@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Button, Box, Paper, TextField, Grid, Stack, Typography } from '@mui/material';
+import { Button, Box, Paper, TextField, Grid, Stack, Typography, IconButton, styled, alpha } from '@mui/material';
 import { addStore } from './API/api';
 import { Link, useNavigate } from 'react-router-dom';
-import { Add as AddIcon } from '@mui/icons-material';
-import Breadcrumb from 'component/Breadcrumb'
+import { Add as AddIcon ,PhotoCamera} from '@mui/icons-material';
+import Breadcrumb from 'component/Breadcrumb';
 const initialValue = {
   user_id: '',
   user_name: '',
@@ -12,6 +12,33 @@ const initialValue = {
   number: '',
   apk_version: ''
 };
+const ButtonWrapper = styled(Box)(({ theme }) => ({
+  width: 100,
+  height: 100,
+  display: "flex",
+  borderRadius: "50%",
+  alignItems: "center",
+  justifyContent: "center",
+  backgroundColor:
+    theme.palette.mode === "light"
+      ? theme.palette.secondary[200]
+      : alpha(theme.palette.primary[100], 0.1),
+}));
+
+const UploadButton = styled(Box)(({ theme }) => ({
+  width: 50,
+  height: 50,
+  display: "flex",
+  borderRadius: "50%",
+  border: "2px solid",
+  alignItems: "center",
+  justifyContent: "center",
+  borderColor: theme.palette.background.paper,
+  backgroundColor:
+    theme.palette.mode === "light"
+      ? theme.palette.secondary[400]
+      : alpha(theme.palette.background.paper, 0.9),
+}));
 
 const AddStore = () => {
   const [user, setUser] = useState(initialValue);
@@ -26,6 +53,13 @@ const AddStore = () => {
     await addStore(user);
     navigate('/team');
   };
+
+  const [image, setImage] = useState(null);
+
+  const handleImageChange = (e) => {
+  const selectedImage = e.target.files[0];
+  setImage(selectedImage);
+};
 
   return (
     <>
@@ -44,7 +78,45 @@ const AddStore = () => {
       <Grid container spacing={3}>
         <Grid item md={5}>
             <Paper elevation={2} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
-              <Box sx={{ mb: 5 }}>{/* implementation for the image upload */}</Box>
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              mb: 5,
+            }}>
+            <ButtonWrapper>
+                <label htmlFor="image-upload">
+                  <input
+                    onChange={handleImageChange}
+                    accept="image/*"
+                    id="image-upload"
+                    type="file"
+                    style={{ display: "none" }}
+                  />
+                  <UploadButton>
+                    <IconButton component="span">
+                      <PhotoCamera sx={{ fontSize: 60, color: "black !important" }} />
+                    </IconButton>
+                  </UploadButton>
+                </label>
+              </ButtonWrapper>
+              {image && <Typography>{image.name}</Typography>}
+              <Box
+              component="small"
+              fontSize="16px"
+              fontWeight="500"
+              lineHeight={1.9}
+              marginTop={2}
+              maxWidth={200}
+              display="block !important"
+              textAlign="center !important"
+              color="text.disabled !important"
+            >
+              Allowed *.jpeg, *.jpg, *.png, *.gif max size of 3.1 MB
+            </Box>
+              </Box>
             </Paper>
         </Grid>
         <Grid item md={6}>
