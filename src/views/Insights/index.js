@@ -1,74 +1,25 @@
 import { React, useState, useEffect } from 'react';
 
-// axios import
-import axios from 'axios';
+// API imports
+import { GetCaptureProgress } from 'api';
+
+// Apex chart import
+import Chart from 'react-apexcharts';
 
 // material-ui
-import {
-  useTheme
-  // styled
-} from '@mui/material/styles';
-// import Box from '@mui/material';
-import {
-  Grid,
-  Card,
-  // CardHeader,
-  CardContent,
-  Typography,
-  // Divider,
-  LinearProgress,
-  Box,
-  Stack,
-  TextField,
-  MenuItem
-} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { Grid, Card, CardContent, Typography, LinearProgress, Box, Stack, TextField, MenuItem, Skeleton } from '@mui/material';
 
 //project import
-// import SalesLineCard from './SalesLineCard';
-// import SalesLineCardData from './chart/sale-chart-1';
-// import StoresBarChartCard from './StoresBarChartCard';
-// import StoresBarCardData from './chart/stores-chart';
 import statisticsChartsData from 'data/statistics-charts-data';
 import DatePickerComp from './DatePicker';
 import BrandDonutChart from './BrandDonutChart';
 import BrandChartData from './chart/brand-chart';
 import KpiCard from './KpiCard';
 import { gridSpacing } from 'config.js';
-
-// import AnomaliesChartCard from './AnomaliesChartCard';
 import AnomaliesBarChart from './AnomaliesBarChart';
-// import AnomaliesBarCardData from './chart/anomalies-chart';
-
-import Chart from 'react-apexcharts';
 
 // assets
-// import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-// import TrendingDownIcon from '@mui/icons-material/TrendingDown';
-// import MonetizationOnTwoTone from '@mui/icons-material/MonetizationOnTwoTone';
-// import DescriptionTwoTone from '@mui/icons-material/DescriptionTwoTone';
-// import ThumbUpAltTwoTone from '@mui/icons-material/ThumbUpAltTwoTone';
-// import CalendarTodayTwoTone from '@mui/icons-material/CalendarTodayTwoTone';
-// import BusinessTwoToneIcon from '@mui/icons-material/BusinessTwoTone';
-// import CenterFocusStrongTwoToneIcon from '@mui/icons-material/CenterFocusStrongTwoTone';
-// import StoreTwoToneIcon from '@mui/icons-material/StoreTwoTone';
-// import LocalOfferTwoToneIcon from '@mui/icons-material/LocalOfferTwoTone';
-// import ColorLensTwoToneIcon from '@mui/icons-material/ColorLensTwoTone';
-// import CategoryTwoToneIcon from '@mui/icons-material/CategoryTwoTone';
-
-// custom style
-// const FlatCardBlock = styled((props) => <Grid item sm={6} xs={12} {...props} />)(({ theme }) => ({
-//   padding: '25px 25px',
-//   borderLeft: '1px solid' + theme.palette.background.default,
-//   [theme.breakpoints.down('sm')]: {
-//     borderLeft: 'none',
-//     borderBottom: '1px solid' + theme.palette.background.default
-//   },
-//   [theme.breakpoints.down('md')]: {
-//     borderBottom: '1px solid' + theme.palette.background.default
-//   }
-// }));
-
-const fashionUrl = 'https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp';
 
 const histogramData = {
   asuk: [5, 10, 20, 25, 30, 35, 25, 15, 3, 2],
@@ -80,7 +31,7 @@ const histogramChartRequirements = {
   totalStores: 150,
   selectOptions: [
     {
-      label: 'Avg. shelf Up-keep',
+      label: 'Avg. shelf-fullness',
       value: 'ASUK'
     },
     {
@@ -88,7 +39,7 @@ const histogramChartRequirements = {
       value: 'VMC'
     },
     {
-      label: 'Disc. & promos exe.',
+      label: 'Disc. & Promos Exe.',
       value: 'DPE'
     }
   ]
@@ -107,25 +58,10 @@ const Insights = () => {
   const [selected, setSelected] = useState(selectOptions[0].value);
   const [seriesData, setSeriesData] = useState(histogramData.asuk);
   const [selectedDate, setSelectedDate] = useState('');
+  const [capProgress, setCapProgress] = useState(false);
+  const [avgCapProgress, setAvgCapProgress] = useState(false);
 
-  console.log('DATE SELECTED', selectedDate);
-
-  const GetCaptureProgress = async (data) => {
-    try {
-      const res = await axios.post(`${fashionUrl}/dashboard_capture_progress`, data, {
-        headers: {
-          Accept: 'application/json'
-          //   Authorization: await token(),
-        }
-      });
-      // console.log(res.data);
-      return res;
-    } catch (error) {
-      console.log('Error Calling GetResults API: ', error);
-      setIsLoading(false);
-      setIsError(true);
-    }
-  };
+  // console.log('DATE SELECTED', selectedDate);
 
   let series = [
     {
@@ -267,6 +203,54 @@ const Insights = () => {
     }
   }, [selected]);
 
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    // Set the component to be mounted when the effect is run
+    setIsMounted(true);
+
+    // Return a cleanup function to set the component to unmounted
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
+  // ------------------------
+
+  useEffect(() => {
+    /* eslint-disable no-inner-declarations */
+    if (isMounted) {
+      async function fetchDashboardData() {
+        const capProgressBody = {
+          start_date: selectedDate.toString(),
+          Store_IDs: ['6582be9ac5ed94d792a563b8']
+        };
+        setAvgCapProgress(false);
+        setCapProgress(false);
+
+        try {
+          const [capProgressData] = await Promise.all([GetCaptureProgress(capProgressBody)]);
+          if (capProgressData) {
+            if (capProgressData.data.length > 0) {
+              const totalCapturePercentage = capProgressData.data.reduce((acc, item) => acc + item.capture_percentage, 0);
+              const average = totalCapturePercentage / capProgressData.data.length;
+              setAvgCapProgress(Math.floor(average));
+            } else {
+              setAvgCapProgress('');
+            }
+            setCapProgress(capProgressData.data);
+          } else {
+            setCapProgress('');
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      fetchDashboardData();
+    }
+    /* eslint-enable no-inner-declarations */
+  }, [selectedDate]);
+
+  // console.log('Avg Capture', avgCapProgress);
+
   return (
     <Grid container spacing={gridSpacing}>
       <Grid
@@ -297,7 +281,7 @@ const Insights = () => {
           <Grid item lg={3} sm={6} xs={12}>
             <KpiCard
               chart={statisticsChartsData[1].chart}
-              title="Average Shelf Up-keep"
+              title="Average Shelf-fullness"
               count="86%"
               percentage={0.5}
               chipColor="success"
@@ -317,7 +301,7 @@ const Insights = () => {
           <Grid item lg={3} sm={6} xs={12}>
             <KpiCard
               chart={statisticsChartsData[3].chart}
-              title="Discounts & promos execution"
+              title="Discounts & Promos Execution"
               count="68%"
               percentage={0.5}
               isLoss
@@ -345,16 +329,9 @@ const Insights = () => {
               <Grid item xs={12} md={7}>
                 <Grid container spacing={gridSpacing}>
                   <Grid item xs={12}>
-                    {/* <SalesLineCard chartData={SalesLineCardData} title="150" percentage="3%" icon={<TrendingDownIcon />} /> */}
-                    {/* <StoresBarChartCard chartData={StoresBarCardData} title="150" percentage="3%" icon={<TrendingDownIcon />} /> */}
                     <Card>
                       <CardContent sx={{ padding: 0, paddingBottom: '0 !important' }}>
-                        <Box
-                          color="#fff"
-                          // bgcolor={bgColor ? bgColor : theme.palette.primary.main}
-                          bgcolor={theme.palette.primary.main}
-                          p={3}
-                        >
+                        <Box color="#fff" bgcolor={theme.palette.primary.main} p={3}>
                           <Grid container justifyContent="space-between" alignItems="center">
                             <Grid item>
                               <Grid container spacing={1}>
@@ -456,23 +433,13 @@ const Insights = () => {
                     </Card>
                   </Grid>
                 </Grid>
-                {/* <RevenuChartCard chartData={RevenuChartCardData} /> */}
               </Grid>
             </Grid>
             <Grid item xs={12}>
               <Grid container paddingTop={3} spacing={gridSpacing}>
                 <Grid item xs={12}>
                   <Card>
-                    {/* <CardHeader
-                      title={
-                        <Typography component="div" className="card-header">
-                          Anomalies Resolved
-                        </Typography>
-                      }
-                    />
-                    <Divider /> */}
                     <CardContent>
-                      {/* <AnomaliesChartCard chartData={AnomaliesBarCardData} /> */}
                       <AnomaliesBarChart />
                     </CardContent>
                   </Card>
@@ -482,36 +449,52 @@ const Insights = () => {
           </Grid>
           <Grid item lg={3} xs={12}>
             <Card>
-              {/* <CardHeader
-                title={
-                  <Typography component="div" className="card-header">
-                    Capture Progress
-                  </Typography>
-                }
-              /> */}
               <Grid container spacing={gridSpacing}>
                 <Grid item xs={6} sm={4} md={3} lg={7} xl={6}>
-                  <Chart
-                    options={progressChart.options}
-                    series={progressChart.series}
-                    type={progressChart.options.chart.type}
-                    height={progressChart.options.chart.height}
-                  />
+                  {avgCapProgress ? (
+                    <Chart
+                      options={progressChart.options}
+                      series={[avgCapProgress]}
+                      type={progressChart.options.chart.type}
+                      height={progressChart.options.chart.height}
+                    />
+                  ) : avgCapProgress === '' ? (
+                    <Chart
+                      options={progressChart.options}
+                      series={[0]}
+                      type={progressChart.options.chart.type}
+                      height={progressChart.options.chart.height}
+                    />
+                  ) : (
+                    <Chart
+                      options={progressChart.options}
+                      series={[0]}
+                      type={progressChart.options.chart.type}
+                      height={progressChart.options.chart.height}
+                    />
+                  )}
                 </Grid>
                 <Grid item alignContent={'center'} xs={6} sm={8} md={9} lg={5} xl={6}>
-                  {/* <Grid container spacing={gridSpacing}> */}
                   <div className="flex flex-col gap-1">
                     <Typography variant="h1" sx={{ color: accentColMain, paddingTop: 8 }}>
-                      68 %
+                      {avgCapProgress ? (
+                        `${avgCapProgress}%`
+                      ) : avgCapProgress === '' ? (
+                        '0%'
+                      ) : (
+                        <Stack spacing={0.5}>
+                          <Skeleton animation="wave" variant="rounded" width={60} height={10} />
+                          <Skeleton animation="wave" variant="rounded" width={75} height={10} />
+                          <Skeleton animation="wave" variant="rounded" width={90} height={10} />
+                        </Stack>
+                      )}
                     </Typography>
                     <Typography variant="h5" color="textSecondary">
                       Capture Progress
                     </Typography>
                   </div>
-                  {/* </Grid> */}
                 </Grid>
               </Grid>
-              {/* <Divider /> */}
               <CardContent
                 sx={{
                   height: 370,
@@ -525,36 +508,50 @@ const Insights = () => {
                 className="overflow-y-auto flex flex-col gap-1 scrollbar"
               >
                 <Grid container spacing={gridSpacing}>
-                  <Grid item xs={12}>
-                    <Grid container justifyContent={'space-between'} alignItems="center" spacing={1}>
-                      <Grid item sm zeroMinWidth>
-                        <Typography variant="body2">TU30</Typography>
+                  {capProgress ? (
+                    capProgress.map((item) => (
+                      <Grid key={item._id} item xs={12}>
+                        <Grid container justifyContent={'space-between'} alignItems="center" spacing={1}>
+                          <Grid item sm zeroMinWidth>
+                            <Typography variant="body2">{item.store_id}</Typography>
+                          </Grid>
+                          <Grid item>
+                            <Typography variant="body2" align="right">
+                              {Math.floor(item.capture_percentage)}%
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12}>
+                            <LinearProgress
+                              sx={{
+                                borderRadius: 3,
+                                height: 5,
+                                [theme.breakpoints.up('xl')]: {
+                                  height: 5 // Height for screens equal to or larger than 'lg' breakpoint
+                                }
+                              }}
+                              variant="determinate"
+                              aria-label="direct"
+                              value={Math.floor(item.capture_percentage)}
+                              color="primary"
+                            />
+                          </Grid>
+                          {/* <Grid item sm zeroMinWidth>
+                          <Typography variant="body2">1:00 PM</Typography>
+                        </Grid> */}
+                        </Grid>
                       </Grid>
-                      <Grid item>
-                        <Typography variant="body2" align="right">
-                          80%
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <LinearProgress
-                          sx={{
-                            borderRadius: 3,
-                            height: 5,
-                            [theme.breakpoints.up('xl')]: {
-                              height: 5 // Height for screens equal to or larger than 'lg' breakpoint
-                            }
-                          }}
-                          variant="determinate"
-                          aria-label="direct"
-                          value={80}
-                          color="primary"
-                        />
-                      </Grid>
-                      <Grid item sm zeroMinWidth>
-                        <Typography variant="body2">1:00 PM</Typography>
-                      </Grid>
-                    </Grid>
-                  </Grid>
+                    ))
+                  ) : capProgress === '' ? (
+                    <></>
+                  ) : (
+                    <Stack paddingLeft={gridSpacing} width={'100%'} spacing={gridSpacing}>
+                      <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
+                      <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
+                      <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
+                      <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
+                      <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
+                    </Stack>
+                  )}
                 </Grid>
               </CardContent>
             </Card>
