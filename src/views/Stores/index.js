@@ -2,14 +2,90 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 // material-ui
-import { Card, CardHeader, CardContent, Divider, Grid, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 
 // project import
 import Breadcrumb from 'component/Breadcrumb';
 import { gridSpacing } from 'config.js';
+import TableComponent from 'views/Stores/Table';
 
 // ==============================|| STORES PAGE ||============================== //
 
+function createData(name, calories, fat, carbs, protein) {
+  return { name, calories, fat, carbs, protein };
+}
+const rows = [
+  createData('Frozen yoghurt', 159, 6.0, 24),
+  createData('Ice cream sandwich', 237, 9.0, 4.3),
+  createData('Eclair', 262, 16.0, 24),
+  createData('Cupcake', 305, 3.7, 4.3),
+  createData('Gingerbread', 356, 49, 3.9),
+  createData('Frozen yoghurt', 159, 6.0, 24),
+  createData('Ice cream sandwich', 237, 9.0, 4.3),
+  createData('Eclair', 262, 16.0, 24),
+  createData('Cupcake', 305, 3.7, 4.3),
+  createData('Gingerbread', 356, 49, 3.9),
+  createData('Frozen yoghurt', 159, 6.0, 24),
+  createData('Ice cream sandwich', 237, 9.0, 4.3),
+  createData('Eclair', 262, 16.0, 24),
+  createData('Cupcake', 305, 3.7, 4.3),
+  createData('Gingerbread', 356, 49, 3.9),
+  createData('Frozen yoghurt', 159, 6.0, 24),
+  createData('Ice cream sandwich', 237, 9.0, 4.3),
+  createData('Eclair', 262, 16.0, 24),
+  createData('Cupcake', 305, 3.7, 4.3),
+  createData('Gingerbread', 356, 49, 3.9),
+  createData('Frozen yoghurt', 159, 6.0, 24),
+  createData('Ice cream sandwich', 237, 9.0, 4.3),
+  createData('Eclair', 262, 16.0, 24),
+  createData('Cupcake', 305, 3.7, 4.3),
+  createData('Gingerbread', 356, 49, 3.9),
+  createData('Frozen yoghurt', 159, 6.0, 24),
+  createData('Ice cream sandwich', 237, 9.0, 4.3),
+  createData('Eclair', 262, 16.0, 24),
+  createData('Cupcake', 305, 3.7, 4.3),
+  createData('Gingerbread', 356, 49, 3.9),
+  createData('Frozen yoghurt', 159, 6.0, 24),
+  createData('Ice cream sandwich', 237, 9.0, 4.3),
+  createData('Eclair', 262, 16.0, 24),
+  createData('Cupcake', 305, 3.7, 4.3),
+  createData('Gingerbread', 356, 49, 3.9),
+  createData('Frozen yoghurt', 159, 6.0, 24),
+  createData('Ice cream sandwich', 237, 9.0, 4.3),
+  createData('Eclair', 262, 16.0, 24),
+  createData('Cupcake', 305, 3.7, 4.3),
+  createData('Gingerbread', 356, 49, 3.9),
+  createData('Frozen yoghurt', 159, 6.0, 24),
+  createData('Ice cream sandwich', 237, 9.0, 4.3),
+  createData('Eclair', 262, 16.0, 24),
+  createData('Cupcake', 305, 3.7, 4.3),
+  createData('Gingerbread', 356, 49, 3.9),
+  createData('Frozen yoghurt', 159, 6.0, 24),
+  createData('Ice cream sandwich', 237, 9.0, 4.3),
+  createData('Eclair', 262, 16.0, 24),
+  createData('Cupcake', 305, 3.7, 4.3),
+  createData('Gingerbread', 356, 49, 3.9),
+  createData('Frozen yoghurt', 159, 6.0, 24),
+  createData('Ice cream sandwich', 237, 9.0, 4.3),
+  createData('Eclair', 262, 16.0, 24),
+  createData('Cupcake', 305, 3.7, 4.3),
+  createData('Gingerbread', 356, 49, 3.9),
+  createData('Frozen yoghurt', 159, 6.0, 24),
+  createData('Ice cream sandwich', 237, 9.0, 4.3),
+  createData('Eclair', 262, 16.0, 24),
+  createData('Cupcake', 305, 3.7, 4.3),
+  createData('Gingerbread', 356, 49, 3.9),
+  createData('Frozen yoghurt', 159, 6.0, 24),
+  createData('Ice cream sandwich', 237, 9.0, 4.3),
+  createData('Eclair', 262, 16.0, 24),
+  createData('Cupcake', 305, 3.7, 4.3),
+  createData('Gingerbread', 356, 49, 3.9),
+  createData('Frozen yoghurt', 159, 6.0, 24),
+  createData('Ice cream sandwich', 237, 9.0, 4.3),
+  createData('Eclair', 262, 16.0, 24),
+  createData('Cupcake', 305, 3.7, 4.3),
+  createData('Gingerbread', 356, 49, 3.9)
+];
 const Stores = () => {
   return (
     <>
@@ -22,25 +98,8 @@ const Stores = () => {
         </Typography>
       </Breadcrumb>
       <Grid container spacing={gridSpacing}>
-        <Grid item>
-          <Card>
-            <CardHeader
-              title={
-                <Typography component="div" className="card-header">
-                  Heading
-                </Typography>
-              }
-            />
-            <Divider />
-            <CardContent>
-              <Typography variant="body2">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
-                dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiatnulla pariatur. Excepteur sint occaecat cupidatat non
-                proident, sunt in culpa qui officia deserunt mollitanim id est laborum.
-              </Typography>
-            </CardContent>
-          </Card>
+        <Grid item width={'100%'}>
+          <TableComponent rows={rows} />
         </Grid>
       </Grid>
     </>
