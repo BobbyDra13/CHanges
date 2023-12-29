@@ -1,5 +1,8 @@
 import { React, useState, useEffect } from 'react';
 
+// axios import
+import axios from 'axios';
+
 // material-ui
 import {
   useTheme
@@ -65,6 +68,8 @@ import Chart from 'react-apexcharts';
 //   }
 // }));
 
+const fashionUrl = 'https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp';
+
 const histogramData = {
   asuk: [5, 10, 20, 25, 30, 35, 25, 15, 3, 2],
   vmc: [10, 20, 30, 25, 15, 10, 15, 20, 17, 8],
@@ -104,6 +109,23 @@ const Insights = () => {
   const [selectedDate, setSelectedDate] = useState('');
 
   console.log('DATE SELECTED', selectedDate);
+
+  const GetCaptureProgress = async (data) => {
+    try {
+      const res = await axios.post(`${fashionUrl}/dashboard_capture_progress`, data, {
+        headers: {
+          Accept: 'application/json'
+          //   Authorization: await token(),
+        }
+      });
+      // console.log(res.data);
+      return res;
+    } catch (error) {
+      console.log('Error Calling GetResults API: ', error);
+      setIsLoading(false);
+      setIsError(true);
+    }
+  };
 
   let series = [
     {
