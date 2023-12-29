@@ -3,6 +3,8 @@ import React, { lazy } from 'react';
 // project import
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'component/Loadable';
+import AddStore from 'views/Team/addStore';
+import EditStore from 'views/Team/updateStore';
 
 const Insight = Loadable(lazy(() => import('../views/Insights')));
 
@@ -47,6 +49,14 @@ const MainRoutes = {
     {
       path: '/team',
       element: <Team />
+    },
+    {
+      path: '/team/add',
+      element: <AddStore/>
+    },
+    {
+      path: '/team/edit/:id',
+      element: <EditStore/>
     },
 
     { path: '/utils/util-typography', element: <UtilsTypography /> },
