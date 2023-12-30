@@ -73,7 +73,7 @@ const AddStore = () => {
       </Breadcrumb>
 
       <Grid container spacing={3}>
-        <Grid item md={4}>
+        <Grid item md={5}>
           <Paper elevation={2} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
             <Box
               sx={{
@@ -117,7 +117,7 @@ const AddStore = () => {
           </Alert>
         )}
         </Grid>
-        <Grid item md={8}>
+        <Grid item md={7}>
           <Paper elevation={3} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
             <Box
               rowGap={4}
