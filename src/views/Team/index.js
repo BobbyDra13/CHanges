@@ -23,7 +23,7 @@ const Team = () => {
       </Breadcrumb>
       <Grid container spacing={gridSpacing}>
         <Grid item width="99%">
-        <AllStores />
+          <AllStores />
         </Grid>
       </Grid>
     </>

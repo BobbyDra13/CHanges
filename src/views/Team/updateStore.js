@@ -1,27 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
-import {
-  Button,
-  Typography,
-  Paper,
-  Grid,
-  Box,
-  TextField,
-  Stack,
-} from "@mui/material";
-import {  useNavigate, useParams } from "react-router-dom";
-import {editStore, getStores } from "./API/api";
-import Breadcrumb from "component/Breadcrumb";
+import { Button, Typography, Paper, Grid, Box, TextField, Stack } from '@mui/material';
+import { useNavigate, useParams } from 'react-router-dom';
+import { editStore, getStores } from './API/api';
+import Breadcrumb from 'component/Breadcrumb';
 import { Add as AddIcon } from '@mui/icons-material';
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 const initialValue = {
-  user_id: "",
-  user_name: "",
-  status: "",
-  user_role: "",
-  number: "",
-  apk_version: "",
+  user_id: '',
+  user_name: '',
+  status: '',
+  user_role: '',
+  number: '',
+  apk_version: ''
 };
 
 const EditStore = () => {
@@ -51,7 +43,7 @@ const EditStore = () => {
 
   return (
     <>
-    <Breadcrumb title="Team">
+      <Breadcrumb title="Team">
         <Typography component={Link} to="/" variant="subtitle2" color="inherit" className="link-breadcrumb">
           Insights
         </Typography>
@@ -64,79 +56,79 @@ const EditStore = () => {
       </Breadcrumb>
       <Grid container spacing={3}>
         <Grid item md={5}>
-            <Paper elevation={2} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
-              <Box sx={{ mb: 5 }}>{/* implementation for the image upload */}</Box>
-            </Paper>
+          <Paper elevation={2} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
+            <Box sx={{ mb: 5 }}>{/* implementation for the image upload */}</Box>
+          </Paper>
         </Grid>
         <Grid item md={6}>
-            <Paper elevation={3} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
-              <Box
-                rowGap={3}
-                columnGap={2}
-                display="grid"
-                gridTemplateColumns={{
-                  xs: 'repeat(1, 1fr)',
-                  sm: 'repeat(2, 1fr)'
+          <Paper elevation={3} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
+            <Box
+              rowGap={3}
+              columnGap={2}
+              display="grid"
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                sm: 'repeat(2, 1fr)'
+              }}
+            >
+              <TextField
+                label="User ID"
+                onChange={(e) => onValueChange(e)}
+                name="user_id"
+                value={user_id}
+                id="my-input"
+                variant="outlined"
+                fullWidth
+                sx={{
+                  '& .MuiInputLabel-root': {
+                    color: 'rgba(0, 0, 0, 0.4)',
+                    '&.Mui-focused': {
+                      color: 'black'
+                    }
+                  },
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '10px',
+                    '& fieldset': {
+                      borderColor: 'rgba(0, 0, 0, 0.2)'
+                    },
+                    '&:hover fieldset': {
+                      borderColor: 'black'
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: 'black'
+                    }
+                  }
                 }}
-              >
-                <TextField
-                  label="User ID"
-                  onChange={(e) => onValueChange(e)}
-                  name="user_id"
-                  value={user_id}
-                  id="my-input"
-                  variant="outlined"
-                  fullWidth
-                  sx={{
-                    '& .MuiInputLabel-root': {
-                      color: 'rgba(0, 0, 0, 0.4)',
-                      '&.Mui-focused': {
-                        color: 'black'
-                      }
-                    },
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: '10px',
-                      '& fieldset': {
-                        borderColor: 'rgba(0, 0, 0, 0.2)'
-                      },
-                      '&:hover fieldset': {
-                        borderColor: 'black'
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: 'black'
-                      }
+              />
+              <TextField
+                label="Name"
+                onChange={(e) => onValueChange(e)}
+                name="user_name"
+                value={user_name}
+                id="my-input"
+                variant="outlined"
+                fullWidth
+                sx={{
+                  '& .MuiInputLabel-root': {
+                    color: 'rgba(0, 0, 0, 0.4)',
+                    '&.Mui-focused': {
+                      color: 'black'
                     }
-                  }}
-                />
-                <TextField
-                  label="Name"
-                  onChange={(e) => onValueChange(e)}
-                  name="user_name"
-                  value={user_name}
-                  id="my-input"
-                  variant="outlined"
-                  fullWidth
-                  sx={{
-                    '& .MuiInputLabel-root': {
-                      color: 'rgba(0, 0, 0, 0.4)',
-                      '&.Mui-focused': {
-                        color: 'black'
-                      }
+                  },
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '10px',
+                    '& fieldset': {
+                      borderColor: 'rgba(0, 0, 0, 0.2)'
                     },
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: '10px',
-                      '& fieldset': {
-                        borderColor: 'rgba(0, 0, 0, 0.2)'
-                      },
-                      '&:hover fieldset': {
-                        borderColor: 'black'
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: 'black'
-                      }
+                    '&:hover fieldset': {
+                      borderColor: 'black'
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: 'black'
                     }
-                  }}
-                />
+                  }
+                }}
+              />
 
                 <TextField
                   label="Status"

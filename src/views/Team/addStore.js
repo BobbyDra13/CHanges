@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Button, Box, Paper, TextField, Grid, Stack, Typography, IconButton, styled, alpha } from '@mui/material';
+import { Button, Box, Paper, TextField, Grid, Stack, Typography, IconButton, styled, alpha, Alert } from '@mui/material';
 import { addStore } from './API/api';
 import { Link, useNavigate } from 'react-router-dom';
-import { Add as AddIcon ,PhotoCamera} from '@mui/icons-material';
+import { Add as AddIcon, PhotoCamera } from '@mui/icons-material';
 import Breadcrumb from 'component/Breadcrumb';
 const initialValue = {
   user_id: '',
@@ -15,29 +15,23 @@ const initialValue = {
 const ButtonWrapper = styled(Box)(({ theme }) => ({
   width: 100,
   height: 100,
-  display: "flex",
-  borderRadius: "50%",
-  alignItems: "center",
-  justifyContent: "center",
-  backgroundColor:
-    theme.palette.mode === "light"
-      ? theme.palette.secondary[200]
-      : alpha(theme.palette.primary[100], 0.1),
+  display: 'flex',
+  borderRadius: '50%',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: theme.palette.mode === 'light' ? theme.palette.secondary[200] : alpha(theme.palette.primary[100], 0.1)
 }));
 
 const UploadButton = styled(Box)(({ theme }) => ({
   width: 50,
   height: 50,
-  display: "flex",
-  borderRadius: "50%",
-  border: "2px solid",
-  alignItems: "center",
-  justifyContent: "center",
+  display: 'flex',
+  borderRadius: '50%',
+  border: '2px solid',
+  alignItems: 'center',
+  justifyContent: 'center',
   borderColor: theme.palette.background.paper,
-  backgroundColor:
-    theme.palette.mode === "light"
-      ? theme.palette.secondary[400]
-      : alpha(theme.palette.background.paper, 0.9),
+  backgroundColor: theme.palette.mode === 'light' ? theme.palette.secondary[400] : alpha(theme.palette.background.paper, 0.9)
 }));
 
 const AddStore = () => {
@@ -54,16 +48,19 @@ const AddStore = () => {
     navigate('/team');
   };
 
-  const [image, setImage] = useState(null);
+  // const [image, setImage] = useState(null);
+  const [showAlert, setShowAlert] = useState(false);
 
-  const handleImageChange = (e) => {
-  const selectedImage = e.target.files[0];
-  setImage(selectedImage);
-};
+  const handleImageChange = () => {
+    <Alert severity="info">This feature is not yet available</Alert>
+    // const selectedImage = e.target.files[0];
+    // setImage(selectedImage);
+    setShowAlert(true);
+  };
 
   return (
     <>
-     <Breadcrumb title="Team">
+      <Breadcrumb title="Team">
         <Typography component={Link} to="/" variant="subtitle2" color="inherit" className="link-breadcrumb">
           Insights
         </Typography>
@@ -76,118 +73,119 @@ const AddStore = () => {
       </Breadcrumb>
 
       <Grid container spacing={3}>
-        <Grid item md={5}>
-            <Paper elevation={2} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
-            <Box sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              textAlign: 'center',
-              mb: 5,
-            }}>
-            <ButtonWrapper>
+        <Grid item md={4}>
+          <Paper elevation={2} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center',
+                mb: 5
+              }}
+            >
+              <ButtonWrapper>
                 <label htmlFor="image-upload">
-                  <input
-                    onChange={handleImageChange}
-                    accept="image/*"
-                    id="image-upload"
-                    type="file"
-                    style={{ display: "none" }}
-                  />
+                  <input onChange={handleImageChange} accept="image/*" id="image-upload" type="file" style={{ display: 'none' }} />
                   <UploadButton>
                     <IconButton component="span">
-                      <PhotoCamera sx={{ fontSize: 60, color: "black !important" }} />
+                      <PhotoCamera sx={{ fontSize: 60, color: 'grey !important' }} />
                     </IconButton>
                   </UploadButton>
                 </label>
               </ButtonWrapper>
-              {image && <Typography>{image.name}</Typography>}
+              {/* {image && <Typography>{image.name}</Typography>} */}
               <Box
-              component="small"
-              fontSize="16px"
-              fontWeight="500"
-              lineHeight={1.9}
-              marginTop={2}
-              maxWidth={200}
-              display="block !important"
-              textAlign="center !important"
-              color="text.disabled !important"
-            >
-              Allowed *.jpeg, *.jpg, *.png, *.gif max size of 3.1 MB
-            </Box>
-              </Box>
-            </Paper>
-        </Grid>
-        <Grid item md={6}>
-            <Paper elevation={3} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
-              <Box
-                rowGap={3}
-                columnGap={2}
-                display="grid"
-                gridTemplateColumns={{
-                  xs: 'repeat(1, 1fr)',
-                  sm: 'repeat(2, 1fr)'
-                }}
+                component="small"
+                fontSize="16px"
+                fontWeight="500"
+                lineHeight={1.9}
+                marginTop={2}
+                maxWidth={200}
+                display="block !important"
+                textAlign="center !important"
+                color="text.disabled !important"
               >
-                <TextField
-                  label="User ID"
-                  onChange={(e) => onValueChange(e)}
-                  name="user_id"
-                  value={user_id}
-                  id="my-input"
-                  variant="outlined"
-                  fullWidth
-                  sx={{
-                    '& .MuiInputLabel-root': {
-                      color: 'rgba(0, 0, 0, 0.4)',
-                      '&.Mui-focused': {
-                        color: 'black'
-                      }
-                    },
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: '10px',
-                      '& fieldset': {
-                        borderColor: 'rgba(0, 0, 0, 0.2)'
-                      },
-                      '&:hover fieldset': {
-                        borderColor: 'black'
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: 'black'
-                      }
+                Allowed *.jpeg, *.jpg, *.png, *.gif max size of 3.1 MB
+              </Box>
+            </Box>
+          </Paper>
+          {showAlert && (
+          <Alert severity="info" onClose={() => setShowAlert(false)}>
+            This feature is not yet available
+          </Alert>
+        )}
+        </Grid>
+        <Grid item md={8}>
+          <Paper elevation={3} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
+            <Box
+              rowGap={4}
+              columnGap={3}
+              display="grid"
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                sm: 'repeat(2, 1fr)'
+              }}
+            >
+              <TextField
+                label="User ID"
+                onChange={(e) => onValueChange(e)}
+                name="user_id"
+                value={user_id}
+                id="my-input"
+                variant="outlined"
+                fullWidth
+                sx={{
+                  '& .MuiInputLabel-root': {
+                    color: 'rgba(0, 0, 0, 0.4)',
+                    '&.Mui-focused': {
+                      color: 'black'
                     }
-                  }}
-                />
-                <TextField
-                  label="Name"
-                  onChange={(e) => onValueChange(e)}
-                  name="user_name"
-                  value={user_name}
-                  id="my-input"
-                  variant="outlined"
-                  fullWidth
-                  sx={{
-                    '& .MuiInputLabel-root': {
-                      color: 'rgba(0, 0, 0, 0.4)',
-                      '&.Mui-focused': {
-                        color: 'black'
-                      }
+                  },
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '10px',
+                    '& fieldset': {
+                      borderColor: 'rgba(0, 0, 0, 0.2)'
                     },
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: '10px',
-                      '& fieldset': {
-                        borderColor: 'rgba(0, 0, 0, 0.2)'
-                      },
-                      '&:hover fieldset': {
-                        borderColor: 'black'
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: 'black'
-                      }
+                    '&:hover fieldset': {
+                      borderColor: 'black'
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: 'black'
                     }
-                  }}
-                />
+                  }
+                }}
+              />
+              <TextField
+                label="Name"
+                onChange={(e) => onValueChange(e)}
+                name="user_name"
+                value={user_name}
+                id="my-input"
+                variant="outlined"
+                fullWidth
+                sx={{
+                  '& .MuiInputLabel-root': {
+                    color: 'rgba(0, 0, 0, 0.4)',
+                    '&.Mui-focused': {
+                      color: 'black'
+                    }
+                  },
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '10px',
+                    '& fieldset': {
+                      borderColor: 'rgba(0, 0, 0, 0.2)'
+                    },
+                    '&:hover fieldset': {
+                      borderColor: 'black'
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: 'black'
+                    }
+                  }
+                }}
+              />
 
                 <TextField
                   label="Status"
@@ -313,15 +311,15 @@ const AddStore = () => {
                   startIcon={<AddIcon />}
                   onClick={() => addUserDetails()}
                   sx={{
-                    bgcolor: '#000000 !important',
+                    backgroundColor: '#000000 !important',
                     color: '#FFFFFF !important',
                     borderRadius: '8px !important',
                     padding: '6px 24px !important',
                     '&:hover': {
-                      bgcolor: '#1a1a1a !important'
+                      backgroundColor: '#1a1a1a !important'
                     },
                     '&:active': {
-                      bgcolor: '#000000 !important'
+                      backgroundColor: '#000000 !important'
                     }
                   }}
                 >
