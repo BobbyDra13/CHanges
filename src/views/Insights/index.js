@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from 'react';
 
 // API imports
-import { GetCaptureProgress } from 'api';
+import { GetCaptureProgress, GetBrandDonutData, GetFullnessKpi } from 'api';
 
 // Apex chart import
 import Chart from 'react-apexcharts';
@@ -20,6 +20,7 @@ import { gridSpacing } from 'config.js';
 import AnomaliesBarChart from './AnomaliesBarChart';
 
 // assets
+import NoDataPng from '../../assets/images/No_data.png';
 
 const histogramData = {
   asuk: [5, 10, 20, 25, 30, 35, 25, 15, 3, 2],
@@ -219,7 +220,11 @@ const Insights = () => {
     /* eslint-disable no-inner-declarations */
     if (isMounted) {
       async function fetchDashboardData() {
-        const capProgressBody = {
+        const commonBody = {
+          start_date: selectedDate.toString(),
+          Store_IDs: ['6582be9ac5ed94d792a563b8']
+        };
+        const brandDonutBody = {
           start_date: selectedDate.toString(),
           Store_IDs: ['6582be9ac5ed94d792a563b8']
         };
@@ -227,7 +232,11 @@ const Insights = () => {
         setCapProgress(false);
 
         try {
-          const [capProgressData] = await Promise.all([GetCaptureProgress(capProgressBody)]);
+          const [capProgressData, brandDonutData, fullnessKpiData] = await Promise.all([
+            GetCaptureProgress(commonBody),
+            GetBrandDonutData(brandDonutBody),
+            GetFullnessKpi(commonBody)
+          ]);
           if (capProgressData) {
             if (capProgressData.data.length > 0) {
               const totalCapturePercentage = capProgressData.data.reduce((acc, item) => acc + item.capture_percentage, 0);
@@ -235,10 +244,15 @@ const Insights = () => {
               setAvgCapProgress(Math.floor(average));
             } else {
               setAvgCapProgress('');
+              // setCapProgress('');
             }
             setCapProgress(capProgressData.data);
-          } else {
-            setCapProgress('');
+          }
+          if (brandDonutData) {
+            console.log('Brand Data', brandDonutData);
+          }
+          if (fullnessKpiData) {
+            console.log('Brand Data', fullnessKpiData);
           }
         } catch (error) {
           console.log(error);
@@ -249,7 +263,7 @@ const Insights = () => {
     /* eslint-enable no-inner-declarations */
   }, [selectedDate]);
 
-  // console.log('Avg Capture', avgCapProgress);
+  // console.log('Avg Capture', capProgress);
 
   return (
     <Grid container spacing={gridSpacing}>
@@ -451,28 +465,12 @@ const Insights = () => {
             <Card>
               <Grid container spacing={gridSpacing}>
                 <Grid item xs={6} sm={4} md={3} lg={7} xl={6}>
-                  {avgCapProgress ? (
-                    <Chart
-                      options={progressChart.options}
-                      series={[avgCapProgress]}
-                      type={progressChart.options.chart.type}
-                      height={progressChart.options.chart.height}
-                    />
-                  ) : avgCapProgress === '' ? (
-                    <Chart
-                      options={progressChart.options}
-                      series={[0]}
-                      type={progressChart.options.chart.type}
-                      height={progressChart.options.chart.height}
-                    />
-                  ) : (
-                    <Chart
-                      options={progressChart.options}
-                      series={[0]}
-                      type={progressChart.options.chart.type}
-                      height={progressChart.options.chart.height}
-                    />
-                  )}
+                  <Chart
+                    options={progressChart.options}
+                    series={avgCapProgress ? [avgCapProgress] : [0]}
+                    type={progressChart.options.chart.type}
+                    height={progressChart.options.chart.height}
+                  />
                 </Grid>
                 <Grid item alignContent={'center'} xs={6} sm={8} md={9} lg={5} xl={6}>
                   <div className="flex flex-col gap-1">
@@ -508,7 +506,7 @@ const Insights = () => {
                 className="overflow-y-auto flex flex-col gap-1 scrollbar"
               >
                 <Grid container spacing={gridSpacing}>
-                  {capProgress ? (
+                  {capProgress.length > 0 ? (
                     capProgress.map((item) => (
                       <Grid key={item._id} item xs={12}>
                         <Grid container justifyContent={'space-between'} alignItems="center" spacing={1}>
@@ -541,9 +539,12 @@ const Insights = () => {
                         </Grid>
                       </Grid>
                     ))
-                  ) : capProgress === '' ? (
-                    <></>
+                  ) : capProgress.length === 0 ? (
+                    <div className="w-full h-full flex justify-center place-items-center">
+                      <img style={{ width: '100%' }} src={NoDataPng} alt="No data" />
+                    </div>
                   ) : (
+                    // <>No data</>
                     <Stack paddingLeft={gridSpacing} width={'100%'} spacing={gridSpacing}>
                       <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
                       <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
