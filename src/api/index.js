@@ -40,6 +40,34 @@ export const GetFullnessKpi = async (data) => {
     });
     return res;
   } catch (error) {
-    console.log('Error Calling GetBrandDonutData API: ', error);
+    console.log('Error Calling GetFullnessKpi API: ', error);
+  }
+};
+
+export const GetAnomaliesKpi = async (data) => {
+  try {
+    const res = await axios.post(`${lambUrl}/dashboard/card_anomalies`, data, {
+      headers: {
+        Accept: 'application/json'
+        //   Authorization: await token(),
+      }
+    });
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetAnomaliesKpi API: ', error);
+  }
+};
+
+export const GetAnomaliesBarChartData = async (data) => {
+  try {
+    const res = await axios.post(`${lambUrl}/dashboard/anomalies_barchart`, data, {
+      headers: {
+        Accept: 'application/json'
+        //   Authorization: await token(),
+      }
+    });
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetAnomaliesKpi API: ', error);
   }
 };

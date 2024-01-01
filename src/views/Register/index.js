@@ -22,7 +22,7 @@ const Register = () => {
       container
       justifyContent="center"
       alignItems="center"
-      sx={{ backgroundColor: theme.palette.common.black, height: '100%', minHeight: '100vh' }}
+      sx={{ bgcolor: theme.palette.common.black, height: '100%', minHeight: '100vh' }}
     >
       <Grid item xs={11} md={6} lg={4}>
         <Card

@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from 'react';
 
 // API imports
-import { GetCaptureProgress, GetBrandDonutData, GetFullnessKpi } from 'api';
+import { GetCaptureProgress, GetBrandDonutData, GetFullnessKpi, GetAnomaliesKpi, GetAnomaliesBarChartData } from 'api';
 
 // Apex chart import
 import Chart from 'react-apexcharts';
@@ -21,6 +21,7 @@ import AnomaliesBarChart from './AnomaliesBarChart';
 
 // assets
 import NoDataPng from '../../assets/images/No_data.png';
+import NoDataImg from '../../assets/images/No_data-amico.svg';
 
 const histogramData = {
   asuk: [5, 10, 20, 25, 30, 35, 25, 15, 3, 2],
@@ -61,6 +62,12 @@ const Insights = () => {
   const [selectedDate, setSelectedDate] = useState('');
   const [capProgress, setCapProgress] = useState(false);
   const [avgCapProgress, setAvgCapProgress] = useState(false);
+  const [fullness, setFullness] = useState(false);
+  const [anomalies, setAnomalies] = useState(false);
+  const [brandDonut, setBrandDonut] = useState(false);
+  const [brandChartOptions, setBrandChartOptions] = useState(BrandChartData.options);
+  const [brandFullness, setBrandFullness] = useState([]);
+  // const [brandNames, setBrandNames] = useState([]);
 
   // console.log('DATE SELECTED', selectedDate);
 
@@ -230,13 +237,19 @@ const Insights = () => {
         };
         setAvgCapProgress(false);
         setCapProgress(false);
+        setFullness(false);
+        setAnomalies(false);
+        setBrandDonut(false);
 
         try {
-          const [capProgressData, brandDonutData, fullnessKpiData] = await Promise.all([
+          const [capProgressData, brandDonutData, fullnessKpiData, anomaliesKpiData, anomaliesBarChartData] = await Promise.all([
             GetCaptureProgress(commonBody),
             GetBrandDonutData(brandDonutBody),
-            GetFullnessKpi(commonBody)
+            GetFullnessKpi(commonBody),
+            GetAnomaliesKpi(commonBody),
+            GetAnomaliesBarChartData(commonBody)
           ]);
+
           if (capProgressData) {
             if (capProgressData.data.length > 0) {
               const totalCapturePercentage = capProgressData.data.reduce((acc, item) => acc + item.capture_percentage, 0);
@@ -248,11 +261,31 @@ const Insights = () => {
             }
             setCapProgress(capProgressData.data);
           }
+
           if (brandDonutData) {
-            console.log('Brand Data', brandDonutData);
+            // console.log('Brand Data', brandDonutData);
+            if (brandDonutData.data.length > 0) {
+              const extractedFullness = brandDonutData.data.map((item) => item.fullness);
+              const extractedBrandNames = brandDonutData.data.map((item) => item.brand_name);
+
+              setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
+
+              setBrandFullness(extractedFullness);
+              // setBrandNames(extractedBrandNames);
+            }
+            setBrandDonut(brandDonutData.data);
           }
+
           if (fullnessKpiData) {
-            console.log('Brand Data', fullnessKpiData);
+            setFullness(fullnessKpiData.data);
+          }
+
+          if (anomaliesKpiData) {
+            setAnomalies(anomaliesKpiData.data.toString());
+          }
+
+          if (anomaliesBarChartData) {
+            setAnomalies(anomaliesKpiData.data.toString());
           }
         } catch (error) {
           console.log(error);
@@ -262,8 +295,6 @@ const Insights = () => {
     }
     /* eslint-enable no-inner-declarations */
   }, [selectedDate]);
-
-  // console.log('Avg Capture', capProgress);
 
   return (
     <Grid container spacing={gridSpacing}>
@@ -294,9 +325,10 @@ const Insights = () => {
         <Grid container spacing={gridSpacing}>
           <Grid item lg={3} sm={6} xs={12}>
             <KpiCard
+              isLoaded={fullness}
               chart={statisticsChartsData[1].chart}
               title="Average Shelf-fullness"
-              count="86%"
+              count={fullness.length > 0 ? `${Math.floor(fullness[0].fullness)}%` : `0%`}
               percentage={0.5}
               chipColor="success"
               color={theme.palette.success.main}
@@ -304,34 +336,39 @@ const Insights = () => {
           </Grid>
           <Grid item lg={3} sm={6} xs={12}>
             <KpiCard
+              isLoaded={fullness}
               chart={statisticsChartsData[2].chart}
               title="Visual Merchandising Compliance"
-              count="78%"
+              count="0%"
               percentage={2}
-              chipColor="warning"
-              color={theme.palette.warning.main}
+              chipColor="success"
+              color={theme.palette.success.main}
             />
           </Grid>
           <Grid item lg={3} sm={6} xs={12}>
             <KpiCard
+              isLoaded={fullness}
               chart={statisticsChartsData[3].chart}
               title="Discounts & Promos Execution"
-              count="68%"
+              count="0%"
+              percentage={0.5}
+              // isLoss
+              chipColor="success"
+              color={theme.palette.success.main}
+            />
+          </Grid>
+          <Grid item lg={3} sm={6} xs={12}>
+            <KpiCard
+              isLoaded={anomalies}
+              chart={statisticsChartsData[4].chart}
+              title="Anomalies Found"
+              count={anomalies && anomalies}
               percentage={0.5}
               isLoss
               chipColor="error"
+              // chipColor="success"
+              // chipColor="warning"
               color={theme.palette.error.main}
-            />
-          </Grid>
-          <Grid item lg={3} sm={6} xs={12}>
-            <KpiCard
-              chart={statisticsChartsData[4].chart}
-              title="Anomalies Found"
-              count="27"
-              percentage={0.5}
-              isLoss
-              chipColor="warning"
-              color={theme.palette.warning.main}
             />
           </Grid>
         </Grid>
@@ -344,58 +381,68 @@ const Insights = () => {
                 <Grid container spacing={gridSpacing}>
                   <Grid item xs={12}>
                     <Card>
-                      <CardContent sx={{ padding: 0, paddingBottom: '0 !important' }}>
-                        <Box color="#fff" bgcolor={theme.palette.primary.main} p={3}>
-                          <Grid container justifyContent="space-between" alignItems="center">
-                            <Grid item>
-                              <Grid container spacing={1}>
-                                <Stack direction={'row'} spacing={1}>
-                                  <Typography variant="h2" color="inherit">
-                                    {totalStores}
-                                  </Typography>
-                                  <Typography paddingBottom={0.6} className="self-end" variant="h5" color="inherit">
-                                    Stores
-                                  </Typography>
-                                </Stack>
+                      {brandDonut.length > 0 ? (
+                        <CardContent sx={{ padding: 0, paddingBottom: '0 !important' }}>
+                          <Box color="#fff" bgcolor={theme.palette.primary.main} p={3}>
+                            <Grid container justifyContent="space-between" alignItems="center">
+                              <Grid item>
+                                <Grid container spacing={1}>
+                                  <Stack direction={'row'} spacing={1}>
+                                    <Typography variant="h2" color="inherit">
+                                      {totalStores}
+                                    </Typography>
+                                    <Typography paddingBottom={0.6} className="self-end" variant="h5" color="inherit">
+                                      Stores
+                                    </Typography>
+                                  </Stack>
+                                </Grid>
+                              </Grid>
+                              <Grid item>
+                                <Grid container alignItems="center">
+                                  <TextField
+                                    id="standard-select-currency"
+                                    size="small"
+                                    select
+                                    value={selected}
+                                    onChange={(e) => setSelected(e.target.value)}
+                                    sx={{
+                                      '& .MuiInputBase-input': {
+                                        paddingBottom: 0.5,
+                                        paddingTop: 0.7,
+                                        fontSize: '1rem',
+                                        fontWeight: 600,
+                                        color: 'white'
+                                      }
+                                    }}
+                                  >
+                                    {histogramChartRequirements.selectOptions.map((option) => (
+                                      <MenuItem key={option.value} value={option.value}>
+                                        {option.label}
+                                      </MenuItem>
+                                    ))}
+                                  </TextField>
+                                </Grid>
                               </Grid>
                             </Grid>
                             <Grid item>
-                              <Grid container alignItems="center">
-                                <TextField
-                                  id="standard-select-currency"
-                                  size="small"
-                                  select
-                                  value={selected}
-                                  onChange={(e) => setSelected(e.target.value)}
-                                  sx={{
-                                    '& .MuiInputBase-input': {
-                                      paddingBottom: 0.5,
-                                      paddingTop: 0.7,
-                                      fontSize: '1rem',
-                                      fontWeight: 600,
-                                      color: 'white'
-                                    }
-                                  }}
-                                >
-                                  {histogramChartRequirements.selectOptions.map((option) => (
-                                    <MenuItem key={option.value} value={option.value}>
-                                      {option.label}
-                                    </MenuItem>
-                                  ))}
-                                </TextField>
-                              </Grid>
+                              <Chart
+                                options={histogramOptions.options}
+                                series={series}
+                                type={histogramOptions.options.chart.type}
+                                height={histogramOptions.options.chart.height}
+                              />
                             </Grid>
-                          </Grid>
-                          <Grid item>
-                            <Chart
-                              options={histogramOptions.options}
-                              series={series}
-                              type={histogramOptions.options.chart.type}
-                              height={histogramOptions.options.chart.height}
-                            />
-                          </Grid>
-                        </Box>
-                      </CardContent>
+                          </Box>
+                        </CardContent>
+                      ) : brandDonut.length === 0 ? (
+                        <div className="w-full h-full flex justify-center place-items-center">
+                          <img style={{ height: '392px' }} src={NoDataImg} alt="No data" />
+                        </div>
+                      ) : (
+                        <div className="w-full h-full flex justify-center place-items-center">
+                          <Skeleton variant="rounded" width={'100%'} height={392} />
+                        </div>
+                      )}
                     </Card>
                   </Grid>
                 </Grid>
@@ -414,7 +461,7 @@ const Insights = () => {
                             </Grid>
                           </Grid>
                           <Grid item>
-                            <Grid container alignItems="center">
+                            <Grid container sx={{ visibility: 'hidden' }} alignItems="center">
                               <TextField
                                 id="standard-select-currency"
                                 size="small"
@@ -440,9 +487,41 @@ const Insights = () => {
                             </Grid>
                           </Grid>
                         </Grid>
-                        <Grid item>
-                          <BrandDonutChart chartData={BrandChartData} />
-                        </Grid>
+
+                        {brandDonut.length > 0 ? (
+                          <Grid item>
+                            <BrandDonutChart
+                              chartOptions={brandChartOptions}
+                              chartSeries={brandFullness}
+                              chartHeight={BrandChartData.height}
+                              chartType={BrandChartData.type}
+                            />
+                          </Grid>
+                        ) : brandDonut.length === 0 ? (
+                          // <BrandDonutChart
+                          //   chartOptions={brandChartOptions}
+                          //   chartSeries={[0]}
+                          //   chartHeight={BrandChartData.height}
+                          //   chartType={BrandChartData.type}
+                          // />
+                          <div className="w-full h-full flex justify-center place-items-center">
+                            <img style={{ height: '310px' }} src={NoDataImg} alt="No data" />
+                          </div>
+                        ) : (
+                          <div className="w-full h-full flex justify-center place-items-center">
+                            <Skeleton variant="circular" width={300} height={310} />
+                          </div>
+                        )}
+
+                        {/* <Grid item>
+                          <BrandDonutChart
+                            chartOptions={brandChartOptions}
+                            chartSeries={brandFullness}
+                            chartHeight={BrandChartData.height}
+                            chartType={BrandChartData.type}
+                          />
+                        </Grid> */}
+                        {/* <BrandDonutChart chartData={BrandChartData} /> */}
                       </CardContent>
                     </Card>
                   </Grid>
@@ -454,7 +533,7 @@ const Insights = () => {
                 <Grid item xs={12}>
                   <Card>
                     <CardContent>
-                      <AnomaliesBarChart />
+                      <AnomaliesBarChart date={selectedDate} />
                     </CardContent>
                   </Card>
                 </Grid>

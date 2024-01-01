@@ -53,11 +53,11 @@ const FirebaseRegister = ({ ...rest }) => {
             sx={{
               fontSize: { md: '1rem', xs: '0.875rem' },
               fontWeight: 500,
-              backgroundColor: theme.palette.grey[50],
+              bgcolor: theme.palette.grey[50],
               color: theme.palette.grey[600],
               textTransform: 'capitalize',
               '&:hover': {
-                backgroundColor: theme.palette.grey[100]
+                bgcolor: theme.palette.grey[100]
               }
             }}
             size="large"

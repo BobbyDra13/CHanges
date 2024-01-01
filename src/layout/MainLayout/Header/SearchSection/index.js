@@ -19,9 +19,9 @@ const SearchSection = () => {
       sx={{
         position: 'relative',
         borderRadius: 1,
-        backgroundColor: { sm: alpha(theme.palette.common.white, 0.15), xs: 'transparent' },
+        bgcolor: { sm: alpha(theme.palette.common.white, 0.15), xs: 'transparent' },
         '&:hover': {
-          backgroundColor: { sm: alpha(theme.palette.common.white, 0.25), xs: 'transparent' }
+          bgcolor: { sm: alpha(theme.palette.common.white, 0.25), xs: 'transparent' }
         },
         ml: { sm: theme.spacing(1), xs: 0 },
         mr: { sm: theme.spacing(2), xs: 0 },
@@ -71,7 +71,7 @@ const SearchSection = () => {
                         boxShadow: { sm: 'none' }
                       }}
                     >
-                      <CardContent sx={{ p: 1.5, backgroundColor: theme.palette.secondary.main }}>
+                      <CardContent sx={{ p: 1.5, bgcolor: theme.palette.secondary.main }}>
                         <Grid container alignItems="center" justifyContent="space-between">
                           <Grid item xs>
                             <Box display="flex" p={0}>

@@ -7,7 +7,7 @@ export default {
     dataLabels: {
       enabled: false
     },
-    labels: ['Zivame %', 'Clovia %', 'Amanté %', 'Jockey %'],
+    labels: [],
     legend: {
       show: true,
       position: 'bottom',
@@ -50,5 +50,5 @@ export default {
       }
     ]
   },
-  series: [24, 16, 32, 28]
+  series: [0]
 };

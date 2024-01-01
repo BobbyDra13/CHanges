@@ -262,15 +262,15 @@ const EditStore = () => {
                   startIcon={<AddIcon />}
                   onClick={() => editUserDetails()}
                   sx={{
-                    backgroundColor: '#000000 !important',
+                    bgcolor: '#000000 !important',
                     color: '#FFFFFF !important',
                     borderRadius: '8px !important',
                     padding: '6px 24px !important',
                     '&:hover': {
-                      backgroundColor: '#1a1a1a !important'
+                      bgcolor: '#1a1a1a !important'
                     },
                     '&:active': {
-                      backgroundColor: '#000000 !important'
+                      bgcolor: '#000000 !important'
                     }
                   }}
                 >

@@ -230,13 +230,13 @@ const AllStores = () => {
           to={`/team/add`}
           startIcon={<AddIcon />}
           sx={{
-            backgroundColor: '#000000',
+            bgcolor: '#000000',
             color: '#FFFFFF',
             '&:hover': {
-              backgroundColor: '#1a1a1a'
+              bgcolor: '#1a1a1a'
             },
             '&:active': {
-              backgroundColor: '#000000'
+              bgcolor: '#000000'
             }
           }}
         >
