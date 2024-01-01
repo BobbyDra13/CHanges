@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -7,13 +6,6 @@ import { Grid, Typography } from '@mui/material';
 import Progress_bar from '../Stores/Table/progressBar';
 import { Tooltip, Dialog, DialogContent, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-=======
-import React from 'react';
-import { Link } from 'react-router-dom';
-
-// material-ui
-import { Card, CardHeader, CardContent, Divider, Grid, Typography } from '@mui/material';
->>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
 
 // project import
 import Breadcrumb from 'component/Breadcrumb';
@@ -22,7 +14,6 @@ import { gridSpacing } from 'config.js';
 // ==============================|| BRANDS PAGE ||============================== //
 
 const Brands = () => {
-<<<<<<< HEAD
   const [clickedBar, setClickedBar] = useState(null);
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -124,8 +115,6 @@ const Brands = () => {
     }
   ];
 
-=======
->>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
   return (
     <>
       <Breadcrumb title="Brands">
@@ -137,7 +126,6 @@ const Brands = () => {
         </Typography>
       </Breadcrumb>
       <Grid container spacing={gridSpacing}>
-<<<<<<< HEAD
         {/* <div className="flex justify-center items-start mt-20 min-h-screen"> */}
         <table className="border-collapse mt-20 ml-20 w-4/5">
           <thead>
@@ -255,28 +243,6 @@ const Brands = () => {
           </tbody>
         </table>
         {/* </div> */}
-=======
-        <Grid item>
-          <Card>
-            <CardHeader
-              title={
-                <Typography component="div" className="card-header">
-                  Heading
-                </Typography>
-              }
-            />
-            <Divider />
-            <CardContent>
-              <Typography variant="body2">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
-                dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiatnulla pariatur. Excepteur sint occaecat cupidatat non
-                proident, sunt in culpa qui officia deserunt mollitanim id est laborum.
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
->>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
       </Grid>
     </>
   );

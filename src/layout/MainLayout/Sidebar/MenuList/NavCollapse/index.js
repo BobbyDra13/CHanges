@@ -50,11 +50,7 @@ const NavCollapse = ({ menu, level }) => {
           borderRadius: '5px',
           mb: 0.6,
           pl: `${level * 16}px`,
-<<<<<<< HEAD
-          ...(level > 1 && { backgroundColor: 'transparent !important', py: 1, borderRadius: '5px' })
-=======
           ...(level > 1 && { bgcolor: 'transparent !important', py: 1, borderRadius: '5px' })
->>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
         }}
         selected={selected === menu.id}
         onClick={handleClick}

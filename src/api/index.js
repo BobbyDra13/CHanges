@@ -71,7 +71,6 @@ export const GetAnomaliesBarChartData = async (data) => {
     console.log('Error Calling GetAnomaliesKpi API: ', error);
   }
 };
-import axios from "axios";
 
 
 export const GetAllStores = async () => {

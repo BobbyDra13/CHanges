@@ -7,11 +7,7 @@ export default {
     dataLabels: {
       enabled: false
     },
-<<<<<<< HEAD
-    labels: ['Zivame %', 'Clovia %', 'Amanté %', 'Jockey %'],
-=======
     labels: [],
->>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
     legend: {
       show: true,
       position: 'bottom',
@@ -54,9 +50,5 @@ export default {
       }
     ]
   },
-<<<<<<< HEAD
-  series: [24, 16, 32, 28]
-=======
   series: [0]
->>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
 };

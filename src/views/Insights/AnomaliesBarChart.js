@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-import { useEffect, useState } from 'react';
-
-// material-ui
-import { useTheme } from '@mui/material/styles';
-=======
 import { React, useEffect, useState } from 'react';
 
 // APIs
@@ -13,17 +7,13 @@ import { GetAnomaliesBarChartData } from 'api';
 // import { useTheme } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
 import { Skeleton } from '@mui/material';
->>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
 
 // third-party
 import ReactApexChart from 'react-apexcharts';
 
-<<<<<<< HEAD
-=======
 // assets import
 import NoDataImg from '../../assets/images/No_data-amico.svg';
 
->>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
 // chart options
 const columnChartOptions = {
   chart: {
@@ -33,10 +23,7 @@ const columnChartOptions = {
       show: false
     }
   },
-<<<<<<< HEAD
-=======
   colors: ['#ff413a', '#00ac69'],
->>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
   plotOptions: {
     bar: {
       columnWidth: '30%',
@@ -52,12 +39,6 @@ const columnChartOptions = {
     colors: ['transparent']
   },
   xaxis: {
-<<<<<<< HEAD
-    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
-  },
-  yaxis: {
-   show: false,
-=======
     labels: {
       style: {
         colors: ['#1b212c']
@@ -72,7 +53,6 @@ const columnChartOptions = {
         colors: ['#1b212c']
       }
     },
->>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
     title: {
       text: '$ (thousands)'
     }
@@ -80,15 +60,11 @@ const columnChartOptions = {
   fill: {
     opacity: 1
   },
-<<<<<<< HEAD
-  tooltip: {
-=======
   grid: {
     borderColor: grey[200]
   },
   tooltip: {
     theme: 'dark',
->>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
     y: {
       formatter(val) {
         return `${val}`;
@@ -96,22 +72,15 @@ const columnChartOptions = {
     }
   },
   legend: {
-<<<<<<< HEAD
-=======
     position: 'top',
     horizontalAlign: 'right',
->>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
     show: false,
     fontFamily: `'Public Sans', sans-serif`,
     offsetX: 10,
     offsetY: 10,
     labels: {
-<<<<<<< HEAD
-      useSeriesColors: false
-=======
       useSeriesColors: false,
       colors: grey[400]
->>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
     },
     markers: {
       width: 16,
@@ -139,69 +108,6 @@ const columnChartOptions = {
 
 // ==============================|| ANOMALIES BAR CHART ||============================== //
 
-<<<<<<< HEAD
-const AnomaliesBarChart = () => {
-  const theme = useTheme();
-
-  const { primary, secondary } = theme.palette.text.primary;
-  const line = theme.palette.grey[200];
-
-  const error = theme.palette.error.main;
-  const primaryMain = theme.palette.primary.main;
-  //   const successDark = theme.palette.success.dark;
-
-  const [series] = useState([
-    {
-      name: 'Anomalies remaining',
-      data: [180, 90, 135, 114, 120, 145]
-    },
-    {
-      name: 'Anomalies resolved',
-      data: [120, 45, 78, 150, 168, 99]
-    }
-  ]);
-
-  const [options, setOptions] = useState(columnChartOptions);
-
-  useEffect(() => {
-    setOptions((prevState) => ({
-      ...prevState,
-      colors: [error, primaryMain],
-      xaxis: {
-        labels: {
-          style: {
-            colors: [secondary, secondary, secondary, secondary, secondary, secondary]
-          }
-        }
-      },
-      yaxis: {
-        labels: {
-          style: {
-            colors: [secondary]
-          }
-        }
-      },
-      grid: {
-        borderColor: line
-      },
-      tooltip: {
-        theme: 'dark'
-      },
-      legend: {
-        position: 'top',
-        horizontalAlign: 'right',
-        labels: {
-          colors: 'grey.400'
-        }
-      }
-    }));
-  }, [primary, secondary, line, error, primaryMain]);
-
-  return (
-    <div id="chart">
-      <ReactApexChart options={options} series={series} type={options.chart.type} height={options.chart.height} />
-    </div>
-=======
 const AnomaliesBarChart = ({ date }) => {
   const [series, setSeries] = useState([]);
   const [options, setOptions] = useState({});
@@ -268,7 +174,6 @@ const AnomaliesBarChart = ({ date }) => {
         <Skeleton sx={{ margin: -3, paddingRight: -3 }} animation="wave" variant="rounded" width={'120%'} height={392} />
       )}
     </>
->>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
   );
 };
 

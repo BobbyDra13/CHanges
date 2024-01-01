@@ -200,17 +200,10 @@ export function theme() {
                 color: value.primary
               },
               color: value.primary,
-<<<<<<< HEAD
-              backgroundColor: value.menuHover
-            },
-            '&:hover': {
-              backgroundColor: value.menuHover,
-=======
               bgcolor: value.menuHover
             },
             '&:hover': {
               bgcolor: value.menuHover,
->>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
               color: value.primary,
               '& .MuiListItemIcon-root': {
                 color: value.primary
@@ -218,11 +211,7 @@ export function theme() {
             },
             button: {
               '&:hover': {
-<<<<<<< HEAD
-                backgroundColor: value.menuHover
-=======
                 bgcolor: value.menuHover
->>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
               }
             }
           }
@@ -239,17 +228,10 @@ export function theme() {
                 color: value.primary
               },
               color: value.primary,
-<<<<<<< HEAD
-              backgroundColor: value.menuHover
-            },
-            '&:hover': {
-              backgroundColor: value.menuHover,
-=======
               bgcolor: value.menuHover
             },
             '&:hover': {
               bgcolor: value.menuHover,
->>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
               color: value.primary,
               '& .MuiListItemIcon-root': {
                 color: value.primary
@@ -257,11 +239,7 @@ export function theme() {
             },
             button: {
               '&:hover': {
-<<<<<<< HEAD
-                backgroundColor: value.menuHover
-=======
                 bgcolor: value.menuHover
->>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
               }
             }
           }
@@ -358,11 +336,7 @@ export function theme() {
           },
           MuiChip: {
             root: {
-<<<<<<< HEAD
-              backgroundColor: value.secondary
-=======
               bgcolor: value.secondary
->>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
             }
           }
         }
@@ -371,11 +345,7 @@ export function theme() {
         styleOverrides: {
           colorDefault: {
             color: grey[100],
-<<<<<<< HEAD
-            backgroundColor: value.secondary
-=======
             bgcolor: value.secondary
->>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
           },
           colorSecondary: {
             color: grey[100]
@@ -429,11 +399,7 @@ export function theme() {
       MuiAvatar: {
         styleOverrides: {
           colorDefault: {
-<<<<<<< HEAD
-            backgroundColor: value.textHint,
-=======
             bgcolor: value.textHint,
->>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
             color: grey[100]
           }
         }
