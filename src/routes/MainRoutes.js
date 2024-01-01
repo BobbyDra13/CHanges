@@ -3,16 +3,15 @@ import React, { lazy } from 'react';
 // project import
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'component/Loadable';
-import AddStore from 'views/Team/addStore';
-import EditStore from 'views/Team/updateStore';
+import StoreLayout from 'views/Stores/Table/layout';
 
 const Insight = Loadable(lazy(() => import('../views/Insights')));
-
-const Stores = Loadable(lazy(() => import('../views/Stores')));
 
 const Brands = Loadable(lazy(() => import('../views/Brands')));
 
 const Customers = Loadable(lazy(() => import('../views/Customers')));
+
+const StoreContent = Loadable(lazy(() => import('../views/Stores/Table')));
 
 const Team = Loadable(lazy(() => import('../views/Team')));
 
@@ -36,7 +35,11 @@ const MainRoutes = {
     },
     {
       path: '/stores',
-      element: <Stores />
+      element: <StoreContent />
+    },
+    {
+      path: '/stores/analysis/layout',
+      element: <StoreLayout />
     },
     {
       path: '/brands',
@@ -49,14 +52,6 @@ const MainRoutes = {
     {
       path: '/team',
       element: <Team />
-    },
-    {
-      path: '/team/add',
-      element: <AddStore/>
-    },
-    {
-      path: '/team/edit/:id',
-      element: <EditStore/>
     },
 
     { path: '/utils/util-typography', element: <UtilsTypography /> },

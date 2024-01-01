@@ -3,7 +3,7 @@ import React from 'react';
 
 // material-ui
 import { useTheme, styled } from '@mui/material/styles';
-import { useMediaQuery, Divider, Drawer, Grid, Box } from '@mui/material';
+import {  Divider, Drawer, Grid, Box } from '@mui/material';
 import { Typography } from '@mui/material';
 
 // third party
@@ -29,7 +29,7 @@ const Nav = styled((props) => <nav {...props} />)(({ theme }) => ({
 
 const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
   const theme = useTheme();
-  const matchUpMd = useMediaQuery(theme.breakpoints.up('md'));
+  // const matchUpMd = useMediaQuery(theme.breakpoints.up('md'));
   const drawer = (
     <>
       <Box sx={{ display: { md: 'none', xs: 'block' } }}>
@@ -76,7 +76,7 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
       <Drawer
         container={container}
         // variant={matchUpMd ? 'persistent' : 'temporary'}
-        variant={matchUpMd ? 'persistent' : 'temporary'}
+        // variant={matchUpMd ? 'persistent' : 'temporary'}
         anchor="left"
         open={drawerOpen}
         onClose={drawerToggle}

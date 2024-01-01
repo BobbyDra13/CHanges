@@ -85,7 +85,7 @@ const Header = ({ drawerToggle }) => {
             to={'/stores'}
             onClick={() => dispatch({ type: actionTypes.MENU_OPEN, isOpen: 'stores' })}
             className={`text-lg hover:border-b-2 hover:border-emerald-500 hover:text-emerald-600 ${
-              location.pathname === '/stores' ? 'border-b-2 border-emerald-500 text-emerald-600' : ''
+              location.pathname === '/stores' || location.pathname === '/stores/analysis' ? 'border-b-2 border-emerald-500 text-emerald-600' : ''
             }`}
           >
             Stores
