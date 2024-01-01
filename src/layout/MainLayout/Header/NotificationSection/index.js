@@ -105,7 +105,11 @@ const NotificationSection = () => {
                     width: '100%',
                     maxWidth: 350,
                     minWidth: 250,
+<<<<<<< HEAD
                     backgroundColor: theme.palette.background.paper,
+=======
+                    bgcolor: theme.palette.background.paper,
+>>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
                     pb: 0,
                     borderRadius: '10px'
                   }}

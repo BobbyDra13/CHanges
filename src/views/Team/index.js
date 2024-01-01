@@ -2,12 +2,20 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 // material-ui
+<<<<<<< HEAD
 import { Card, CardHeader, CardContent, Divider, Grid, Typography } from '@mui/material';
+=======
+import { Grid, Typography } from '@mui/material';
+>>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
 
 // project import
 import Breadcrumb from 'component/Breadcrumb';
 import { gridSpacing } from 'config.js';
+<<<<<<< HEAD
 
+=======
+import AllStores from './stores';
+>>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
 // ==============================|| TEAM PAGE ||============================== //
 
 const Team = () => {
@@ -18,6 +26,7 @@ const Team = () => {
           Insights
         </Typography>
         <Typography variant="subtitle2" color="primary" className="link-breadcrumb">
+<<<<<<< HEAD
         Team
         </Typography>
       </Breadcrumb>
@@ -41,6 +50,14 @@ const Team = () => {
               </Typography>
             </CardContent>
           </Card>
+=======
+          Team
+        </Typography>
+      </Breadcrumb>
+      <Grid container spacing={gridSpacing}>
+        <Grid item width="99%">
+        <AllStores />
+>>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
         </Grid>
       </Grid>
     </>

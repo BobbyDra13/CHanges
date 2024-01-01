@@ -13,7 +13,11 @@ const chartData = {
       style: {
         fontSize: '12px',
         fontFamily: undefined,
+<<<<<<< HEAD
         backgroundColor: '#000000'
+=======
+        bgcolor: '#000000'
+>>>>>>> 2a90240c57e011d4a69c4ed616d203686d2904b6
       },
       theme: 'dark',
       onDatasetHover: {
