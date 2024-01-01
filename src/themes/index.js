@@ -200,10 +200,10 @@ export function theme() {
                 color: value.primary
               },
               color: value.primary,
-              backgroundColor: value.menuHover
+              bgcolor: value.menuHover
             },
             '&:hover': {
-              backgroundColor: value.menuHover,
+              bgcolor: value.menuHover,
               color: value.primary,
               '& .MuiListItemIcon-root': {
                 color: value.primary
@@ -211,7 +211,7 @@ export function theme() {
             },
             button: {
               '&:hover': {
-                backgroundColor: value.menuHover
+                bgcolor: value.menuHover
               }
             }
           }
@@ -228,10 +228,10 @@ export function theme() {
                 color: value.primary
               },
               color: value.primary,
-              backgroundColor: value.menuHover
+              bgcolor: value.menuHover
             },
             '&:hover': {
-              backgroundColor: value.menuHover,
+              bgcolor: value.menuHover,
               color: value.primary,
               '& .MuiListItemIcon-root': {
                 color: value.primary
@@ -239,7 +239,7 @@ export function theme() {
             },
             button: {
               '&:hover': {
-                backgroundColor: value.menuHover
+                bgcolor: value.menuHover
               }
             }
           }
@@ -336,7 +336,7 @@ export function theme() {
           },
           MuiChip: {
             root: {
-              backgroundColor: value.secondary
+              bgcolor: value.secondary
             }
           }
         }
@@ -345,7 +345,7 @@ export function theme() {
         styleOverrides: {
           colorDefault: {
             color: grey[100],
-            backgroundColor: value.secondary
+            bgcolor: value.secondary
           },
           colorSecondary: {
             color: grey[100]
@@ -399,7 +399,7 @@ export function theme() {
       MuiAvatar: {
         styleOverrides: {
           colorDefault: {
-            backgroundColor: value.textHint,
+            bgcolor: value.textHint,
             color: grey[100]
           }
         }

@@ -30,7 +30,7 @@ function DatePickerComp({ SetSelectedDate }) {
         <DatePicker
           className="cursor-pointer"
           sx={{
-            backgroundColor: 'white',
+            bgcolor: 'white',
             '& .MuiInputBase-root': {
               height: '40px' // Adjust the height as needed
             }
@@ -38,7 +38,7 @@ function DatePickerComp({ SetSelectedDate }) {
           slotProps={{
             textField: {
               fullWidth: true,
-              backgroundColor: 'white'
+              bgcolor: 'white'
               // readOnly: true,
               // onClick: () => setOpen(true),
             }

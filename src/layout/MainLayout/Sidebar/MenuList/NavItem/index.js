@@ -37,7 +37,7 @@ const NavItem = ({ item, level }) => {
     <ListItemButton
       disabled={item.disabled}
       sx={{
-        ...(level > 1 && { backgroundColor: 'transparent !important', py: 1, borderRadius: '5px' }),
+        ...(level > 1 && { bgcolor: 'transparent !important', py: 1, borderRadius: '5px' }),
         borderRadius: '5px',
         marginBottom: '5px',
         pl: `${level * 16}px`
