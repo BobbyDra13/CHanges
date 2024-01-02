@@ -60,27 +60,6 @@ const MainRoutes = {
       path: '/team/edit/:id',
       element: <EditStore/>
     },
-    {
-      path: '/team/agents',
-      element: <AllAgents/>
-    },
-    {
-      path: '/team/DeptMan',
-      element: <DeptMan/>
-    },
-    {
-      path: '/team/StoreMan',
-      element: <StoreMan/>
-    },
-    {
-      path: '/team/ClusMan',
-      element: <ClusMan/>
-    },
-    {
-      path: '/team/SupUsers',
-      element: <SupUsers/>
-    },
-
     { path: '/utils/util-typography', element: <UtilsTypography /> },
     { path: '/sample-page', element: <SamplePage /> }
   ]

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Table,
   TableHead,
@@ -9,10 +9,12 @@ import {
   Checkbox,
   TablePagination,
   TableContainer,
-  styled
+  styled,
+  Dialog
 } from '@mui/material';
 import { ArrowDownwardRounded, ArrowUpwardRounded, Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
+import EditStore from 'views/Stores/Table/editStore';
 
 const HeaderCell = styled(TableCell)({
   fontWeight: 'bold',
@@ -47,6 +49,7 @@ const TRow = styled(TableRow)`
 
 const StoresTable = ({
   rows,
+  getAllUsers,
   page,
   rowsPerPage,
   handleChangePage,
@@ -71,6 +74,22 @@ const StoresTable = ({
       </HeaderCell>
     );
   };
+
+  // const [editRowId, setEditRowId] = useState(null);
+
+  const [showEditUserDialog, setShowEditUserDialog] = useState(false);
+  const handleEditUserDialogOpen = (rowId) => {
+    // setEditRowId(rowId);
+    console.log(rowId);
+    setShowEditUserDialog(true);
+  };
+
+  const handleEditUserDialogClose = () => {
+    setShowEditUserDialog(false);
+    // setEditRowId(null);
+    getAllUsers();
+  };
+
 
   return (
     <>
@@ -122,9 +141,10 @@ const StoresTable = ({
                 <TableCell align="left">{row.number}</TableCell>
                 <TableCell align="left">
                   <IconButton
+                    onClick={() => handleEditUserDialogOpen(row.id)}
                     color="primary"
                     component={Link}
-                    to={`/team/edit/${row.id}`}
+                    // to={`/team/edit/${row.id}`}
                     aria-label="edit"
                     sx={{
                       color: '#212b36',
@@ -136,8 +156,21 @@ const StoresTable = ({
                       }
                     }}
                   >
-                    <EditIcon />
+                      <EditIcon />
                   </IconButton>
+                 
+                  <Dialog
+                    open={showEditUserDialog}
+                    onClose={handleEditUserDialogClose}
+                    PaperProps={{
+                      style: {
+                        maxWidth: '100%',
+                        maxHeight: '100%'
+                      }
+                    }}
+                  >
+                   <EditStore rowId={row.id} handleEditUserDialogClose={handleEditUserDialogClose}/>
+                  </Dialog>
                   <IconButton
                     color="secondary"
                     aria-label="delete"

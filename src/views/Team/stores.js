@@ -25,7 +25,7 @@ import { CSVLink } from 'react-csv';
 import SearchBar from './SearchBar';
 import StoresTable from './StoresTable';
 import AddStore from './addStore';
-import NavigationBar from './NavBar';
+import FilterationButton from './FilterationButton';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 20;
@@ -89,9 +89,11 @@ const AllStores = () => {
 
   const prepareExportData = () => {
     const dataForExport = rows.map((row) => ({
-      Id: row.user_id,
+      Role: row.user_role,
+      ID: row.user_id,
       Name: row.user_name,
-      Status: row.status,
+      Store: row.store_id,
+      Email: row.email,
       Phone: row.number
     }));
 
@@ -123,7 +125,7 @@ const AllStores = () => {
 
   const [roleFilter, setRoleFilter] = useState('');
   const handleNavigationClick = (role) => {
-    if (role === 'All Stores') {
+    if (role === 'All Users') {
       setRoleFilter('');
       return;
     }
@@ -188,7 +190,7 @@ const AllStores = () => {
 
   return (
     <>
-      <NavigationBar handleNavigationClick={handleNavigationClick} />
+      
       <div
         style={{
           display: 'flex',
@@ -231,6 +233,7 @@ const AllStores = () => {
       <Paper elevation={4} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
         <Stack className="p-2 border-0 border-red-500" direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
           <Stack direction={'row'} alignItems={'center'} justifyContent={'flex-end'} sx={{ paddingRight: '16px' }}>
+          <FilterationButton handleNavigationClick={handleNavigationClick} />
             <div>
               <FormControl
                 sx={{
@@ -294,6 +297,7 @@ const AllStores = () => {
                     </MenuItem>
                   ))}
                 </Select>
+                
               </FormControl>
             </div>
             <SearchBar searchQuery={searchQuery} handleSearchChange={handleSearchChange} />
@@ -345,6 +349,7 @@ const AllStores = () => {
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           <StoresTable
             rows={filteredAndSortedRows}
+            getAllUsers={getAllUsers}
             page={page}
             rowsPerPage={rowsPerPage}
             handleChangePage={handleChangePage}

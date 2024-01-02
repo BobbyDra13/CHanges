@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button, Box, TextField, Grid, Stack, MenuItem, ListItemText, Typography, Paper } from '@mui/material';
 import { addStore } from './API/api';
 import { Add as AddIcon } from '@mui/icons-material';
+
 const initialValue = {
   user_role: '',
   user_id: '',
@@ -18,10 +19,10 @@ const AddStore = ({ handleAddUserDialogClose }) => {
   const { user_role, user_id, user_name, store_id, number } = user;
   const [isEmailEditable, setIsEmailEditable] = useState(false);
   const [email, setEmail] = useState('');
-
   const onValueChange = (e) => {
     const { name, value } = e.target;
     setUser({ ...user, [name]: value });
+
 
     if (name === 'user_role') {
       setIsEmailEditable(value === 'Cluster Manager' || value === 'NHK Super User');
@@ -31,6 +32,9 @@ const AddStore = ({ handleAddUserDialogClose }) => {
     }
   };
 
+
+  
+
   const addUserDetails = async () => {
     try {
       await addStore(user);
@@ -39,6 +43,7 @@ const AddStore = ({ handleAddUserDialogClose }) => {
       console.error('Error adding user:', error);
     }
   };
+
 
   return (
     <Box p={4}>
@@ -234,7 +239,6 @@ const AddStore = ({ handleAddUserDialogClose }) => {
                   value={email}
                   id="my-input"
                   variant="outlined"
-                  disabled={!isEmailEditable}
                   required={isEmailEditable}
                   fullWidth
                   sx={{
