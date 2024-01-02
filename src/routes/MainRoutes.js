@@ -4,6 +4,9 @@ import React, { lazy } from 'react';
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'component/Loadable';
 import StoreLayout from 'views/Stores/Table/layout';
+import EditStore from 'views/Team/updateStore';
+
+
 
 const Insight = Loadable(lazy(() => import('../views/Insights')));
 
@@ -52,6 +55,30 @@ const MainRoutes = {
     {
       path: '/team',
       element: <Team />
+    },
+    {
+      path: '/team/edit/:id',
+      element: <EditStore/>
+    },
+    {
+      path: '/team/agents',
+      element: <AllAgents/>
+    },
+    {
+      path: '/team/DeptMan',
+      element: <DeptMan/>
+    },
+    {
+      path: '/team/StoreMan',
+      element: <StoreMan/>
+    },
+    {
+      path: '/team/ClusMan',
+      element: <ClusMan/>
+    },
+    {
+      path: '/team/SupUsers',
+      element: <SupUsers/>
     },
 
     { path: '/utils/util-typography', element: <UtilsTypography /> },
