@@ -1,41 +1,49 @@
-
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Drawer, List, ListItemButton, ListItemText } from '@mui/material';
+import { Drawer, List, ListItemButton, ListItemText, Typography, ListItemIcon } from '@mui/material';
+import { Person, AccountCircle, Business, Store, SupervisorAccount, VerifiedUser } from '@mui/icons-material';
+
 const drawerWidth = 250;
 
-const NavigationBar = () => {
+const NavigationBar = ({ handleNavigationClick }) => {
   const navLinks = [
-    { label: 'All Users', path: '/team' },
-    { label: 'Agents', path: '/team/agents/' },
-    { label: 'Department Manger', path: '/team/DeptMan' },
-    { label: 'Store Manager', path: '/team/StoreMan' },
-    { label: 'Cluster Manager', path: '/team/ClusMan' },
-    { label: 'NHQ Super User', path: '/team/SupUsers' },
-
+    { label: 'All Stores', icon: <Person /> },
+    { label: 'Agents', icon: <AccountCircle /> },
+    { label: 'Department Manager', icon: <Business /> },
+    { label: 'Store Manager', icon: <Store /> },
+    { label: 'Cluster Manager', icon: <SupervisorAccount /> },
+    { label: 'NHK Super User', icon: <VerifiedUser /> }
   ];
-  
-  
+
+  const listItemTextStyle = {
+    fontSize: '1rem'
+  };
+
   return (
-    <Drawer variant="permanent"
-    sx={{
-      width: drawerWidth,
-      flexShrink: 0,
-      '& .MuiDrawer-paper': {
-        width: drawerWidth,
-        height: 'calc(100% - 100px)',
-        top: '70px', 
-      },
-    }}
-    anchor="left">
-      <List>
-        {navLinks.map((link, index) => (
-          <ListItemButton key={index} component={Link} to={link.path}>
-            <ListItemText primary={link.label} />
-          </ListItemButton>
-        ))}
-      </List>
-    </Drawer>
+    <div>
+      <Drawer
+        variant="permanent"
+        sx={{
+          width: drawerWidth,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            height: 'calc(100% - 80px)',
+            top: '70px',
+            color: '#fff'
+          }
+        }}
+        anchor="left"
+      >
+        <List>
+          {navLinks.map((link, index) => (
+            <ListItemButton key={index} onClick={() => handleNavigationClick(link.label)}>
+              <ListItemIcon>{link.icon}</ListItemIcon>
+              <ListItemText primary={<Typography style={listItemTextStyle}>{link.label}</Typography>} />
+            </ListItemButton>
+          ))}
+        </List>
+      </Drawer>
+    </div>
   );
 };
 

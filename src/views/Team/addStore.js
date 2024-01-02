@@ -1,197 +1,153 @@
 import { useState } from 'react';
-import { Button, Box, Paper, TextField, Grid, Stack, Typography, IconButton, styled, alpha, Alert } from '@mui/material';
+import { Button, Box, TextField, Grid, Stack, MenuItem, ListItemText, Typography, Paper } from '@mui/material';
 import { addStore } from './API/api';
-import { Link, useNavigate } from 'react-router-dom';
-import { Add as AddIcon, PhotoCamera } from '@mui/icons-material';
-import Breadcrumb from 'component/Breadcrumb';
+import { Add as AddIcon } from '@mui/icons-material';
 const initialValue = {
+  user_role: '',
   user_id: '',
   user_name: '',
-  status: '',
-  user_role: '',
-  number: '',
-  apk_version: ''
+  store_id: '',
+  number: ''
 };
-const ButtonWrapper = styled(Box)(({ theme }) => ({
-  width: 100,
-  height: 100,
-  display: 'flex',
-  borderRadius: '50%',
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundColor: theme.palette.mode === 'light' ? theme.palette.secondary[200] : alpha(theme.palette.primary[100], 0.1)
-}));
 
-const UploadButton = styled(Box)(({ theme }) => ({
-  width: 50,
-  height: 50,
-  display: 'flex',
-  borderRadius: '50%',
-  border: '2px solid',
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderColor: theme.palette.background.paper,
-  backgroundColor: theme.palette.mode === 'light' ? theme.palette.secondary[400] : alpha(theme.palette.background.paper, 0.9)
-}));
+const roles = ['Agents', 'Department Manager', 'Store Manager', 'Cluster Manager', 'NHK Super User'];
+const stores = ['Lakme', 'Adidas', 'Trends', 'Loreal', 'Heads and Shoulders'];
 
-const AddStore = () => {
+const AddStore = ({ handleAddUserDialogClose }) => {
   const [user, setUser] = useState(initialValue);
-  const { user_id, user_name, status, user_role, number, apk_version } = user;
-  let navigate = useNavigate();
+  const { user_role, user_id, user_name, store_id, number } = user;
+  const [isEmailEditable, setIsEmailEditable] = useState(false);
+  const [email, setEmail] = useState('');
 
   const onValueChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setUser({ ...user, [name]: value });
+
+    if (name === 'user_role') {
+      setIsEmailEditable(value === 'Cluster Manager' || value === 'NHK Super User');
+      if (!(value === 'Cluster Manager' || value === 'NHK Super User')) {
+        setEmail('');
+      }
+    }
   };
 
   const addUserDetails = async () => {
-    await addStore(user);
-    navigate('/team');
-  };
-
-  // const [image, setImage] = useState(null);
-  const [showAlert, setShowAlert] = useState(false);
-
-  const handleImageChange = () => {
-    <Alert severity="info">This feature is not yet available</Alert>
-    // const selectedImage = e.target.files[0];
-    // setImage(selectedImage);
-    setShowAlert(true);
+    try {
+      await addStore(user);
+      handleAddUserDialogClose();
+    } catch (error) {
+      console.error('Error adding user:', error);
+    }
   };
 
   return (
-    <>
-      <Breadcrumb title="Team">
-        <Typography component={Link} to="/" variant="subtitle2" color="inherit" className="link-breadcrumb">
-          Insights
-        </Typography>
-        <Typography component={Link} to="/team" variant="subtitle2" color="inherit" className="link-breadcrumb">
-          Team
-        </Typography>
-        <Typography variant="subtitle2" color="primary" className="link-breadcrumb">
-          Add User
-        </Typography>
-      </Breadcrumb>
+    <Box p={4}>
+      <Paper elevation={6} sx={{ padding: '24px', borderRadius: '12px' }}>
+        <Grid container spacing={4}>
+          <Grid item xs={12}>
+            <Typography variant="h3" gutterBottom>
+              Add User
+            </Typography>
+          </Grid>
 
-      <Grid container spacing={3}>
-        <Grid item md={5}>
-          <Paper elevation={2} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                textAlign: 'center',
-                mb: 5
-              }}
-            >
-              <ButtonWrapper>
-                <label htmlFor="image-upload">
-                  <input onChange={handleImageChange} accept="image/*" id="image-upload" type="file" style={{ display: 'none' }} />
-                  <UploadButton>
-                    <IconButton component="span">
-                      <PhotoCamera sx={{ fontSize: 60, color: 'grey !important' }} />
-                    </IconButton>
-                  </UploadButton>
-                </label>
-              </ButtonWrapper>
-              {/* {image && <Typography>{image.name}</Typography>} */}
+          <Grid item xs={12}>
+            <Stack spacing={3}>
               <Box
-                component="small"
-                fontSize="16px"
-                fontWeight="500"
-                lineHeight={1.9}
-                marginTop={2}
-                maxWidth={200}
-                display="block !important"
-                textAlign="center !important"
-                color="text.disabled !important"
+                rowGap={4}
+                columnGap={2}
+                display="grid"
+                gridTemplateColumns={{
+                  xs: 'repeat(1, 1fr)',
+                  sm: 'repeat(1, 1fr)'
+                }}
               >
-                Allowed *.jpeg, *.jpg, *.png, *.gif max size of 3.1 MB
-              </Box>
-            </Box>
-          </Paper>
-          {showAlert && (
-          <Alert severity="info" onClose={() => setShowAlert(false)}>
-            This feature is not yet available
-          </Alert>
-        )}
-        </Grid>
-        <Grid item md={7}>
-          <Paper elevation={3} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
-            <Box
-              rowGap={4}
-              columnGap={3}
-              display="grid"
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)'
-              }}
-            >
-              <TextField
-                label="User ID"
-                onChange={(e) => onValueChange(e)}
-                name="user_id"
-                value={user_id}
-                id="my-input"
-                variant="outlined"
-                fullWidth
-                sx={{
-                  '& .MuiInputLabel-root': {
-                    color: 'rgba(0, 0, 0, 0.4)',
-                    '&.Mui-focused': {
-                      color: 'black'
-                    }
-                  },
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '10px',
-                    '& fieldset': {
-                      borderColor: 'rgba(0, 0, 0, 0.2)'
+                <TextField
+                  label="User Role"
+                  onChange={(e) => onValueChange(e)}
+                  name="user_role"
+                  value={user_role}
+                  id="my-input"
+                  variant="outlined"
+                  fullWidth
+                  select
+                  sx={{
+                    '& .MuiInputLabel-root': {
+                      color: 'rgba(0, 0, 0, 0.4)',
+                      '&.Mui-focused': {
+                        color: 'black'
+                      }
                     },
-                    '&:hover fieldset': {
-                      borderColor: 'black'
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: 'black'
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '10px',
+                      '& fieldset': {
+                        borderColor: 'rgba(0, 0, 0, 0.2)'
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'black'
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: 'black'
+                      }
                     }
-                  }
-                }}
-              />
-              <TextField
-                label="Name"
-                onChange={(e) => onValueChange(e)}
-                name="user_name"
-                value={user_name}
-                id="my-input"
-                variant="outlined"
-                fullWidth
-                sx={{
-                  '& .MuiInputLabel-root': {
-                    color: 'rgba(0, 0, 0, 0.4)',
-                    '&.Mui-focused': {
-                      color: 'black'
-                    }
-                  },
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '10px',
-                    '& fieldset': {
-                      borderColor: 'rgba(0, 0, 0, 0.2)'
+                  }}
+                >
+                  {roles.map((name) => (
+                    <MenuItem
+                      key={name}
+                      value={name}
+                      sx={{
+                        padding: '6px 8px',
+                        lineHeight: '1.57143',
+                        fontSize: '0.875rem',
+                        fontWeight: '400',
+                        borderRadius: '6px',
+                        display: 'flex',
+                        marginBottom: '4px',
+                        height: '40px',
+                        '&:focus, &:hover': {
+                          bgcolor: '#f4f6f8'
+                        }
+                      }}
+                    >
+                      <ListItemText primary={<Typography variant="body2">{name}</Typography>} />
+                    </MenuItem>
+                  ))}
+                </TextField>
+                <TextField
+                  label="User ID"
+                  onChange={(e) => onValueChange(e)}
+                  name="user_id"
+                  value={user_id}
+                  id="my-input"
+                  variant="outlined"
+                  fullWidth
+                  sx={{
+                    '& .MuiInputLabel-root': {
+                      color: 'rgba(0, 0, 0, 0.4)',
+                      '&.Mui-focused': {
+                        color: 'black'
+                      }
                     },
-                    '&:hover fieldset': {
-                      borderColor: 'black'
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: 'black'
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '10px',
+                      '& fieldset': {
+                        borderColor: 'rgba(0, 0, 0, 0.2)'
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'black'
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: 'black'
+                      }
                     }
-                  }
-                }}
-              />
+                  }}
+                />
 
                 <TextField
-                  label="Status"
+                  label="User Name"
                   onChange={(e) => onValueChange(e)}
-                  name="status"
-                  value={status}
+                  name="user_name"
+                  value={user_name}
                   id="my-input"
                   variant="outlined"
                   fullWidth
@@ -217,12 +173,69 @@ const AddStore = () => {
                   }}
                 />
                 <TextField
-                  label="User Role"
+                  label="Store"
                   onChange={(e) => onValueChange(e)}
-                  name="user_role"
-                  value={user_role}
+                  name="store_id"
+                  value={store_id}
                   id="my-input"
                   variant="outlined"
+                  fullWidth
+                  select
+                  sx={{
+                    '& .MuiInputLabel-root': {
+                      color: 'rgba(0, 0, 0, 0.4)',
+                      '&.Mui-focused': {
+                        color: 'black'
+                      }
+                    },
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '10px',
+                      '& fieldset': {
+                        borderColor: 'rgba(0, 0, 0, 0.2)'
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'black'
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: 'black'
+                      }
+                    }
+                  }}
+                >
+                  {stores.map((name) => (
+                    <MenuItem
+                      key={name}
+                      value={name}
+                      sx={{
+                        padding: '6px 8px',
+                        lineHeight: '1.57143',
+                        fontSize: '0.875rem',
+                        fontWeight: '400',
+                        borderRadius: '6px',
+                        display: 'flex',
+                        marginBottom: '4px',
+                        height: '40px',
+                        '&:focus, &:hover': {
+                          bgcolor: '#f4f6f8'
+                        }
+                      }}
+                    >
+                      <ListItemText primary={<Typography variant="body2">{name}</Typography>} />
+                    </MenuItem>
+                  ))}
+                </TextField>
+                <TextField
+                  label="Email Address"
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    onValueChange(e);
+                  }}
+                  name="email"
+                  value={email}
+                  id="my-input"
+                  variant="outlined"
+                  disabled={!isEmailEditable}
+                  required={isEmailEditable}
                   fullWidth
                   sx={{
                     '& .MuiInputLabel-root': {
@@ -274,62 +287,39 @@ const AddStore = () => {
                     }
                   }}
                 />
-                <TextField
-                  label="APK Version"
-                  onChange={(e) => onValueChange(e)}
-                  name="apk_version"
-                  value={apk_version}
-                  id="my-input"
-                  variant="outlined"
-                  fullWidth
-                  sx={{
-                    '& .MuiInputLabel-root': {
-                      color: 'rgba(0, 0, 0, 0.4)',
-                      '&.Mui-focused': {
-                        color: 'black'
-                      }
-                    },
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: '10px',
-                      '& fieldset': {
-                        borderColor: 'rgba(0, 0, 0, 0.2)'
-                      },
-                      '&:hover fieldset': {
-                        borderColor: 'black'
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: 'black'
-                      }
-                    }
-                  }}
-                />
               </Box>
-              <Stack alignItems="flex-end !important" justifyContent="flex-end !important" sx={{ mt: 3 }}>
-                <Button
-                  color="primary"
-                  variant="contained"
-                  startIcon={<AddIcon />}
-                  onClick={() => addUserDetails()}
-                  sx={{
-                    backgroundColor: '#000000 !important',
-                    color: '#FFFFFF !important',
-                    borderRadius: '8px !important',
-                    padding: '6px 24px !important',
-                    '&:hover': {
-                      backgroundColor: '#1a1a1a !important'
-                    },
-                    '&:active': {
-                      backgroundColor: '#000000 !important'
-                    }
-                  }}
-                >
-                  Create User
-                </Button>
-              </Stack>
-            </Paper>
+            </Stack>
+          </Grid>
+          <Grid item xs={12}>
+            <Stack direction="row" justifyContent="flex-end" spacing={2}>
+              <Button
+                color="primary"
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => addUserDetails()}
+                sx={{
+                  backgroundColor: '#000000 !important',
+                  color: '#FFFFFF !important',
+                  borderRadius: '8px !important',
+                  padding: '6px 24px !important',
+                  '&:hover': {
+                    backgroundColor: '#1a1a1a !important'
+                  },
+                  '&:active': {
+                    backgroundColor: '#000000 !important'
+                  }
+                }}
+              >
+                Create User
+              </Button>
+              <Button variant="outlined" onClick={handleAddUserDialogClose}>
+                Cancel
+              </Button>
+            </Stack>
+          </Grid>
         </Grid>
-      </Grid>
-    </>
+      </Paper>
+    </Box>
   );
 };
 

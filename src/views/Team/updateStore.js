@@ -37,7 +37,6 @@ const UploadButton = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'light' ? theme.palette.secondary[400] : alpha(theme.palette.background.paper, 0.9)
 }));
 
-
 const EditStore = () => {
   const [user, setUser] = useState(initialValue);
   const { user_id, user_name, status, user_role, number, apk_version } = user;
@@ -64,14 +63,14 @@ const EditStore = () => {
   };
 
   // const [image, setImage] = useState(null);
-const [showAlert, setShowAlert] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
 
-const handleImageChange = () => {
-  <Alert severity="info">This feature is not yet available</Alert>
-  // const selectedImage = e.target.files[0];
-  // setImage(selectedImage);
-  setShowAlert(true);
-};
+  const handleImageChange = () => {
+    <Alert severity="info">This feature is not yet available</Alert>;
+    // const selectedImage = e.target.files[0];
+    // setImage(selectedImage);
+    setShowAlert(true);
+  };
 
   return (
     <>
@@ -87,7 +86,7 @@ const handleImageChange = () => {
         </Typography>
       </Breadcrumb>
       <Grid container spacing={3}>
-      <Grid item md={5}>
+        <Grid item md={5}>
           <Paper elevation={2} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
             <Box
               sx={{
@@ -126,10 +125,10 @@ const handleImageChange = () => {
             </Box>
           </Paper>
           {showAlert && (
-          <Alert severity="info" onClose={() => setShowAlert(false)}>
-            This feature is not yet available
-          </Alert>
-        )}
+            <Alert severity="info" onClose={() => setShowAlert(false)}>
+              This feature is not yet available
+            </Alert>
+          )}
         </Grid>
         <Grid item md={7}>
           <Paper elevation={3} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
