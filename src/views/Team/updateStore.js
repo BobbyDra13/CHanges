@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { Button, Paper, Grid, Box, TextField, Stack } from '@mui/material';
+import { Button, Grid, Box, TextField, Stack, Typography, MenuItem, ListItemText, Paper } from '@mui/material';
 import { editStore, getStores } from './API/api';
 import { Add as AddIcon } from '@mui/icons-material';
 
@@ -12,21 +12,22 @@ const initialValue = {
   email: '',
   number: ''
 };
+const roles = ['Agents', 'Department Manager', 'Store Manager', 'Cluster Manager', 'NHK Super User'];
+const stores = ['Lakme', 'Adidas', 'Trends', 'Loreal', 'Heads and Shoulders'];
 
-const EditStore = ({rowId, handleUpdateUserDialogClose}) => {
+
+const EditStore = ({rowId, handleEditUserDialogClose}) => {
+  console.log(rowId);
   const [user, setUser] = useState(initialValue);
-  const {  user_role,
-  user_id,
-  user_name,
-  store_id ,email, number } = user;
-
+  const { user_role, user_id, user_name, store_id, email, number } = user;
 
   useEffect(() => {
     loadUserDetails();
-  }, [rowId]);
+  }, []);
 
   const loadUserDetails = async () => {
   try {
+    console.log(rowId);
     const response = await getStores(rowId);
     setUser(response.data);
   } catch(error){
@@ -36,29 +37,39 @@ const EditStore = ({rowId, handleUpdateUserDialogClose}) => {
   const editUserDetails = async () => {
     try{
     await editStore(rowId, user);
-    handleUpdateUserDialogClose();
+    handleEditUserDialogClose();
     }catch(error) {
       console.error('Error Updating user details:',error);
     }
   };
 
   const onValueChange = (e) => {
-    console.log(e.target.value);
-    setUser({ ...user, [e.target.name]: e.target.value });
+    // console.log(e.target.value);
+    setUser(prevUser => ({
+      ...prevUser,
+      [e.target.name]: e.target.value
+    }));
   };
 
   return (
-    <>
-      <Grid container spacing={3}>
-        <Grid item md={7}>
-          <Paper elevation={3} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
+    <Box p={4}>
+    <Paper elevation={6} sx={{ padding: '24px', borderRadius: '12px' }}>
+
+      <Grid container spacing={4}>
+      <Grid item xs={12}>
+            <Typography variant="h3" gutterBottom>
+              Edit User
+            </Typography>
+          </Grid>
+        <Grid item xs={12}>
+          <Stack spacing={3}>
             <Box
               rowGap={4}
-              columnGap={3}
+              columnGap={2}
               display="grid"
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)'
+                sm: 'repeat(1, 1fr)'
               }}
             >
               <TextField
@@ -69,6 +80,7 @@ const EditStore = ({rowId, handleUpdateUserDialogClose}) => {
                 id="my-input"
                 variant="outlined"
                 fullWidth
+                select
                 sx={{
                   '& .MuiInputLabel-root': {
                     color: 'rgba(0, 0, 0, 0.4)',
@@ -89,7 +101,29 @@ const EditStore = ({rowId, handleUpdateUserDialogClose}) => {
                     }
                   }
                 }}
-              />
+              >
+                {roles.map((name) => (
+                    <MenuItem
+                      key={name}
+                      value={name}
+                      sx={{
+                        padding: '6px 8px',
+                        lineHeight: '1.57143',
+                        fontSize: '0.875rem',
+                        fontWeight: '400',
+                        borderRadius: '6px',
+                        display: 'flex',
+                        marginBottom: '4px',
+                        height: '40px',
+                        '&:focus, &:hover': {
+                          bgcolor: '#f4f6f8'
+                        }
+                      }}
+                    >
+                      <ListItemText primary={<Typography variant="body2">{name}</Typography>} />
+                    </MenuItem>
+                  ))}
+                  </TextField>
               <TextField
                 label="User ID"
                 onChange={(e) => onValueChange(e)}
@@ -157,6 +191,7 @@ const EditStore = ({rowId, handleUpdateUserDialogClose}) => {
                   id="my-input"
                   variant="outlined"
                   fullWidth
+                  select
                   sx={{
                     '& .MuiInputLabel-root': {
                       color: 'rgba(0, 0, 0, 0.4)',
@@ -177,9 +212,31 @@ const EditStore = ({rowId, handleUpdateUserDialogClose}) => {
                       }
                     }
                   }}
-                />
+                >
+                  {stores.map((name) => (
+                    <MenuItem
+                      key={name}
+                      value={name}
+                      sx={{
+                        padding: '6px 8px',
+                        lineHeight: '1.57143',
+                        fontSize: '0.875rem',
+                        fontWeight: '400',
+                        borderRadius: '6px',
+                        display: 'flex',
+                        marginBottom: '4px',
+                        height: '40px',
+                        '&:focus, &:hover': {
+                          bgcolor: '#f4f6f8'
+                        }
+                      }}
+                    >
+                      <ListItemText primary={<Typography variant="body2">{name}</Typography>} />
+                    </MenuItem>
+                  ))}
+                  </TextField>
                 <TextField
-                  label="Email"
+                  label="Email Address"
                   onChange={(e) => onValueChange(e)}
                   name="email"
                   value={email}
@@ -237,7 +294,10 @@ const EditStore = ({rowId, handleUpdateUserDialogClose}) => {
                   }}
                 />
               </Box>
-              <Stack alignItems="flex-end !important" justifyContent="flex-end !important" sx={{ mt: 3 }}>
+              </Stack>
+              </Grid>
+              <Grid item xs={12}>
+              <Stack direction="row" justifyContent="flex-end" spacing={2}>
                 <Button
                   color="primary"
                   variant="contained"
@@ -258,11 +318,14 @@ const EditStore = ({rowId, handleUpdateUserDialogClose}) => {
                 >
                   Update User
                 </Button>
+                <Button variant="outlined" onClick={handleEditUserDialogClose}>
+                Cancel
+               </Button>
               </Stack>
-            </Paper>
         </Grid>
       </Grid>
-    </>
+      </Paper>
+    </Box>
   );
 };
 

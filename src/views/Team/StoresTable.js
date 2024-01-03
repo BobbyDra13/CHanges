@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { ArrowDownwardRounded, ArrowUpwardRounded, Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
-import EditStore from 'views/Stores/Table/editStore';
+import EditStore from './updateStore';
 
 const HeaderCell = styled(TableCell)({
   fontWeight: 'bold',
@@ -60,6 +60,8 @@ const StoresTable = ({
   sortConfig,
   requestSort
 }) => {
+
+
   const HeaderCellWithSortIcon = ({ label, onClick, sortedKey }) => {
     const isAscending = sortConfig.key === sortedKey && sortConfig.direction === 'ascending';
     const isDescending = sortConfig.key === sortedKey && sortConfig.direction === 'descending';
@@ -75,18 +77,17 @@ const StoresTable = ({
     );
   };
 
-  // const [editRowId, setEditRowId] = useState(null);
+  const [editRowId, setEditRowId] = useState(null);
 
   const [showEditUserDialog, setShowEditUserDialog] = useState(false);
   const handleEditUserDialogOpen = (rowId) => {
-    // setEditRowId(rowId);
-    console.log(rowId);
+    setEditRowId(rowId);
     setShowEditUserDialog(true);
   };
 
   const handleEditUserDialogClose = () => {
+    setEditRowId(null);
     setShowEditUserDialog(false);
-    // setEditRowId(null);
     getAllUsers();
   };
 
@@ -140,6 +141,7 @@ const StoresTable = ({
                 <TableCell align="left">{row.email}</TableCell>
                 <TableCell align="left">{row.number}</TableCell>
                 <TableCell align="left">
+                  
                   <IconButton
                     onClick={() => handleEditUserDialogOpen(row.id)}
                     color="primary"
@@ -160,8 +162,9 @@ const StoresTable = ({
                   </IconButton>
                  
                   <Dialog
-                    open={showEditUserDialog}
-                    onClose={handleEditUserDialogClose}
+                    key={row.id}
+                    open={editRowId === row.id && showEditUserDialog}
+                    onClose={()=>handleEditUserDialogClose()}
                     PaperProps={{
                       style: {
                         maxWidth: '100%',
@@ -171,6 +174,7 @@ const StoresTable = ({
                   >
                    <EditStore rowId={row.id} handleEditUserDialogClose={handleEditUserDialogClose}/>
                   </Dialog>
+
                   <IconButton
                     color="secondary"
                     aria-label="delete"
