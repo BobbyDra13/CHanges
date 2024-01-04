@@ -1,14 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 
 import {
-  Table,
-  TableHead,
-  TableCell,
-  TableRow,
-  TableBody,
   Button,
-  styled,
-  TablePagination,
   Paper,
   Typography,
   IconButton,
@@ -20,48 +13,19 @@ import {
   ListItemText,
   MenuItem,
   Checkbox,
-  TextField,
-  InputAdornment,
   useTheme,
-  TableContainer
+  Dialog
 } from '@mui/material';
-import { Delete as DeleteIcon, Edit as EditIcon, Add as AddIcon, ArrowUpwardRounded, ArrowDownwardRounded } from '@mui/icons-material';
+import { Delete as DeleteIcon, Add as AddIcon } from '@mui/icons-material';
 import { getStores, deleteStore } from './API/api';
 import { Link } from 'react-router-dom';
 import { BsApp } from 'react-icons/bs';
-import { IoIosSearch } from 'react-icons/io';
 import { CiExport } from 'react-icons/ci';
 import { CSVLink } from 'react-csv';
-
-const StyledTable = styled(Table)`
-  width: 100%;
-  table-layout: auto;
-  aria-label: 'simple table';
-`;
-
-const THead = styled(TableRow)`
-  & > th {
-    font-size: 18px;
-    background: #000000;
-    color: #ffffff;
-  }
-`;
-
-const TRow = styled(TableRow)`
-  &:hover {
-    background-color: #f4f6f8;
-  }
-
-  & > td {
-    font-size: 16;
-  }
-`;
-const HeaderCell = styled(TableCell)({
-  fontWeight: 'bold',
-  '& svg': {
-    verticalAlign: 'middle'
-  }
-});
+import SearchBar from './SearchBar';
+import StoresTable from './StoresTable';
+import AddStore from './addStore';
+import FilterationButton from './FilterationButton';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 20;
@@ -125,67 +89,19 @@ const AllStores = () => {
 
   const prepareExportData = () => {
     const dataForExport = rows.map((row) => ({
-      Id: row.user_id,
+      Role: row.user_role,
+      ID: row.user_id,
       Name: row.user_name,
-      Status: row.status,
+      Store: row.store_id,
+      Email: row.email,
       Phone: row.number
     }));
 
     return dataForExport;
   };
-
-  const [sortConfig, setSortConfig] = useState({
-    key: null,
-    direction: 'ascending'
-  });
-
-  const requestSort = (key) => {
-    let direction = 'ascending';
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
-    }
-    setSortConfig({ key, direction });
-  };
-  const filteredAndSortedRows = useMemo(() => {
-    let filteredData = rows.filter(
-      (row) =>
-        row.user_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        row.user_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        row.status.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        row.user_role.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        row.number.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        row.apk_version.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    if (sortConfig && sortConfig.key) {
-      const key = sortConfig.key;
-      const direction = sortConfig.direction === 'ascending' ? 1 : -1;
-      filteredData = filteredData.sort((a, b) => {
-        if (a[key] < b[key]) return -1 * direction;
-        if (a[key] > b[key]) return 1 * direction;
-        return 0;
-      });
-    }
-
-    return filteredData;
-  }, [rows, searchQuery, sortConfig]);
-
-  const HeaderCellWithSortIcon = ({ label, onClick, sortedKey }) => {
-    const isAscending = sortConfig.key === sortedKey && sortConfig.direction === 'ascending';
-    const isDescending = sortConfig.key === sortedKey && sortConfig.direction === 'descending';
-
-    return (
-      <HeaderCell align="left" onClick={onClick}>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          {label}
-          {isAscending && <ArrowUpwardRounded />}
-          {isDescending && <ArrowDownwardRounded />}
-        </div>
-      </HeaderCell>
-    );
-  };
-
   const [selectedRows, setSelectedRows] = useState([]);
+
+  const isSelected = (userId) => selectedRows.indexOf(userId) !== -1;
   const handleRowSelect = (userId) => {
     const selectedIndex = selectedRows.indexOf(userId);
     let newSelectedRows = [];
@@ -202,8 +118,28 @@ const AllStores = () => {
 
     setSelectedRows(newSelectedRows);
   };
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: 'ascending'
+  });
 
-  const isSelected = (userId) => selectedRows.indexOf(userId) !== -1;
+  const [roleFilter, setRoleFilter] = useState('');
+  const handleNavigationClick = (role) => {
+    if (role === 'All Users') {
+      setRoleFilter('');
+      return;
+    }
+    setRoleFilter(role);
+    setSortConfig({ key: null, direction: 'ascending' });
+  };
+
+  const requestSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
 
   const handleDeleteSelectedRows = async () => {
     const remainingRows = rows.filter((row) => !selectedRows.includes(row.id));
@@ -213,9 +149,48 @@ const AllStores = () => {
     rowchange(remainingRows);
     setSelectedRows([]);
   };
+  const filteredAndSortedRows = useMemo(() => {
+    let filteredData = rows.filter((row) => {
+      if (roleFilter !== '' && row.user_role !== roleFilter) {
+        return false;
+      }
+
+      const searchQueryLowerCase = searchQuery.toLowerCase();
+      return (
+        row.user_role.toLowerCase().includes(searchQueryLowerCase) ||
+        row.user_id.toLowerCase().includes(searchQueryLowerCase) ||
+        row.user_name.toLowerCase().includes(searchQueryLowerCase) ||
+        row.store_id.toLowerCase().includes(searchQueryLowerCase) ||
+        row.number.toLowerCase().includes(searchQueryLowerCase)
+      );
+    });
+
+    if (sortConfig && sortConfig.key) {
+      const key = sortConfig.key;
+      const direction = sortConfig.direction === 'ascending' ? 1 : -1;
+      filteredData = filteredData.sort((a, b) => {
+        if (a[key] < b[key]) return -1 * direction;
+        if (a[key] > b[key]) return 1 * direction;
+        return 0;
+      });
+    }
+
+    return filteredData;
+  }, [rows, roleFilter, searchQuery, sortConfig]);
+  const [showAddUserDialog, setShowAddUserDialog] = useState(false);
+
+  const handleAddUserDialogOpen = () => {
+    setShowAddUserDialog(true);
+  };
+
+  const handleAddUserDialogClose = () => {
+    setShowAddUserDialog(false);
+    getAllUsers();
+  };
 
   return (
     <>
+      
       <div
         style={{
           display: 'flex',
@@ -224,10 +199,10 @@ const AllStores = () => {
         }}
       >
         <Button
+          onClick={handleAddUserDialogOpen}
           color="primary"
           component={Link}
           variant="contained"
-          to={`/team/add`}
           startIcon={<AddIcon />}
           sx={{
             bgcolor: '#000000',
@@ -242,10 +217,23 @@ const AllStores = () => {
         >
           Add User
         </Button>
+        <Dialog
+          open={showAddUserDialog}
+          onClose={handleAddUserDialogClose}
+          PaperProps={{
+            style: {
+              maxWidth: '100%',
+              maxHeight: '100%'
+            }
+          }}
+        >
+          <AddStore handleAddUserDialogClose={handleAddUserDialogClose} />
+        </Dialog>
       </div>
       <Paper elevation={4} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
         <Stack className="p-2 border-0 border-red-500" direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
           <Stack direction={'row'} alignItems={'center'} justifyContent={'flex-end'} sx={{ paddingRight: '16px' }}>
+          <FilterationButton handleNavigationClick={handleNavigationClick} />
             <div>
               <FormControl
                 sx={{
@@ -295,7 +283,7 @@ const AllStores = () => {
                         checked={personName.indexOf(name) > -1}
                         sx={{
                           '& .MuiSvgIcon-root': {
-                            borderRadius: 10, // Adjust the border radius as needed
+                            borderRadius: 10,
                             fontSize: '1.25rem',
                             color: '#00a76f'
                           },
@@ -309,25 +297,10 @@ const AllStores = () => {
                     </MenuItem>
                   ))}
                 </Select>
+                
               </FormControl>
             </div>
-            <TextField
-              id="outlined-disabled"
-              value={searchQuery}
-              onChange={handleSearchChange}
-              sx={{
-                width: 300,
-                '& .MuiOutlinedInput-notchedOutline': { borderRadius: '10px' }
-              }}
-              placeholder="Search..."
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <IoIosSearch style={{ fontSize: 24 }} className="text-gray-400" />
-                  </InputAdornment>
-                )
-              }}
-            />
+            <SearchBar searchQuery={searchQuery} handleSearchChange={handleSearchChange} />
           </Stack>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             {selectedRows.length > 0 && (
@@ -374,107 +347,19 @@ const AllStores = () => {
         </Stack>
 
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <TableContainer sx={{ maxHeight: 440 }}>
-            <StyledTable>
-              <TableHead>
-                <THead
-                  sx={{
-                    '& .MuiTableCell-root': {
-                      borderBottom: '1px dotted #B9B9B9',
-                      bgcolor: '#f4f6f8',
-                      color: '#637381',
-                      fontWeight: 'bold'
-                    }
-                  }}
-                >
-                  <TableCell padding="checkbox"></TableCell>
-                  <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_id')} sortedKey="user_id" label="ID" />
-                  <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_name')} sortedKey="user_name" label="Name" />
-                  <HeaderCellWithSortIcon align="left" onClick={() => requestSort('status')} sortedKey="status" label="Status" />
-                  <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_role')} sortedKey="user_role" label="User Role" />
-                  <HeaderCellWithSortIcon align="left" onClick={() => requestSort('number')} sortedKey="number" label="Phone" />
-                  <HeaderCellWithSortIcon align="left" onClick={() => requestSort('createdAt')} sortedKey="createdAt" label="Created on" />
-                  <HeaderCellWithSortIcon
-                    align="left"
-                    onClick={() => requestSort('apk_version')}
-                    sortedKey="apk_version"
-                    label="Apk Version"
-                  />
-                  <TableCell align="left">Actions</TableCell>
-                </THead>
-              </TableHead>
-              <TableBody>
-                {filteredAndSortedRows.slice(page, rowsPerPage).map((row) => (
-                  <TRow
-                    key={row.user_id}
-                    sx={{
-                      '&:last-child td, &:last-child th': { border: 0 },
-                      '& .MuiTableCell-root': {
-                        borderBottom: '1px dotted #B9B9B9'
-                      }
-                    }}
-                    className="hover:bg-gray-100"
-                  >
-                    <TableCell padding="checkbox">
-                      <Checkbox checked={isSelected(row.id)} onChange={() => handleRowSelect(row.id)} />
-                    </TableCell>
-                    <TableCell component={'th'} scope="row">
-                      {row.user_id}
-                    </TableCell>
-                    <TableCell align="left">{row.user_name}</TableCell>
-                    <TableCell align="left">{row.status}</TableCell>
-                    <TableCell align="left">{row.user_role}</TableCell>
-                    <TableCell align="left">{row.number}</TableCell>
-                    <TableCell align="left">{formatDate(row.createdAt)}</TableCell>
-                    <TableCell align="left">{row.apk_version}</TableCell>
-                    <TableCell align="left">
-                      <IconButton
-                        color="primary"
-                        component={Link}
-                        to={`/team/edit/${row.id}`}
-                        aria-label="edit"
-                        sx={{
-                          color: '#212b36',
-                          fontSize: '14px',
-                          lineHeight: '17px',
-                          textTransform: 'none',
-                          '&:hover': {
-                            bgcolor: '#f4f6f8'
-                          }
-                        }}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        color="secondary"
-                        aria-label="delete"
-                        onClick={() => deleteUserData(row.id)}
-                        sx={{
-                          color: '#212b36',
-                          fontSize: '14px',
-                          lineHeight: '17px',
-                          textTransform: 'none',
-                          '&:hover': {
-                            bgcolor: '#f4f6f8'
-                          }
-                        }}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TRow>
-                ))}
-              </TableBody>
-            </StyledTable>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            rowsPerPage={rowsPerPage}
+          <StoresTable
+            rows={filteredAndSortedRows}
+            getAllUsers={getAllUsers}
             page={page}
-            count={rows.length}
-            component="div"
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
+            rowsPerPage={rowsPerPage}
+            handleChangePage={handleChangePage}
+            handleChangeRowsPerPage={handleChangeRowsPerPage}
+            isSelected={isSelected}
+            handleRowSelect={handleRowSelect}
+            deleteUserData={deleteUserData}
+            formatDate={formatDate}
+            sortConfig={sortConfig}
+            requestSort={requestSort}
           />
         </div>
       </Paper>

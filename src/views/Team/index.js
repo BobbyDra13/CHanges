@@ -13,17 +13,21 @@ import AllStores from './stores';
 const Team = () => {
   return (
     <>
-      <Breadcrumb title="Team">
-        <Typography component={Link} to="/" variant="subtitle2" color="inherit" className="link-breadcrumb">
-          Insights
-        </Typography>
-        <Typography variant="subtitle2" color="primary" className="link-breadcrumb">
-          Team
-        </Typography>
-      </Breadcrumb>
-      <Grid container spacing={gridSpacing}>
-        <Grid item width="99%">
-        <AllStores />
+      <Grid container style={{ marginLeft: '30px' }}>
+        <Grid item xs={12}>
+          <Breadcrumb title="Team">
+            <Typography component={Link} to="/" variant="subtitle2" color="inherit" className="link-breadcrumb">
+              Insights
+            </Typography>
+            <Typography variant="subtitle2" color="primary" className="link-breadcrumb">
+              Team
+            </Typography>
+          </Breadcrumb>
+          <Grid container spacing={gridSpacing}>
+            <Grid item width="99%">
+              <AllStores />
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
     </>

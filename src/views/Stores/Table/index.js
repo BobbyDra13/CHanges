@@ -1,221 +1,696 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import {
-  TableBody,
-  Table,
-  TableCell,
-  TableContainer,
-  TableHead,
-  Paper,
-  TableRow,
-  TablePagination,
-  FormControl,
-  Select,
-  MenuItem,
-  Checkbox,
-  ListItemText,
-  InputLabel,
-  OutlinedInput,
-  Typography,
-  useTheme,
-  TextField,
-  InputAdornment,
-  Button,
-  Stack
-} from '@mui/material';
-import { IosShareRounded, SearchRounded, CheckBoxOutlineBlankRounded } from '@mui/icons-material';
+import React, { useState, useEffect } from 'react';
+// import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
-const status = ['All', 'Verified', 'Pending Verification', 'Rejected'];
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 20;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      borderRadius: '10px',
-      padding: '0px 6px'
+
+// material-ui
+import { Grid, Typography } from '@mui/material';
+// import Progress_bar from './progressBar';
+import { Tooltip, Dialog, DialogContent, IconButton, Menu, MenuItem } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+// project import
+import Breadcrumb from 'component/Breadcrumb';
+import { gridSpacing } from 'config.js';
+import AddStore from './addStore';
+// import TextField from '@mui/material/TextField';
+// import Button from '@mui/material/Button';
+// import InputLabel from '@mui/material/InputLabel';
+// import FormControl from '@mui/material/FormControl';
+// import Select from '@mui/material/Select';
+// import ControlPointIcon from '@mui/icons-material/ControlPoint';
+// import stateCities from './stateCitiesData.json';
+// import Autocomplete from '@mui/material/Autocomplete';
+// import { createTheme } from '@mui/material';
+// import { ThemeProvider } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
+import { GetStoreLayout } from 'api';
+
+// ==============================|| BRANDS PAGE ||============================== //
+// const states = Object.keys(stateCities);
+
+const StoreContent = () => {
+  const [clickedBar] = useState(null);
+  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+  // const [editDialogOpenMap, setEditDialogOpenMap] = useState({});
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const navigate = useNavigate();
+
+  // const [storeInfo, setStoreInfo] = useState({ id: 0, name: '', type: '' });
+  // const [location, setLocation] = useState({
+  //   area: '',
+  //   region: '',
+  //   state: '',
+  //   city: ''
+  // });
+
+  const [storesData, setStoresData] = useState([]);
+  const date = new Date();
+  const today = date.toISOString().split('T')[0];
+  const location = useLocation();
+
+
+  const fetchData = async () => {
+    try {
+      const input = {
+        Store_IDs: ['6582be9ac5ed94d792a563b8'],
+        start_date: today
+      };
+      
+      const response = await GetStoreLayout(input);
+  
+      // Log the raw response to get more insights
+      console.log('Raw Response:', response);
+  
+      // Check if response and response.data are defined
+      if (response && response.data) {
+        console.log('Data:', response.data);
+        setStoresData(response.data);
+      } else {
+        console.error("Response or response.data is undefined.");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
-  }
-};
-export default function TableComponent({ rows }) {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [personName, setPersonName] = useState([]);
-  const theme = useTheme();
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
   };
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
+  
+  useEffect(() => {
+    if (location.pathname === "/stores") {
+      fetchData();
+    }
+  }, [location]);
+  
+  
+  console.log('StoresData', storesData);
+  // const shelfCount = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  // console.log("brand", shelf);
+
+  // const [counter, setCounter] = useState(0);
+
+  // const handleEditsClick = () => {
+  //   setCounter(counter + 1);
+  //   // console.log(counter);
+  // };
+
+  // const handleEditClick = (event, storeId) => {
+  //   setAnchorEl(event.currentTarget);
+  //   setEditDialogOpenMap((prev) => ({ ...prev, [storeId]: true }));
+  // };
+
+  // const handleEditClose = () => {
+  //   setAnchorEl(null);
+  //   setEditDialogOpenMap({});
+  // };
+
+  // const [fullWidth] = useState(true);
+  // const [maxWidth] = useState('md');
+
+  // const handleToastClose = () => {
+  //   setToast({ isToast: false, message: "", type: "" });
+  // };
+  // const handleSubmit = async () => {
+  //   const storeDetails = {
+  //     store_id: storeInfo.id,
+  //     name: storeInfo.name,
+  //     type: storeInfo.type,
+  //     location: location.area,
+  //     region: location.region,
+  //     state: location.state,
+  //     dist: location.city,
+  //     brands: brandValue,
+  //     shelves: shelvesValue,
+  //   };
+  //   try {
+  //     // https://gu44ge6xhk.execute-api.ap-south-1.amazonaws.com/dev/stores/create
+  //     const data = await axios.post(`${lambUrl}/stores/create`, storeDetails, {
+  //       headers: {
+  //         Accept: "application/json",
+  //         Authorization: await token(),
+  //       },
+  //     });
+  //     // console.log(data);
+  //     if (data) {
+  //       window.location.reload();
+  //     }
+  //   } catch (error) {
+  //     setToast({
+  //       isToast: true,
+  //       message: error.response.data,
+  //       type: "warning",
+  //     });
+  //     console.log(error.response.data);
+  //   }
+  //   // console.log(storeDetails);
+  // };
+  // const theme = createTheme({
+  //   components: {
+  //     MuiOutlinedInput: {
+  //       styleOverrides: {
+  //         notchedOutline: {
+  //           fontSize: '20px'
+  //         }
+  //       }
+  //     },
+  //     MuiInputLabel: {
+  //       styleOverrides: {
+  //         outlined: {
+  //           '&.MuiInputLabel-shrink': {
+  //             fontSize: '20px'
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // });
+
+const options = [
+  { label: 'View', icon: <VisibilityIcon />, onClick: () => navigate('/stores/analysis/layout') },
+  { label: 'Edit', icon: <EditIcon />, disabled: true },
+  { label: 'Delete', icon: <DeleteIcon />, color: 'red', disabled: true }
+];
+
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const ITEM_HEIGHT = 48;
+
+  const open = Boolean(anchorEl);
+  // const handleClick = (event) => {
+  //   setAnchorEl(event.currentTarget);
+  // };
+  const handleClick = (event) => {
+    // const selectedOption = options.find((option) => option.label === 'Edit');
+
+    // if (selectedOption) {
+    //   // Handle the "Edit" logic directly
+    //   handleEditClick(event, storeData.id);
+    // } else {
+      // Show the menu for other options
+      setAnchorEl(event.currentTarget);
+    // }
   };
-  const handleChange = (event) => {
-    const {
-      target: { value }
-    } = event;
-    setPersonName(
-      // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value
-    );
+  const handleClose = () => {
+    setAnchorEl(null);
   };
+
+  // const handleProgressBarClick = (storeId, columnName) => {
+  //   const matchingImage = imageData.find((data) => data.id === storeId);
+  //   setClickedBar({
+  //     storeId,
+  //     columnName,
+  //     imageUrls: matchingImage ? matchingImage.url : undefined
+  //   });
+  // };
+
+  const handleImageClick = (imageUrl) => {
+    setSelectedImage(imageUrl);
+    setIsImageDialogOpen(true);
+  };
+
+  const handleCloseImageDialog = () => {
+    setIsImageDialogOpen(false);
+  };
+  // const storeData = [
+  //   {
+  //     id: 'TX1234-Seawoods',
+  //     upKeep: '90%',
+  //     vm: '60%',
+  //     promo: '80%',
+  //     anomalies: (
+  //       <Progress_bar
+  //         bgcolor="rgb(134 239 172)"
+  //         progress="60"
+  //         height={20}
+  //         handleProgressBarClick={() => handleProgressBarClick('TX1234-Seawoods', 'anomalies')}
+  //       />
+  //     )
+  //   },
+  //   {
+  //     id: 'TX1234-Bandra',
+  //     upKeep: '85%',
+  //     vm: '76%',
+  //     promo: '30%',
+  //     anomalies: (
+  //       <Progress_bar
+  //         bgcolor="rgb(134 239 172)"
+  //         progress="20"
+  //         height={20}
+  //         handleProgressBarClick={() => handleProgressBarClick('TX1234-Bandra', 'anomalies')}
+  //       />
+  //     )
+  //   },
+  //   {
+  //     id: 'TX1234-Pune',
+  //     upKeep: '60%',
+  //     vm: '50%',
+  //     promo: '78%',
+  //     anomalies: (
+  //       <Progress_bar
+  //         bgcolor="rgb(134 239 172)"
+  //         progress="40"
+  //         height={20}
+  //         handleProgressBarClick={() => handleProgressBarClick('TX1234-Pune', 'anomalies')}
+  //       />
+  //     )
+  //   },
+  //   {
+  //     id: 'TX1234-Raurkela',
+  //     upKeep: '30%',
+  //     vm: '90%',
+  //     promo: '59%',
+  //     anomalies: (
+  //       <Progress_bar
+  //         bgcolor="rgb(134 239 172)"
+  //         progress="90"
+  //         height={20}
+  //         handleProgressBarClick={() => handleProgressBarClick('TX1234-Raurkela', 'anomalies')}
+  //       />
+  //     )
+  //   }
+  // ];
+
+  // const imageData = [
+  //   {
+  //     id: 'TX1234-Seawoods',
+  //     url: [
+  //       'https://simplyorganized.me/wp-content/uploads/2016/12/IMG_9029-768x1027.jpg',
+  //       'https://simplyorganized.me/wp-content/uploads/2016/12/IMG_9029-768x1027.jpg'
+  //     ]
+  //   },
+  //   {
+  //     id: 'TX1234-Bandra',
+  //     url: [
+  //       'https://simplyorganized.me/wp-content/uploads/2016/12/IMG_9029-768x1027.jpg',
+  //       'https://simplyorganized.me/wp-content/uploads/2016/12/IMG_9029-768x1027.jpg',
+  //       'https://simplyorganized.me/wp-content/uploads/2016/12/IMG_9029-768x1027.jpg'
+  //     ]
+  //   }
+  // ];
 
   return (
-    <Paper sx={{ borderRadius: '15px' }}>
-      <Stack p={1} direction={{ lg: 'row', xs: 'column' }} justifyContent={'space-between'} alignItems={{ lg: 'center', xs: 'end' }}>
-        <Stack direction={{ lg: 'row', xs: 'column' }} alignItems={'center'} width={{ lg: '50%', xs: '100%' }} order={{ lg: 1, xs: 2 }}>
-          <FormControl
-            sx={{
-              m: 1,
-              width: '100%'
-            }}
-            color="success"
-          >
-            <InputLabel id="demo-multiple-checkbox-label">Verification Fillter</InputLabel>
-            <Select
-              labelId="demo-multiple-checkbox-label"
-              id="demo-multiple-checkbox"
-              multiple
-              value={personName}
-              onChange={handleChange}
-              input={
-                <OutlinedInput
-                  label="Verification Fillter"
-                  sx={{
-                    borderRadius: '10px',
-                    borderColor: theme.palette.grey[200]
-                  }}
-                />
-              }
-              renderValue={(selected) => selected.join(', ')}
-              MenuProps={MenuProps}
-            >
-              {status.map((name) => (
-                <MenuItem
-                  key={name}
-                  value={name}
-                  sx={{
-                    padding: '6px 8px',
-                    lineHeight: '1.57143',
-                    fontSize: '0.875rem',
-                    fontWeight: '400',
-                    borderRadius: '6px',
-                    display: 'flex',
-                    marginBottom: '4px',
-                    height: '40px',
-                    '&:focus, &:hover': {
-                      bgcolor: '#f4f6f8'
-                    }
-                  }}
+    <>
+      <Breadcrumb title="Stores">
+        <Typography variant="subtitle2" color="primary" className="link-breadcrumb">
+          Stores
+        </Typography>
+      </Breadcrumb>
+      <Grid item spacing={gridSpacing}>
+        <AddStore />
+      </Grid>
+      <Grid container spacing={gridSpacing}>
+        <table className="border-collapse mt-5 ml-5 w-full">
+          <thead>
+            <tr className="">
+              <th className="flex-1 p-0.5 cursor-pointer" style={{ width: '8%' }}>
+                <div className="bg-gray-200 p-0.5 rounded">Store ID</div>
+              </th>
+              <th className="flex-1 p-0.5 cursor-pointer" style={{ width: '5%' }}>
+                <div className="bg-gray-200 p-0.5 rounded">Up Keep</div>
+              </th>
+              <th className="flex-1 p-0.5 cursor-pointer" style={{ width: '5%' }}>
+                <div className="bg-gray-200 p-0.5 rounded">VM</div>
+              </th>
+              <th className="flex-1 p-0.5 cursor-pointer" style={{ width: '5%' }}>
+                <div className="bg-gray-200 p-0.5 rounded">Promo</div>
+              </th>
+              <th className="flex-1 p-0.5 cursor-pointer" style={{ width: '20%' }}>
+                <div className="bg-gray-200 p-0.5 rounded">Anomalies</div>
+              </th>
+              <th className="flex-1 p-0.5 cursor-pointer" style={{ width: '5%' }}>
+                <div className="bg-gray-200 p-0.5 rounded">Actions</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody className="">
+            {storesData.map((store) => (
+              <tr key={store.id} className="text-center">
+                <td className="p-0.5 w-5 cursor-pointer">
+                  <div className="bg-gray-100 p-0.5 rounded h-[100px] flex items-center justify-center hover:bg-gray-200 hover:text-black transition">
+                    {store.store_id}  {store.name}
+                  </div>
+                </td>
+                <td className="p-0.5 cursor-pointer">
+                  <div className="bg-gray-100 p-0.5 rounded h-[100px] flex items-center justify-center hover:bg-gray-200 hover:text-black transition">
+                  {store.upKeep ?? 0}%
+                  </div>
+                </td>
+                <td className="p-0.5 cursor-pointer">
+                  <div className="bg-gray-100 p-0.5 rounded h-[100px] flex items-center justify-center hover:bg-gray-200 hover:text-black transition">
+                  {store.vm ?? 0}%
+                  </div>
+                </td>
+                <td className="p-0.5 cursor-pointer">
+                  <div className="bg-gray-100 p-0.5 rounded h-[100px] flex items-center justify-center hover:bg-gray-200 hover:text-black transition">
+                  {store.promo ?? 0}%
+                  </div>
+                </td>
+                <td className="p-0.5 w-20 cursor-pointer">
+                  <div className="bg-gray-100 p-0.5 rounded h-[100px] flex items-center flex-col justify-center hover:bg-gray-200 hover:text-black transition">
+                    {clickedBar && clickedBar.storeId === store.id && clickedBar.columnName === 'anomalies' ? (
+                      <>
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px'
+                          }}
+                        >
+                          {clickedBar.imageUrls &&
+                            clickedBar.imageUrls.map((imageUrl, index) => (
+                              <Tooltip
+                                key={index}
+                                title={
+                                  <div>
+                                    <img
+                                      key={index}
+                                      className="w-fit h-fit max-h-[200px] "
+                                      src={imageUrl}
+                                      alt={`Image_no. ${index + 1} for ${store.id}`}
+                                    />
+                                  </div>
+                                }
+                              >
+                                <div
+                                  className="w-15 h-12 m-1 cursor-pointer"
+                                  key={index}
+                                  role="button"
+                                  tabIndex={0}
+                                  onClick={() => handleImageClick(imageUrl)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                      handleImageClick(imageUrl);
+                                    }
+                                  }}
+                                >
+                                  <img
+                                    src={imageUrl}
+                                    alt={`Image_no. ${index + 1} for ${store.id}`}
+                                    style={{ width: '100%', height: '100%' }}
+                                  />
+                                </div>
+                              </Tooltip>
+                            ))}
+                        </div>
+                        {store.anomalies ?? 0}
+                      </>
+                    ) : (
+                      store.anomalies ?? 0
+                    )}
+                  </div>
+                </td>
+                <td className="p-0.5 cursor-pointer">
+                  <div className="bg-gray-100 p-0.5 rounded h-[100px] flex items-center justify-center hover:bg-gray-200 hover:text-black transition">
+                    <IconButton
+                      aria-label="more"
+                      id="long-button"
+                      aria-controls={open ? 'long-menu' : undefined}
+                      aria-expanded={open ? 'true' : undefined}
+                      aria-haspopup="true"
+                      onClick={handleClick}
+                    >
+                      <MoreVertIcon />
+                    </IconButton>
+                    <Menu
+                      id="long-menu"
+                      anchorEl={anchorEl}
+                      open={open}
+                      onClose={handleClose}
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right'
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right'
+                      }}
+                      PaperProps={{
+                        style: {
+                          maxHeight: ITEM_HEIGHT * 4.5,
+                          width: '20ch'
+                        }
+                      }}
+                    >
+                      {options.map((option) => (
+                        <MenuItem
+                        key={option.label}
+                        selected={option.label === 'View'}
+                        disabled={option.disabled}  // Apply the disabled attribute conditionally
+                        onClick={() => {
+                          if (option.disabled != true) {
+                            option.onClick();
+                            handleClose();
+                          }
+                        }}
+                      >
+                        {option.icon && <span style={{ marginRight: '8px', color: option.color }}>{option.icon}</span>}
+                        <span style={{ color: option.color }}>{option.label}</span>
+                      </MenuItem>
+                      ))}
+                    </Menu>
+                  </div>
+                </td>
+                {/* <Dialog
+                  fullWidth={fullWidth}
+                  maxWidth={maxWidth}
+                  open={editDialogOpenMap[store.id] || false}
+                  onClose={() => setEditDialogOpenMap((prev) => ({ ...prev, [store.id]: false }))}
                 >
-                  <Checkbox
-                    checked={personName.indexOf(name) > -1}
-                    sx={{
-                      '& .MuiSvgIcon-root': {
-                        borderRadius: 10, // Adjust the border radius as needed
-                        fontSize: '1.25rem',
-                        color: '#00a76f'
-                      },
-                      borderRadius: '10px',
-                      borderWidth: '1px',
-                      outlineWidth: '1px'
-                    }}
-                    icon={<CheckBoxOutlineBlankRounded />}
-                  />
-                  <ListItemText primary={<Typography variant="body2">{name}</Typography>} />
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+                  <DialogContent className="overflow-y-auto scrollbar">
+                    <div className="w-full">
+                      <div className="w-full flex justify-between text-xl mb-5 text-gray-600 font-bold">
+                        <span className="self-center">Edit Store</span>
+                        <IconButton edge="end" onClick={handleEditClose} aria-label="close" className="self-center">
+                          <CloseIcon />
+                        </IconButton>
+                      </div>
+                      <div className="w-full space-y-6">
+                        <div className="flex justify-start items-center gap-2">
+                          <p className="rounded-full flex justify-center items-center w-6 h-6 bg-[#10b981] text-white p-2">1</p>
+                          <h1 className="text-lg">Store Info</h1>
+                        </div>
+                        <div className="w-full flex bprder sm:space-x-2 flex-wrap sm:flex-nowrap">
+                          <div className="sm:w-1/2 w-full sm:mb-0 mb-2">
+                            <ThemeProvider theme={theme}>
+                              <TextField
+                                className="w-full"
+                                type="text"
+                                label="Store ID"
+                                variant="outlined"
+                                name="number"
+                                onChange={(e) => setStoreInfo({ ...storeInfo, id: e.target.value })}
+                              />
+                            </ThemeProvider>
+                          </div>
+                          <div className="w-full sm:mb-0 mb-2">
+                            <ThemeProvider theme={theme}>
+                              <TextField
+                                type="text"
+                                className="w-full"
+                                label="Store Name"
+                                variant="outlined"
+                                name="name"
+                                onChange={(e) => setStoreInfo({ ...storeInfo, name: e.target.value })}
+                              />
+                            </ThemeProvider>
+                          </div>
+                          <div className="sm:w-1/2 w-full">
+                            <ThemeProvider theme={theme}>
+                              <FormControl fullWidth>
+                                <InputLabel>Store Type</InputLabel>
+                                <Select
+                                  label="Store Type"
+                                  name="type"
+                                  value={storeInfo.type}
+                                  onChange={(e) => {
+                                    setStoreInfo({ ...storeInfo, type: e.target.value });
+                                    console.log(e.target.value);
+                                  }}
+                                >
+                                  <MenuItem value={'trends'}>Trends</MenuItem>
+                                  <MenuItem value={'smart'}>Smart</MenuItem>
+                                  <MenuItem value={'beauty'}>Beauty</MenuItem>
+                                </Select>
+                              </FormControl>
+                            </ThemeProvider>
+                          </div>
+                        </div>
+                        <hr />
+                        <div className="flex justify-start items-center gap-2">
+                          <p className="rounded-full flex justify-center items-center w-6 h-6 bg-[#10b981] text-white p-2">2</p>
+                          <h1 className="text-lg">Store Location</h1>
+                        </div>
+                        <div className="w-full flex bprder gap-2 flex-wrap">
+                          <div className="flex w-full gap-2 sm:flex-nowrap flex-wrap">
+                            <div className="w-full mb-0.5 sm:mb-0">
+                              <ThemeProvider theme={theme}>
+                                <TextField
+                                  type="text"
+                                  className="w-full"
+                                  label="Area"
+                                  variant="outlined"
+                                  name="area"
+                                  onChange={(e) => setLocation({ ...location, area: e.target.value })}
+                                />
+                              </ThemeProvider>
+                            </div>
+                            <div className="w-full mb-0.5 sm:mb-0">
+                              <ThemeProvider theme={theme}>
+                                <TextField
+                                  type="text"
+                                  className="w-full"
+                                  label="Region"
+                                  variant="outlined"
+                                  name="region"
+                                  onChange={(e) => setLocation({ ...location, region: e.target.value })}
+                                />
+                              </ThemeProvider>
+                            </div>
+                          </div>
+                          <div className="w-full flex gap-0.5 sm:gap-2 flex-wrap sm:flex-nowrap">
+                            <div className="w-full mb-2 sm:mb-0">
+                              <ThemeProvider theme={theme}>
+                                <Autocomplete
+                                  options={states}
+                                  renderInput={(params) => <TextField {...params} label="Select Your State" variant="outlined" />}
+                                  onChange={(event, value) => {
+                                    setLocation({ ...location, state: value });
+                                  }}
+                                />
+                              </ThemeProvider>
+                            </div>
+                            <div className="w-full mb-2 sm:mb-0">
+                              <ThemeProvider theme={theme}>
+                                <Autocomplete
+                                  options={stateCities[location.state]}
+                                  noOptionsText="No locations"
+                                  disableListWrap
+                                  renderInput={(params) => <TextField {...params} label="Select Your City" variant="outlined" />}
+                                  onChange={(event, value) => {
+                                    setLocation({ ...location, city: value });
+                                  }}
+                                />
+                              </ThemeProvider>
+                            </div>
+                          </div>
+                        </div>
+                        <hr />
+                        <div className="flex justify-start items-center gap-2">
+                          <p className="rounded-full flex justify-center items-center w-6 h-6 bg-[#10b981] text-white p-2">3</p>
+                          <h1 className="text-lg">Brand & Shelves</h1>
+                        </div>
+                        <div className="w-full flex space-x-4">
+                          <div className=" w-full flex space-x-2">
+                            <div className="w-full">
+                              <ThemeProvider theme={theme}>
+                                <FormControl fullWidth>
+                                  <InputLabel>Brand</InputLabel>
+                                  <Select
+                                    label="Brands"
+                                    name="brands"
+                                    // onChange={(e) => setBrandValue(e.target.value)}
+                                    onChange={(e) => {
+                                      const selectedValue = e.target.value;
+                                      setBrandValue((prevSelectedBrands) => {
+                                        if (prevSelectedBrands.includes(selectedValue)) {
+                                          return prevSelectedBrands.filter((value) => value !== selectedValue);
+                                        } else {
+                                          return [...prevSelectedBrands, selectedValue];
+                                        }
+                                      });
+                                    }}
+                                  >
+                                    <MenuItem value={10}>10</MenuItem>
+                                    <MenuItem value={20}>20</MenuItem>
+                                    <MenuItem value={30}>30</MenuItem>
+                                  </Select>
+                                </FormControl>
+                              </ThemeProvider>
+                            </div>
+                          </div>
+                          <div className="w-full flex space-x-2">
+                            <div className="w-full">
+                              <ThemeProvider theme={theme}>
+                                <FormControl fullWidth>
+                                  <InputLabel>Shelves</InputLabel>
+                                  <Select
+                                    label="Shelves"
+                                    name="shelves"
+                                    onChange={(e) => {
+                                      const selectedValue = e.target.value;
+                                      setShelvesValue((prevSelectedBrands) => {
+                                        if (prevSelectedBrands.includes(selectedValue)) {
+                                          return prevSelectedBrands.filter((value) => value !== selectedValue);
+                                        } else {
+                                          return [...prevSelectedBrands, selectedValue];
+                                        }
+                                      });
+                                    }}
+                                  >
+                                    <MenuItem value={10}>10</MenuItem>
+                                    <MenuItem value={20}>20</MenuItem>
+                                    <MenuItem value={30}>30</MenuItem>
+                                  </Select>
+                                </FormControl>
+                              </ThemeProvider>
+                            </div>
 
-          <TextField
-            id="outlined-disabled"
-            sx={{
-              width: '100%',
-              '& .MuiOutlinedInput-notchedOutline': { borderRadius: '10px' }
-            }}
-            placeholder="Search..."
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchRounded style={{ fontSize: 24 }} className="text-gray-400" />
-                </InputAdornment>
-              )
-            }}
-          />
-        </Stack>
+                            <div className="m-auto">
+                              <Button
+                                sx={{
+                                  backgroundColor: '#059669'
+                                }}
+                                onClick={handleEditsClick}
+                                variant="contained"
+                              >
+                                <ControlPointIcon />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex justify-end w-full gap-2">
+                          <button
+                            onClick={handleEditClose}
+                            className="rounded-md shadow-md text-sm font-bold bg-red-500 active:bg-red-400 hover:bg-red-700 text-white w-20 h-8"
+                          >
+                            Cancel
+                          </button>
 
-        <Button
-          variant="text"
-          sx={{
-            color: '#212b36',
-            fontSize: { lg: '18px', xs: '14px' },
-            lineHeight: { lg: '21px', xs: '17px' },
-            textTransform: 'none',
-            margin: { lg: '0 0 0 10px', xs: '10px 0 0 0' },
-            '&:hover': {
-              bgcolor: '#f4f6f8'
-            },
-            order: { lg: 2, xs: 1 }
-          }}
-          startIcon={<IosShareRounded className="text-[#212b36] w-6 h-4" />}
-        >
-          Export
-        </Button>
-      </Stack>
-      <TableContainer sx={{ maxHeight: { xl: '50vh', xs: '60vh' } }}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table" stickyHeader>
-          <TableHead>
-            <TableRow
-              sx={{
-                '& .MuiTableCell-root': {
-                  borderBottom: '1px dotted #B9B9B9',
-                  bgcolor: '#f4f6f8',
-                  color: '#637381',
-                  fontWeight: 'bold'
-                }
-              }}
-            >
-              <TableCell align="left">ID</TableCell>
-              <TableCell align="left">Name</TableCell>
-              <TableCell align="left">Shelf Verification</TableCell>
-              <TableCell align="left">Action</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.slice(page, rowsPerPage).map((row) => (
-              <TableRow
-                key={row.name}
-                sx={{
-                  '&:last-child td, &:last-child th': { border: 0 },
-                  '& .MuiTableCell-root': {
-                    borderBottom: '1px dotted #B9B9B9'
-                  }
-                }}
-                className="hover:bg-gray-100"
-              >
-                <TableCell component="th" scope="row">
-                  {row.name}
-                </TableCell>
-                <TableCell align="left">{row.calories}</TableCell>
-                <TableCell align="left">{row.fat}</TableCell>
-                <TableCell align="left">{row.carbs}</TableCell>
-              </TableRow>
+                          <button
+                            type="submit"
+                            // onClick={handleSubmit}
+                            className=" rounded-md shadow-md text-sm font-bold bg-emerald-500 active:bg-emerald-400 hover:bg-emerald-700 text-white w-20 h-8"
+                          >
+                            Save
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog> */}
+                <Dialog open={isImageDialogOpen} onClose={handleCloseImageDialog} maxWidth="lg">
+                  <DialogContent>
+                    <IconButton
+                      edge="end"
+                      color="inherit"
+                      onClick={handleCloseImageDialog}
+                      aria-label="close"
+                      sx={{ position: 'absolute', right: 8, top: 8 }}
+                    >
+                      <CloseIcon />
+                    </IconButton>
+                    <img src={selectedImage} alt="Full-screen" style={{ width: '100%', height: 'auto' }} />
+                  </DialogContent>
+                </Dialog>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </Paper>
+          </tbody>
+        </table>
+      </Grid>
+    </>
   );
-}
-TableComponent.propTypes = {
-  rows: PropTypes.array
 };
+
+export default StoreContent;

@@ -85,12 +85,14 @@ const Header = ({ drawerToggle }) => {
             to={'/stores'}
             onClick={() => dispatch({ type: actionTypes.MENU_OPEN, isOpen: 'stores' })}
             className={`text-lg hover:border-b-2 hover:border-emerald-500 hover:text-emerald-600 ${
-              location.pathname === '/stores' ? 'border-b-2 border-emerald-500 text-emerald-600' : ''
+              location.pathname === '/stores' || location.pathname === '/stores/analysis'
+                ? 'border-b-2 border-emerald-500 text-emerald-600'
+                : ''
             }`}
           >
             Stores
           </Link>
-          <Link
+          {/* <Link
             to={'/brands'}
             onClick={() => dispatch({ type: actionTypes.MENU_OPEN, isOpen: 'brands' })}
             className={`text-lg hover:border-b-2 hover:border-emerald-500 hover:text-emerald-600 ${
@@ -98,7 +100,7 @@ const Header = ({ drawerToggle }) => {
             }`}
           >
             Brands
-          </Link>
+          </Link> */}
           <Link
             to={'/customers'}
             onClick={() => dispatch({ type: actionTypes.MENU_OPEN, isOpen: 'customers' })}
@@ -106,7 +108,7 @@ const Header = ({ drawerToggle }) => {
               location.pathname === '/customers' ? 'border-b-2 border-emerald-500 text-emerald-600' : ''
             }`}
           >
-            Customers
+            Stores New
           </Link>
           <Link
             to={'/team'}
