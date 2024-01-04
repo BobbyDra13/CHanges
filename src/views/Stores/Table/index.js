@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+// import { Link } from 'react-router-dom';
 
 // material-ui
 import { Grid, Typography } from '@mui/material';
@@ -7,7 +7,7 @@ import Progress_bar from './progressBar';
 import { Tooltip, Dialog, DialogContent, IconButton, Menu, MenuItem } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import EditIcon from '@mui/icons-material/Edit';
+// import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 // project import
@@ -25,16 +25,15 @@ import Autocomplete from '@mui/material/Autocomplete';
 import { createTheme } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
-
+import { GetAllStores } from 'api';
 
 // ==============================|| BRANDS PAGE ||============================== //
 const states = Object.keys(stateCities);
 
-
 const StoreContent = () => {
   const [clickedBar, setClickedBar] = useState(null);
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editDialogOpenMap, setEditDialogOpenMap] = useState({});
   const [selectedImage, setSelectedImage] = useState(null);
 
   const navigate = useNavigate();
@@ -47,6 +46,21 @@ const StoreContent = () => {
     city: ''
   });
 
+  const [storesData, setStoresData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await GetAllStores();
+        setStoresData(response.data.data);
+      } catch (error) {
+        console.error('Error fetching stores data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+  console.log('StoresData', storesData);
   // const shelfCount = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   // console.log("brand", shelf);
 
@@ -57,12 +71,19 @@ const StoreContent = () => {
     // console.log(counter);
   };
 
+  const handleEditClick = (event, storeId) => {
+    setAnchorEl(event.currentTarget);
+    setEditDialogOpenMap((prev) => ({ ...prev, [storeId]: true }));
+  };
+
+  const handleEditClose = () => {
+    setAnchorEl(null);
+    setEditDialogOpenMap({});
+  };
+
   const [fullWidth] = useState(true);
   const [maxWidth] = useState('md');
 
-  const handleEditClose = () => {
-    setEditDialogOpen(false);
-  };
   // const handleToastClose = () => {
   //   setToast({ isToast: false, message: "", type: "" });
   // };
@@ -120,33 +141,10 @@ const StoreContent = () => {
       }
     }
   });
-  const handleEditClick = (storeId) => {
-    // Find the store data based on the storeId
-    const selectedStore = storeData.find((store) => store.id === storeId);
-  
-    // Check if the store is found
-    if (selectedStore) {
-      // Extract necessary information and set the state
-      const { id } = selectedStore;
-      setStoreInfo({ id, name: '', type: '' }); // Populate with your actual store data
-      setLocation({
-        area: '', // Populate with your actual data
-        region: '', // Populate with your actual data
-        state: '', // Populate with your actual data
-        city: '' // Populate with your actual data
-      });
-  
-      // Additional logic to handle other data if needed
-      // ...
-  
-      // Open the edit dialog
-      setEditDialogOpen(true);
-    }
-  };
-  
+
   const options = [
-    { label: 'View', icon: <VisibilityIcon /> },
-    { label: 'Edit', icon: <EditIcon />, onClick: () => handleEditClick(store.id) },
+    { label: 'View', icon: <VisibilityIcon />, onClick: () => navigate('/stores/analysis/layout') },
+    // { label: 'Edit', icon: <EditIcon /> },
     { label: 'Delete', icon: <DeleteIcon />, color: 'red' }
   ];
 
@@ -154,8 +152,19 @@ const StoreContent = () => {
   const ITEM_HEIGHT = 48;
 
   const open = Boolean(anchorEl);
+  // const handleClick = (event) => {
+  //   setAnchorEl(event.currentTarget);
+  // };
   const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+    const selectedOption = options.find((option) => option.label === 'Edit');
+
+    if (selectedOption) {
+      // Handle the "Edit" logic directly
+      handleEditClick(event, storeData.id);
+    } else {
+      // Show the menu for other options
+      setAnchorEl(event.currentTarget);
+    }
   };
   const handleClose = () => {
     setAnchorEl(null);
@@ -255,13 +264,9 @@ const StoreContent = () => {
     }
   ];
 
-
   return (
     <>
       <Breadcrumb title="Stores">
-        <Typography component={Link} to="/" variant="subtitle2" color="inherit" className="link-breadcrumb">
-          Insights
-        </Typography>
         <Typography variant="subtitle2" color="primary" className="link-breadcrumb">
           Stores
         </Typography>
@@ -276,7 +281,7 @@ const StoreContent = () => {
               <th className="flex-1 p-0.5 cursor-pointer" style={{ width: '8%' }}>
                 <div className="bg-gray-200 p-0.5 rounded">Store ID</div>
               </th>
-              <th className="flex-1 p-0.5 cursor-pointer" style={{ width: '5%' }} onClick={() => navigate('/stores/analysis/layout')}>
+              <th className="flex-1 p-0.5 cursor-pointer" style={{ width: '5%' }}>
                 <div className="bg-gray-200 p-0.5 rounded">Up Keep</div>
               </th>
               <th className="flex-1 p-0.5 cursor-pointer" style={{ width: '5%' }}>
@@ -294,11 +299,11 @@ const StoreContent = () => {
             </tr>
           </thead>
           <tbody className="">
-            {storeData.map((store) => (
+            {storesData.map((store) => (
               <tr key={store.id} className="text-center">
                 <td className="p-0.5 w-5 cursor-pointer">
                   <div className="bg-gray-100 p-0.5 rounded h-[100px] flex items-center justify-center hover:bg-gray-200 hover:text-black transition">
-                    {store.id}
+                    {store.store_id}  {store.name}
                   </div>
                 </td>
                 <td className="p-0.5 cursor-pointer">
@@ -384,12 +389,17 @@ const StoreContent = () => {
                     </IconButton>
                     <Menu
                       id="long-menu"
-                      MenuListProps={{
-                        'aria-labelledby': 'long-button'
-                      }}
                       anchorEl={anchorEl}
                       open={open}
                       onClose={handleClose}
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right'
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right'
+                      }}
                       PaperProps={{
                         style: {
                           maxHeight: ITEM_HEIGHT * 4.5,
@@ -398,7 +408,14 @@ const StoreContent = () => {
                       }}
                     >
                       {options.map((option) => (
-                        <MenuItem key={option.label} selected={option.label === 'View'} onClick={handleClose}>
+                        <MenuItem
+                          key={option.label}
+                          selected={option.label === 'View'}
+                          onClick={() => {
+                            option.onClick();
+                            handleClose();
+                          }}
+                        >
                           {option.icon && <span style={{ marginRight: '8px', color: option.color }}>{option.icon}</span>}
                           <span style={{ color: option.color }}>{option.label}</span>
                         </MenuItem>
@@ -406,219 +423,224 @@ const StoreContent = () => {
                     </Menu>
                   </div>
                 </td>
-         <Dialog fullWidth={fullWidth} maxWidth={maxWidth} open={editDialogOpen} onClose={handleEditClose}>
-         <DialogContent className="overflow-y-auto scrollbar">
-           <div className="w-full">
-             <div className="w-full flex justify-between text-xl mb-5 text-gray-600 font-bold">
-               <span className="self-center">Edit Store</span>
-               <IconButton edge="end" onClick={handleEditClose} aria-label="close" className="self-center">
-                 <CloseIcon />
-               </IconButton>
-             </div>
-             <div className="w-full space-y-6">
-               <div className="flex justify-start items-center gap-2">
-                 <p className="rounded-full flex justify-center items-center w-6 h-6 bg-[#10b981] text-white p-2">1</p>
-                 <h1 className="text-lg">Store Info</h1>
-               </div>
-               <div className="w-full flex bprder sm:space-x-2 flex-wrap sm:flex-nowrap">
-                 <div className="sm:w-1/2 w-full sm:mb-0 mb-2">
-                   <ThemeProvider theme={theme}>
-                     <TextField
-                       className="w-full"
-                       type="text"
-                       label="Store ID"
-                       variant="outlined"
-                       name="number"
-                       onChange={(e) => setStoreInfo({ ...storeInfo, id: e.target.value })}
-                     />
-                   </ThemeProvider>
-                 </div>
-                 <div className="w-full sm:mb-0 mb-2">
-                   <ThemeProvider theme={theme}>
-                     <TextField
-                       type="text"
-                       className="w-full"
-                       label="Store Name"
-                       variant="outlined"
-                       name="name"
-                       onChange={(e) => setStoreInfo({ ...storeInfo, name: e.target.value })}
-                     />
-                   </ThemeProvider>
-                 </div>
-                 <div className="sm:w-1/2 w-full">
-                   <ThemeProvider theme={theme}>
-                     <FormControl fullWidth>
-                       <InputLabel>Store Type</InputLabel>
-                       <Select
-                         label="Store Type"
-                         name="type"
-                         value={storeInfo.type}
-                         onChange={(e) => {
-                           setStoreInfo({ ...storeInfo, type: e.target.value });
-                           console.log(e.target.value);
-                         }}
-                       >
-                         <MenuItem value={'trends'}>Trends</MenuItem>
-                         <MenuItem value={'smart'}>Smart</MenuItem>
-                         <MenuItem value={'beauty'}>Beauty</MenuItem>
-                       </Select>
-                     </FormControl>
-                   </ThemeProvider>
-                 </div>
-               </div>
-               <hr />
-               <div className="flex justify-start items-center gap-2">
-                 <p className="rounded-full flex justify-center items-center w-6 h-6 bg-[#10b981] text-white p-2">2</p>
-                 <h1 className="text-lg">Store Location</h1>
-               </div>
-               <div className="w-full flex bprder gap-2 flex-wrap">
-                 <div className="flex w-full gap-2 sm:flex-nowrap flex-wrap">
-                   <div className="w-full mb-0.5 sm:mb-0">
-                     <ThemeProvider theme={theme}>
-                       <TextField
-                         type="text"
-                         className="w-full"
-                         label="Area"
-                         variant="outlined"
-                         name="area"
-                         onChange={(e) => setLocation({ ...location, area: e.target.value })}
-                       />
-                     </ThemeProvider>
-                   </div>
-                   <div className="w-full mb-0.5 sm:mb-0">
-                     <ThemeProvider theme={theme}>
-                       <TextField
-                         type="text"
-                         className="w-full"
-                         label="Region"
-                         variant="outlined"
-                         name="region"
-                         onChange={(e) => setLocation({ ...location, region: e.target.value })}
-                       />
-                     </ThemeProvider>
-                   </div>
-                 </div>
-                 <div className="w-full flex gap-0.5 sm:gap-2 flex-wrap sm:flex-nowrap">
-                   <div className="w-full mb-2 sm:mb-0">
-                     <ThemeProvider theme={theme}>
-                       <Autocomplete
-                         options={states}
-                         renderInput={(params) => <TextField {...params} label="Select Your State" variant="outlined" />}
-                         onChange={(event, value) => {
-                           setLocation({ ...location, state: value });
-                         }}
-                       />
-                     </ThemeProvider>
-                   </div>
-                   <div className="w-full mb-2 sm:mb-0">
-                     <ThemeProvider theme={theme}>
-                       <Autocomplete
-                         options={stateCities[location.state]}
-                         noOptionsText="No locations"
-                         disableListWrap
-                         renderInput={(params) => <TextField {...params} label="Select Your City" variant="outlined" />}
-                         onChange={(event, value) => {
-                           setLocation({ ...location, city: value });
-                         }}
-                       />
-                     </ThemeProvider>
-                   </div>
-                 </div>
-               </div>
-               <hr />
-               <div className="flex justify-start items-center gap-2">
-                 <p className="rounded-full flex justify-center items-center w-6 h-6 bg-[#10b981] text-white p-2">3</p>
-                 <h1 className="text-lg">Brand & Shelves</h1>
-               </div>
-               <div className="w-full flex space-x-4">
-                 <div className=" w-full flex space-x-2">
-                   <div className="w-full">
-                     <ThemeProvider theme={theme}>
-                       <FormControl fullWidth>
-                         <InputLabel>Brand</InputLabel>
-                         <Select
-                           label="Brands"
-                           name="brands"
-                           // onChange={(e) => setBrandValue(e.target.value)}
-                           onChange={(e) => {
-                             const selectedValue = e.target.value;
-                             setBrandValue((prevSelectedBrands) => {
-                               if (prevSelectedBrands.includes(selectedValue)) {
-                                 return prevSelectedBrands.filter((value) => value !== selectedValue);
-                               } else {
-                                 return [...prevSelectedBrands, selectedValue];
-                               }
-                             });
-                           }}
-                         >
-                           <MenuItem value={10}>10</MenuItem>
-                           <MenuItem value={20}>20</MenuItem>
-                           <MenuItem value={30}>30</MenuItem>
-                         </Select>
-                       </FormControl>
-                     </ThemeProvider>
-                   </div>
-                 </div>
-                 <div className="w-full flex space-x-2">
-                   <div className="w-full">
-                     <ThemeProvider theme={theme}>
-                       <FormControl fullWidth>
-                         <InputLabel>Shelves</InputLabel>
-                         <Select
-                           label="Shelves"
-                           name="shelves"
-                           onChange={(e) => {
-                             const selectedValue = e.target.value;
-                             setShelvesValue((prevSelectedBrands) => {
-                               if (prevSelectedBrands.includes(selectedValue)) {
-                                 return prevSelectedBrands.filter((value) => value !== selectedValue);
-                               } else {
-                                 return [...prevSelectedBrands, selectedValue];
-                               }
-                             });
-                           }}
-                         >
-                           <MenuItem value={10}>10</MenuItem>
-                           <MenuItem value={20}>20</MenuItem>
-                           <MenuItem value={30}>30</MenuItem>
-                         </Select>
-                       </FormControl>
-                     </ThemeProvider>
-                   </div>
- 
-                   <div className="m-auto">
-                     <Button
-                       sx={{
-                         backgroundColor: '#059669'
-                       }}
-                       onClick={handleEditsClick}
-                       variant="contained"
-                     >
-                       <ControlPointIcon />
-                     </Button>
-                   </div>
-                 </div>
-               </div>
-               <div className="flex justify-end w-full gap-2">
-                 <button
-                   onClick={handleEditClose}
-                   className="rounded-md shadow-md text-sm font-bold bg-red-500 active:bg-red-400 hover:bg-red-700 text-white w-20 h-8"
-                 >
-                   Cancel
-                 </button>
- 
-                 <button
-                   type="submit"
-                   // onClick={handleSubmit}
-                   className=" rounded-md shadow-md text-sm font-bold bg-emerald-500 active:bg-emerald-400 hover:bg-emerald-700 text-white w-20 h-8"
-                 >
-                   Save
-                 </button>
-               </div>
-             </div>
-           </div>
-         </DialogContent>
-       </Dialog>
+                <Dialog
+                  fullWidth={fullWidth}
+                  maxWidth={maxWidth}
+                  open={editDialogOpenMap[store.id] || false}
+                  onClose={() => setEditDialogOpenMap((prev) => ({ ...prev, [store.id]: false }))}
+                >
+                  <DialogContent className="overflow-y-auto scrollbar">
+                    <div className="w-full">
+                      <div className="w-full flex justify-between text-xl mb-5 text-gray-600 font-bold">
+                        <span className="self-center">Edit Store</span>
+                        <IconButton edge="end" onClick={handleEditClose} aria-label="close" className="self-center">
+                          <CloseIcon />
+                        </IconButton>
+                      </div>
+                      <div className="w-full space-y-6">
+                        <div className="flex justify-start items-center gap-2">
+                          <p className="rounded-full flex justify-center items-center w-6 h-6 bg-[#10b981] text-white p-2">1</p>
+                          <h1 className="text-lg">Store Info</h1>
+                        </div>
+                        <div className="w-full flex bprder sm:space-x-2 flex-wrap sm:flex-nowrap">
+                          <div className="sm:w-1/2 w-full sm:mb-0 mb-2">
+                            <ThemeProvider theme={theme}>
+                              <TextField
+                                className="w-full"
+                                type="text"
+                                label="Store ID"
+                                variant="outlined"
+                                name="number"
+                                onChange={(e) => setStoreInfo({ ...storeInfo, id: e.target.value })}
+                              />
+                            </ThemeProvider>
+                          </div>
+                          <div className="w-full sm:mb-0 mb-2">
+                            <ThemeProvider theme={theme}>
+                              <TextField
+                                type="text"
+                                className="w-full"
+                                label="Store Name"
+                                variant="outlined"
+                                name="name"
+                                onChange={(e) => setStoreInfo({ ...storeInfo, name: e.target.value })}
+                              />
+                            </ThemeProvider>
+                          </div>
+                          <div className="sm:w-1/2 w-full">
+                            <ThemeProvider theme={theme}>
+                              <FormControl fullWidth>
+                                <InputLabel>Store Type</InputLabel>
+                                <Select
+                                  label="Store Type"
+                                  name="type"
+                                  value={storeInfo.type}
+                                  onChange={(e) => {
+                                    setStoreInfo({ ...storeInfo, type: e.target.value });
+                                    console.log(e.target.value);
+                                  }}
+                                >
+                                  <MenuItem value={'trends'}>Trends</MenuItem>
+                                  <MenuItem value={'smart'}>Smart</MenuItem>
+                                  <MenuItem value={'beauty'}>Beauty</MenuItem>
+                                </Select>
+                              </FormControl>
+                            </ThemeProvider>
+                          </div>
+                        </div>
+                        <hr />
+                        <div className="flex justify-start items-center gap-2">
+                          <p className="rounded-full flex justify-center items-center w-6 h-6 bg-[#10b981] text-white p-2">2</p>
+                          <h1 className="text-lg">Store Location</h1>
+                        </div>
+                        <div className="w-full flex bprder gap-2 flex-wrap">
+                          <div className="flex w-full gap-2 sm:flex-nowrap flex-wrap">
+                            <div className="w-full mb-0.5 sm:mb-0">
+                              <ThemeProvider theme={theme}>
+                                <TextField
+                                  type="text"
+                                  className="w-full"
+                                  label="Area"
+                                  variant="outlined"
+                                  name="area"
+                                  onChange={(e) => setLocation({ ...location, area: e.target.value })}
+                                />
+                              </ThemeProvider>
+                            </div>
+                            <div className="w-full mb-0.5 sm:mb-0">
+                              <ThemeProvider theme={theme}>
+                                <TextField
+                                  type="text"
+                                  className="w-full"
+                                  label="Region"
+                                  variant="outlined"
+                                  name="region"
+                                  onChange={(e) => setLocation({ ...location, region: e.target.value })}
+                                />
+                              </ThemeProvider>
+                            </div>
+                          </div>
+                          <div className="w-full flex gap-0.5 sm:gap-2 flex-wrap sm:flex-nowrap">
+                            <div className="w-full mb-2 sm:mb-0">
+                              <ThemeProvider theme={theme}>
+                                <Autocomplete
+                                  options={states}
+                                  renderInput={(params) => <TextField {...params} label="Select Your State" variant="outlined" />}
+                                  onChange={(event, value) => {
+                                    setLocation({ ...location, state: value });
+                                  }}
+                                />
+                              </ThemeProvider>
+                            </div>
+                            <div className="w-full mb-2 sm:mb-0">
+                              <ThemeProvider theme={theme}>
+                                <Autocomplete
+                                  options={stateCities[location.state]}
+                                  noOptionsText="No locations"
+                                  disableListWrap
+                                  renderInput={(params) => <TextField {...params} label="Select Your City" variant="outlined" />}
+                                  onChange={(event, value) => {
+                                    setLocation({ ...location, city: value });
+                                  }}
+                                />
+                              </ThemeProvider>
+                            </div>
+                          </div>
+                        </div>
+                        <hr />
+                        <div className="flex justify-start items-center gap-2">
+                          <p className="rounded-full flex justify-center items-center w-6 h-6 bg-[#10b981] text-white p-2">3</p>
+                          <h1 className="text-lg">Brand & Shelves</h1>
+                        </div>
+                        <div className="w-full flex space-x-4">
+                          <div className=" w-full flex space-x-2">
+                            <div className="w-full">
+                              <ThemeProvider theme={theme}>
+                                <FormControl fullWidth>
+                                  <InputLabel>Brand</InputLabel>
+                                  <Select
+                                    label="Brands"
+                                    name="brands"
+                                    // onChange={(e) => setBrandValue(e.target.value)}
+                                    onChange={(e) => {
+                                      const selectedValue = e.target.value;
+                                      setBrandValue((prevSelectedBrands) => {
+                                        if (prevSelectedBrands.includes(selectedValue)) {
+                                          return prevSelectedBrands.filter((value) => value !== selectedValue);
+                                        } else {
+                                          return [...prevSelectedBrands, selectedValue];
+                                        }
+                                      });
+                                    }}
+                                  >
+                                    <MenuItem value={10}>10</MenuItem>
+                                    <MenuItem value={20}>20</MenuItem>
+                                    <MenuItem value={30}>30</MenuItem>
+                                  </Select>
+                                </FormControl>
+                              </ThemeProvider>
+                            </div>
+                          </div>
+                          <div className="w-full flex space-x-2">
+                            <div className="w-full">
+                              <ThemeProvider theme={theme}>
+                                <FormControl fullWidth>
+                                  <InputLabel>Shelves</InputLabel>
+                                  <Select
+                                    label="Shelves"
+                                    name="shelves"
+                                    onChange={(e) => {
+                                      const selectedValue = e.target.value;
+                                      setShelvesValue((prevSelectedBrands) => {
+                                        if (prevSelectedBrands.includes(selectedValue)) {
+                                          return prevSelectedBrands.filter((value) => value !== selectedValue);
+                                        } else {
+                                          return [...prevSelectedBrands, selectedValue];
+                                        }
+                                      });
+                                    }}
+                                  >
+                                    <MenuItem value={10}>10</MenuItem>
+                                    <MenuItem value={20}>20</MenuItem>
+                                    <MenuItem value={30}>30</MenuItem>
+                                  </Select>
+                                </FormControl>
+                              </ThemeProvider>
+                            </div>
+
+                            <div className="m-auto">
+                              <Button
+                                sx={{
+                                  backgroundColor: '#059669'
+                                }}
+                                onClick={handleEditsClick}
+                                variant="contained"
+                              >
+                                <ControlPointIcon />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex justify-end w-full gap-2">
+                          <button
+                            onClick={handleEditClose}
+                            className="rounded-md shadow-md text-sm font-bold bg-red-500 active:bg-red-400 hover:bg-red-700 text-white w-20 h-8"
+                          >
+                            Cancel
+                          </button>
+
+                          <button
+                            type="submit"
+                            // onClick={handleSubmit}
+                            className=" rounded-md shadow-md text-sm font-bold bg-emerald-500 active:bg-emerald-400 hover:bg-emerald-700 text-white w-20 h-8"
+                          >
+                            Save
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
                 <Dialog open={isImageDialogOpen} onClose={handleCloseImageDialog} maxWidth="lg">
                   <DialogContent>
                     <IconButton
