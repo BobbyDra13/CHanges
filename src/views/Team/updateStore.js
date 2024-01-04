@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 
 import { Button, Grid, Box, TextField, Stack, Typography, MenuItem, ListItemText, Paper } from '@mui/material';
-import { editStore, getStores } from './API/api';
+import { editStore } from './API/api';
 import { Add as AddIcon } from '@mui/icons-material';
+import { getUsers } from 'api';
 
 const initialValue = {
   user_role: '',
@@ -28,7 +29,7 @@ const EditStore = ({rowId, handleEditUserDialogClose}) => {
   const loadUserDetails = async () => {
   try {
     console.log(rowId);
-    const response = await getStores(rowId);
+    const response = await getUsers(rowId);
     setUser(response.data);
   } catch(error){
     console.error('Error Fetching user details:',error);

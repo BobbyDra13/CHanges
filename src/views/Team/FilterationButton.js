@@ -11,7 +11,7 @@ const FilterationButton = ({ handleNavigationClick }) => {
 
   const navLinks = [
     { label: 'All Users', value: 'All Users'},
-    { label: 'Agents', value: 'Agents'},
+    { label: 'Agent', value: 'Agent'},
     { label: 'Department Manager', value: 'Department Manager' },
     { label: 'Store Manager', value: 'Store Manager' },
     { label: 'Cluster Manager', value: 'Cluster Manager' },

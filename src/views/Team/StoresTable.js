@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { ArrowDownwardRounded, ArrowUpwardRounded, Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
-import EditStore from './updateStore';
+// import EditStore from './updateStore';
 
 const HeaderCell = styled(TableCell)({
   fontWeight: 'bold',
@@ -56,7 +56,7 @@ const StoresTable = ({
   handleChangeRowsPerPage,
   isSelected,
   handleRowSelect,
-  deleteUserData,
+  // deleteUserData,
   sortConfig,
   requestSort
 }) => {
@@ -172,13 +172,15 @@ const StoresTable = ({
                       }
                     }}
                   >
-                   <EditStore rowId={row.id} handleEditUserDialogClose={handleEditUserDialogClose}/>
+                   {/* <EditStore rowId={row.id} handleEditUserDialogClose={handleEditUserDialogClose}/> */}
+                   This feature is under maintainance.
                   </Dialog>
 
                   <IconButton
                     color="secondary"
                     aria-label="delete"
-                    onClick={() => deleteUserData(row.id)}
+                    // onClick={() => deleteUserData(row.id)}
+                    
                     sx={{
                       color: '#212b36',
                       fontSize: '14px',

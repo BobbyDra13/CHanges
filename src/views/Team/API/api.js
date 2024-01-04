@@ -2,14 +2,14 @@ import axios from 'axios';
 
 const BASE_URL = 'http://localhost:3001/users';
 
-export const getStores = async (id) => {
-  id = id || '';
-  try {
-    return await axios.get(`${BASE_URL}/${id}`);
-  } catch (error) {
-    console.log('Error while calling stores api ', error);
-  }
-};
+// export const getStores = async (id) => {
+//   id = id || '';
+//   try {
+//     return await axios.get(`${BASE_URL}/${id}`);
+//   } catch (error) {
+//     console.log('Error while calling stores api ', error);
+//   }
+// };
 
 export const addStore = async (user) => {
   return await axios.post(`${BASE_URL}`, user);
