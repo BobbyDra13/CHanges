@@ -8,6 +8,8 @@ import { GetStoreLayout, GetImagesFromSignedUrl } from '../../../api/index';
 import NewLoader from '../../../component/Loader/Loader';
 import { Typography, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { GetAllStores } from 'api';
+
 
 const theme = createTheme({
   components: {
@@ -30,14 +32,33 @@ const StoreLayout = () => {
   const [scaleFactor, setScaleFactor] = useState(1); // [1,2,3,4,5,6,7,8
   const [updatedPartDetails, setUpdatedPartDetails] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [layoutData, setLayoutData] = useState();
+  const [layoutData, setLayoutData] = useState({});
 
+  const [storesData, setStoresData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await GetAllStores();
+        setStoresData(response.data.data);
+      } catch (error) {
+        console.error('Error fetching stores data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const date = new Date();
+  const today = date.toISOString().split('T')[0];
+  console.log(today);
   const getLayoutData = async () => {
     const input = {
       Store_IDs: ['6582be9ac5ed94d792a563b8'],
-      start_date: '2023-12-26'
+      start_date: '2024-01-01'
     };
     const response = await GetStoreLayout(input);
+    console.log(response.data[0]);
     setLayoutData(response.data[0]);
     setLoading(false);
   };
@@ -53,17 +74,18 @@ const StoreLayout = () => {
   };
   const handleCloseBay = () => {
     setOpenBay(false);
+    setLoading(true);
+    getLayoutData();
   };
   const handleOpenBay = (item) => {
     setOpenBay(true);
     setCurrentBay(item);
-    console.log(item);
   };
   const handlePrevBay = () => {
     let sortedBayArray = layoutData.bayDetails.sort((a, b) => {
       return a.bay_name.localeCompare(b.bay_name);
     });
-    console.log(sortedBayArray[parseInt(currentBay?.bay_name?.split(' ')[1]) - 1]);
+    // console.log(sortedBayArray[parseInt(currentBay?.bay_name?.split(' ')[1]) - 1]);
     parseInt(currentBay?.bay_name?.split(' ')[1]) === 1
       ? setCurrentBay(sortedBayArray[layoutData.bayDetails.length - 1])
       : setCurrentBay(sortedBayArray[parseInt(currentBay?.bay_name?.split(' ')[1]) - 2]);
@@ -91,12 +113,11 @@ const StoreLayout = () => {
     if (input.length > 0) {
       data = await GetImagesFromSignedUrl(input);
     }
-    console.log(data);
+    // console.log(data);
     const mergedPartsDetails = item.partsDetails.map((originalPart) => {
       const matchingApiData = data?.data?.find((apiPart) => apiPart.name === originalPart.name);
       return matchingApiData || originalPart;
     });
-    console.log(mergedPartsDetails);
     setCurrentShelf(item);
     setUpdatedPartDetails(mergedPartsDetails);
     setLoading(false);
@@ -170,65 +191,53 @@ const StoreLayout = () => {
     const { width } = imgDiv.getBoundingClientRect();
     setScaleFactor(width / naturalWidth);
   };
-  console.log(layoutData);
+
   return (
-    <div className="w-full  max-h-screen flex  bg-gray-100 overflow-y-auto scrollbar">
+    <div className="w-full flex bg-gray-100 ">
       <div className="w-full h-full">
-        {/* <div className="w-full bg-white">
-          <div className="md:py-3 md:pl-4 md:flex items-center justify-between md:text-2xl text-xl font-sans text-gray-600 font-bold tracking-wide w-[80%] h-[12]">
-            {openShelves ? (
-              <span>
-                {currentBay.bay_name} / {currentShelf.shelf_name}
-              </span>
-            ) : openBay ? (
-              <span>
-                {currentBay.bay_name} / {currentBay.brand}
-              </span>
-            ) : loading ? (
-              "Loading"
-            ) : (
-              "Layout"
-            )}
-          </div>
-        </div> */}
         <Breadcrumb
-          title={
-            openShelves ? (
+          // title={
+          //   openShelves ? (
+          //     <Box component={'span'}>
+          //       {currentBay.bay_name} / {currentShelf.shelf_name}
+          //     </Box>
+          //   ) : openBay ? (
+          //     <Box component={'span'}>{currentBay.bay_name}</Box>
+          //   ) : loading ? (
+          //     'Loading'
+          //   ) : (
+          //     'Layout'
+          //   )
+          // }
+        >
+          <Typography component={Link} to="/stores" variant="subtitle2" color="inherit" className="link-breadcrumb">
+            Stores
+          </Typography>
+          {storesData.map((store) => (
+            <Typography variant="subtitle2" color="primary" className="link-breadcrumb" key={store._id}>
+              {store.store_id}
+            </Typography>
+          ))
+          }
+           {openShelves ? (
               <Box component={'span'}>
                 {currentBay.bay_name} / {currentShelf.shelf_name}
               </Box>
             ) : openBay ? (
-              <Box component={'span'}>
-                {currentBay.bay_name} / {currentBay.brand}
-              </Box>
+              <Box component={'span'}>{currentBay.bay_name}</Box>
             ) : loading ? (
               'Loading'
             ) : (
               'Layout'
-            )
-          }
-        >
-          <Typography component={Link} to="/" variant="subtitle2" color="inherit" className="link-breadcrumb">
-            Insights
-          </Typography>
-          <Typography component={Link} too="/stores" variant="subtitle2" color="inherit" className="link-breadcrumb">
-            Stores
-          </Typography>
-          <Typography component={Link} to="/stores" variant="subtitle2" color="inherit" className="link-breadcrumb">
-            Analysis
-          </Typography>
-          <Typography variant="subtitle2" color="primary" className="link-breadcrumb">
-            Layout
-          </Typography>
+            )}
         </Breadcrumb>
         {loading ? (
           <div className="flex justify-center items-center">
             <NewLoader />{' '}
           </div>
         ) : (
-          <div className={`w-full relative ${openShelves || openBay ? 'hidden' : ''}`}>
+          <div className={`w-full h-full relative ${openShelves || openBay ? 'hidden' : ''}`}>
             <img src={layoutData?.image_url} alt="layout" loading="lazy" onLoad={findDimensions} ref={imageRef} />
-            {/* {console.log(layoutData.image_url)} */}
             <div className="absolute top-0 left-0 w-full h-full">
               {layoutData?.bayDetails.map((item, index) => (
                 <ThemeProvider theme={theme} key={index}>
@@ -270,7 +279,7 @@ const StoreLayout = () => {
           <div className="w-full relative flex justify-center items-center h-[92%]">
             <CloseRounded
               onClick={handleCloseBay}
-              className="z-20 text-xl cursor-pointer text-gray-400 opacity-60 hover:opacity-100 absolute"
+              className="z-10 text-xl cursor-pointer text-gray-600 opacity-60 hover:opacity-100 absolute"
               style={{
                 right: '4%',
                 top: '2%'
@@ -294,9 +303,9 @@ const StoreLayout = () => {
             />
 
             <div
-              className={`w-[45%]  h-[67vh] border-red-500 border `}
+              className={`w-[45%]  h-[67vh] `}
               style={{
-                perspective: '800px'
+                perspective: '900px'
               }}
             >
               <div
@@ -311,7 +320,7 @@ const StoreLayout = () => {
                     return (
                       <div
                         key={index}
-                        className="border-emerald-500 border-[5px] rounded-lg col-span-1 row-start-2 flex justify-center items-center text-xl font-semibold"
+                        className="border-emerald-500 border-[5px] rounded-lg col-span-1 cursor-pointer row-start-2 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500"
                         style={{
                           gridRowEnd: 8
                         }}
@@ -328,7 +337,7 @@ const StoreLayout = () => {
                     return (
                       <div
                         key={index}
-                        className="border-emerald-500 border-[5px] rounded-lg col-span-1 row-start-2 flex justify-center items-center text-xl font-semibold"
+                        className="border-emerald-500 border-[5px] rounded-lg col-span-1 row-start-2 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500"
                         style={{
                           gridRowEnd: 8,
                           gridColumnStart: 6
@@ -337,7 +346,7 @@ const StoreLayout = () => {
                           handleOpenShelves(item);
                         }}
                       >
-                        <div className="h-full flex justify-center items-center">
+                        <div className="h-full flex justify-center items-center cursor-pointer">
                           <p className="rotate-90 border-0 border-red-500 m-0 w-24 text-center">shelf - 3</p>
                         </div>
                       </div>
@@ -346,7 +355,7 @@ const StoreLayout = () => {
                     return (
                       <div
                         key={index}
-                        className="border-emerald-500 border-[5px] rounded-lg col-start-2 row-span-1 flex justify-center items-center text-xl font-semibold"
+                        className="border-emerald-500 cursor-pointer border-[5px] rounded-lg col-start-2 row-span-1 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500"
                         style={{
                           gridColumnEnd: 6,
                           gridRowStart: 1
@@ -361,7 +370,7 @@ const StoreLayout = () => {
                   return (
                     <div
                       key={index}
-                      className="border-emerald-500 border-[5px] rounded-lg col-start-2 row-span-1 flex justify-center items-center text-xl font-semibold"
+                      className="border-emerald-500 cursor-pointer border-[5px] rounded-lg col-start-2 row-span-1 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500"
                       style={{
                         gridColumnEnd: 6,
                         gridRowStart: currentBay.id === 9 ? 9 : 8
@@ -383,10 +392,10 @@ const StoreLayout = () => {
           </div>
         )}
         {openShelves && (
-          <div className="w-full relative flex flex-col justify-center items-center h-[92%]">
+          <div className="w-full relative flex flex-col justify-center items-center ">
             <CloseRounded
               onClick={handleCloseShelves}
-              className="z-20 text-xl cursor-pointer text-gray-400 opacity-60 hover:opacity-100 absolute"
+              className="z-20 text-xl cursor-pointer text-gray-600 opacity-60 hover:opacity-100 absolute"
               style={{
                 right: '4%',
                 top: '2%'
@@ -410,7 +419,7 @@ const StoreLayout = () => {
             /> */}
 
             <div
-              className={` w-[80%] h-[67vh] text-3xl font-semibold border-[5px] overflow-y-auto border-emerald-500 rounded-lg grid gap-2`}
+              className={` w-[80%] h-full text-3xl font-semibold border-[0px] overflow-y-auto border-emerald-500 rounded-lg grid gap-2`}
               style={{
                 gridTemplateColumns: `repeat(${currentShelf?.partsDetails?.length / 2}, minmax(0, 1fr))`
               }}
