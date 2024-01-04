@@ -3,9 +3,28 @@ import { Link } from 'react-router-dom';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import { useNavigate } from 'react-router-dom';
 
 // material-ui
-import { Card, Grid, Typography, Stack, LinearProgress, Box, useTheme, Tooltip, Avatar, AvatarGroup } from '@mui/material';
+import {
+  Card,
+  Grid,
+  Typography,
+  Stack,
+  LinearProgress,
+  Box,
+  useTheme,
+  Tooltip,
+  Avatar,
+  AvatarGroup,
+  IconButton,
+  Menu,
+  MenuItem
+} from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 // project import
 import Breadcrumb from 'component/Breadcrumb';
@@ -30,6 +49,33 @@ const Customers = () => {
   const success = theme.palette.success.main;
   const warning = theme.palette.warning.main;
   const error = theme.palette.error.main;
+  const navigate = useNavigate();
+  const options = [
+    { label: 'View', icon: <VisibilityIcon />, onClick: () => navigate('/stores/analysis/layout') },
+    { label: 'Edit', icon: <EditIcon />, disabled: true },
+    { label: 'Delete', icon: <DeleteIcon />, color: 'red', disabled: true }
+  ];
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const ITEM_HEIGHT = 48;
+
+  const open = Boolean(anchorEl);
+  // const handleClick = (event) => {
+  //   setAnchorEl(event.currentTarget);
+  // };
+  const handleClick = (event) => {
+    // const selectedOption = options.find((option) => option.label === 'Edit');
+
+    // if (selectedOption) {
+    //   // Handle the "Edit" logic directly
+    //   handleEditClick(event, storeData.id);
+    // } else {
+    // Show the menu for other options
+    setAnchorEl(event.currentTarget);
+    // }
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
     <>
@@ -69,20 +115,68 @@ const Customers = () => {
                               <div className="h-full flex flex-col justify-center">
                                 <Tooltip title={item.active ? 'Active' : 'Inactive'}>
                                   <div
-                                    className={`shadow-md rounded-full hover:cursor-pointer w-3 h-3 ${
+                                    className={`shadow-md mb-0.5 rounded-full hover:cursor-pointer w-3 h-3 ${
                                       item.active ? 'bg-emerald-500' : 'bg-gray-400'
                                     }`}
                                   ></div>
                                 </Tooltip>
                               </div>
-                              <Typography className=" drop-shadow-md" variant="h5">
+                              <Typography className="drop-shadow-md self-center" variant="h5">
                                 {item.storeId}
                               </Typography>
                             </Stack>
+                            <IconButton
+                              size="small"
+                              aria-label="more"
+                              id="long-button"
+                              aria-controls={open ? 'long-menu' : undefined}
+                              aria-expanded={open ? 'true' : undefined}
+                              aria-haspopup="true"
+                              onClick={handleClick}
+                            >
+                              <MoreVertIcon />
+                            </IconButton>
+                            <Menu
+                              id="long-menu"
+                              anchorEl={anchorEl}
+                              open={open}
+                              onClose={handleClose}
+                              anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right'
+                              }}
+                              transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right'
+                              }}
+                              PaperProps={{
+                                style: {
+                                  maxHeight: ITEM_HEIGHT * 4.5,
+                                  width: '20ch'
+                                }
+                              }}
+                            >
+                              {options.map((option) => (
+                                <MenuItem
+                                  key={option.label}
+                                  selected={option.label === 'View'}
+                                  disabled={option.disabled} // Apply the disabled attribute conditionally
+                                  onClick={() => {
+                                    if (option.disabled != true) {
+                                      option.onClick();
+                                      handleClose();
+                                    }
+                                  }}
+                                >
+                                  {option.icon && <span style={{ marginRight: '8px', color: option.color }}>{option.icon}</span>}
+                                  <span style={{ color: option.color }}>{option.label}</span>
+                                </MenuItem>
+                              ))}
+                            </Menu>
                           </Box>
                           <Stack direction={'row'} justifyContent={'space-between'}>
                             <Typography sx={{ width: 90 }} variant="subtitle1">
-                              Capture
+                              Capture %
                             </Typography>
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
                               <LinearProgress
@@ -225,7 +319,7 @@ const Customers = () => {
                     <div className="w-full px-4 flex flex-col justify-center h-full">
                       <Slider {...settings}>
                         {item.anomalies.images.map((anomaly) => (
-                          <div key={anomaly.url} className="rounded-md border shadow-md h-[132px]">
+                          <div key={anomaly.url} className="rounded-md border shadow-md h-[147px]">
                             <img
                               style={{ width: '100%', objectFit: 'cover' }}
                               className="rounded-md shadow-md h-full"

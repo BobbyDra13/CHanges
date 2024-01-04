@@ -7,7 +7,7 @@ import Img3 from '../assets/images/AnomalyImages/img3.jpg';
 import Img4 from '../assets/images/AnomalyImages/img4.jpg';
 import Img5 from '../assets/images/AnomalyImages/img5.jpg';
 import Img6 from '../assets/images/AnomalyImages/img6.jpg';
-import Img7 from '../assets/images/AnomalyImages/img7.jpg';
+import Img7 from '../assets/images/AnomalyImages/img7.jpg'; 
 import Img8 from '../assets/images/AnomalyImages/img8.jpg';
 
 export const storesData = [
@@ -93,7 +93,7 @@ export const storesData = [
     kpiValues: {
       capture: 79,
       upKeep: 19,
-      vm: 38,
+      vm: 62,
       pop: 94
     },
     anomalies: {

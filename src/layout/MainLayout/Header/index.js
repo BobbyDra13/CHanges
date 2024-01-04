@@ -106,7 +106,7 @@ const Header = ({ drawerToggle }) => {
               location.pathname === '/customers' ? 'border-b-2 border-emerald-500 text-emerald-600' : ''
             }`}
           >
-            Customers
+            Stores New
           </Link>
           <Link
             to={'/team'}
