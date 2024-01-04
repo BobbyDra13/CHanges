@@ -21,9 +21,15 @@ import {
 import Breadcrumb from 'component/Breadcrumb';
 import { gridSpacing } from 'config.js';
 import { imageData } from 'data/dummyImages';
-
+// import Map from './map';
 // assets
 import MapImg from '../../assets/images/mapImg.png';
+
+// const location = {
+//   address: '1600 Amphitheatre Parkway, Mountain View, california.',
+//   lat: 37.42216,
+//   lng: -122.08427
+// };
 
 function SamplePrevArrow(props) {
   const { className, style, onClick } = props;
@@ -163,6 +169,9 @@ const Customers = () => {
                       src={MapImg}
                       alt="noImg"
                     />
+                    {/* <div className="rounded-md border border-gray-300 w-20 h-[105px] drop-shadow-md">
+                      <Map location={location} zoomLevel={3} />
+                    </div> */}
                   </Grid>
                   <Grid item sx={{ display: 'flex', flex: 1 }}>
                     <Stack sx={{ width: '100%' }} direction={'column'}>
