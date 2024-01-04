@@ -114,3 +114,12 @@ export const GetImagesFromSignedUrl = async (data) => {
     console.log("Error Calling all Store API: ", error);
   }
 }
+
+export const getUsers = async () => {
+
+  try {
+    return await axios.get(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/getalluser`);
+  } catch (error) {
+    console.log('Error while calling tean api ', error);
+  }
+};

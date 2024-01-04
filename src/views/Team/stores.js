@@ -17,15 +17,16 @@ import {
   Dialog
 } from '@mui/material';
 import { Delete as DeleteIcon, Add as AddIcon } from '@mui/icons-material';
-import { getStores, deleteStore } from './API/api';
+// import { deleteStore } from './API/api';
 import { Link } from 'react-router-dom';
 import { BsApp } from 'react-icons/bs';
 import { CiExport } from 'react-icons/ci';
 import { CSVLink } from 'react-csv';
 import SearchBar from './SearchBar';
 import StoresTable from './StoresTable';
-import AddStore from './addStore';
+// import AddStore from './addStore';
 import FilterationButton from './FilterationButton';
+import { getUsers } from 'api';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 20;
@@ -68,7 +69,7 @@ const AllStores = () => {
   };
 
   const getAllUsers = async () => {
-    let response = await getStores();
+    let response = await getUsers();
     rowchange(response?.data);
   };
 
@@ -227,7 +228,8 @@ const AllStores = () => {
             }
           }}
         >
-          <AddStore handleAddUserDialogClose={handleAddUserDialogClose} />
+          This feature is under maintainance.
+          {/* <AddStore handleAddUserDialogClose={handleAddUserDialogClose} /> */}
         </Dialog>
       </div>
       <Paper elevation={4} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
