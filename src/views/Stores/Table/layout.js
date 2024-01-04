@@ -2,15 +2,17 @@ import React, { useEffect, useRef, useState } from 'react';
 // import { GoChevronLeft, GoChevronRight } from "react-icons/go";
 import Breadcrumb from 'component/Breadcrumb';
 import { ChevronLeftRounded, ChevronRightRounded, CloseRounded } from '@mui/icons-material';
-import CloseIcon from '@mui/icons-material/Close';
+import { ImCross } from 'react-icons/im';
 import Tooltip from '@mui/material/Tooltip';
-import { Dialog, DialogContent, IconButton } from '@mui/material';
+import { Dialog, DialogContent } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { GetStoreLayout, GetImagesFromSignedUrl } from '../../../api/index';
 import NewLoader from '../../../component/Loader/Loader';
 import { Typography, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
-// import { GetAllStores } from 'api';
+import ImageList from '@mui/material/ImageList';
+import ImageListItem from '@mui/material/ImageListItem';
+import { IoReturnUpBack } from 'react-icons/io5';
 
 const theme = createTheme({
   components: {
@@ -208,9 +210,9 @@ const StoreLayout = () => {
     const { width } = imgDiv.getBoundingClientRect();
     setScaleFactor(width / naturalWidth);
   };
-console.log("layoutdata", layoutData);
+  console.log('layoutdata', layoutData);
   return (
-    <div className="w-full flex bg-gray-100 ">
+    <div className="w-full flex">
       <div className="w-full h-full">
         <Breadcrumb
         // title={
@@ -230,9 +232,9 @@ console.log("layoutdata", layoutData);
           <Typography component={Link} to="/stores" variant="subtitle2" color="inherit" className="link-breadcrumb">
             Stores
           </Typography>
-            <Typography variant="subtitle2" color="primary" className="link-breadcrumb">
+          <Typography variant="subtitle2" color="primary" className="link-breadcrumb">
             {layoutData?.name}
-            </Typography>
+          </Typography>
           {openShelves ? (
             <Box component={'span'}>
               {currentBay.bay_name} / {currentShelf.shelf_name}
@@ -406,15 +408,28 @@ console.log("layoutdata", layoutData);
           </div>
         )}
         {openShelves && (
-          <div className="w-full relative flex flex-col justify-center items-center ">
-            <CloseRounded
+          <div className="w-full relative flex flex-col justify-center items-start ">
+            <div className="flex items-center gap-2">
+              {' '}
+              {/* Added a container with flex and gap */}
+              <IoReturnUpBack
+                onClick={handleCloseShelves}
+                className="text-lg cursor-pointer text-gray-600 opacity-60 hover:opacity-100"
+                style={{}}
+              />
+              <span className="cursor-pointer text-lg text-black-600 opacity-60 hover:opacity-100" onClick={handleCloseShelves}>
+                Back
+              </span>{' '}
+              {/* Wrapped the text in a span */}
+            </div>
+            {/* <CloseRounded
               onClick={handleCloseShelves}
               className="z-20 text-xl cursor-pointer text-gray-600 opacity-60 hover:opacity-100 absolute"
               style={{
                 right: '4%',
                 top: '2%'
               }}
-            />
+            /> */}
             {/* <GoChevronLeft
               onClick={handlePrevShelves}
               className="text-gray-400 opacity-50 hover:opacity-100 text-7xl absolute z-10 cursor-pointer"
@@ -431,47 +446,53 @@ console.log("layoutdata", layoutData);
                 top: "45%",
               }}
             /> */}
+            <div className="w-full h-full text-3xl font-semibold border-[0px] grid py-6">
+              <div className="overflow-auto w-full ">
+                <ImageList sx={{ width: '100%', height: '60vh' }}  cols={currentShelf?.partsDetails?.length / 2} rowHeight="auto" gap={10}>
+                  {updatedPartDetails.map((item, index) => (
+                    <ImageListItem key={index} onClick={() => handleImageClick(item.img_url)}>
+                      {item.img_url ? (
+                        <img src={item.img_url} alt={`Shelf ${index}`} className="w-full h-full object-cover cursor-pointer" />
+                      ) : (
+                        <img
+                          src="https://img.freepik.com/premium-vector/no-data-found-empty-file-folder-concept-design-vector-illustration_620585-1698.jpg"
+                          alt="no data found"
+                          className=" w-full h-full object-cover"
+                        />
+                      )}
+                    </ImageListItem>
+                  ))}
+                </ImageList>
+              </div>
 
-            <div
-              className={` w-[80%] h-full text-3xl font-semibold border-[0px] overflow-y-auto border-emerald-500 rounded-lg grid gap-2`}
-              style={{
-                gridTemplateColumns: `repeat(${currentShelf?.partsDetails?.length / 2}, minmax(0, 1fr))`
-              }}
-            >
-              {updatedPartDetails.map((item, index) => (
-                <div
-                  key={index}
-                  className="cursor-pointer row-span-2 flex justify-center items-center"
-                  onClick={() => handleImageClick(item.img_url)}
-                >
-                  {/* {item.img_url ? <img src={item.img_url} alt="shelf" className="w-full h-80 object-contain" /> : 'NO IMAGE'} */}
-                  {item.img_url ? (
-                    <img
-                      src={item.img_url}
-                      alt="shelf"
-                      className="w-full h-80 rounded-xl object-cover"
+              {/* <Dialog open={isImageDialogOpen} onClose={handleCloseImageDialog} maxWidth="lg"> */}
+              <Dialog
+                // fullWidth={fullWidth}
+                // maxWidth={maxWidth}
+                fullScreen
+                open={isImageDialogOpen}
+                onClose={handleCloseImageDialog}
+                PaperProps={{
+                  sx: {
+                    width: '100%',
+                    maxHeight: '1300px',
+                    background: 'black',
+                    boxShadow: 'none'
+                  }
+                }}
+              >
+                <DialogContent className="w-full h-full flex justify-center relative overflow-hidden">
+                  <div className="self-center">
+                    <ImCross
+                      onClick={handleCloseImageDialog}
+                      className="z-20 text-xl cursor-pointer text-white opacity-60 hover:opacity-100 absolute"
+                      style={{
+                        right: '4%',
+                        top: '2%'
+                      }}
                     />
-                  ) : (
-                    'NO IMAGE'
-                  )}
-                </div>
-              ))}
-              <Dialog open={isImageDialogOpen} onClose={handleCloseImageDialog} maxWidth="lg">
-                <DialogContent>
-                  <IconButton
-                    edge="end"
-                    color="inherit"
-                    onClick={handleCloseImageDialog}
-                    aria-label="close"
-                    sx={{ position: 'absolute', right: 8, top: 8 }}
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                  <img
-                    src={selectedImage}
-                    alt="Full-screen"
-                    style={{ width: '100%', height: 'auto' }}
-                  />
+                    <img src={selectedImage} alt="Full-screen" className="self-center" style={{ maxHeight: '95svh' }} />
+                  </div>
                 </DialogContent>
               </Dialog>
             </div>
