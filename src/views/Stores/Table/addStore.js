@@ -126,6 +126,7 @@ export default function AddStore() {
         sx={{
           backgroundColor: '#10b981'
         }}
+        disabled
         onClick={handleClickOpen}
         style={{ marginTop: '2px', marginBottom: '5px', marginRight: '50px', float: 'right' }}
         className="font-bold text-white rounded-md shadow-md bg-green-600 hover:bg-emerald-800 active:bg-emerald-500"
