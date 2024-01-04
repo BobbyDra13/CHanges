@@ -10,6 +10,7 @@ import { Typography, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { GetAllStores } from 'api';
 
+
 const theme = createTheme({
   components: {
     MuiTooltip: {
@@ -29,7 +30,7 @@ const StoreLayout = () => {
   const [currentShelf, setCurrentShelf] = useState({}); // [0,1,2,3,4,5,6,7,8
   // const [numberOfShelves, setNumberOfShelves] = useState(1); // [1,2,3,4,5,6,7,8
   const [scaleFactor, setScaleFactor] = useState(1); // [1,2,3,4,5,6,7,8
-  // const [updatedPartDetails, setUpdatedPartDetails] = useState([]);
+  const [updatedPartDetails, setUpdatedPartDetails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [layoutData, setLayoutData] = useState({});
 
@@ -112,13 +113,13 @@ const StoreLayout = () => {
     if (input.length > 0) {
       data = await GetImagesFromSignedUrl(input);
     }
-    console.log(data);
-    // const mergedPartsDetails = item.partsDetails.map((originalPart) => {
-    //   const matchingApiData = data?.data?.find((apiPart) => apiPart.name === originalPart.name);
-    //   return matchingApiData || originalPart;
-    // });
+    // console.log(data);
+    const mergedPartsDetails = item.partsDetails.map((originalPart) => {
+      const matchingApiData = data?.data?.find((apiPart) => apiPart.name === originalPart.name);
+      return matchingApiData || originalPart;
+    });
     setCurrentShelf(item);
-    // setUpdatedPartDetails(mergedPartsDetails);
+    setUpdatedPartDetails(mergedPartsDetails);
     setLoading(false);
     setOpenShelves(true);
   };
@@ -195,19 +196,19 @@ const StoreLayout = () => {
     <div className="w-full flex bg-gray-100 ">
       <div className="w-full h-full">
         <Breadcrumb
-        // title={
-        //   openShelves ? (
-        //     <Box component={'span'}>
-        //       {currentBay.bay_name} / {currentShelf.shelf_name}
-        //     </Box>
-        //   ) : openBay ? (
-        //     <Box component={'span'}>{currentBay.bay_name}</Box>
-        //   ) : loading ? (
-        //     'Loading'
-        //   ) : (
-        //     'Layout'
-        //   )
-        // }
+          // title={
+          //   openShelves ? (
+          //     <Box component={'span'}>
+          //       {currentBay.bay_name} / {currentShelf.shelf_name}
+          //     </Box>
+          //   ) : openBay ? (
+          //     <Box component={'span'}>{currentBay.bay_name}</Box>
+          //   ) : loading ? (
+          //     'Loading'
+          //   ) : (
+          //     'Layout'
+          //   )
+          // }
         >
           <Typography component={Link} to="/stores" variant="subtitle2" color="inherit" className="link-breadcrumb">
             Stores
@@ -216,18 +217,19 @@ const StoreLayout = () => {
             <Typography variant="subtitle2" color="primary" className="link-breadcrumb" key={store._id}>
               {store.store_id}
             </Typography>
-          ))}
-          {openShelves ? (
-            <Box component={'span'}>
-              {currentBay.bay_name} / {currentShelf.shelf_name}
-            </Box>
-          ) : openBay ? (
-            <Box component={'span'}>{currentBay.bay_name}</Box>
-          ) : loading ? (
-            'Loading'
-          ) : (
-            'Layout'
-          )}
+          ))
+          }
+           {openShelves ? (
+              <Box component={'span'}>
+                {currentBay.bay_name} / {currentShelf.shelf_name}
+              </Box>
+            ) : openBay ? (
+              <Box component={'span'}>{currentBay.bay_name}</Box>
+            ) : loading ? (
+              'Loading'
+            ) : (
+              'Layout'
+            )}
         </Breadcrumb>
         {loading ? (
           <div className="flex justify-center items-center">
@@ -422,16 +424,11 @@ const StoreLayout = () => {
                 gridTemplateColumns: `repeat(${currentShelf?.partsDetails?.length / 2}, minmax(0, 1fr))`
               }}
             >
-              {/* {updatedPartDetails.map((item, index) => (
+              {updatedPartDetails.map((item, index) => (
                 <div key={index} className="border-2 border-emerald-500 rounded-lg row-span-2 flex justify-center items-center">
                   {item.img_url ? <img src={item.img_url} alt="shelf" className="w-full h-80 object-contain" /> : 'NO IMAGE'}
                 </div>
-              ))} */}
-              <img
-                src={require('../../../assets/images/left_cupboard.png')}
-                alt="Cupboard"
-                style={{ width: '100%', height: '60%', objectFit: 'contain' }}
-              />
+              ))}
             </div>
             {/* <div
               className={` w-[45%] h-[75%] text-3xl font-semibold border-[5px] border-emerald-500 rounded-lg `}
