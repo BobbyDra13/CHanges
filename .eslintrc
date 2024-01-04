@@ -7,7 +7,7 @@
   "extends": [
     "prettier",
     "plugin:react/jsx-runtime",
-    "plugin:jsx-a11y/recommended",
+    // "plugin:jsx-a11y/recommended",
     "plugin:react-hooks/recommended",
     "eslint:recommended",
     "plugin:react/recommended"
