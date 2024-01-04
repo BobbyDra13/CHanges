@@ -73,18 +73,18 @@ export const GetAnomaliesBarChartData = async (data) => {
 };
 
 
-export const GetAllStores = async () => {
-    try {
-      const res = await axios.get(`http://localhost:8080/store/allStores`, {
-        headers: {
-          Accept: "application/json",
-        },
-      });
-      return res;
-    } catch (error) {
-      console.log("Error Calling Stores API: ", error);
-    }
-  };
+// export const GetAllStores = async () => {
+//     try {
+//       const res = await axios.get(`http://localhost:8080/store/allStores`, {
+//         headers: {
+//           Accept: "application/json",
+//         },
+//       });
+//       return res;
+//     } catch (error) {
+//       console.log("Error Calling Stores API: ", error);
+//     }
+//   };
 
   // API FOR THE LAYOUT OF THE STORE
 export const GetStoreLayout = async (data) => {
@@ -94,7 +94,7 @@ export const GetStoreLayout = async (data) => {
         Accept: "application/json",
       },
     });
-    
+    console.log("api response", res);
     return res;
   } catch (error) {
     console.log("Error Calling all Store API: ", error);
@@ -108,7 +108,7 @@ export const GetImagesFromSignedUrl = async (data) => {
         Accept: "application/json",
       },
     });
-    
+    console.log("api image response", res);
     return res;
   } catch (error) {
     console.log("Error Calling all Store API: ", error);

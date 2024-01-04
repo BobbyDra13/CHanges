@@ -2,14 +2,15 @@ import React, { useEffect, useRef, useState } from 'react';
 // import { GoChevronLeft, GoChevronRight } from "react-icons/go";
 import Breadcrumb from 'component/Breadcrumb';
 import { ChevronLeftRounded, ChevronRightRounded, CloseRounded } from '@mui/icons-material';
+import CloseIcon from '@mui/icons-material/Close';
 import Tooltip from '@mui/material/Tooltip';
+import { Dialog, DialogContent, IconButton } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { GetStoreLayout, GetImagesFromSignedUrl } from '../../../api/index';
 import NewLoader from '../../../component/Loader/Loader';
 import { Typography, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { GetAllStores } from 'api';
-
+// import { GetAllStores } from 'api';
 
 const theme = createTheme({
   components: {
@@ -33,21 +34,34 @@ const StoreLayout = () => {
   const [updatedPartDetails, setUpdatedPartDetails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [layoutData, setLayoutData] = useState({});
+  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
-  const [storesData, setStoresData] = useState([]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await GetAllStores();
+  //       setStoresData(response.data.data);
+  //     } catch (error) {
+  //       console.error('Error fetching stores data:', error);
+  //     }
+  //   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await GetAllStores();
-        setStoresData(response.data.data);
-      } catch (error) {
-        console.error('Error fetching stores data:', error);
-      }
-    };
+  //   fetchData();
+  // }, []);
 
-    fetchData();
-  }, []);
+  const handleCloseImageDialog = () => {
+    setIsImageDialogOpen(false);
+  };
+
+  // const handleImageClick = (imageUrl) => {
+  //   setSelectedImage(imageUrl);
+  //   setIsImageDialogOpen(true);
+  // };
+  const handleImageClick = (image_url) => {
+    setSelectedImage(image_url);
+    setIsImageDialogOpen(true);
+  };
 
   const date = new Date();
   const today = date.toISOString().split('T')[0];
@@ -55,13 +69,15 @@ const StoreLayout = () => {
   const getLayoutData = async () => {
     const input = {
       Store_IDs: ['6582be9ac5ed94d792a563b8'],
-      start_date: '2024-01-01'
+      // start_date: '2024-01-01'
+      start_date: today
     };
     const response = await GetStoreLayout(input);
-    console.log(response.data[0]);
+    // console.log(response.data[0]);
     setLayoutData(response.data[0]);
     setLoading(false);
   };
+
   useEffect(() => {
     getLayoutData();
   }, []);
@@ -105,13 +121,14 @@ const StoreLayout = () => {
   };
   const handleOpenShelves = async (item) => {
     setLoading(true);
-    console.log(item.partsDetails);
+    console.log('partdetails', item.partsDetails);
     const input = item.partsDetails.filter((value) => value.img_url);
     console.log(input);
     handleCloseBay();
     let data;
     if (input.length > 0) {
       data = await GetImagesFromSignedUrl(input);
+      console.log('api data', data);
     }
     // console.log(data);
     const mergedPartsDetails = item.partsDetails.map((originalPart) => {
@@ -123,7 +140,7 @@ const StoreLayout = () => {
     setLoading(false);
     setOpenShelves(true);
   };
-
+  console.log('updated parts', updatedPartDetails);
   // const handlePrevShelves = () => {
   //   // SORTING THE SHELVES IN THE BASIS OF THEIR NAME
   //   let sortedShelvesArray = currentBay.shelves.sort((a, b) => {
@@ -191,45 +208,42 @@ const StoreLayout = () => {
     const { width } = imgDiv.getBoundingClientRect();
     setScaleFactor(width / naturalWidth);
   };
-
+console.log("layoutdata", layoutData);
   return (
     <div className="w-full flex bg-gray-100 ">
       <div className="w-full h-full">
         <Breadcrumb
-          // title={
-          //   openShelves ? (
-          //     <Box component={'span'}>
-          //       {currentBay.bay_name} / {currentShelf.shelf_name}
-          //     </Box>
-          //   ) : openBay ? (
-          //     <Box component={'span'}>{currentBay.bay_name}</Box>
-          //   ) : loading ? (
-          //     'Loading'
-          //   ) : (
-          //     'Layout'
-          //   )
-          // }
+        // title={
+        //   openShelves ? (
+        //     <Box component={'span'}>
+        //       {currentBay.bay_name} / {currentShelf.shelf_name}
+        //     </Box>
+        //   ) : openBay ? (
+        //     <Box component={'span'}>{currentBay.bay_name}</Box>
+        //   ) : loading ? (
+        //     'Loading'
+        //   ) : (
+        //     'Layout'
+        //   )
+        // }
         >
           <Typography component={Link} to="/stores" variant="subtitle2" color="inherit" className="link-breadcrumb">
             Stores
           </Typography>
-          {storesData.map((store) => (
-            <Typography variant="subtitle2" color="primary" className="link-breadcrumb" key={store._id}>
-              {store.store_id}
+            <Typography variant="subtitle2" color="primary" className="link-breadcrumb">
+            {layoutData?.name}
             </Typography>
-          ))
-          }
-           {openShelves ? (
-              <Box component={'span'}>
-                {currentBay.bay_name} / {currentShelf.shelf_name}
-              </Box>
-            ) : openBay ? (
-              <Box component={'span'}>{currentBay.bay_name}</Box>
-            ) : loading ? (
-              'Loading'
-            ) : (
-              'Layout'
-            )}
+          {openShelves ? (
+            <Box component={'span'}>
+              {currentBay.bay_name} / {currentShelf.shelf_name}
+            </Box>
+          ) : openBay ? (
+            <Box component={'span'}>{currentBay.bay_name}</Box>
+          ) : loading ? (
+            'Loading'
+          ) : (
+            'Layout'
+          )}
         </Breadcrumb>
         {loading ? (
           <div className="flex justify-center items-center">
@@ -425,11 +439,43 @@ const StoreLayout = () => {
               }}
             >
               {updatedPartDetails.map((item, index) => (
-                <div key={index} className="border-2 border-emerald-500 rounded-lg row-span-2 flex justify-center items-center">
-                  {item.img_url ? <img src={item.img_url} alt="shelf" className="w-full h-80 object-contain" /> : 'NO IMAGE'}
+                <div
+                  key={index}
+                  className="cursor-pointer row-span-2 flex justify-center items-center"
+                  onClick={() => handleImageClick(item.img_url)}
+                >
+                  {/* {item.img_url ? <img src={item.img_url} alt="shelf" className="w-full h-80 object-contain" /> : 'NO IMAGE'} */}
+                  {item.img_url ? (
+                    <img
+                      src={item.img_url}
+                      alt="shelf"
+                      className="w-full h-80 rounded-xl object-cover"
+                    />
+                  ) : (
+                    'NO IMAGE'
+                  )}
                 </div>
               ))}
+              <Dialog open={isImageDialogOpen} onClose={handleCloseImageDialog} maxWidth="lg">
+                <DialogContent>
+                  <IconButton
+                    edge="end"
+                    color="inherit"
+                    onClick={handleCloseImageDialog}
+                    aria-label="close"
+                    sx={{ position: 'absolute', right: 8, top: 8 }}
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                  <img
+                    src={selectedImage}
+                    alt="Full-screen"
+                    style={{ width: '100%', height: 'auto' }}
+                  />
+                </DialogContent>
+              </Dialog>
             </div>
+
             {/* <div
               className={` w-[45%] h-[75%] text-3xl font-semibold border-[5px] border-emerald-500 rounded-lg `}
             >
