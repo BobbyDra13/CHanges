@@ -1,88 +1,113 @@
 import React, { useState, useEffect } from 'react';
 // import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+
 
 // material-ui
 import { Grid, Typography } from '@mui/material';
-import Progress_bar from './progressBar';
+// import Progress_bar from './progressBar';
 import { Tooltip, Dialog, DialogContent, IconButton, Menu, MenuItem } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-// import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 // project import
 import Breadcrumb from 'component/Breadcrumb';
 import { gridSpacing } from 'config.js';
 import AddStore from './addStore';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import ControlPointIcon from '@mui/icons-material/ControlPoint';
-import stateCities from './stateCitiesData.json';
-import Autocomplete from '@mui/material/Autocomplete';
-import { createTheme } from '@mui/material';
-import { ThemeProvider } from '@mui/material/styles';
+// import TextField from '@mui/material/TextField';
+// import Button from '@mui/material/Button';
+// import InputLabel from '@mui/material/InputLabel';
+// import FormControl from '@mui/material/FormControl';
+// import Select from '@mui/material/Select';
+// import ControlPointIcon from '@mui/icons-material/ControlPoint';
+// import stateCities from './stateCitiesData.json';
+// import Autocomplete from '@mui/material/Autocomplete';
+// import { createTheme } from '@mui/material';
+// import { ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
-import { GetAllStores } from 'api';
+import { GetStoreLayout } from 'api';
 
 // ==============================|| BRANDS PAGE ||============================== //
-const states = Object.keys(stateCities);
+// const states = Object.keys(stateCities);
 
 const StoreContent = () => {
-  const [clickedBar, setClickedBar] = useState(null);
+  const [clickedBar] = useState(null);
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
-  const [editDialogOpenMap, setEditDialogOpenMap] = useState({});
+  // const [editDialogOpenMap, setEditDialogOpenMap] = useState({});
   const [selectedImage, setSelectedImage] = useState(null);
 
   const navigate = useNavigate();
 
-  const [storeInfo, setStoreInfo] = useState({ id: 0, name: '', type: '' });
-  const [location, setLocation] = useState({
-    area: '',
-    region: '',
-    state: '',
-    city: ''
-  });
+  // const [storeInfo, setStoreInfo] = useState({ id: 0, name: '', type: '' });
+  // const [location, setLocation] = useState({
+  //   area: '',
+  //   region: '',
+  //   state: '',
+  //   city: ''
+  // });
 
   const [storesData, setStoresData] = useState([]);
+  const date = new Date();
+  const today = date.toISOString().split('T')[0];
+  const location = useLocation();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await GetAllStores();
-        setStoresData(response.data.data);
-      } catch (error) {
-        console.error('Error fetching stores data:', error);
+
+  const fetchData = async () => {
+    try {
+      const input = {
+        Store_IDs: ['6582be9ac5ed94d792a563b8'],
+        start_date: today
+      };
+      
+      const response = await GetStoreLayout(input);
+  
+      // Log the raw response to get more insights
+      console.log('Raw Response:', response);
+  
+      // Check if response and response.data are defined
+      if (response && response.data) {
+        console.log('Data:', response.data);
+        setStoresData(response.data);
+      } else {
+        console.error("Response or response.data is undefined.");
       }
-    };
-
-    fetchData();
-  }, []);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  
+  useEffect(() => {
+    if (location.pathname === "/stores") {
+      fetchData();
+    }
+  }, [location]);
+  
+  
   console.log('StoresData', storesData);
   // const shelfCount = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   // console.log("brand", shelf);
 
-  const [counter, setCounter] = useState(0);
+  // const [counter, setCounter] = useState(0);
 
-  const handleEditsClick = () => {
-    setCounter(counter + 1);
-    // console.log(counter);
-  };
+  // const handleEditsClick = () => {
+  //   setCounter(counter + 1);
+  //   // console.log(counter);
+  // };
 
-  const handleEditClick = (event, storeId) => {
-    setAnchorEl(event.currentTarget);
-    setEditDialogOpenMap((prev) => ({ ...prev, [storeId]: true }));
-  };
+  // const handleEditClick = (event, storeId) => {
+  //   setAnchorEl(event.currentTarget);
+  //   setEditDialogOpenMap((prev) => ({ ...prev, [storeId]: true }));
+  // };
 
-  const handleEditClose = () => {
-    setAnchorEl(null);
-    setEditDialogOpenMap({});
-  };
+  // const handleEditClose = () => {
+  //   setAnchorEl(null);
+  //   setEditDialogOpenMap({});
+  // };
 
-  const [fullWidth] = useState(true);
-  const [maxWidth] = useState('md');
+  // const [fullWidth] = useState(true);
+  // const [maxWidth] = useState('md');
 
   // const handleToastClose = () => {
   //   setToast({ isToast: false, message: "", type: "" });
@@ -121,32 +146,33 @@ const StoreContent = () => {
   //   }
   //   // console.log(storeDetails);
   // };
-  const theme = createTheme({
-    components: {
-      MuiOutlinedInput: {
-        styleOverrides: {
-          notchedOutline: {
-            fontSize: '20px'
-          }
-        }
-      },
-      MuiInputLabel: {
-        styleOverrides: {
-          outlined: {
-            '&.MuiInputLabel-shrink': {
-              fontSize: '20px'
-            }
-          }
-        }
-      }
-    }
-  });
+  // const theme = createTheme({
+  //   components: {
+  //     MuiOutlinedInput: {
+  //       styleOverrides: {
+  //         notchedOutline: {
+  //           fontSize: '20px'
+  //         }
+  //       }
+  //     },
+  //     MuiInputLabel: {
+  //       styleOverrides: {
+  //         outlined: {
+  //           '&.MuiInputLabel-shrink': {
+  //             fontSize: '20px'
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // });
 
-  const options = [
-    { label: 'View', icon: <VisibilityIcon />, onClick: () => navigate('/stores/analysis/layout') },
-    // { label: 'Edit', icon: <EditIcon /> },
-    { label: 'Delete', icon: <DeleteIcon />, color: 'red' }
-  ];
+const options = [
+  { label: 'View', icon: <VisibilityIcon />, onClick: () => navigate('/stores/analysis/layout') },
+  { label: 'Edit', icon: <EditIcon />, disabled: true },
+  { label: 'Delete', icon: <DeleteIcon />, color: 'red', disabled: true }
+];
+
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const ITEM_HEIGHT = 48;
@@ -156,28 +182,28 @@ const StoreContent = () => {
   //   setAnchorEl(event.currentTarget);
   // };
   const handleClick = (event) => {
-    const selectedOption = options.find((option) => option.label === 'Edit');
+    // const selectedOption = options.find((option) => option.label === 'Edit');
 
-    if (selectedOption) {
-      // Handle the "Edit" logic directly
-      handleEditClick(event, storeData.id);
-    } else {
+    // if (selectedOption) {
+    //   // Handle the "Edit" logic directly
+    //   handleEditClick(event, storeData.id);
+    // } else {
       // Show the menu for other options
       setAnchorEl(event.currentTarget);
-    }
+    // }
   };
   const handleClose = () => {
     setAnchorEl(null);
   };
 
-  const handleProgressBarClick = (storeId, columnName) => {
-    const matchingImage = imageData.find((data) => data.id === storeId);
-    setClickedBar({
-      storeId,
-      columnName,
-      imageUrls: matchingImage ? matchingImage.url : undefined
-    });
-  };
+  // const handleProgressBarClick = (storeId, columnName) => {
+  //   const matchingImage = imageData.find((data) => data.id === storeId);
+  //   setClickedBar({
+  //     storeId,
+  //     columnName,
+  //     imageUrls: matchingImage ? matchingImage.url : undefined
+  //   });
+  // };
 
   const handleImageClick = (imageUrl) => {
     setSelectedImage(imageUrl);
@@ -187,82 +213,82 @@ const StoreContent = () => {
   const handleCloseImageDialog = () => {
     setIsImageDialogOpen(false);
   };
-  const storeData = [
-    {
-      id: 'TX1234-Seawoods',
-      upKeep: '90%',
-      vm: '60%',
-      promo: '80%',
-      anomalies: (
-        <Progress_bar
-          bgcolor="rgb(134 239 172)"
-          progress="60"
-          height={20}
-          handleProgressBarClick={() => handleProgressBarClick('TX1234-Seawoods', 'anomalies')}
-        />
-      )
-    },
-    {
-      id: 'TX1234-Bandra',
-      upKeep: '85%',
-      vm: '76%',
-      promo: '30%',
-      anomalies: (
-        <Progress_bar
-          bgcolor="rgb(134 239 172)"
-          progress="20"
-          height={20}
-          handleProgressBarClick={() => handleProgressBarClick('TX1234-Bandra', 'anomalies')}
-        />
-      )
-    },
-    {
-      id: 'TX1234-Pune',
-      upKeep: '60%',
-      vm: '50%',
-      promo: '78%',
-      anomalies: (
-        <Progress_bar
-          bgcolor="rgb(134 239 172)"
-          progress="40"
-          height={20}
-          handleProgressBarClick={() => handleProgressBarClick('TX1234-Pune', 'anomalies')}
-        />
-      )
-    },
-    {
-      id: 'TX1234-Raurkela',
-      upKeep: '30%',
-      vm: '90%',
-      promo: '59%',
-      anomalies: (
-        <Progress_bar
-          bgcolor="rgb(134 239 172)"
-          progress="90"
-          height={20}
-          handleProgressBarClick={() => handleProgressBarClick('TX1234-Raurkela', 'anomalies')}
-        />
-      )
-    }
-  ];
+  // const storeData = [
+  //   {
+  //     id: 'TX1234-Seawoods',
+  //     upKeep: '90%',
+  //     vm: '60%',
+  //     promo: '80%',
+  //     anomalies: (
+  //       <Progress_bar
+  //         bgcolor="rgb(134 239 172)"
+  //         progress="60"
+  //         height={20}
+  //         handleProgressBarClick={() => handleProgressBarClick('TX1234-Seawoods', 'anomalies')}
+  //       />
+  //     )
+  //   },
+  //   {
+  //     id: 'TX1234-Bandra',
+  //     upKeep: '85%',
+  //     vm: '76%',
+  //     promo: '30%',
+  //     anomalies: (
+  //       <Progress_bar
+  //         bgcolor="rgb(134 239 172)"
+  //         progress="20"
+  //         height={20}
+  //         handleProgressBarClick={() => handleProgressBarClick('TX1234-Bandra', 'anomalies')}
+  //       />
+  //     )
+  //   },
+  //   {
+  //     id: 'TX1234-Pune',
+  //     upKeep: '60%',
+  //     vm: '50%',
+  //     promo: '78%',
+  //     anomalies: (
+  //       <Progress_bar
+  //         bgcolor="rgb(134 239 172)"
+  //         progress="40"
+  //         height={20}
+  //         handleProgressBarClick={() => handleProgressBarClick('TX1234-Pune', 'anomalies')}
+  //       />
+  //     )
+  //   },
+  //   {
+  //     id: 'TX1234-Raurkela',
+  //     upKeep: '30%',
+  //     vm: '90%',
+  //     promo: '59%',
+  //     anomalies: (
+  //       <Progress_bar
+  //         bgcolor="rgb(134 239 172)"
+  //         progress="90"
+  //         height={20}
+  //         handleProgressBarClick={() => handleProgressBarClick('TX1234-Raurkela', 'anomalies')}
+  //       />
+  //     )
+  //   }
+  // ];
 
-  const imageData = [
-    {
-      id: 'TX1234-Seawoods',
-      url: [
-        'https://simplyorganized.me/wp-content/uploads/2016/12/IMG_9029-768x1027.jpg',
-        'https://simplyorganized.me/wp-content/uploads/2016/12/IMG_9029-768x1027.jpg'
-      ]
-    },
-    {
-      id: 'TX1234-Bandra',
-      url: [
-        'https://simplyorganized.me/wp-content/uploads/2016/12/IMG_9029-768x1027.jpg',
-        'https://simplyorganized.me/wp-content/uploads/2016/12/IMG_9029-768x1027.jpg',
-        'https://simplyorganized.me/wp-content/uploads/2016/12/IMG_9029-768x1027.jpg'
-      ]
-    }
-  ];
+  // const imageData = [
+  //   {
+  //     id: 'TX1234-Seawoods',
+  //     url: [
+  //       'https://simplyorganized.me/wp-content/uploads/2016/12/IMG_9029-768x1027.jpg',
+  //       'https://simplyorganized.me/wp-content/uploads/2016/12/IMG_9029-768x1027.jpg'
+  //     ]
+  //   },
+  //   {
+  //     id: 'TX1234-Bandra',
+  //     url: [
+  //       'https://simplyorganized.me/wp-content/uploads/2016/12/IMG_9029-768x1027.jpg',
+  //       'https://simplyorganized.me/wp-content/uploads/2016/12/IMG_9029-768x1027.jpg',
+  //       'https://simplyorganized.me/wp-content/uploads/2016/12/IMG_9029-768x1027.jpg'
+  //     ]
+  //   }
+  // ];
 
   return (
     <>
@@ -308,17 +334,17 @@ const StoreContent = () => {
                 </td>
                 <td className="p-0.5 cursor-pointer">
                   <div className="bg-gray-100 p-0.5 rounded h-[100px] flex items-center justify-center hover:bg-gray-200 hover:text-black transition">
-                    {store.upKeep}
+                  {store.upKeep ?? 0}%
                   </div>
                 </td>
                 <td className="p-0.5 cursor-pointer">
                   <div className="bg-gray-100 p-0.5 rounded h-[100px] flex items-center justify-center hover:bg-gray-200 hover:text-black transition">
-                    {store.vm}
+                  {store.vm ?? 0}%
                   </div>
                 </td>
                 <td className="p-0.5 cursor-pointer">
                   <div className="bg-gray-100 p-0.5 rounded h-[100px] flex items-center justify-center hover:bg-gray-200 hover:text-black transition">
-                    {store.promo}
+                  {store.promo ?? 0}%
                   </div>
                 </td>
                 <td className="p-0.5 w-20 cursor-pointer">
@@ -368,10 +394,10 @@ const StoreContent = () => {
                               </Tooltip>
                             ))}
                         </div>
-                        {store.anomalies}
+                        {store.anomalies ?? 0}
                       </>
                     ) : (
-                      store.anomalies
+                      store.anomalies ?? 0
                     )}
                   </div>
                 </td>
@@ -409,21 +435,24 @@ const StoreContent = () => {
                     >
                       {options.map((option) => (
                         <MenuItem
-                          key={option.label}
-                          selected={option.label === 'View'}
-                          onClick={() => {
+                        key={option.label}
+                        selected={option.label === 'View'}
+                        disabled={option.disabled}  // Apply the disabled attribute conditionally
+                        onClick={() => {
+                          if (option.disabled != true) {
                             option.onClick();
                             handleClose();
-                          }}
-                        >
-                          {option.icon && <span style={{ marginRight: '8px', color: option.color }}>{option.icon}</span>}
-                          <span style={{ color: option.color }}>{option.label}</span>
-                        </MenuItem>
+                          }
+                        }}
+                      >
+                        {option.icon && <span style={{ marginRight: '8px', color: option.color }}>{option.icon}</span>}
+                        <span style={{ color: option.color }}>{option.label}</span>
+                      </MenuItem>
                       ))}
                     </Menu>
                   </div>
                 </td>
-                <Dialog
+                {/* <Dialog
                   fullWidth={fullWidth}
                   maxWidth={maxWidth}
                   open={editDialogOpenMap[store.id] || false}
@@ -640,7 +669,7 @@ const StoreContent = () => {
                       </div>
                     </div>
                   </DialogContent>
-                </Dialog>
+                </Dialog> */}
                 <Dialog open={isImageDialogOpen} onClose={handleCloseImageDialog} maxWidth="lg">
                   <DialogContent>
                     <IconButton
