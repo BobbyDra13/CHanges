@@ -1,63 +1,123 @@
 import { useState } from 'react';
-import { Button, Box, Paper, TextField, Grid, Stack, Typography } from '@mui/material';
+import { Button, Box, TextField, Grid, Stack, MenuItem, ListItemText, Typography, Paper } from '@mui/material';
 import { addStore } from './API/api';
-import { Link, useNavigate } from 'react-router-dom';
 import { Add as AddIcon } from '@mui/icons-material';
-import Breadcrumb from 'component/Breadcrumb'
+
 const initialValue = {
+  user_role: '',
   user_id: '',
   user_name: '',
-  status: '',
-  user_role: '',
-  number: '',
-  apk_version: ''
+  store_id: '',
+  number: ''
 };
 
-const AddStore = () => {
-  const [user, setUser] = useState(initialValue);
-  const { user_id, user_name, status, user_role, number, apk_version } = user;
-  let navigate = useNavigate();
+const roles = ['Agents', 'Department Manager', 'Store Manager', 'Cluster Manager', 'NHK Super User'];
+const stores = ['Lakme', 'Adidas', 'Trends', 'Loreal', 'Heads and Shoulders'];
 
+const AddStore = ({ handleAddUserDialogClose }) => {
+  const [user, setUser] = useState(initialValue);
+  const { user_role, user_id, user_name, store_id, number } = user;
+  const [isEmailEditable, setIsEmailEditable] = useState(false);
+  const [email, setEmail] = useState('');
   const onValueChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setUser({ ...user, [name]: value });
+
+
+    if (name === 'user_role') {
+      setIsEmailEditable(value === 'Cluster Manager' || value === 'NHK Super User');
+      if (!(value === 'Cluster Manager' || value === 'NHK Super User')) {
+        setEmail('');
+      }
+    }
   };
+
+
+  
 
   const addUserDetails = async () => {
-    await addStore(user);
-    navigate('/team');
+    try {
+      await addStore(user);
+      handleAddUserDialogClose();
+    } catch (error) {
+      console.error('Error adding user:', error);
+    }
   };
 
-  return (
-    <>
-     <Breadcrumb title="Team">
-        <Typography component={Link} to="/" variant="subtitle2" color="inherit" className="link-breadcrumb">
-          Insights
-        </Typography>
-        <Typography component={Link} to="/team" variant="subtitle2" color="inherit" className="link-breadcrumb">
-          Team
-        </Typography>
-        <Typography variant="subtitle2" color="primary" className="link-breadcrumb">
-          Add User
-        </Typography>
-      </Breadcrumb>
 
-      <Grid container spacing={3}>
-        <Grid item md={5}>
-            <Paper elevation={2} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
-              <Box sx={{ mb: 5 }}>{/* implementation for the image upload */}</Box>
-            </Paper>
-        </Grid>
-        <Grid item md={6}>
-            <Paper elevation={3} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
+  return (
+    <Box p={4}>
+      <Paper elevation={6} sx={{ padding: '24px', borderRadius: '12px' }}>
+        <Grid container spacing={4}>
+          <Grid item xs={12}>
+            <Typography variant="h3" gutterBottom>
+              Add User
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Stack spacing={3}>
               <Box
-                rowGap={3}
+                rowGap={4}
                 columnGap={2}
                 display="grid"
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
-                  sm: 'repeat(2, 1fr)'
+                  sm: 'repeat(1, 1fr)'
                 }}
               >
+                <TextField
+                  label="User Role"
+                  onChange={(e) => onValueChange(e)}
+                  name="user_role"
+                  value={user_role}
+                  id="my-input"
+                  variant="outlined"
+                  fullWidth
+                  select
+                  sx={{
+                    '& .MuiInputLabel-root': {
+                      color: 'rgba(0, 0, 0, 0.4)',
+                      '&.Mui-focused': {
+                        color: 'black'
+                      }
+                    },
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '10px',
+                      '& fieldset': {
+                        borderColor: 'rgba(0, 0, 0, 0.2)'
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'black'
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: 'black'
+                      }
+                    }
+                  }}
+                >
+                  {roles.map((name) => (
+                    <MenuItem
+                      key={name}
+                      value={name}
+                      sx={{
+                        padding: '6px 8px',
+                        lineHeight: '1.57143',
+                        fontSize: '0.875rem',
+                        fontWeight: '400',
+                        borderRadius: '6px',
+                        display: 'flex',
+                        marginBottom: '4px',
+                        height: '40px',
+                        '&:focus, &:hover': {
+                          bgcolor: '#f4f6f8'
+                        }
+                      }}
+                    >
+                      <ListItemText primary={<Typography variant="body2">{name}</Typography>} />
+                    </MenuItem>
+                  ))}
+                </TextField>
                 <TextField
                   label="User ID"
                   onChange={(e) => onValueChange(e)}
@@ -87,8 +147,9 @@ const AddStore = () => {
                     }
                   }}
                 />
+
                 <TextField
-                  label="Name"
+                  label="User Name"
                   onChange={(e) => onValueChange(e)}
                   name="user_name"
                   value={user_name}
@@ -116,15 +177,15 @@ const AddStore = () => {
                     }
                   }}
                 />
-
                 <TextField
-                  label="Status"
+                  label="Store"
                   onChange={(e) => onValueChange(e)}
-                  name="status"
-                  value={status}
+                  name="store_id"
+                  value={store_id}
                   id="my-input"
                   variant="outlined"
                   fullWidth
+                  select
                   sx={{
                     '& .MuiInputLabel-root': {
                       color: 'rgba(0, 0, 0, 0.4)',
@@ -145,14 +206,40 @@ const AddStore = () => {
                       }
                     }
                   }}
-                />
+                >
+                  {stores.map((name) => (
+                    <MenuItem
+                      key={name}
+                      value={name}
+                      sx={{
+                        padding: '6px 8px',
+                        lineHeight: '1.57143',
+                        fontSize: '0.875rem',
+                        fontWeight: '400',
+                        borderRadius: '6px',
+                        display: 'flex',
+                        marginBottom: '4px',
+                        height: '40px',
+                        '&:focus, &:hover': {
+                          bgcolor: '#f4f6f8'
+                        }
+                      }}
+                    >
+                      <ListItemText primary={<Typography variant="body2">{name}</Typography>} />
+                    </MenuItem>
+                  ))}
+                </TextField>
                 <TextField
-                  label="User Role"
-                  onChange={(e) => onValueChange(e)}
-                  name="user_role"
-                  value={user_role}
+                  label="Email Address"
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    onValueChange(e);
+                  }}
+                  name="email"
+                  value={email}
                   id="my-input"
                   variant="outlined"
+                  required={isEmailEditable}
                   fullWidth
                   sx={{
                     '& .MuiInputLabel-root': {
@@ -204,62 +291,39 @@ const AddStore = () => {
                     }
                   }}
                 />
-                <TextField
-                  label="APK Version"
-                  onChange={(e) => onValueChange(e)}
-                  name="apk_version"
-                  value={apk_version}
-                  id="my-input"
-                  variant="outlined"
-                  fullWidth
-                  sx={{
-                    '& .MuiInputLabel-root': {
-                      color: 'rgba(0, 0, 0, 0.4)',
-                      '&.Mui-focused': {
-                        color: 'black'
-                      }
-                    },
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: '10px',
-                      '& fieldset': {
-                        borderColor: 'rgba(0, 0, 0, 0.2)'
-                      },
-                      '&:hover fieldset': {
-                        borderColor: 'black'
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: 'black'
-                      }
-                    }
-                  }}
-                />
               </Box>
-              <Stack alignItems="flex-end !important" justifyContent="flex-end !important" sx={{ mt: 3 }}>
-                <Button
-                  color="primary"
-                  variant="contained"
-                  startIcon={<AddIcon />}
-                  onClick={() => addUserDetails()}
-                  sx={{
-                    bgcolor: '#000000 !important',
-                    color: '#FFFFFF !important',
-                    borderRadius: '8px !important',
-                    padding: '6px 24px !important',
-                    '&:hover': {
-                      bgcolor: '#1a1a1a !important'
-                    },
-                    '&:active': {
-                      bgcolor: '#000000 !important'
-                    }
-                  }}
-                >
-                  Create User
-                </Button>
-              </Stack>
-            </Paper>
+            </Stack>
+          </Grid>
+          <Grid item xs={12}>
+            <Stack direction="row" justifyContent="flex-end" spacing={2}>
+              <Button
+                color="primary"
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => addUserDetails()}
+                sx={{
+                  backgroundColor: '#000000 !important',
+                  color: '#FFFFFF !important',
+                  borderRadius: '8px !important',
+                  padding: '6px 24px !important',
+                  '&:hover': {
+                    backgroundColor: '#1a1a1a !important'
+                  },
+                  '&:active': {
+                    backgroundColor: '#000000 !important'
+                  }
+                }}
+              >
+                Create User
+              </Button>
+              <Button variant="outlined" onClick={handleAddUserDialogClose}>
+                Cancel
+              </Button>
+            </Stack>
+          </Grid>
         </Grid>
-      </Grid>
-    </>
+      </Paper>
+    </Box>
   );
 };
 
