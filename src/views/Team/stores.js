@@ -3,44 +3,22 @@ import { useState, useEffect, useMemo } from 'react';
 import {
   Button,
   Paper,
-  Typography,
   IconButton,
   Stack,
-  FormControl,
-  InputLabel,
-  Select,
-  OutlinedInput,
-  ListItemText,
-  MenuItem,
-  Checkbox,
-  useTheme,
   Dialog
 } from '@mui/material';
 import { Delete as DeleteIcon, Add as AddIcon } from '@mui/icons-material';
-// import { deleteStore } from './API/api';
 import { Link } from 'react-router-dom';
-import { BsApp } from 'react-icons/bs';
 import { CiExport } from 'react-icons/ci';
 import { CSVLink } from 'react-csv';
 import SearchBar from './SearchBar';
 import StoresTable from './StoresTable';
-// import AddStore from './addStore';
+import AddStore from './addStore';
 import FilterationButton from './FilterationButton';
-import { getUsers } from 'api';
+import { deleteUser, getUsers } from 'api';
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 20;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-      borderRadius: '10px',
-      padding: '0px 6px'
-    }
-  }
-};
-const status = ['All', 'Verified', 'Pending Verification', 'Rejected'];
+// const ITEM_HEIGHT = 48;
+// const ITEM_PADDING_TOP = 20;
 
 const AllStores = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -64,7 +42,7 @@ const AllStores = () => {
   };
 
   const deleteUserData = async (id) => {
-    await deleteStore(id);
+    await deleteUser(id);
     getAllUsers();
   };
 
@@ -73,15 +51,15 @@ const AllStores = () => {
     rowchange(response?.data);
   };
 
-  const [personName, setPersonName] = useState([]);
-  const handleChange = (event) => {
-    const {
-      target: { value }
-    } = event;
-    setPersonName(typeof value === 'string' ? value.split(',') : value);
-  };
+  // const [personName, setPersonName] = useState([]);
+  // const handleChange = (event) => {
+  //   const {
+  //     target: { value }
+  //   } = event;
+  //   setPersonName(typeof value === 'string' ? value.split(',') : value);
+  // };
 
-  const theme = useTheme();
+  // const theme = useTheme();
 
   const [searchQuery, setSearchQuery] = useState('');
   const handleSearchChange = (event) => {
@@ -228,80 +206,13 @@ const AllStores = () => {
             }
           }}
         >
-          This feature is under maintainance.
-          {/* <AddStore handleAddUserDialogClose={handleAddUserDialogClose} /> */}
+          <AddStore handleAddUserDialogClose={handleAddUserDialogClose} />
         </Dialog>
       </div>
       <Paper elevation={4} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
         <Stack className="p-2 border-0 border-red-500" direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
           <Stack direction={'row'} alignItems={'center'} justifyContent={'flex-end'} sx={{ paddingRight: '16px' }}>
           <FilterationButton handleNavigationClick={handleNavigationClick} />
-            <div>
-              <FormControl
-                sx={{
-                  m: 1,
-                  width: 250
-                }}
-                color="success"
-              >
-                <InputLabel id="demo-multiple-checkbox-label">Status</InputLabel>
-                <Select
-                  labelId="demo-multiple-checkbox-label"
-                  id="demo-multiple-checkbox"
-                  multiple
-                  value={personName}
-                  onChange={handleChange}
-                  input={
-                    <OutlinedInput
-                      label="Verification Filter"
-                      sx={{
-                        borderRadius: '10px',
-                        borderColor: theme.palette.grey[200]
-                      }}
-                    />
-                  }
-                  renderValue={(selected) => selected.join(', ')}
-                  MenuProps={MenuProps}
-                >
-                  {status.map((name) => (
-                    <MenuItem
-                      key={name}
-                      value={name}
-                      sx={{
-                        padding: '6px 8px',
-                        lineHeight: '1.57143',
-                        fontSize: '0.875rem',
-                        fontWeight: '400',
-                        borderRadius: '6px',
-                        display: 'flex',
-                        marginBottom: '4px',
-                        height: '40px',
-                        '&:focus, &:hover': {
-                          bgcolor: '#f4f6f8'
-                        }
-                      }}
-                    >
-                      <Checkbox
-                        checked={personName.indexOf(name) > -1}
-                        sx={{
-                          '& .MuiSvgIcon-root': {
-                            borderRadius: 10,
-                            fontSize: '1.25rem',
-                            color: '#00a76f'
-                          },
-                          borderRadius: '10px',
-                          borderWidth: '1px',
-                          outlineWidth: '1px'
-                        }}
-                        icon={<BsApp />}
-                      />
-                      <ListItemText primary={<Typography variant="body2">{name}</Typography>} />
-                    </MenuItem>
-                  ))}
-                </Select>
-                
-              </FormControl>
-            </div>
             <SearchBar searchQuery={searchQuery} handleSearchChange={handleSearchChange} />
           </Stack>
           <div style={{ display: 'flex', alignItems: 'center' }}>

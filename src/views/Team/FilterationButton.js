@@ -29,11 +29,11 @@ const FilterationButton = ({ handleNavigationClick }) => {
           inputProps={{ 'aria-label': 'Select Option' }}
           sx={{
             borderRadius: '10px',
-            borderWidth: '1px',
-            outlineWidth: '6px',
+            borderWidth: '2px',
+            outlineWidth: '8px',
             borderColor: 'white',
             '& .MuiSelect-outlined': {
-              padding: '15px 14px',
+              padding: '15px 15px',
             },  
           }}
         >
