@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 
 import { Button, Grid, Box, TextField, Stack, Typography, MenuItem, ListItemText, Paper } from '@mui/material';
-import { editStore } from './API/api';
 import { Add as AddIcon } from '@mui/icons-material';
-import { getUsers } from 'api';
+import { getOneUser, updateUser } from 'api';
 
 const initialValue = {
   user_role: '',
@@ -13,7 +12,7 @@ const initialValue = {
   email: '',
   number: ''
 };
-const roles = ['Agents', 'Department Manager', 'Store Manager', 'Cluster Manager', 'NHK Super User'];
+const roles = ['Agent', 'Department Manager', 'Store Manager', 'Cluster Manager', 'NHK Super User'];
 const stores = ['Lakme', 'Adidas', 'Trends', 'Loreal', 'Heads and Shoulders'];
 
 
@@ -29,7 +28,7 @@ const EditStore = ({rowId, handleEditUserDialogClose}) => {
   const loadUserDetails = async () => {
   try {
     console.log(rowId);
-    const response = await getUsers(rowId);
+    const response = await getOneUser(rowId);
     setUser(response.data);
   } catch(error){
     console.error('Error Fetching user details:',error);
@@ -37,7 +36,7 @@ const EditStore = ({rowId, handleEditUserDialogClose}) => {
   };
   const editUserDetails = async () => {
     try{
-    await editStore(rowId, user);
+    await updateUser(rowId, user);
     handleEditUserDialogClose();
     }catch(error) {
       console.error('Error Updating user details:',error);

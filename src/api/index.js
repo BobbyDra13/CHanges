@@ -120,6 +120,39 @@ export const getUsers = async () => {
   try {
     return await axios.get(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/getalluser`);
   } catch (error) {
-    console.log('Error while calling tean api ', error);
+    console.log('Error while calling team API :', error);
   }
 };
+
+export const getOneUser = async (id) => {
+  try{
+    return await axios.get(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/get_one_user?userID=${id}`);
+  } catch (error){
+    console.log('Error while calling team api :',error);
+  }
+  
+}
+
+export const deleteUser = async (id) => {
+  try{
+  return await axios.get(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/delete_user?userID=${id}`);
+} catch (error){
+  console.log('Error while calling team api :', error);
+  }
+};
+
+export const updateUser = async (id,user) => {
+  try {
+    return await axios.post(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/update_user?userID=${id}`,user);
+  } catch(error) {
+    console.log('Error while calling team api :', error);
+  }
+}
+
+export const createUser = async (user) => {
+  try {
+    return await axios.post(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/create_user`,user);
+  } catch(error){
+    console.log('Error while calling team api :', error);
+  }
+}
