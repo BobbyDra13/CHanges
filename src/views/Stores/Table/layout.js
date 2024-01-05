@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import { IoReturnUpBack } from 'react-icons/io5';
+import ImageListItemBar from '@mui/material/ImageListItemBar';
 
 const theme = createTheme({
   components: {
@@ -446,24 +447,34 @@ const StoreLayout = () => {
                 top: "45%",
               }}
             /> */}
-            <div className="w-full h-full text-3xl font-semibold border-[0px] grid py-6">
-              <div className="overflow-auto w-full ">
-                <ImageList sx={{ width: '100%', height: '60vh' }}  cols={currentShelf?.partsDetails?.length / 2} rowHeight="auto" gap={10}>
-                  {updatedPartDetails.map((item, index) => (
-                    <ImageListItem key={index} onClick={() => handleImageClick(item.img_url)}>
-                      {item.img_url ? (
-                        <img src={item.img_url} alt={`Shelf ${index}`} className="w-full h-full object-cover cursor-pointer" />
-                      ) : (
-                        <img
-                          src="https://img.freepik.com/premium-vector/no-data-found-empty-file-folder-concept-design-vector-illustration_620585-1698.jpg"
-                          alt="no data found"
-                          className=" w-full h-full object-cover"
-                        />
-                      )}
-                    </ImageListItem>
-                  ))}
-                </ImageList>
-              </div>
+            <div className="w-full h-full flex justify-center text-3xl font-semibold border-[0px] py-6">
+              {/* <div className="overflow-auto w-full "> */}
+              <ImageList
+                sx={{
+                  // width:
+                  //   currentShelf?.partsDetails?.length / 2 > 2 ? '50%' : currentShelf?.partsDetails?.length / 2 < 2 ? '16.67%' : '33.32%',
+                  width: `${(currentShelf?.partsDetails?.length / 2) * 16}%`,
+                  height: '120svh'
+                }}
+                cols={currentShelf?.partsDetails?.length / 2}
+                gap={10}
+              >
+                {updatedPartDetails.map((item, index) => (
+                  <ImageListItem key={index} onClick={() => handleImageClick(item.img_url)}>
+                    {item.img_url ? (
+                      <img src={item.img_url} alt={`Shelf ${index}`} className="w-full h-full object-cover cursor-pointer" />
+                    ) : (
+                      <img
+                        src="https://img.freepik.com/premium-vector/no-data-found-empty-file-folder-concept-design-vector-illustration_620585-1698.jpg"
+                        alt="no data found"
+                        className=" w-full h-full object-cover"
+                      />
+                    )}
+                    <ImageListItemBar title={`Fullness: ${item.avg_full}%`} subtitle={item.name} />
+                  </ImageListItem>
+                ))}
+              </ImageList>
+              {/* </div> */}
 
               {/* <Dialog open={isImageDialogOpen} onClose={handleCloseImageDialog} maxWidth="lg"> */}
               <Dialog
