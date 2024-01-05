@@ -28,7 +28,6 @@ jobs:
         
         - name: Checking the path and the data
           run: |
-            pwd
             ls -la
             cd build/
             ls -la
