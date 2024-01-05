@@ -36,7 +36,7 @@ jobs:
         - name: 📂 Sync files
           uses: SamKirkland/FTP-Deploy-Action@v4.3.4
           with:
-            local-dir: '/home/runner/work/neophyte_website/disha_fashion/build/'
+            local-dir: '/home/runner/work/disha_fashion/disha_fashion/build/'
             server: '217.21.91.239'
             username: u134273879.disha_fashion_ftp
             password: ${{ secrets.DISHA_FTP_PWD }}
