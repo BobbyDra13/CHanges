@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Box, TextField, Grid, Stack, MenuItem, ListItemText, Typography, Paper } from '@mui/material';
-import { addStore } from './API/api';
 import { Add as AddIcon } from '@mui/icons-material';
+import { createUser } from 'api';
 
 const initialValue = {
   user_role: '',
@@ -37,7 +37,7 @@ const AddStore = ({ handleAddUserDialogClose }) => {
 
   const addUserDetails = async () => {
     try {
-      await addStore(user);
+      await createUser(user);
       handleAddUserDialogClose();
     } catch (error) {
       console.error('Error adding user:', error);
