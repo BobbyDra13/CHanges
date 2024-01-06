@@ -119,6 +119,7 @@ const StoreLayout = () => {
   };
   const handleCloseShelves = () => {
     setOpenShelves(false);
+    setOpenBay(true);
     setLoading(true);
     getLayoutData();
   };
