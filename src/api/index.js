@@ -151,7 +151,7 @@ export const updateUser = async (id,user) => {
 
 export const createUser = async (user) => {
   try {
-    return await axios.post(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/create_user`,user);
+    return await axios.post(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/create`,user);
   } catch(error){
     console.log('Error while calling team api :', error);
   }

@@ -50,11 +50,11 @@ export default {
           url: '/'
         },
         {
-          id: 'analysis',
-          title: 'Analysis',
+          id: 'stores',
+          title: 'Stores',
           type: 'item',
-          icon: icons['AssessmentOutlinedIcon']
-          // url: '/dashboard/default'
+          icon: icons['AssessmentOutlinedIcon'],
+          url: '/stores'
         }
       ]
     },
@@ -127,19 +127,19 @@ export default {
       icon: icons['AccountTreeOutlinedIcon'],
       children: [
         {
-          id: 'stores',
-          title: 'Stores',
+          id: 'storesNew',
+          title: 'Stores New',
           type: 'item',
-          // url: 'https://mui.com/material-ui/material-icons/',
+          url: '/customers',
           icon: icons['StoreMallDirectoryOutlinedIcon']
           // external: true,
           // target: true
         },
         {
-          id: 'users',
-          title: 'Users',
+          id: 'team',
+          title: 'Team',
           type: 'item',
-          // url: '/utils/util-typography',
+          url: '/team',
           icon: icons['PeopleAltOutlinedIcon']
         }
       ]

@@ -9,7 +9,7 @@ const SearchBar = ({ searchQuery, handleSearchChange }) => {
       value={searchQuery}
       onChange={handleSearchChange}
       sx={{
-        width: 300,
+        width: 150,
         '& .MuiOutlinedInput-notchedOutline': { borderRadius: '10px' }
       }}
       placeholder="Search..."

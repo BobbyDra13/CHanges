@@ -1,12 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 
-import {
-  Button,
-  Paper,
-  IconButton,
-  Stack,
-  Dialog
-} from '@mui/material';
+import { Button, Paper, IconButton, Dialog, useTheme, Snackbar, Alert } from '@mui/material';
 import { Delete as DeleteIcon, Add as AddIcon } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { CiExport } from 'react-icons/ci';
@@ -17,13 +11,21 @@ import AddStore from './addStore';
 import FilterationButton from './FilterationButton';
 import { deleteUser, getUsers } from 'api';
 
-// const ITEM_HEIGHT = 48;
-// const ITEM_PADDING_TOP = 20;
-
 const AllStores = () => {
+  const theme = useTheme();
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [rows, rowchange] = useState([]);
   const [page, setPage] = useState(0);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+
+  const handleSnackbarOpen = () => {
+    setSnackbarOpen(true);
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
 
   useEffect(() => {
     getAllUsers();
@@ -50,16 +52,6 @@ const AllStores = () => {
     let response = await getUsers();
     rowchange(response?.data);
   };
-
-  // const [personName, setPersonName] = useState([]);
-  // const handleChange = (event) => {
-  //   const {
-  //     target: { value }
-  //   } = event;
-  //   setPersonName(typeof value === 'string' ? value.split(',') : value);
-  // };
-
-  // const theme = useTheme();
 
   const [searchQuery, setSearchQuery] = useState('');
   const handleSearchChange = (event) => {
@@ -169,52 +161,71 @@ const AllStores = () => {
 
   return (
     <>
-      
       <div
         style={{
           display: 'flex',
           justifyContent: 'flex-end',
-          marginRight: '30px'
+          marginRight: '30px',
+          flexWrap: 'wrap'
         }}
       >
         <Button
           onClick={handleAddUserDialogOpen}
-          color="primary"
           component={Link}
           variant="contained"
           startIcon={<AddIcon />}
           sx={{
-            bgcolor: '#000000',
+            bgcolor: theme.palette.success.main,
             color: '#FFFFFF',
+            borderRadius: '8px',
+            padding: '10px 20px',
+            transition: 'background-color 0.3s ease',
             '&:hover': {
-              bgcolor: '#1a1a1a'
+              bgcolor: theme.palette.success.dark
             },
             '&:active': {
-              bgcolor: '#000000'
+              bgcolor: theme.palette.success.light,
+              transform: 'scale(0.98)'
+            },
+            '&:focus': {
+              outline: 'none'
             }
           }}
         >
           Add User
         </Button>
-        <Dialog
-          open={showAddUserDialog}
-          onClose={handleAddUserDialogClose}
-          PaperProps={{
-            style: {
-              maxWidth: '100%',
-              maxHeight: '100%'
-            }
+        <Dialog open={showAddUserDialog} onClose={handleAddUserDialogClose}>
+          <AddStore
+            handleSnackbarOpen={handleSnackbarOpen}
+            handleSnackbarClose={handleSnackbarClose}
+            setSnackbarMessage={setSnackbarMessage}
+            handleAddUserDialogClose={handleAddUserDialogClose}
+          />
+        </Dialog>
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={handleSnackbarClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right'
           }}
         >
-          <AddStore handleAddUserDialogClose={handleAddUserDialogClose} />
-        </Dialog>
+          <Alert
+            onClose={handleSnackbarClose}
+            severity={snackbarMessage.includes('successfully') ? 'success' : snackbarMessage.includes('Failed') ? 'error' : 'info'}
+            sx={{ width: '100%' }}
+          >
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
       </div>
       <Paper elevation={4} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
-        <Stack className="p-2 border-0 border-red-500" direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Stack direction={'row'} alignItems={'center'} justifyContent={'flex-end'} sx={{ paddingRight: '16px' }}>
-          <FilterationButton handleNavigationClick={handleNavigationClick} />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <FilterationButton handleNavigationClick={handleNavigationClick} />
             <SearchBar searchQuery={searchQuery} handleSearchChange={handleSearchChange} />
-          </Stack>
+          </div>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             {selectedRows.length > 0 && (
               <IconButton
@@ -222,12 +233,12 @@ const AllStores = () => {
                 variant="contained"
                 onClick={handleDeleteSelectedRows}
                 sx={{
-                  color: '#212b36',
+                  color: theme.palette.error.dark,
                   fontSize: '14px',
                   lineHeight: '17px',
                   textTransform: 'none',
                   '&:hover': {
-                    bgcolor: '#f4f6f8'
+                    bgcolor: theme.palette.error.light
                   }
                 }}
               >
@@ -257,7 +268,7 @@ const AllStores = () => {
               </Button>
             </CSVLink>
           </div>
-        </Stack>
+        </div>
 
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           <StoresTable
