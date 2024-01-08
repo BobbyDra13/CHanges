@@ -105,9 +105,16 @@ const Insights = () => {
         min: 0,
         max: 100,
         tickAmount: 10,
+
+        categories: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+
         labels: {
-          show: false,
-          formatter: (x) => x
+          show: true,
+          formatter: (x) => x + '%',
+          style: {
+            colors: '#fff',
+            fontWeight: 'bold'
+          }
         },
         show: false,
         // categories: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
@@ -119,7 +126,18 @@ const Insights = () => {
         }
       },
       yaxis: {
-        show: false,
+        labels: {
+          show: false
+        },
+
+        title: {
+          text: 'Number of Stores',
+          style: {
+            color: '#fff',
+            fontSize: '12px'
+          }
+        },
+
         min: 0,
         max: Math.max(...seriesData)
       },
@@ -249,11 +267,11 @@ const Insights = () => {
             GetAnomaliesKpi(commonBody),
             GetAnomaliesBarChartData(commonBody)
           ]);
-
           if (capProgressData) {
             if (capProgressData.data.length > 0) {
               const totalCapturePercentage = capProgressData.data.reduce((acc, item) => acc + item.capture_percentage, 0);
               const average = totalCapturePercentage / capProgressData.data.length;
+
               setAvgCapProgress(Math.floor(average));
             } else {
               setAvgCapProgress('');
@@ -261,7 +279,6 @@ const Insights = () => {
             }
             setCapProgress(capProgressData.data);
           }
-
           if (brandDonutData) {
             // console.log('Brand Data', brandDonutData);
             if (brandDonutData.data.length > 0) {
@@ -362,7 +379,8 @@ const Insights = () => {
               isLoaded={anomalies}
               chart={statisticsChartsData[4].chart}
               title="Anomalies Found"
-              count={anomalies && anomalies}
+              count={(anomalies && anomalies) + '%'}
+              // count="0%"
               percentage={0.5}
               isLoss
               chipColor="error"
@@ -556,7 +574,7 @@ const Insights = () => {
                     <Typography variant="h1" sx={{ color: accentColMain, paddingTop: 8 }}>
                       {avgCapProgress ? (
                         `${avgCapProgress}%`
-                      ) : avgCapProgress === '' ? (
+                      ) : avgCapProgress === 0 ? ( //edited as zero from ''
                         '0%'
                       ) : (
                         <Stack spacing={0.5}>
