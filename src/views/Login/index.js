@@ -7,7 +7,7 @@ import { Card, CardContent, Typography, Grid } from '@mui/material';
 
 // project import
 import AuthLogin from './FirebaseLogin';
-import Background from "../../assets/images/abstractbackground.jpg";
+import Background from '../../assets/images/abstractbackground.jpg';
 
 // assets
 // import Logo from 'assets/images/logo-dark.svg';
@@ -22,7 +22,14 @@ const Login = () => {
       container
       justifyContent="center"
       alignItems="center"
-      sx={{ backgroundImage: `url(${Background})`, height: '100%', minHeight: '100vh' }}
+      sx={{
+        backgroundImage: `url(${Background})`,
+        height: '100%',
+        minHeight: '100vh',
+        backgroundSize: 'cover', // Set the background size to cover,
+        backgroundPosition: 'center', // Center the background image
+
+      }}
     >
       <Grid item xs={11} sm={7} md={6} lg={4}>
         <Card
