@@ -1,154 +1,156 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import OtpInput from 'react-otp-input';
+import { COUNTRYCODE } from './countryCode';
+import { Box, Button, FormHelperText, TextField, Snackbar } from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
+import { auth } from 'firebase.config';
+import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 
-// material-ui
-import { useTheme } from '@mui/material/styles';
-import {
-  Box,
-  Button,
-  Divider,
-  FormHelperText,
-  Grid,
-  TextField,
-  Typography,
-  FormControl,
-  InputLabel,
-  OutlinedInput,
-  InputAdornment,
-  IconButton
-} from '@mui/material';
-
-//  third party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 
-// assets
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import Google from 'assets/images/social-google.svg';
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
-// ==============================|| FIREBASE LOGIN ||============================== //
+const FirebaseLogin = () => {
+  const [otp, setOtp] = useState('');
+  const [phone, setPhone] = useState('');
+  const [countryCode, setCountryCode] = useState('+91');
+  const [buttonLabel, setButtonLabel] = useState('Send OTP');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [otpEntered, setOtpEntered] = useState(false);
 
-const FirebaseLogin = ({ ...rest }) => {
-  const theme = useTheme();
-  const [showPassword, setShowPassword] = React.useState(false);
-
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
+  const onCaptchVerify = () => {
+    window.recaptchaVerifier = new RecaptchaVerifier(
+      auth,
+      'recaptcha-container',
+      {
+        size: 'invisible',
+        callback: () => {},
+        'expired-callback': () => {}
+      },
+    );
   };
 
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
+
+  const getPhoneNumber = `+${countryCode}${phone}`;
+
+  function onSignup() {
+    onCaptchVerify();
+    let appVerifier = window.recaptchaVerifier;
+
+    try {
+      signInWithPhoneNumber(auth, getPhoneNumber, appVerifier)
+        .then((confirmationResult) => {
+          window.confirmationResult = confirmationResult;
+          if (confirmationResult) {
+            setSnackbarOpen(true);
+            setButtonLabel('Submit');
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } catch (error) {
+      console.log('Error in signInWithPhoneNumber:', error);
+    }
+  }
+
+  function onOTPVerify() {
+    let confirmationResult = window.confirmationResult;
+    
+    if (!confirmationResult) {
+      console.error('Confirmation result is not available.');
+      return;
+    }
+  
+    confirmationResult
+      .confirm(otp)
+      .then(async (res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+  
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+    setButtonLabel('Submit');
+  };
+
+  const handleChange = (event) => {
+    const val = event.target.value;
+
+    if (val.match(/[^0-9]/)) {
+      return event.preventDefault();
+    }
+
+    setPhone(val);
+  };
+
+  const handleOtpChange = (value) => {
+    setOtp(value);
+    setOtpEntered(value.length === 6);
   };
 
   return (
     <>
-      <Grid container justifyContent="center">
-        <Grid item xs={12}>
-          <Button
-            fullWidth={true}
-            sx={{
-              fontSize: { md: '1rem', xs: '0.875rem' },
-              fontWeight: 500,
-              bgcolor: theme.palette.grey[50],
-              color: theme.palette.grey[600],
-              textTransform: 'capitalize',
-              '&:hover': {
-                bgcolor: theme.palette.grey[100]
-              }
-            }}
-            size="large"
-            variant="contained"
-          >
-            <img
-              src={Google}
-              alt="google"
-              width="20px"
-              style={{
-                marginRight: '16px',
-                '@media (maxWidth:899.95px)': {
-                  marginRight: '8px'
-                }
-              }}
-            />{' '}
-            Sign in with Google
-          </Button>
-        </Grid>
-      </Grid>
-
-      <Box alignItems="center" display="flex" mt={2}>
-        <Divider sx={{ flexGrow: 1 }} orientation="horizontal" />
-        <Typography color="textSecondary" variant="h5" sx={{ m: theme.spacing(2) }}>
-          OR
-        </Typography>
-        <Divider sx={{ flexGrow: 1 }} orientation="horizontal" />
-      </Box>
-
       <Formik
         initialValues={{
-          email: 'admin@neophyte.ai',
-          password: 'neo@12345',
+          phone: '7735299084',
+          otp: '123456',
           submit: null
         }}
         validationSchema={Yup.object().shape({
-          email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-          password: Yup.string().max(255).required('Password is required')
+          phone: Yup.string()
+            .matches(/^[0-9]{10}$/, 'Must be a valid 10-digit phone number')
+            .required('Phone number is required'),
+          otp: Yup.string().when('phone', {
+            is: (val) => !!val,
+            then: Yup.string().max(255).required('OTP is required')
+          })
         })}
       >
-        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
-          <form noValidate onSubmit={handleSubmit} {...rest}>
-            <TextField
-              error={Boolean(touched.email && errors.email)}
-              fullWidth
-              helperText={touched.email && errors.email}
-              label="Email Address / Username"
-              margin="normal"
-              name="email"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              type="email"
-              value={values.email}
-              variant="outlined"
-            />
+        {({ errors }) => (
+          <form noValidate>
+            <div id="rubikFont" className="flex flex-row space-x-2">
+              <div id="recaptcha-container"></div>
 
-            <FormControl fullWidth error={Boolean(touched.password && errors.password)} sx={{ mt: theme.spacing(3), mb: theme.spacing(1) }}>
-              <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-password"
-                type={showPassword ? 'text' : 'password'}
-                value={values.password}
-                name="password"
-                onBlur={handleBlur}
+              <select
+                value={countryCode}
+                onChange={(e) => setCountryCode(e.target.value)}
+                className="px-2 py-2 transition duration-300 border border-gray-300 rounded bg-gray-100 focus:border-transparent focus:outline-none focus:ring-4 focus:ring-emerald-300"
+              >
+                {COUNTRYCODE.map((e) => (
+                  <option key={e} value={e.dial_code}>
+                    {e.dial_code}
+                  </option>
+                ))}
+              </select>
+              <TextField
+                fullWidth
+                label="Enter your phone number"
+                name="phone"
                 onChange={handleChange}
-                label="Password"
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      edge="end"
-                      size="large"
-                    >
-                      {showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                }
+                type="tel" 
+                value={phone}
+                variant="outlined"
               />
-              {touched.password && errors.password && (
-                <FormHelperText error id="standard-weight-helper-text">
-                  {' '}
-                  {errors.password}{' '}
-                </FormHelperText>
-              )}
-            </FormControl>
-            <Grid container justifyContent="flex-end">
-              <Grid item>
-                <Typography variant="subtitle2" color="primary" sx={{ textDecoration: 'none' }}>
-                  Forgot Password?
-                </Typography>
-              </Grid>
-            </Grid>
+            </div>
+            <div className="flex flex-col justify-center">
+              <p className="py-2 px-2">Enter OTP</p>
+              <OtpInput
+                value={otp}
+                onChange={handleOtpChange}
+                inputStyle="m-[0.25rem] w-12  text-3xl rounded-md border border-solid border-gray-300 focus:border-transparent focus:outline-none focus:ring-4 focus:ring-emerald-300"
+                numInputs={6}
+                renderSeparator={<span>-</span>}
+                renderInput={(props) => <input {...props} disabled={!phone || otpEntered} />}
+              />
+            </div>
 
             {errors.submit && (
               <Box mt={3}>
@@ -157,12 +159,52 @@ const FirebaseLogin = ({ ...rest }) => {
             )}
 
             <Box mt={2}>
-              <Link to={'/insights'}>
-                <Button color="primary" disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained">
-                  Log In
-                </Button>
+              <Link to={buttonLabel === 'Submit' && otpEntered ? '/insights' : '#'}>
+                {buttonLabel === 'Send OTP' && (
+                  <>
+                  <Button
+                    color="primary"
+                    // sx={{ backgroundColor: 'primary', color: 'white' }}  
+                    disabled={!phone || phone.length !== 10 || otpEntered}
+                    fullWidth
+                    size="large"
+                    type="button"
+                    variant="outlined"
+                    onClick={onSignup}
+                  >
+                    Send OTP
+                  </Button>
+                  </>
+                )}
+
+                {buttonLabel === 'Submit' && (
+                  <Button
+                    // color="primary"
+                    // sx={{ backgroundColor: 'primary', color: 'white' }}  
+                    disabled={!otpEntered || otp.length !== 6}
+                    fullWidth
+                    size="large"
+                    type="button"
+                    variant="outlined"
+                    onClick={onOTPVerify}
+                  >
+                    Submit
+                  </Button>
+                )}
               </Link>
             </Box>
+
+            <Snackbar
+              open={snackbarOpen}
+              anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+              key={'top' + 'center'}
+              autoHideDuration={6000}
+              onClose={handleCloseSnackbar}
+            >
+              <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
+                OTP sent successfully!
+              </Alert>
+            </Snackbar>
           </form>
         )}
       </Formik>

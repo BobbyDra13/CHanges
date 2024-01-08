@@ -7,6 +7,7 @@ import { Card, CardContent, Typography, Grid } from '@mui/material';
 
 // project import
 import AuthLogin from './FirebaseLogin';
+import Background from "../../assets/images/abstractbackground.jpg";
 
 // assets
 // import Logo from 'assets/images/logo-dark.svg';
@@ -21,7 +22,7 @@ const Login = () => {
       container
       justifyContent="center"
       alignItems="center"
-      sx={{ bgcolor: theme.palette.common.black, height: '100%', minHeight: '100vh' }}
+      sx={{ backgroundImage: `url(${Background})`, height: '100%', minHeight: '100vh' }}
     >
       <Grid item xs={11} sm={7} md={6} lg={4}>
         <Card
@@ -63,7 +64,7 @@ const Login = () => {
               <Grid item xs={12}>
                 <AuthLogin />
               </Grid>
-              <Grid container justifyContent="flex-start" sx={{ mt: theme.spacing(2), mb: theme.spacing(1) }}>
+              {/* <Grid container justifyContent="flex-start" sx={{ mt: theme.spacing(2), mb: theme.spacing(1) }}>
                 <Grid item>
                   <RouterLink to={'/register'}>
                     <Typography variant="subtitle2" color="secondary" sx={{ textDecoration: 'none', pl: 2 }}>
@@ -71,7 +72,7 @@ const Login = () => {
                     </Typography>
                   </RouterLink>
                 </Grid>
-              </Grid>
+              </Grid> */}
             </Grid>
           </CardContent>
         </Card>
