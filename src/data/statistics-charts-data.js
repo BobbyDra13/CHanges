@@ -103,7 +103,7 @@ const anomaliesChart = {
       curve: 'smooth'
     },
     markers: {
-      size: 0
+      size: 4
     },
     grid: {
       show: false

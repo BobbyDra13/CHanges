@@ -13,7 +13,7 @@ import AllStores from './stores';
 const Team = () => {
   return (
     <>
-      <Grid container style={{ marginLeft: '30px' }}>
+      <Grid container >
         <Grid item xs={12}>
           <Breadcrumb title="Team">
             <Typography component={Link} to="/" variant="subtitle2" color="inherit" className="link-breadcrumb">
