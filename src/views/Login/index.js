@@ -7,7 +7,7 @@ import { Card, CardContent, Typography, Grid } from '@mui/material';
 
 // project import
 import AuthLogin from './FirebaseLogin';
-import Background from '../../assets/images/abstractbackground.jpg';
+// import Background from '../../assets/images/backgroundcolor.jpeg';
 
 // assets
 // import Logo from 'assets/images/logo-dark.svg';
@@ -23,16 +23,18 @@ const Login = () => {
       justifyContent="center"
       alignItems="center"
       sx={{
-        backgroundImage: `url(${Background})`,
+        // backgroundImage: `url(${Background})`,
+        // background: 'rgb(2, 0, 36)',
+        // backgroundImage: 'linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(0, 172, 105, 1) 29%, rgba(0, 212, 255, 1) 100%)',
         height: '100%',
         minHeight: '100vh',
         backgroundSize: 'cover', // Set the background size to cover,
-        backgroundPosition: 'center', // Center the background image
-
+        backgroundPosition: 'center' // Center the background image
       }}
     >
       <Grid item xs={11} sm={7} md={6} lg={4}>
         <Card
+        // className='shadow-xl drop-shadow-md'
           sx={{
             overflow: 'visible',
             display: 'flex',

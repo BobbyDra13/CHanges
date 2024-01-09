@@ -51,7 +51,7 @@ const Customers = () => {
   const error = theme.palette.error.main;
   const navigate = useNavigate();
   const options = [
-    { label: 'View', icon: <VisibilityIcon />, onClick: () => navigate('/stores/analysis/layout') },
+    { label: 'View', icon: <VisibilityIcon />, onClick: () => navigate('/stores/layout') },
     { label: 'Edit', icon: <EditIcon />, disabled: true },
     { label: 'Delete', icon: <DeleteIcon />, color: 'red', disabled: true }
   ];

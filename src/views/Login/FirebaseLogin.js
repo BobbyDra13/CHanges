@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import OtpInput from 'react-otp-input';
 import { COUNTRYCODE } from './countryCode';
-import { Box, Button, FormHelperText, TextField, Snackbar } from '@mui/material';
+import { Box, Button, FormHelperText, Snackbar } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
+// import { useTheme } from '@mui/material';
 import { auth } from 'firebase.config';
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
+// import FadeLoader from "react-spinners/FadeLoader";
+// import { css } from '@emotion/react';
+
 
 import * as Yup from 'yup';
 import { Formik } from 'formik';
@@ -15,25 +19,31 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 const FirebaseLogin = () => {
+  // const theme = useTheme();
+
+  const navigate = useNavigate();
   const [otp, setOtp] = useState('');
   const [phone, setPhone] = useState('');
   const [countryCode, setCountryCode] = useState('+91');
   const [buttonLabel, setButtonLabel] = useState('Send OTP');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [otpEntered, setOtpEntered] = useState(false);
+  // const [loading, setLoading] = useState(true);
+//   const [color] = useState("black");
+//   const override = css`
+//   display: block;
+//   margin: 0 auto;
+//   border-color: red;
+// `;
+
 
   const onCaptchVerify = () => {
-    window.recaptchaVerifier = new RecaptchaVerifier(
-      auth,
-      'recaptcha-container',
-      {
-        size: 'invisible',
-        callback: () => {},
-        'expired-callback': () => {}
-      },
-    );
+    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      size: 'invisible',
+      callback: () => {},
+      'expired-callback': () => {}
+    });
   };
-
 
   const getPhoneNumber = `+${countryCode}${phone}`;
 
@@ -48,6 +58,7 @@ const FirebaseLogin = () => {
           if (confirmationResult) {
             setSnackbarOpen(true);
             setButtonLabel('Submit');
+            // setLoading(false);
           }
         })
         .catch((error) => {
@@ -57,38 +68,41 @@ const FirebaseLogin = () => {
       console.log('Error in signInWithPhoneNumber:', error);
     }
   }
-
   function onOTPVerify() {
     let confirmationResult = window.confirmationResult;
-    
+
     if (!confirmationResult) {
       console.error('Confirmation result is not available.');
       return;
     }
-  
+
     confirmationResult
       .confirm(otp)
-      .then(async (res) => {
-        console.log(res);
+      .then((userCredential) => {
+        // Verification successful
+        const user = userCredential.user;
+
+        if (user) {
+          navigate('/insights');
+          // OTP is correct, you can redirect to the '/insights' page
+          console.log('OTP is correct. Redirect to /insights.');
+          // Add the logic to navigate to '/insights'
+        } else {
+          // OTP is incorrect, show a snackbar or error message
+          console.log('Incorrect OTP. Show error message.');
+          // Add logic to display an error message (e.g., setSnackbarOpen(true, 'Incorrect OTP'))
+        }
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((error) => {
+        // OTP verification failed, show a snackbar or error message
+        console.error('Error verifying OTP:', error);
+        // Add logic to display an error message (e.g., setSnackbarOpen(true, 'OTP verification failed'))
       });
   }
-  
+
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
     setButtonLabel('Submit');
-  };
-
-  const handleChange = (event) => {
-    const val = event.target.value;
-
-    if (val.match(/[^0-9]/)) {
-      return event.preventDefault();
-    }
-
-    setPhone(val);
   };
 
   const handleOtpChange = (value) => {
@@ -100,8 +114,8 @@ const FirebaseLogin = () => {
     <>
       <Formik
         initialValues={{
-          phone: '7735299084',
-          otp: '123456',
+          phone: '',
+          otp: '',
           submit: null
         }}
         validationSchema={Yup.object().shape({
@@ -122,7 +136,7 @@ const FirebaseLogin = () => {
               <select
                 value={countryCode}
                 onChange={(e) => setCountryCode(e.target.value)}
-                className="px-2 py-2 transition duration-300 border border-gray-300 rounded bg-gray-100 focus:border-transparent focus:outline-none focus:ring-4 focus:ring-emerald-300"
+                className={`px-2 py-2 transition duration-300 border border-gray-300 rounded bg-gray-100 focus:border-transparent focus:outline-none focus:ring-1 focus:ring-emerald-300`}
               >
                 {COUNTRYCODE.map((e) => (
                   <option key={e} value={e.dial_code}>
@@ -130,25 +144,36 @@ const FirebaseLogin = () => {
                   </option>
                 ))}
               </select>
-              <TextField
-                fullWidth
-                label="Enter your phone number"
+              <input
+                type="tel"
+                maxLength={10}
+                label="Number"
                 name="phone"
-                onChange={handleChange}
-                type="tel" 
-                value={phone}
-                variant="outlined"
+                onChange={(event) => setPhone(event.target.value)}
+                placeholder="Mobile number"
+                autoFocus
+                className="px-4 py-2 w-full transition duration-300 border border-gray-300 rounded bg-gray-100 focus:border-transparent focus:outline-none focus:ring-1 focus:ring-emerald-300"
               />
             </div>
-            <div className="flex flex-col justify-center">
-              <p className="py-2 px-2">Enter OTP</p>
+            <div className="flex flex-col justify-center items-center">
+              <p className="mt-2 py-2 px-2">Enter OTP</p>
               <OtpInput
                 value={otp}
                 onChange={handleOtpChange}
-                inputStyle="m-[0.25rem] w-12  text-3xl rounded-md border border-solid border-gray-300 focus:border-transparent focus:outline-none focus:ring-4 focus:ring-emerald-300"
+                inputStyle="m-[0.75rem] text-lg rounded-md border border-solid border-gray-300 focus:border-transparent focus:outline-none focus:ring-1 focus:ring-emerald-300"
                 numInputs={6}
                 renderSeparator={<span>-</span>}
-                renderInput={(props) => <input {...props} disabled={!phone || otpEntered} />}
+                renderInput={(props) => (
+                  <input
+                    {...props}
+                    style={{
+                      padding: '0.5rem', 
+                      width: '2rem', 
+                      height: '2rem' 
+                    }}
+                    disabled={!phone || buttonLabel !== 'Submit'}
+                  />
+                )}
               />
             </div>
 
@@ -158,13 +183,21 @@ const FirebaseLogin = () => {
               </Box>
             )}
 
-            <Box mt={2}>
-              <Link to={buttonLabel === 'Submit' && otpEntered ? '/insights' : '#'}>
-                {buttonLabel === 'Send OTP' && (
-                  <>
+            <Box
+              mt={2}
+              // sx={{
+              //   backgroundColor: theme.palette.success.main,
+              //   color: 'black',
+              //   '&:hover': {
+              //     backgroundColor: theme.palette.success.dark // Change the hover color if needed
+              //   },
+              //   cursor: 'pointer'
+              // }}
+            >
+              {buttonLabel === 'Send OTP' &&(
+              <>
                   <Button
-                    color="primary"
-                    // sx={{ backgroundColor: 'primary', color: 'white' }}  
+                    // color="primary"
                     disabled={!phone || phone.length !== 10 || otpEntered}
                     fullWidth
                     size="large"
@@ -175,33 +208,30 @@ const FirebaseLogin = () => {
                     Send OTP
                   </Button>
                   </>
-                )}
+              )}
+              {buttonLabel === 'Submit' && (
 
-                {buttonLabel === 'Submit' && (
-                  <Button
-                    // color="primary"
-                    // sx={{ backgroundColor: 'primary', color: 'white' }}  
-                    disabled={!otpEntered || otp.length !== 6}
-                    fullWidth
-                    size="large"
-                    type="button"
-                    variant="outlined"
-                    onClick={onOTPVerify}
-                  >
-                    Submit
-                  </Button>
-                )}
-              </Link>
+                <Button
+                  disabled={!otpEntered || otp.length !== 6}
+                  fullWidth
+                  size="large"
+                  type="button"
+                  variant="outlined"
+                  onClick={onOTPVerify}
+                >
+                  Submit
+                </Button>
+              )}
             </Box>
 
             <Snackbar
               open={snackbarOpen}
-              anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-              key={'top' + 'center'}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              key={'bottom' + 'right'}
               autoHideDuration={6000}
               onClose={handleCloseSnackbar}
             >
-              <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
+              <Alert onClose={handleCloseSnackbar} className="text-white" severity="success" sx={{ width: '100%' }}>
                 OTP sent successfully!
               </Alert>
             </Snackbar>
