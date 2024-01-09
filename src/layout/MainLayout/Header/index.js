@@ -82,7 +82,7 @@ const Header = ({ drawerToggle }) => {
             Insights
           </Link>
           <Link
-            to={'/stores'}
+            to={'/customers'}
             onClick={() => dispatch({ type: actionTypes.MENU_OPEN, isOpen: 'stores' })}
             className={`text-lg hover:border-b-2 hover:border-emerald-500 hover:text-emerald-600 ${
               location.pathname === '/stores' || location.pathname === '/stores/analysis'
@@ -93,6 +93,17 @@ const Header = ({ drawerToggle }) => {
             Stores
           </Link>
           {/* <Link
+            to={'/stores'}
+            onClick={() => dispatch({ type: actionTypes.MENU_OPEN, isOpen: 'stores' })}
+            className={`text-lg hover:border-b-2 hover:border-emerald-500 hover:text-emerald-600 ${
+              location.pathname === '/stores' || location.pathname === '/stores/analysis'
+                ? 'border-b-2 border-emerald-500 text-emerald-600'
+                : ''
+            }`}
+          >
+            Stores
+          </Link> */}
+          {/* <Link
             to={'/brands'}
             onClick={() => dispatch({ type: actionTypes.MENU_OPEN, isOpen: 'brands' })}
             className={`text-lg hover:border-b-2 hover:border-emerald-500 hover:text-emerald-600 ${
@@ -101,7 +112,7 @@ const Header = ({ drawerToggle }) => {
           >
             Brands
           </Link> */}
-          <Link
+          {/* <Link
             to={'/customers'}
             onClick={() => dispatch({ type: actionTypes.MENU_OPEN, isOpen: 'customers' })}
             className={`text-lg hover:border-b-2 hover:border-emerald-500 hover:text-emerald-600 ${
@@ -109,7 +120,7 @@ const Header = ({ drawerToggle }) => {
             }`}
           >
             Stores New
-          </Link>
+          </Link> */}
           <Link
             to={'/team'}
             onClick={() => dispatch({ type: actionTypes.MENU_OPEN, isOpen: 'team' })}

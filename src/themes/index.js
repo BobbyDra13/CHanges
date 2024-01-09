@@ -200,10 +200,10 @@ export function theme() {
                 color: value.primary
               },
               color: value.primary,
-              bgcolor: value.menuHover
+              bgcolor: value.primary
             },
             '&:hover': {
-              bgcolor: value.menuHover,
+              bgcolor: value.primary,
               color: value.primary,
               '& .MuiListItemIcon-root': {
                 color: value.primary
@@ -211,7 +211,7 @@ export function theme() {
             },
             button: {
               '&:hover': {
-                bgcolor: value.menuHover
+                bgcolor: value.primary
               }
             }
           }
@@ -228,10 +228,10 @@ export function theme() {
                 color: value.primary
               },
               color: value.primary,
-              bgcolor: value.menuHover
+              bgcolor: value.primary
             },
             '&:hover': {
-              bgcolor: value.menuHover,
+              bgcolor: value.primary,
               color: value.primary,
               '& .MuiListItemIcon-root': {
                 color: value.primary
@@ -239,7 +239,7 @@ export function theme() {
             },
             button: {
               '&:hover': {
-                bgcolor: value.menuHover
+                bgcolor: value.primary
               }
             }
           }

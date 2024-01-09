@@ -41,7 +41,7 @@ const MainRoutes = {
       element: <StoreContent />
     },
     {
-      path: '/stores/analysis/layout',
+      path: '/stores/layout',
       element: <StoreLayout />
     },
     {
