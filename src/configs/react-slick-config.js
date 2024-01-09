@@ -22,10 +22,10 @@ function SampleNextArrow(props) {
 
 export const settings = {
   dots: false,
-  focusOnSelect: true,
+  // focusOnSelect: true,
   infinite: false,
   speed: 500,
-  slidesToShow: 8,
+  slidesToShow: 5,
   slidesToScroll: 1,
   // initialSlide: 0,
   nextArrow: <SampleNextArrow />,
@@ -34,35 +34,35 @@ export const settings = {
     {
       breakpoint: 1526,
       settings: {
-        slidesToShow: 7,
+        slidesToShow: 5,
         slidesToScroll: 1
       }
     },
     {
       breakpoint: 1350,
       settings: {
-        slidesToShow: 5,
+        slidesToShow: 4,
         slidesToScroll: 1
       }
     },
     {
       breakpoint: 1200,
       settings: {
-        slidesToShow: 4,
+        slidesToShow: 3,
         slidesToScroll: 1
       }
     },
     {
       breakpoint: 1040,
       settings: {
-        slidesToShow: 3,
+        slidesToShow: 2,
         slidesToScroll: 1
       }
     },
     {
       breakpoint: 900,
       settings: {
-        slidesToShow: 7,
+        slidesToShow: 5,
         slidesToScroll: 1,
         initialSlide: 1
       }
@@ -70,7 +70,7 @@ export const settings = {
     {
       breakpoint: 800,
       settings: {
-        slidesToShow: 6,
+        slidesToShow: 4,
         slidesToScroll: 1,
         initialSlide: 1
       }
@@ -78,7 +78,7 @@ export const settings = {
     {
       breakpoint: 700,
       settings: {
-        slidesToShow: 5,
+        slidesToShow: 3,
         slidesToScroll: 1,
         initialSlide: 1
       }
@@ -86,7 +86,7 @@ export const settings = {
     {
       breakpoint: 600,
       settings: {
-        slidesToShow: 3,
+        slidesToShow: 2,
         slidesToScroll: 1,
         initialSlide: 1
       }
@@ -94,7 +94,7 @@ export const settings = {
     {
       breakpoint: 450,
       settings: {
-        slidesToShow: 2,
+        slidesToShow: 1,
         slidesToScroll: 1
       }
     },

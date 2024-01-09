@@ -7,7 +7,7 @@ import Img3 from '../assets/images/AnomalyImages/img3.jpg';
 import Img4 from '../assets/images/AnomalyImages/img4.jpg';
 import Img5 from '../assets/images/AnomalyImages/img5.jpg';
 import Img6 from '../assets/images/AnomalyImages/img6.jpg';
-import Img7 from '../assets/images/AnomalyImages/img7.jpg'; 
+import Img7 from '../assets/images/AnomalyImages/img7.jpg';
 import Img8 from '../assets/images/AnomalyImages/img8.jpg';
 
 export const storesData = [
@@ -30,42 +30,52 @@ export const storesData = [
       resolved: 5,
       images: [
         {
+          type: 'upKeep',
           agent: 'Rajkishore Pradhan',
           url: Img1
         },
         {
+          type: 'vm',
           agent: 'Paresh Kumar Barik',
           url: Img2
         },
         {
+          type: 'pop',
           agent: 'Rajkishore Pradhan',
           url: Img3
         },
         {
+          type: 'upKeep',
           agent: 'Paresh Kumar Barik',
           url: Img4
         },
         {
+          type: 'vm',
           agent: 'Rajkishore Pradhan',
           url: Img5
         },
         {
+          type: 'pop',
           agent: 'Paresh Kumar Barik',
           url: Img6
         },
         {
+          type: 'upKeep',
           agent: 'Rajkishore Pradhan',
           url: Img7
         },
         {
+          type: 'vm',
           agent: 'Paresh Kumar Barik',
           url: Img8
         },
         {
+          type: 'pop',
           agent: 'Rajkishore Pradhan',
           url: Img1
         },
         {
+          type: 'upKeep',
           agent: 'Paresh Kumar Barik',
           url: Img2
         }
@@ -101,38 +111,47 @@ export const storesData = [
       resolved: 3,
       images: [
         {
+          type: 'vm',
           agent: 'Mayur Pawar',
           url: Img8
         },
         {
+          type: 'pop',
           agent: 'Gourav Atre',
           url: Img7
         },
         {
+          type: 'upKeep',
           agent: 'Mayur Pawar',
           url: Img6
         },
         {
+          type: 'vm',
           agent: 'Gourav Atre',
           url: Img5
         },
         {
+          type: 'pop',
           agent: 'Mayur Pawar',
           url: Img4
         },
         {
+          type: 'upKeep',
           agent: 'Gourav Atre',
           url: Img3
         },
         {
+          type: 'vm',
           agent: 'Mayur Pawar',
           url: Img2
         },
         {
+          type: 'pop',
           agent: 'Gourav Atre',
           url: Img1
         },
         {
+          type: 'upKeep',
           agent: 'Mayur Pawar',
           url: Img8
         }
@@ -168,46 +187,57 @@ export const storesData = [
       resolved: 0,
       images: [
         {
+          type: 'vm',
           agent: 'Abhijeet Dalai',
           url: Img5
         },
         {
+          type: 'pop',
           agent: 'Ashis Sasmal',
           url: Img3
         },
         {
+          type: 'upKeep',
           agent: 'Abhijeet Dalai',
           url: Img6
         },
         {
+          type: 'vm',
           agent: 'Ashis Sasmal',
           url: Img1
         },
         {
+          type: 'pop',
           agent: 'Abhijeet Dalai',
           url: Img4
         },
         {
+          type: 'upKeep',
           agent: 'Ashis Sasmal',
           url: Img8
         },
         {
+          type: 'vm',
           agent: 'Abhijeet Dalai',
           url: Img2
         },
         {
+          type: 'pop',
           agent: 'Ashis Sasmal',
           url: Img7
         },
         {
+          type: 'upKeep',
           agent: 'Abhijeet Dalai',
           url: Img5
         },
         {
+          type: 'vm',
           agent: 'Ashis Sasmal',
           url: Img4
         },
         {
+          type: 'pop',
           agent: 'Abhijeet Dalai',
           url: Img1
         }
