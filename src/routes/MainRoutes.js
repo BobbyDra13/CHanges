@@ -14,8 +14,6 @@ const Brands = Loadable(lazy(() => import('../views/Brands')));
 
 const Customers = Loadable(lazy(() => import('../views/Customers')));
 
-const StoreContent = Loadable(lazy(() => import('../views/Stores/Table')));
-
 const Team = Loadable(lazy(() => import('../views/Team')));
 
 const UtilsTypography = Loadable(lazy(() => import('../views/Utils/Typography')));
@@ -25,44 +23,39 @@ const SamplePage = Loadable(lazy(() => import('../views/SamplePage')));
 // ==============================|| MAIN ROUTES ||============================== //
 
 const MainRoutes = {
-  path: '/',
+  path: '/main',
   element: <MainLayout />,
   children: [
     {
-      path: '/',
+      path: '/main/insights', // Make this path relative to '/main'
       element: <Insight />
     },
     {
-      path: '/insights',
-      element: <Insight />
-    },
-    {
-      path: '/stores',
-      element: <StoreContent />
-    },
-    {
-      path: '/stores/layout',
+      path: '/main/stores/layout',
       element: <StoreLayout />
     },
     {
-      path: '/brands',
+      path: '/main/brands',
       element: <Brands />
     },
     {
-      path: '/customers',
+      path: '/main/stores',
       element: <Customers />
     },
     {
-      path: '/team',
-      element: <Team />
+      path: '/main/team',
+      element: <Team />,
+      children: [
+        {
+          path: 'edit/:id', // Make this path relative to '/team'
+          element: <EditStore />
+        }
+      ]
     },
-    {
-      path: '/team/edit/:id',
-      element: <EditStore/>
-    },
-    { path: '/utils/util-typography', element: <UtilsTypography /> },
-    { path: '/sample-page', element: <SamplePage /> }
+    { path: '/main/utils/util-typography', element: <UtilsTypography /> },
+    { path: '/main/sample-page', element: <SamplePage /> }
   ]
 };
+
 
 export default MainRoutes;
