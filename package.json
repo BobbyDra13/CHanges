@@ -44,6 +44,7 @@
     "react-scripts": "5.0.1",
     "react-slick": "^0.29.0",
     "react-spinners": "^0.13.8",
+    "react-zoom-pan-pinch": "^3.3.0",
     "redux": "^4.2.1",
     "slick-carousel": "^1.8.1",
     "stream-browserify": "^3.0.0",

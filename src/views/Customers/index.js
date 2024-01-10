@@ -1,9 +1,10 @@
-import React from 'react';
+import { React, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { useNavigate } from 'react-router-dom';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
 // material-ui
 import {
@@ -19,12 +20,17 @@ import {
   AvatarGroup,
   IconButton,
   Menu,
-  MenuItem
+  MenuItem,
+  Dialog,
+  DialogContent
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+
+// react icons import
+import { ImCross } from 'react-icons/im';
 
 // project import
 import Breadcrumb from 'component/Breadcrumb';
@@ -45,6 +51,8 @@ import storesData from 'data/stores-data';
 // ==============================|| CUSTOMERS PAGE ||============================== //
 
 const Customers = () => {
+  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
   const theme = useTheme();
   const success = theme.palette.success.main;
   const warning = theme.palette.warning.main;
@@ -55,26 +63,22 @@ const Customers = () => {
     { label: 'Edit', icon: <EditIcon />, disabled: true },
     { label: 'Delete', icon: <DeleteIcon />, color: 'red', disabled: true }
   ];
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
   const ITEM_HEIGHT = 48;
 
   const open = Boolean(anchorEl);
-  // const handleClick = (event) => {
-  //   setAnchorEl(event.currentTarget);
-  // };
   const handleClick = (event) => {
-    // const selectedOption = options.find((option) => option.label === 'Edit');
-
-    // if (selectedOption) {
-    //   // Handle the "Edit" logic directly
-    //   handleEditClick(event, storeData.id);
-    // } else {
-    // Show the menu for other options
     setAnchorEl(event.currentTarget);
-    // }
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleImageClick = (url) => {
+    if (!isImageDialogOpen) {
+      setSelectedImage(url);
+    }
+    setIsImageDialogOpen(!isImageDialogOpen);
   };
 
   return (
@@ -93,13 +97,13 @@ const Customers = () => {
             <Grid key={index} xs={12} item>
               <Card className="shadow-xl" sx={{ padding: 1 }}>
                 <Grid container spacing={1}>
-                  <Grid item lg={4} md={5} sm={9} xs={12}>
+                  <Grid item lg={5} md={6} sm={9} xs={12}>
                     <Grid container spacing={0}>
                       <Grid sx={{ paddingRight: 1 }} item>
                         <Tooltip title={item.mapData.address}>
                           <img
                             style={{ display: 'block', objectFit: 'cover' }}
-                            className="rounded-md border border-gray-300 w-20 h-[105px] drop-shadow-md hover:cursor-pointer"
+                            className="rounded-md border border-gray-300 max-[600px]:w-24 w-32 h-[153px] drop-shadow-md hover:cursor-pointer"
                             src={item.mapData.imgUrl}
                             alt="noImg"
                           />
@@ -278,7 +282,7 @@ const Customers = () => {
                       </Grid>
                     </Grid>
                   </Grid>
-                  <Grid item lg={1.5} md={2} sm={3} xs={4}>
+                  <Grid item lg={1.5} md={2} sm={3} xs={5}>
                     <div className="w-full flex flex-col justify-center place-items-center min-[600px]:border-l border-r border-gray-300 h-full">
                       <Stack direction={'column'}>
                         <Typography className="drop-shadow-md" align="center" variant="h2">
@@ -315,14 +319,18 @@ const Customers = () => {
                       </Stack>
                     </div>
                   </Grid>
-                  <Grid item lg={6.5} md={5} sm={12} xs={8}>
+                  <Grid item lg={5.5} md={4} sm={12} xs={7}>
                     <div className="w-full px-4 flex flex-col justify-center h-full">
                       <Slider {...settings}>
                         {item.anomalies.images.map((anomaly) => (
-                          <div key={anomaly.url} className="rounded-md border shadow-md h-[147px]">
+                          <div
+                            onClick={() => handleImageClick(anomaly.url)}
+                            key={anomaly.url}
+                            className="rounded-md border shadow-md h-[147px]"
+                          >
                             <img
                               style={{ width: '100%', objectFit: 'cover' }}
-                              className="rounded-md shadow-md h-full"
+                              className="rounded-md shadow-md h-full hover:cursor-pointer"
                               src={anomaly.url}
                               alt="no Img"
                             />
@@ -336,6 +344,37 @@ const Customers = () => {
             </Grid>
           ))}
       </Grid>
+      <Dialog
+        fullScreen
+        open={isImageDialogOpen}
+        // onClose={handleImageClick}
+        PaperProps={{
+          sx: {
+            width: '100%',
+            maxHeight: '1300px',
+            background: 'black',
+            boxShadow: 'none'
+          }
+        }}
+      >
+        <TransformWrapper>
+          <DialogContent className="w-full h-full flex justify-center relative overflow-hidden">
+            <div className="self-center">
+              <ImCross
+                onClick={handleImageClick}
+                className="z-20 text-xl cursor-pointer text-white opacity-60 hover:opacity-100 absolute"
+                style={{
+                  right: '4%',
+                  top: '2%'
+                }}
+              />
+              <TransformComponent>
+                <img src={selectedImage} alt="Full-screen" className="self-center" style={{ maxHeight: '95svh' }} />
+              </TransformComponent>
+            </div>
+          </DialogContent>
+        </TransformWrapper>
+      </Dialog>
     </>
   );
 };
