@@ -25,44 +25,43 @@ const SamplePage = Loadable(lazy(() => import('../views/SamplePage')));
 // ==============================|| MAIN ROUTES ||============================== //
 
 const MainRoutes = {
-  path: '/',
+  path: '/main',
   element: <MainLayout />,
   children: [
     {
-      path: '/',
+      path: '/main/insights', // Make this path relative to '/main'
       element: <Insight />
     },
     {
-      path: '/insights',
-      element: <Insight />
-    },
-    {
-      path: '/stores',
+      path: '/main/stores',
       element: <StoreContent />
     },
     {
-      path: '/stores/layout',
+      path: '/main/stores/layout',
       element: <StoreLayout />
     },
     {
-      path: '/brands',
+      path: '/main/brands',
       element: <Brands />
     },
     {
-      path: '/customers',
+      path: '/main/customers',
       element: <Customers />
     },
     {
-      path: '/team',
-      element: <Team />
+      path: '/main/team',
+      element: <Team />,
+      children: [
+        {
+          path: 'edit/:id', // Make this path relative to '/team'
+          element: <EditStore />
+        }
+      ]
     },
-    {
-      path: '/team/edit/:id',
-      element: <EditStore/>
-    },
-    { path: '/utils/util-typography', element: <UtilsTypography /> },
-    { path: '/sample-page', element: <SamplePage /> }
+    { path: '/main/utils/util-typography', element: <UtilsTypography /> },
+    { path: '/main/sample-page', element: <SamplePage /> }
   ]
 };
+
 
 export default MainRoutes;

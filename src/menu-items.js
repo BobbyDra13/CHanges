@@ -47,14 +47,14 @@ export default {
           title: 'Insights',
           type: 'item',
           icon: icons['SpaceDashboardOutlinedIcon'],
-          url: '/'
+          url: '/main/insights'
         },
         {
           id: 'stores',
           title: 'Stores',
           type: 'item',
           icon: icons['AssessmentOutlinedIcon'],
-          url: '/stores'
+          url: '/main/stores'
         }
       ]
     },
@@ -130,7 +130,7 @@ export default {
           id: 'storesNew',
           title: 'Stores New',
           type: 'item',
-          url: '/customers',
+          url: '/main/customers',
           icon: icons['StoreMallDirectoryOutlinedIcon']
           // external: true,
           // target: true
@@ -139,7 +139,7 @@ export default {
           id: 'team',
           title: 'Team',
           type: 'item',
-          url: '/team',
+          url: '/main/team',
           icon: icons['PeopleAltOutlinedIcon']
         }
       ]

@@ -67,7 +67,7 @@ const Register = () => {
               </Grid>
               <Grid container justifyContent="flex-start" sx={{ mt: theme.spacing(2), mb: theme.spacing(1) }}>
                 <Grid item>
-                  <Typography variant="subtitle2" color="secondary" component={Link} to="/login" sx={{ textDecoration: 'none', pl: 2 }}>
+                  <Typography variant="subtitle2" color="secondary" component={Link} to="/" sx={{ textDecoration: 'none', pl: 2 }}>
                     Having an account
                   </Typography>
                 </Grid>

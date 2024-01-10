@@ -73,25 +73,25 @@ const Header = ({ drawerToggle }) => {
       <Box sx={{ flexGrow: 1 }}>
         <Box className="space-x-8" sx={{ flexGrow: 1, display: { xs: 'none', md: 'block' } }}>
           <Link
-            to={'/'}
+            to={'/main/insights'}
             onClick={() => dispatch({ type: actionTypes.MENU_OPEN, isOpen: 'insights' })}
             className={`text-lg hover:border-b-2 hover:border-emerald-500 hover:text-emerald-600 ${
-              location.pathname === '/' ? 'border-b-2 border-emerald-500 text-emerald-600' : ''
+              location.pathname === '/main/insights' ? 'border-b-2 border-emerald-500 text-emerald-600' : ''
             }`}
           >
             Insights
           </Link>
-          <Link
-            to={'/stores'}
+          {/* <Link
+            to={'/main/stores'}
             onClick={() => dispatch({ type: actionTypes.MENU_OPEN, isOpen: 'stores' })}
             className={`text-lg hover:border-b-2 hover:border-emerald-500 hover:text-emerald-600 ${
-              location.pathname === '/stores' || location.pathname === '/stores/analysis'
+              location.pathname === '/main/stores' || location.pathname === '/stores/analysis'
                 ? 'border-b-2 border-emerald-500 text-emerald-600'
                 : ''
             }`}
           >
             Stores
-          </Link>
+          </Link> */}
           {/* <Link
             to={'/brands'}
             onClick={() => dispatch({ type: actionTypes.MENU_OPEN, isOpen: 'brands' })}
@@ -102,19 +102,19 @@ const Header = ({ drawerToggle }) => {
             Brands
           </Link> */}
           <Link
-            to={'/customers'}
+            to={'/main/customers'}
             onClick={() => dispatch({ type: actionTypes.MENU_OPEN, isOpen: 'customers' })}
             className={`text-lg hover:border-b-2 hover:border-emerald-500 hover:text-emerald-600 ${
-              location.pathname === '/customers' ? 'border-b-2 border-emerald-500 text-emerald-600' : ''
+              location.pathname === '/main/customers' ? 'border-b-2 border-emerald-500 text-emerald-600' : ''
             }`}
           >
             Stores New
           </Link>
           <Link
-            to={'/team'}
+            to={'/main/team'}
             onClick={() => dispatch({ type: actionTypes.MENU_OPEN, isOpen: 'team' })}
             className={`text-lg hover:border-b-2 hover:border-emerald-500 hover:text-emerald-600 ${
-              location.pathname === '/team' ? 'border-b-2 border-emerald-500 text-emerald-600' : ''
+              location.pathname === '/main/team' ? 'border-b-2 border-emerald-500 text-emerald-600' : ''
             }`}
           >
             Team

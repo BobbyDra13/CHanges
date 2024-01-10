@@ -1,5 +1,8 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { signOut } from "firebase/auth";
+import { auth } from 'firebase.config';
+
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -17,6 +20,22 @@ import MeetingRoomTwoToneIcon from '@mui/icons-material/MeetingRoomTwoTone';
 
 const ProfileSection = () => {
   const theme = useTheme();
+  const userData = localStorage.getItem("userData");
+  const users = JSON.parse(userData);
+
+  const navigateTo = useNavigate();
+
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => {
+        // console.log("Sign-out successful");
+        navigateTo("/");
+      })
+      .catch((error) => {
+        // An error happened.
+        console.log(error);
+      });
+  };
 
   const [selectedIndex, setSelectedIndex] = React.useState(1);
   const [open, setOpen] = React.useState(false);
@@ -60,6 +79,7 @@ const ProfileSection = () => {
       >
         <AccountCircleTwoToneIcon sx={{ fontSize: '1.7rem' }} />
       </Button>
+      {users ? (
       <Popper
         placement="bottom-end"
         open={open}
@@ -120,20 +140,21 @@ const ProfileSection = () => {
                     </ListItemIcon>
                     <ListItemText primary="Lock Screen" />
                   </ListItemButton> */}
-                  <Link to={'/login'}>
-                    <ListItemButton selected={selectedIndex === 4}>
+                  {/* <Link to={'/login'}> */}
+                    <ListItemButton selected={selectedIndex === 4} onClick={handleLogout}>
                       <ListItemIcon>
                         <MeetingRoomTwoToneIcon />
                       </ListItemIcon>
                       <ListItemText primary="Logout" />
                     </ListItemButton>
-                  </Link>
+                  {/* </Link> */}
                 </List>
               </ClickAwayListener>
             </Paper>
           </Fade>
         )}
       </Popper>
+      ) : (<>No users found</>)}
     </>
   );
 };
