@@ -91,6 +91,17 @@ const Header = ({ drawerToggle }) => {
             }`}
           >
             Stores
+          </Link>
+          {/* <Link
+            to={'/stores'}
+            onClick={() => dispatch({ type: actionTypes.MENU_OPEN, isOpen: 'stores' })}
+            className={`text-lg hover:border-b-2 hover:border-emerald-500 hover:text-emerald-600 ${
+              location.pathname === '/stores' || location.pathname === '/stores/analysis'
+                ? 'border-b-2 border-emerald-500 text-emerald-600'
+                : ''
+            }`}
+          >
+            Stores
           </Link> */}
           {/* <Link
             to={'/brands'}
@@ -109,7 +120,7 @@ const Header = ({ drawerToggle }) => {
             }`}
           >
             Stores New
-          </Link>
+          </Link> 
           <Link
             to={'/main/team'}
             onClick={() => dispatch({ type: actionTypes.MENU_OPEN, isOpen: 'team' })}
