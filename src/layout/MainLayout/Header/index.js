@@ -113,14 +113,14 @@ const Header = ({ drawerToggle }) => {
             Brands
           </Link> */}
           <Link
-            to={'/main/customers'}
+            to={'/main/stores'}
             onClick={() => dispatch({ type: actionTypes.MENU_OPEN, isOpen: 'customers' })}
             className={`text-lg hover:border-b-2 hover:border-emerald-500 hover:text-emerald-600 ${
-              location.pathname === '/main/customers' ? 'border-b-2 border-emerald-500 text-emerald-600' : ''
+              location.pathname === '/main/stores' ? 'border-b-2 border-emerald-500 text-emerald-600' : ''
             }`}
           >
             Stores New
-          </Link> 
+          </Link>
           <Link
             to={'/main/team'}
             onClick={() => dispatch({ type: actionTypes.MENU_OPEN, isOpen: 'team' })}

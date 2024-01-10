@@ -14,8 +14,6 @@ const Brands = Loadable(lazy(() => import('../views/Brands')));
 
 const Customers = Loadable(lazy(() => import('../views/Customers')));
 
-const StoreContent = Loadable(lazy(() => import('../views/Stores/Table')));
-
 const Team = Loadable(lazy(() => import('../views/Team')));
 
 const UtilsTypography = Loadable(lazy(() => import('../views/Utils/Typography')));
@@ -33,10 +31,6 @@ const MainRoutes = {
       element: <Insight />
     },
     {
-      path: '/main/stores',
-      element: <StoreContent />
-    },
-    {
       path: '/main/stores/layout',
       element: <StoreLayout />
     },
@@ -45,7 +39,7 @@ const MainRoutes = {
       element: <Brands />
     },
     {
-      path: '/main/customers',
+      path: '/main/stores',
       element: <Customers />
     },
     {

@@ -49,13 +49,13 @@ export default {
           icon: icons['SpaceDashboardOutlinedIcon'],
           url: '/main/insights'
         },
-        {
-          id: 'stores',
-          title: 'Stores',
-          type: 'item',
-          icon: icons['AssessmentOutlinedIcon'],
-          url: '/main/stores'
-        }
+        // {
+        //   id: 'stores',
+        //   title: 'Stores',
+        //   type: 'item',
+        //   icon: icons['AssessmentOutlinedIcon'],
+        //   url: '/main/stores'
+        // }
       ]
     },
     // {
@@ -130,7 +130,7 @@ export default {
           id: 'storesNew',
           title: 'Stores New',
           type: 'item',
-          url: '/main/customers',
+          url: '/main/stores',
           icon: icons['StoreMallDirectoryOutlinedIcon']
           // external: true,
           // target: true
