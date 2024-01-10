@@ -156,3 +156,21 @@ export const createUser = async (user) => {
     console.log('Error while calling team api :', error);
   }
 }
+
+export const GetVerifiedUsers = async (phoneNumber) => {
+  try {
+    const res = await axios.get(
+      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-app/user/auth_user_cred?numbers=${phoneNumber}`,
+      {
+        headers: {
+          Accept: "application/json",
+          // Authorization: await token(),
+        },
+      }
+    );
+    // console.log(res.data);
+    return res;
+  } catch (error) {
+    console.log("Error Calling users API: ", error);
+  }
+};

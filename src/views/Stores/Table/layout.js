@@ -156,7 +156,7 @@ const StoreLayout = () => {
     } else if (openShelves) {
       handleCloseShelves();
       handleOpenBay(currentBay);
-    } else navigate('/customers');
+    } else navigate('/main/stores');
     // console.log('back button');
   };
   const handleKeyDownBay = (e) => {
@@ -277,7 +277,7 @@ const StoreLayout = () => {
     // <div className="w-full flex border border-black">
     <div className="w-full h-full flex-col flex overflow-x-hidden">
       <Breadcrumb>
-        <Typography component={Link} to="/customers" variant="subtitle2" color="inherit" className="link-breadcrumb">
+        <Typography component={Link} to="/main/stores" variant="subtitle2" color="inherit" className="link-breadcrumb">
           Stores
         </Typography>
         <Typography variant="subtitle2" color="inherit" className="link-breadcrumb">

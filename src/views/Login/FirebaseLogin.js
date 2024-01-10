@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import OtpInput from 'react-otp-input';
 import { COUNTRYCODE } from './countryCode';
@@ -7,9 +7,11 @@ import MuiAlert from '@mui/material/Alert';
 // import { useTheme } from '@mui/material';
 import { auth } from 'firebase.config';
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
+import toast, { Toaster } from 'react-hot-toast';
+
+import { GetVerifiedUsers } from 'api';
 // import FadeLoader from "react-spinners/FadeLoader";
 // import { css } from '@emotion/react';
-
 
 import * as Yup from 'yup';
 import { Formik } from 'formik';
@@ -28,14 +30,8 @@ const FirebaseLogin = () => {
   const [buttonLabel, setButtonLabel] = useState('Send OTP');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [otpEntered, setOtpEntered] = useState(false);
-  // const [loading, setLoading] = useState(true);
-//   const [color] = useState("black");
-//   const override = css`
-//   display: block;
-//   margin: 0 auto;
-//   border-color: red;
-// `;
-
+  const [verifyData, setVerifyData] = useState(false);
+  const [accessToken, setAccessToken] = useState('');
 
   const onCaptchVerify = () => {
     window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
@@ -45,27 +41,51 @@ const FirebaseLogin = () => {
     });
   };
 
-  const getPhoneNumber = `+${countryCode}${phone}`;
+  let phoneNumber = false;
+  if (phone.length === 10) {
+    phoneNumber = phone;
+  }
+
+  const getPhoneNumber = countryCode + phone;
+
+  useEffect(() => {
+    const checkUsers = async () => {
+      try {
+        const response = await GetVerifiedUsers(phoneNumber);
+        setVerifyData(response.data);
+      } catch (error) {
+        console.log('Error Calling userss API: ', error);
+      }
+    };
+    checkUsers();
+  }, [phoneNumber]);
+
+  console.log('verified data', verifyData);
+
+  localStorage.setItem('userData', JSON.stringify(verifyData));
 
   function onSignup() {
-    onCaptchVerify();
-    let appVerifier = window.recaptchaVerifier;
+    if (!verifyData || verifyData.number !== phoneNumber) {
+      toast.error('You are not authorized to access');
+    } else {
+      onCaptchVerify();
+      let appVerifier = window.recaptchaVerifier;
 
-    try {
-      signInWithPhoneNumber(auth, getPhoneNumber, appVerifier)
-        .then((confirmationResult) => {
-          window.confirmationResult = confirmationResult;
-          if (confirmationResult) {
-            setSnackbarOpen(true);
-            setButtonLabel('Submit');
-            // setLoading(false);
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    } catch (error) {
-      console.log('Error in signInWithPhoneNumber:', error);
+      try {
+        signInWithPhoneNumber(auth, getPhoneNumber, appVerifier)
+          .then((confirmationResult) => {
+            window.confirmationResult = confirmationResult;
+            if (confirmationResult) {
+              setSnackbarOpen(true);
+              setButtonLabel('Submit');
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } catch (error) {
+        console.log('Error in signInWithPhoneNumber:', error);
+      }
     }
   }
   function onOTPVerify() {
@@ -79,25 +99,18 @@ const FirebaseLogin = () => {
     confirmationResult
       .confirm(otp)
       .then((userCredential) => {
-        // Verification successful
         const user = userCredential.user;
-
-        if (user) {
-          navigate('/insights');
-          // OTP is correct, you can redirect to the '/insights' page
-          console.log('OTP is correct. Redirect to /insights.');
-          // Add the logic to navigate to '/insights'
-        } else {
-          // OTP is incorrect, show a snackbar or error message
-          console.log('Incorrect OTP. Show error message.');
-          // Add logic to display an error message (e.g., setSnackbarOpen(true, 'Incorrect OTP'))
-        }
+        setAccessToken(user.accessToken);
       })
       .catch((error) => {
-        // OTP verification failed, show a snackbar or error message
         console.error('Error verifying OTP:', error);
-        // Add logic to display an error message (e.g., setSnackbarOpen(true, 'OTP verification failed'))
       });
+  }
+  useEffect(() => {
+    localStorage.setItem('Token', JSON.stringify(accessToken));
+  }, [accessToken]);
+  if (accessToken) {
+    navigate('/main/insights');
   }
 
   const handleCloseSnackbar = () => {
@@ -167,9 +180,9 @@ const FirebaseLogin = () => {
                   <input
                     {...props}
                     style={{
-                      padding: '0.5rem', 
-                      width: '2rem', 
-                      height: '2rem' 
+                      padding: '0.5rem',
+                      width: '2rem',
+                      height: '2rem'
                     }}
                     disabled={!phone || buttonLabel !== 'Submit'}
                   />
@@ -183,19 +196,9 @@ const FirebaseLogin = () => {
               </Box>
             )}
 
-            <Box
-              mt={2}
-              // sx={{
-              //   backgroundColor: theme.palette.success.main,
-              //   color: 'black',
-              //   '&:hover': {
-              //     backgroundColor: theme.palette.success.dark // Change the hover color if needed
-              //   },
-              //   cursor: 'pointer'
-              // }}
-            >
-              {buttonLabel === 'Send OTP' &&(
-              <>
+            <Box mt={2}>
+              {buttonLabel === 'Send OTP' && (
+                <>
                   <Button
                     // color="primary"
                     disabled={!phone || phone.length !== 10 || otpEntered}
@@ -207,10 +210,9 @@ const FirebaseLogin = () => {
                   >
                     Send OTP
                   </Button>
-                  </>
+                </>
               )}
               {buttonLabel === 'Submit' && (
-
                 <Button
                   disabled={!otpEntered || otp.length !== 6}
                   fullWidth
@@ -223,7 +225,7 @@ const FirebaseLogin = () => {
                 </Button>
               )}
             </Box>
-
+            <Toaster />
             <Snackbar
               open={snackbarOpen}
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
