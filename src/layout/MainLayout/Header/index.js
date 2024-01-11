@@ -119,7 +119,7 @@ const Header = ({ drawerToggle }) => {
               location.pathname === '/main/stores' ? 'border-b-2 border-emerald-500 text-emerald-600' : ''
             }`}
           >
-            Stores New
+            Stores
           </Link>
           <Link
             to={'/main/team'}

@@ -1,10 +1,20 @@
 import { React, useState, useEffect } from 'react';
 
 // API imports
-import { GetCaptureProgress, GetBrandDonutData, GetFullnessKpi, GetAnomaliesKpi, GetAnomaliesBarChartData } from 'api';
+import {
+  GetCaptureProgress,
+  GetBrandDonutData,
+  GetFullnessKpi,
+  GetAnomaliesKpi,
+  GetAnomaliesBarChartData,
+  GetVMCompliance,
+  GetVMComplianceForOneWeek,
+  GetFullnessForOneWeek
+} from 'api';
 
 // Apex chart import
 import Chart from 'react-apexcharts';
+import chartsConfig from 'configs/charts-configs';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -12,6 +22,7 @@ import { Grid, Card, CardContent, Typography, LinearProgress, Box, Stack, TextFi
 
 //project import
 import statisticsChartsData from 'data/statistics-charts-data';
+// import KpiLineChartData from './KpiLineChart';
 import DatePickerComp from './DatePicker';
 import BrandDonutChart from './BrandDonutChart';
 import BrandChartData from './chart/brand-chart';
@@ -63,10 +74,179 @@ const Insights = () => {
   const [capProgress, setCapProgress] = useState(false);
   const [avgCapProgress, setAvgCapProgress] = useState(false);
   const [fullness, setFullness] = useState(false);
+  const [vmc, setVmc] = useState(false);
   const [anomalies, setAnomalies] = useState(false);
   const [brandDonut, setBrandDonut] = useState(false);
   const [brandChartOptions, setBrandChartOptions] = useState(BrandChartData.options);
   const [brandFullness, setBrandFullness] = useState([]);
+  const [chartConfig, setChartConfig] = useState({
+    type: 'line',
+    height: 100,
+    series: [
+      {
+        name: 'Compliance %',
+        data: [67, 14, 52, 93, 30, 81, 45]
+      }
+    ],
+    options: {
+      ...chartsConfig,
+      colors: ['#10b981'],
+      stroke: {
+        lineCap: 'round',
+        curve: 'smooth'
+      },
+      markers: {
+        size: 4
+      },
+      grid: {
+        show: false
+      },
+      xaxis: {
+        ...chartsConfig.xaxis,
+        labels: {
+          show: false
+        },
+        categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+      },
+      yaxis: {
+        labels: {
+          show: false
+        }
+      }
+    }
+  });
+  const [fullnessChartConfig, setFullChartConfig] = useState({
+    type: 'line',
+    height: 100,
+    series: [
+      {
+        name: 'Fullness %',
+        data: [67, 14, 52, 93, 30, 81, 45]
+      }
+    ],
+    options: {
+      ...chartsConfig,
+      colors: ['#10b981'],
+      stroke: {
+        lineCap: 'round',
+        curve: 'smooth'
+      },
+      markers: {
+        size: 4
+      },
+      grid: {
+        show: false
+      },
+      xaxis: {
+        ...chartsConfig.xaxis,
+        labels: {
+          show: false
+        },
+        categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+      },
+      yaxis: {
+        labels: {
+          show: false
+        }
+      }
+    }
+  });
+
+  useEffect(() => {
+    async function fetchLineChart() {
+      const body = {
+        start_date: selectedDate.toString(),
+        Store_IDs: ['6582be9ac5ed94d792a563b8'],
+        period: 7
+      };
+
+      try {
+        const response = await GetVMComplianceForOneWeek(body);
+        console.log('response', response);
+        if (response && response.data) {
+          const apiData = response.data;
+          console.log('apiData', apiData);
+
+          const anomalyPercentages = apiData.map((item) => item.withoutAnomalyPercentage);
+          const dates = apiData.map((item) => item.date);
+
+          const complianceData = anomalyPercentages.map((percentage) => `${percentage}%`);
+
+          const updatedChartConfig = {
+            ...chartConfig,
+            series: [
+              {
+                name: 'Compliance %',
+                data: complianceData
+              }
+            ],
+            options: {
+              ...chartConfig.options,
+              xaxis: {
+                ...chartConfig.options.xaxis,
+                categories: dates
+              }
+            }
+          };
+
+          setChartConfig(updatedChartConfig);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    fetchLineChart();
+  }, [selectedDate]);
+
+  useEffect(() => {
+    async function fetchFullnessLineChart() {
+      const body = {
+        start_date: selectedDate.toString(),
+        Store_IDs: ['6582be9ac5ed94d792a563b8'],
+        period: 7
+      };
+
+      try {
+        const response = await GetFullnessForOneWeek(body);
+        if (response && response.data) {
+          const fullnessData = response.data;
+          console.log('fullnessData', fullnessData);
+
+          const fullnessPercentage = fullnessData.map((item) => item.fullness);
+          const dates = fullnessData.map((item) => item.date);
+
+          const fullness = fullnessPercentage.map((percentage) => `${percentage.toFixed(2)}%`);
+
+          const updatedFullnessChartConfig = {
+            ...fullnessChartConfig,
+            series: [
+              {
+                name: 'Fullness %',
+                data: fullness
+              }
+            ],
+            options: {
+              ...chartConfig.options,
+              xaxis: {
+                ...chartConfig.options.xaxis,
+                categories: dates
+              }
+            }
+          };
+
+          setFullChartConfig(updatedFullnessChartConfig);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    fetchFullnessLineChart();
+  }, [selectedDate]);
+
+  console.log('chartConfig', chartConfig);
+  console.log('fullnessConfig', fullnessChartConfig);
   // const [brandNames, setBrandNames] = useState([]);
 
   // console.log('DATE SELECTED', selectedDate);
@@ -256,17 +436,20 @@ const Insights = () => {
         setAvgCapProgress(false);
         setCapProgress(false);
         setFullness(false);
+        setVmc(false);
         setAnomalies(false);
         setBrandDonut(false);
 
         try {
-          const [capProgressData, brandDonutData, fullnessKpiData, anomaliesKpiData, anomaliesBarChartData] = await Promise.all([
-            GetCaptureProgress(commonBody),
-            GetBrandDonutData(brandDonutBody),
-            GetFullnessKpi(commonBody),
-            GetAnomaliesKpi(commonBody),
-            GetAnomaliesBarChartData(commonBody)
-          ]);
+          const [capProgressData, brandDonutData, fullnessKpiData, vmComplianceKpiData, anomaliesKpiData, anomaliesBarChartData] =
+            await Promise.all([
+              GetCaptureProgress(commonBody),
+              GetBrandDonutData(brandDonutBody),
+              GetFullnessKpi(commonBody),
+              GetVMCompliance(commonBody),
+              GetAnomaliesKpi(commonBody),
+              GetAnomaliesBarChartData(commonBody)
+            ]);
           if (capProgressData) {
             if (capProgressData.data.length > 0) {
               const totalCapturePercentage = capProgressData.data.reduce((acc, item) => acc + item.capture_percentage, 0);
@@ -282,7 +465,7 @@ const Insights = () => {
           if (brandDonutData) {
             // console.log('Brand Data', brandDonutData);
             if (brandDonutData.data.length > 0) {
-              const extractedFullness = brandDonutData.data.map((item) => item.fullness);
+              const extractedFullness = brandDonutData.data.map((item) => Math.floor(item.fullness));
               const extractedBrandNames = brandDonutData.data.map((item) => item.brand_name);
 
               setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
@@ -295,6 +478,10 @@ const Insights = () => {
 
           if (fullnessKpiData) {
             setFullness(fullnessKpiData.data);
+          }
+
+          if (vmComplianceKpiData) {
+            setVmc(vmComplianceKpiData.data);
           }
 
           if (anomaliesKpiData) {
@@ -312,6 +499,8 @@ const Insights = () => {
     }
     /* eslint-enable no-inner-declarations */
   }, [selectedDate]);
+  console.log('vmc', vmc);
+  console.log('fullness', fullness);
 
   return (
     <Grid container spacing={gridSpacing}>
@@ -343,22 +532,28 @@ const Insights = () => {
           <Grid item lg={3} sm={6} xs={12}>
             <KpiCard
               isLoaded={fullness}
-              chart={statisticsChartsData[1].chart}
+              chart={fullnessChartConfig}
               title="Average Shelf-fullness"
-              count={fullness.length > 0 ? `${Math.floor(fullness[0].fullness)}%` : `0%`}
-              percentage={0.5}
-              chipColor="success"
+              count={`${fullness && fullness.currentDay ? Math.floor(fullness.currentDay.fullness) : 0}%`}
+              percentage={`${fullness && fullness.difference ? Math.abs(Math.floor(fullness.difference)) : 0}`}
+              chipColor={fullness && fullness.difference < 0 ? 'error' : 'success'}
+              isLoss={fullness && fullness.difference < 0}
               color={theme.palette.success.main}
             />
           </Grid>
           <Grid item lg={3} sm={6} xs={12}>
             <KpiCard
-              isLoaded={fullness}
-              chart={statisticsChartsData[2].chart}
+              isLoaded={vmc}
+              chart={chartConfig}
               title="Visual Merchandising Compliance"
-              count="0%"
-              percentage={2}
-              chipColor="success"
+              count={`${vmc && vmc.currentDay ? Math.floor(vmc.currentDay.withoutAnomalyPercentage) : 0}%`}
+              percentage={`${
+                vmc && vmc.differencePercentage ? Math.abs(Math.floor(vmc.differencePercentage.withoutAnomalyPercentageDifference)) : 0
+              }`}
+              chipColor={
+                vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0 ? 'error' : 'success'
+              }
+              isLoss={vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0}
               color={theme.palette.success.main}
             />
           </Grid>
@@ -379,7 +574,7 @@ const Insights = () => {
               isLoaded={anomalies}
               chart={statisticsChartsData[4].chart}
               title="Anomalies Found"
-              count={(anomalies && anomalies) + '%'}
+              count={anomalies && anomalies}
               // count="0%"
               percentage={0.5}
               isLoss

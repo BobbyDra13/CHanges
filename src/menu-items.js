@@ -128,7 +128,7 @@ export default {
       children: [
         {
           id: 'storesNew',
-          title: 'Stores New',
+          title: 'Stores',
           type: 'item',
           url: '/main/stores',
           icon: icons['StoreMallDirectoryOutlinedIcon']

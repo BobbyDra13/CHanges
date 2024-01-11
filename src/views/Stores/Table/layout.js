@@ -595,7 +595,7 @@ const StoreLayout = () => {
                     title={
                       <Stack direction={'row'} justifyContent={'space-between'}>
                         <Typography>{`Fullness: ${item.avg_full || 0}%`}</Typography>
-                        <Typography>{`Date: ${item?.timestamps.split('T')[0]}`}</Typography>
+                        <Typography>{`Date: ${item?.timestamps?.split('T')[0]}`}</Typography>
                       </Stack>
                     }
                     subtitle={item.name + '/' + updatedPartDetails.length}
