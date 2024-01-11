@@ -38,6 +38,7 @@ export const GetFullnessKpi = async (data) => {
         //   Authorization: await token(),
       }
     });
+    console.log("fullness res", res);
     return res;
   } catch (error) {
     console.log('Error Calling GetFullnessKpi API: ', error);
@@ -168,7 +169,7 @@ export const GetVerifiedUsers = async (phoneNumber) => {
 
 export const GetVMCompliance = async (data) => {
   try {
-    const res = await axios.post(`http://localhost:8080/anomalies/vmc_current_day`, data, {
+    const res = await axios.post(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/vmc_fullness`, data, {
       headers: {
         Accept: 'application/json'
         //   Authorization: await token(),
@@ -182,13 +183,27 @@ export const GetVMCompliance = async (data) => {
 
 export const GetVMComplianceForOneWeek = async (data) => {
   try {
-    const res = await axios.post(`http://localhost:8080/anomalies/vmc_for_one_week`, data, {
+    const res = await axios.post(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/timeseries_vmc`, data, {
+      headers: {
+        Accept: 'application/json'
+      }
+    });
+    console.log("result", res);
+    return res;
+  } catch (error) {
+    console.log('Error calling vm compliance for a week api', error);
+  }
+};
+
+export const GetFullnessForOneWeek = async (data) => {
+  try {
+    const res = await axios.post(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/timeseries_fullness`, data, {
       headers: {
         Accept: 'application/json'
       }
     });
     return res;
-  } catch (error) {
-    console.log('Error calling vm compliance for a week api', error);
+  } catch(error) {
+    console.log('Error calling fullness for a week api', error);
   }
 };

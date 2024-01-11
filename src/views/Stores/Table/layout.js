@@ -333,7 +333,7 @@ const StoreLayout = () => {
                 <Tooltip
                   title={
                     <div className="flex flex-col">
-                      <span>Brand: {item?.brand || 'No Capture'}</span>
+                      <span>Brand: {item?.brand_name || 'No Capture'}</span>
                       <span>Fullness: {Math.floor(item?.bay_fullness) + '%' || 'No Capture'}</span>
                     </div>
                   }
@@ -397,81 +397,120 @@ const StoreLayout = () => {
               }}
             >
               {currentBay?.shelves?.map((item, index) => {
+                //   <Tooltip
+                //   title={
+                //     <div className="flex flex-col">
+                //       <span> Fullness: {item.shelf_fullness.toFixed(2)}%</span>
+                //     </div>
+                //   }
+                // >
                 if (item.location === 'left')
                   return (
-                    <div
-                      key={index}
-                      className={`border-emerald-500 border-[5px] rounded-lg col-span-1 cursor-pointer row-start-2  text-xl font-semibold hover:bg-emerald-200 duration-500`}
-                      style={{
-                        gridRowEnd: 8,
-                        display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                      onClick={() => {
-                        handleOpenShelves(item);
-                      }}
+                    <Tooltip
+                      title={
+                        <div className="flex flex-col">
+                          <span> Fullness: {item.shelf_fullness.toFixed(2)}%</span>
+                        </div>
+                      }
                     >
-                      <p className="-rotate-90 m-0 w-20 whitespace-nowrap">Shelf - 1</p>
-                      {/* <p className="-rotate-90 m-0 w-20 whitespace-nowrap"> Fullness: {item.shelf_fullness.toFixed(2)}%</p> */}
-                    </div>
+                      <div
+                        key={index}
+                        className={`border-emerald-500 border-[5px] rounded-lg col-span-1 cursor-pointer row-start-2  text-xl font-semibold hover:bg-emerald-200 duration-500`}
+                        style={{
+                          gridRowEnd: 8,
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                        onClick={() => {
+                          handleOpenShelves(item);
+                        }}
+                      >
+                        <p className="-rotate-90 m-0 w-20 whitespace-nowrap">Shelf - 1</p>
+                        {/* <p className="-rotate-90 m-0 w-20 whitespace-nowrap"> Fullness: {item.shelf_fullness.toFixed(2)}%</p> */}
+                      </div>
+                    </Tooltip>
                   );
                 else if (item.location === 'right')
                   return (
-                    <div
-                      key={index}
-                      className="border-emerald-500 border-[5px] rounded-lg col-span-1 row-start-2 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500"
-                      style={{
-                        gridRowEnd: 8,
-                        gridColumnStart: 6
-                      }}
-                      onClick={() => {
-                        handleOpenShelves(item);
-                      }}
+                    <Tooltip
+                      title={
+                        <div className="flex flex-col">
+                          <span> Fullness: {item.shelf_fullness.toFixed(2)}%</span>
+                        </div>
+                      }
                     >
-                      <div className="h-full flex justify-between items-center cursor-pointer">
+                      <div
+                        key={index}
+                        className="border-emerald-500 border-[5px] rounded-lg col-span-1 row-start-2 flex justify-center cursor-pointer items-center text-xl font-semibold hover:bg-emerald-200 duration-500"
+                        style={{
+                          gridRowEnd: 8,
+                          gridColumnStart: 6
+                        }}
+                        onClick={() => {
+                          handleOpenShelves(item);
+                        }}
+                      >
                         {/* <p className="rotate-90 border-0 border-red-500 w-20 text-center mt-2  whitespace-nowrap">
                           {' '}
                           Fullness: {item.shelf_fullness.toFixed(2)}%
                         </p> */}
                         <p className="rotate-90 border-0 border-red-500 m-0 w-20 whitespace-nowrap">Shelf - 3</p>
                       </div>
-                    </div>
+                    </Tooltip>
                   );
                 else if (item.location === 'top')
                   return (
+                    <Tooltip
+                      title={
+                        <div className="flex flex-col">
+                          <span> Fullness: {item.shelf_fullness.toFixed(2)}%</span>
+                        </div>
+                      }
+                    >
+                      <div
+                        key={index}
+                        className="border-emerald-500  flex-col cursor-pointer border-[5px] rounded-lg col-start-2 row-span-1 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500"
+                        style={{
+                          gridColumnEnd: 6,
+                          gridRowStart: 1
+                        }}
+                        onClick={() => {
+                          handleOpenShelves(item);
+                        }}
+                      >
+                        <p className="">Shelf - 2</p>
+                        {/* <p className=""> Fullness: {item.shelf_fullness.toFixed(2)}%</p> */}
+                      </div>
+                    </Tooltip>
+                  );
+                return (
+                  <Tooltip
+                    title={
+                      <div className="flex flex-col">
+                        <span> Fullness: {item.shelf_fullness.toFixed(2)}%</span>
+                      </div>
+                    }
+                    key={index}
+                  >
                     <div
                       key={index}
-                      className="border-emerald-500  flex-col cursor-pointer border-[5px] rounded-lg col-start-2 row-span-1 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500"
+                      className="border-emerald-500 cursor-pointer border-[5px] rounded-lg col-start-2 row-span-1 flex flex-col justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500"
                       style={{
                         gridColumnEnd: 6,
-                        gridRowStart: 1
+                        gridRowStart: currentBay.id === 9 ? 9 : 8
                       }}
                       onClick={() => {
                         handleOpenShelves(item);
                       }}
                     >
-                      <p className="">Shelf - 2</p>
-                      {/* <p className=""> Fullness: {item.shelf_fullness.toFixed(2)}%</p> */}
+                      <p className="border-0 border-red-500 ">Shelf - 0</p>
+                      {/* <p className="border-0 border-red-500 w-15 text-center mt-2"> Fullness: {item.shelf_fullness.toFixed(2)}%</p> */}
                     </div>
-                  );
-                return (
-                  <div
-                    key={index}
-                    className="border-emerald-500 cursor-pointer border-[5px] rounded-lg col-start-2 row-span-1 flex flex-col justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500"
-                    style={{
-                      gridColumnEnd: 6,
-                      gridRowStart: currentBay.id === 9 ? 9 : 8
-                    }}
-                    onClick={() => {
-                      handleOpenShelves(item);
-                    }}
-                  >
-                    <p className="border-0 border-red-500 ">Shelf - 0</p>
-                    {/* <p className="border-0 border-red-500 w-15 text-center mt-2"> Fullness: {item.shelf_fullness.toFixed(2)}%</p> */}
-                  </div>
+                  </Tooltip>
                 );
+                // </Tooltip>
               })}
 
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl font-semibold text-gray-600">
