@@ -544,7 +544,7 @@ const Insights = () => {
           if (brandDonutData) {
             // console.log('Brand Data', brandDonutData);
             if (brandDonutData.data.length > 0) {
-              const extractedFullness = brandDonutData.data.map((item) => item.fullness);
+              const extractedFullness = brandDonutData.data.map((item) => Math.floor(item.fullness));
               const extractedBrandNames = brandDonutData.data.map((item) => item.brand_name);
 
               setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });

@@ -151,7 +151,7 @@ const Customers = () => {
         // Set the state values based on the Map
         setColorArray(anomaliesByType.get('color_assortment') || []);
         // setPromoArray(anomaliesByType.get('promo_assortment') || []);
-        setFullnessArray(anomaliesByType.get('fullness_assortment') || []);
+        setFullnessArray(anomaliesByType.get('empty_bin') || []);
       }
     } catch (error) {
       console.log(error);
@@ -192,7 +192,7 @@ const Customers = () => {
   // console.log('Stores Data', storesData);
   // console.log('Color Data', colorArray);
   // console.log('Promo Data', promoArray);
-  // console.log('Fullness Data', fullnessArray);
+  console.log('Fullness Data', fullnessArray);
   // console.log('Anomaly Data', anomalyImgs);
   // console.log('Clicked', clickedBar);
   return (
