@@ -78,7 +78,7 @@ const StoresTable = ({
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [deleteUserId, setDeleteUserId] = useState(null);
   const [deletionInProgress, setDeletionInProgress] = useState(false);
-  const [deletionSuccess, setDeletionSuccess] = useState(false);
+  const [deletionSuccess, setDeletionSuccess] = useState(null);
 
   const handleConfirmDialogOpen = (userId) => {
     setDeleteUserId(userId);
@@ -206,17 +206,7 @@ const StoresTable = ({
                       <EditIcon />
                     </IconButton>
 
-                    <Dialog
-                      key={row.id}
-                      open={editRowId === row.id && showEditUserDialog}
-                      onClose={() => handleEditUserDialogClose()}
-                      PaperProps={{
-                        style: {
-                          maxWidth: '100%',
-                          maxHeight: '100%'
-                        }
-                      }}
-                    >
+                    <Dialog key={row.id} open={editRowId === row.id && showEditUserDialog} onClose={() => handleEditUserDialogClose()}>
                       <EditStore rowId={row.id} handleEditUserDialogClose={handleEditUserDialogClose} />
                     </Dialog>
 

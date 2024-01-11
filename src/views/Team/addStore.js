@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, TextField, Grid, MenuItem, Typography, Paper, Box, ListItemText, Divider, CircularProgress } from '@mui/material';
-import { createUser } from 'api';
+import { allStoresId, checkId, createUser } from 'api';
 import { useTheme } from '@emotion/react';
 import { Link } from 'react-router-dom';
 
@@ -14,7 +14,7 @@ const initialValue = {
 };
 
 const roles = ['Agent', 'Department Manager', 'Store Manager', 'Cluster Manager', 'NHK Super User'];
-const stores = ['Lakme', 'Adidas', 'Trends', 'Loreal', 'Heads and Shoulders'];
+// const stores = ['Lakme', 'Adidas', 'Trends', 'Loreal', 'Heads and Shoulders'];
 
 const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMessage }) => {
   const theme = useTheme();
@@ -22,7 +22,7 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
   const { user_role, user_id, user_name, store_id, number } = user;
   const [isEmailEditable, setIsEmailEditable] = useState(false);
   const [email, setEmail] = useState('');
-
+  const [stores, updateStores] = useState([]);
   const [apiResponded, setApiResponded] = useState(true);
 
   const validateEmail = (email) => {
@@ -35,7 +35,7 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
   };
   const [errors, setErrors] = useState({});
 
-  const validateForm = () => {
+  const validateForm = async () => {
     let formErrors = {};
 
     if (!user_role) {
@@ -44,9 +44,12 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
 
     if (!user_id) {
       formErrors = { ...formErrors, user_id: 'User ID is required' };
+    } else if (user_id.length < 4) {
+      formErrors = { ...formErrors, user_id: 'User ID must be at least 4 characters' };
     } else {
-      if (user_id.length < 4) {
-        formErrors = { ...formErrors, user_id: 'User ID must be at least 4 characters' };
+      const { isAvailable } = await checkId(user_id);
+      if (!isAvailable) {
+        formErrors = { ...formErrors, user_id: 'This ID is already taken. User ID must be unique.' };
       }
     }
 
@@ -62,13 +65,29 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
       formErrors = { ...formErrors, email: 'Please enter a valid email address' };
     }
 
-    if (number && !validatePhoneNumber(number)) {
-      formErrors = { ...formErrors, number: 'Please enter a valid phone number' };
+    if (!number) {
+      formErrors = { ...formErrors, number: 'Phone Number is required' };
+    } else {
+      if (!validatePhoneNumber(number)) {
+        formErrors = { ...formErrors, number: 'Please enter a valid phone number' };
+      }
     }
 
     setErrors(formErrors);
     return Object.keys(formErrors).length === 0;
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const fetchedStoreIDs = await allStoresId();
+        updateStores(fetchedStoreIDs);
+      } catch (error) {
+        console.error('Error fetching store IDs:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const onValueChange = (e) => {
     const { name, value } = e.target;
@@ -84,7 +103,8 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
 
   const addUserDetails = async () => {
     try {
-      if (validateForm()) {
+      const isFormValid = await validateForm();
+      if (isFormValid) {
         setApiResponded(false);
         await createUser(user);
         handleSnackbarOpen();
@@ -310,6 +330,7 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
               id="my-input"
               variant="outlined"
               required={isEmailEditable}
+              helperText={isEmailEditable ? 'Email is required' : ''}
               fullWidth
               sx={{
                 '& .MuiInputLabel-root': {
@@ -332,7 +353,6 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
                 }
               }}
               error={!!errors.email}
-              helperText={errors.email}
             />
           </Grid>
           <Grid item xs={12} sm={6}>

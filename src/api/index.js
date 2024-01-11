@@ -207,3 +207,24 @@ export const GetFullnessForOneWeek = async (data) => {
     console.log('Error calling fullness for a week api', error);
   }
 };
+
+
+export const checkId = async (user_id) => {
+  try {
+    const response = await axios.get(`http://localhost:8081/data/user/checkUserId?user_id=${user_id}`);
+    return response.data;
+  } catch(error){
+    console.log('Error');
+    throw error;
+  }
+}
+
+export const allStoresId = async () => {
+  try{
+    const response = await axios.get(`http://localhost:8081/data/user/allStoresId`);
+    return response.data.storesId;
+  }catch(error){
+    console.log('Error occured');
+    throw error;
+  }
+}

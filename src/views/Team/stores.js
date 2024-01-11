@@ -49,8 +49,12 @@ const AllStores = () => {
   };
 
   const getAllUsers = async () => {
-    let response = await getUsers();
-    rowchange(response?.data);
+    try {
+      let response = await getUsers();
+      rowchange(response?.data);
+    } catch (error) {
+      console.error('Error Fetching Users: ', error);
+    }
   };
 
   const [searchQuery, setSearchQuery] = useState('');
