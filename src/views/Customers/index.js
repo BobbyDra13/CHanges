@@ -28,7 +28,8 @@ import {
   Menu,
   MenuItem,
   Dialog,
-  DialogContent
+  DialogContent,
+  Skeleton
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
@@ -42,11 +43,12 @@ import { ImCross } from 'react-icons/im';
 import Breadcrumb from 'component/Breadcrumb';
 import { gridSpacing } from 'config.js';
 import settings from '../../configs/react-slick-config';
-import dummyStoresData from 'data/stores-data';
+// import dummyStoresData from 'data/stores-data';
 // import Map from './map';
 
 // assets
 import OrionImg from '../../assets/images/MapImages/orion.png';
+import CheckMarkImg from '../../assets/images/checkmark.png';
 // import MapImg from '../../assets/images/mapImg.png';
 // import OrionImg from '../../assets/images/MapImages/orion.png';
 
@@ -56,6 +58,8 @@ import OrionImg from '../../assets/images/MapImages/orion.png';
 //   lng: -122.08427
 // };
 
+const totalParts = 142;
+
 // ==============================|| CUSTOMERS PAGE ||============================== //
 
 const Customers = () => {
@@ -63,7 +67,7 @@ const Customers = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [storesData, setStoresData] = useState(false);
   const [colorArray, setColorArray] = useState([]);
-  const [promoArray, setPromoArray] = useState([]);
+  // const [promoArray, setPromoArray] = useState([]);
   const [fullnessArray, setFullnessArray] = useState([]);
   const [clickedBar, setClickedBar] = useState({
     isUpKeep: false,
@@ -109,11 +113,11 @@ const Customers = () => {
     }
   };
   const popClicked = () => {
-    if (!clickedBar.isPop) {
-      setClickedBar({ isUpKeep: false, isVm: false, isPop: true });
-    } else {
-      setClickedBar({ isUpKeep: false, isVm: false, isPop: false });
-    }
+    // if (!clickedBar.isPop) {
+    //   setClickedBar({ isUpKeep: false, isVm: false, isPop: true });
+    // } else {
+    //   setClickedBar({ isUpKeep: false, isVm: false, isPop: false });
+    // }
   };
 
   const handleImageClick = (url) => {
@@ -146,7 +150,7 @@ const Customers = () => {
 
         // Set the state values based on the Map
         setColorArray(anomaliesByType.get('color_assortment') || []);
-        setPromoArray(anomaliesByType.get('promo_assortment') || []);
+        // setPromoArray(anomaliesByType.get('promo_assortment') || []);
         setFullnessArray(anomaliesByType.get('fullness_assortment') || []);
       }
     } catch (error) {
@@ -186,9 +190,9 @@ const Customers = () => {
 
   // console.log('Stores Data', storesData && storesData.map((item) => item.store_id));
   // console.log('Stores Data', storesData);
-  console.log('Color Data', colorArray);
-  console.log('Promo Data', promoArray);
-  console.log('Fullness Data', fullnessArray);
+  // console.log('Color Data', colorArray);
+  // console.log('Promo Data', promoArray);
+  // console.log('Fullness Data', fullnessArray);
   // console.log('Anomaly Data', anomalyImgs);
   // console.log('Clicked', clickedBar);
   return (
@@ -202,7 +206,7 @@ const Customers = () => {
         </Typography>
       </Breadcrumb>
       <Grid container spacing={gridSpacing}>
-        {storesData &&
+        {storesData ? (
           storesData.map((item, index) => (
             <Grid key={index} xs={12} item>
               <Card className="shadow-xl" sx={{ padding: 1 }}>
@@ -306,14 +310,14 @@ const Customers = () => {
                                   }
                                 }}
                                 variant="determinate"
-                                value={62}
+                                value={(item.capture_count / totalParts) * 100}
                                 color="secondary"
                               />
-                              <div className="absolute w-full h-full flex justify-center place-items-center">
+                              <button className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center">
                                 <Typography sx={{ color: 'white' }} variant="subtitle2">
-                                  62 %
+                                  {(item.capture_count / totalParts) * 100} %
                                 </Typography>
-                              </div>
+                              </button>
                             </Box>
                           </Stack>
                           <Stack direction={'row'} justifyContent={'space-between'}>
@@ -370,14 +374,22 @@ const Customers = () => {
                                   borderRadius: 3,
                                   height: 20,
                                   '& .MuiLinearProgress-bar': {
-                                    backgroundColor: clickedBar.isVm ? errorDark : error
+                                    backgroundColor:
+                                      Math.floor((item.store_anomalies.length / totalParts) * 100) >= 80 && !clickedBar.isVm
+                                        ? success
+                                        : Math.floor((item.store_anomalies.length / totalParts) * 100) >= 80 && clickedBar.isVm
+                                        ? successDark
+                                        : Math.floor((item.store_anomalies.length / totalParts) * 100) < 50 && !clickedBar.isVm
+                                        ? error
+                                        : Math.floor((item.store_anomalies.length / totalParts) * 100) < 50 && clickedBar.isVm
+                                        ? errorDark
+                                        : !clickedBar.isVm
+                                        ? warning
+                                        : warningDark
                                   }
-                                  // '& .MuiLinearProgress-bar': {
-                                  //   backgroundColor: item.kpiValues.vm >= 80 ? success : item.kpiValues.vm < 50 ? error : warning
-                                  // }
                                 }}
                                 variant="determinate"
-                                value={47}
+                                value={Math.floor((item.store_anomalies.length / totalParts) * 100)}
                                 color="secondary"
                               />
                               <button
@@ -385,7 +397,7 @@ const Customers = () => {
                                 className="absolute hover:cursor-pointer w-full h-full flex justify-center place-items-center"
                               >
                                 <Typography sx={{ color: 'white' }} variant="subtitle2">
-                                  47 %
+                                  {Math.floor((item.store_anomalies.length / totalParts) * 100)} %
                                 </Typography>
                               </button>
                             </Box>
@@ -408,15 +420,15 @@ const Customers = () => {
                                   // }
                                 }}
                                 variant="determinate"
-                                value={85}
+                                value={0}
                                 color="secondary"
                               />
                               <button
                                 onClick={popClicked}
-                                className="absolute hover:cursor-pointer w-full h-full flex justify-center place-items-center"
+                                className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center"
                               >
                                 <Typography sx={{ color: 'white' }} variant="subtitle2">
-                                  85 %
+                                  NA
                                 </Typography>
                               </button>
                             </Box>
@@ -441,7 +453,7 @@ const Customers = () => {
                             }}
                             max={2}
                           >
-                            {dummyStoresData[0].agents.map((agent, index) => (
+                            {item.agentsDetails.map((agent, index) => (
                               <Tooltip
                                 key={index}
                                 title={
@@ -449,12 +461,17 @@ const Customers = () => {
                                     <Typography sx={{ width: '100%', color: 'white' }} variant="h6">
                                       Agent Details
                                     </Typography>
-                                    <Typography variant="subtitle2">Name: {agent.name}</Typography>
-                                    <Typography variant="subtitle2">Number: {agent.number}</Typography>
+                                    <Typography variant="subtitle2">Name: {agent.agentsDetails.user_name}</Typography>
+                                    <Typography variant="subtitle2">Number: {agent.agentsDetails.number}</Typography>
                                   </div>
                                 }
                               >
-                                <Avatar className="hover:cursor-pointer" sx={{ bgcolor: success }} alt={agent.name} src="/example.jpg" />
+                                <Avatar
+                                  className="hover:cursor-pointer"
+                                  sx={{ bgcolor: success }}
+                                  alt={agent.agentsDetails.user_name}
+                                  src="/example.jpg"
+                                />
                               </Tooltip>
                             ))}
                           </AvatarGroup>
@@ -464,29 +481,104 @@ const Customers = () => {
                   </Grid>
                   <Grid item lg={5.5} md={4} sm={12} xs={7}>
                     <div className="w-full px-4 flex flex-col justify-center h-full">
-                      <Slider {...settings}>
-                        {item.store_anomalies.map((anomaly, index) => (
-                          <div
-                            onClick={() => handleImageClick(anomaly.img_url)}
-                            key={index}
-                            className="rounded-md border shadow-md h-[147px]"
-                          >
-                            <img
-                              style={{ width: '100%', objectFit: 'cover' }}
-                              className="rounded-md shadow-md h-full hover:cursor-pointer"
-                              src={anomaly.img_url}
-                              alt="no Img"
-                            />
-                          </div>
-                        ))}
-                        {/* {storesData && console.log('Array', getSignedImg(Object.values(item.store_anomalies)))} */}
-                      </Slider>
+                      {!clickedBar.isUpKeep && !clickedBar.isVm && !clickedBar.isPop ? (
+                        <Slider {...settings}>
+                          {item.store_anomalies.map((anomaly, index) => (
+                            <div
+                              onClick={() => handleImageClick(anomaly.img_url)}
+                              key={index}
+                              className="rounded-md border shadow-md h-[147px]"
+                            >
+                              <img
+                                style={{ width: '100%', objectFit: 'cover' }}
+                                className="rounded-md shadow-md h-full hover:cursor-pointer"
+                                src={anomaly.img_url}
+                                alt="no Img"
+                              />
+                            </div>
+                          ))}
+                        </Slider>
+                      ) : clickedBar.isUpKeep && !clickedBar.isVm && !clickedBar.isPop && fullnessArray.length > 0 ? (
+                        <Slider {...settings}>
+                          {fullnessArray.map((anomaly, index) => (
+                            <div
+                              onClick={() => handleImageClick(anomaly.img_url)}
+                              key={index}
+                              className="rounded-md border shadow-md h-[147px]"
+                            >
+                              <img
+                                style={{ width: '100%', objectFit: 'cover' }}
+                                className="rounded-md shadow-md h-full hover:cursor-pointer"
+                                src={anomaly.img_url}
+                                alt="no Img"
+                              />
+                            </div>
+                          ))}
+                        </Slider>
+                      ) : !clickedBar.isUpKeep && clickedBar.isVm && !clickedBar.isPop && colorArray.length > 0 ? (
+                        <Slider {...settings}>
+                          {colorArray.map((anomaly, index) => (
+                            <div
+                              onClick={() => handleImageClick(anomaly.img_url)}
+                              key={index}
+                              className="rounded-md border shadow-md h-[147px]"
+                            >
+                              <img
+                                style={{ width: '100%', objectFit: 'cover' }}
+                                className="rounded-md shadow-md h-full hover:cursor-pointer"
+                                src={anomaly.img_url}
+                                alt="no Img"
+                              />
+                            </div>
+                          ))}
+                        </Slider>
+                      ) : (
+                        <div className=" w-full h-full flex justify-center place-items-center">
+                          <Stack direction={'column'} spacing={1}>
+                            <div className="w-28 flex justify-center ">
+                              <img src={CheckMarkImg} alt="complete" className="w-20" />
+                            </div>
+                            <button
+                              onClick={() => navigate('/main/stores/layout')}
+                              className="rounded-xl w-28 h-8 border border-emerald-600 hover:bg-emerald-600 hover:text-white hover:shadow-lg text-base"
+                            >
+                              No Anomalies
+                            </button>
+                          </Stack>
+                        </div>
+                      )}
                     </div>
+                    {/* {storesData && console.log('Array', getSignedImg(Object.values(item.store_anomalies)))} */}
                   </Grid>
                 </Grid>
               </Card>
             </Grid>
-          ))}
+          ))
+        ) : (
+          <Stack marginLeft={3} width={'100%'} paddingTop={3} spacing={gridSpacing}>
+            <Grid xs={12} item>
+              <Card className="shadow-xl" sx={{ padding: 1 }}>
+                <Grid container>
+                  <Skeleton animation="wave" variant="rounded" width={'100%'} height={160} />
+                </Grid>
+              </Card>
+            </Grid>
+            <Grid xs={12} item>
+              <Card className="shadow-xl" sx={{ padding: 1 }}>
+                <Grid container>
+                  <Skeleton animation="wave" variant="rounded" width={'100%'} height={160} />
+                </Grid>
+              </Card>
+            </Grid>
+            <Grid xs={12} item>
+              <Card className="shadow-xl" sx={{ padding: 1 }}>
+                <Grid container>
+                  <Skeleton animation="wave" variant="rounded" width={'100%'} height={160} />
+                </Grid>
+              </Card>
+            </Grid>
+          </Stack>
+        )}
       </Grid>
       <Dialog
         fullScreen
