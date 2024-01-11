@@ -8,8 +8,10 @@ import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
 // api imports
 import {
+  GetAnomalyDetails,
   GetStoreLayout
-  // GetImagesFromSignedUrl
+  // GetImagesFromSignedUrl,
+  // GetAnolamayDetails
 } from 'api';
 
 // material-ui
@@ -69,6 +71,7 @@ const Customers = () => {
   const [colorArray, setColorArray] = useState([]);
   // const [promoArray, setPromoArray] = useState([]);
   const [fullnessArray, setFullnessArray] = useState([]);
+  // const [analysisId, setAnalysisId] = useState('');
   const [clickedBar, setClickedBar] = useState({
     isUpKeep: false,
     isVm: false,
@@ -120,9 +123,23 @@ const Customers = () => {
     // }
   };
 
-  const handleImageClick = (url) => {
+  const getAnomalyDetails = async (id) => {
+    try {
+      const response = await GetAnomalyDetails(id);
+      if (response) {
+        console.log('AnomalyDetails', response);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleImageClick = (url, id) => {
     if (!isImageDialogOpen) {
       setSelectedImage(url);
+      // setAnalysisId(id);
+      // const analysis_id = id;
+      getAnomalyDetails(id);
     }
     setIsImageDialogOpen(!isImageDialogOpen);
   };
@@ -192,9 +209,10 @@ const Customers = () => {
   // console.log('Stores Data', storesData);
   // console.log('Color Data', colorArray);
   // console.log('Promo Data', promoArray);
-  console.log('Fullness Data', fullnessArray);
+  // console.log('Fullness Data', fullnessArray);
   // console.log('Anomaly Data', anomalyImgs);
   // console.log('Clicked', clickedBar);
+  // console.log('Analysis Id', analysisId);
   return (
     <>
       <Breadcrumb title="Stores">
@@ -206,7 +224,7 @@ const Customers = () => {
         </Typography>
       </Breadcrumb>
       <Grid container spacing={gridSpacing}>
-        {storesData ? (
+        {storesData && storesData.length > 0 ? (
           storesData.map((item, index) => (
             <Grid key={index} xs={12} item>
               <Card className="shadow-xl" sx={{ padding: 1 }}>
@@ -310,12 +328,12 @@ const Customers = () => {
                                   }
                                 }}
                                 variant="determinate"
-                                value={(item.capture_count / totalParts) * 100}
+                                value={Math.floor((item.capture_count / totalParts) * 100)}
                                 color="secondary"
                               />
                               <button className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center">
                                 <Typography sx={{ color: 'white' }} variant="subtitle2">
-                                  {(item.capture_count / totalParts) * 100} %
+                                  {Math.floor((item.capture_count / totalParts) * 100)} %
                                 </Typography>
                               </button>
                             </Box>
@@ -441,7 +459,12 @@ const Customers = () => {
                     <div className="w-full flex flex-col justify-center place-items-center min-[600px]:border-l border-r border-gray-300 h-full">
                       <Stack direction={'column'}>
                         <Typography className="drop-shadow-md" align="center" variant="h2">
-                          0/{item.store_anomalies.length}
+                          0/
+                          {!clickedBar.isUpKeep && !clickedBar.isVm && !clickedBar.isPop
+                            ? item.store_anomalies.length
+                            : clickedBar.isUpKeep
+                            ? fullnessArray.length
+                            : colorArray.length}
                         </Typography>
                         <Typography className="drop-shadow-md" align="center" variant="h6">
                           Anomalies solved
@@ -485,7 +508,7 @@ const Customers = () => {
                         <Slider {...settings}>
                           {item.store_anomalies.map((anomaly, index) => (
                             <div
-                              onClick={() => handleImageClick(anomaly.img_url)}
+                              onClick={() => handleImageClick(anomaly.img_url, anomaly.store_anomalies.analysis_id)}
                               key={index}
                               className="rounded-md border shadow-md h-[147px]"
                             >
@@ -502,7 +525,7 @@ const Customers = () => {
                         <Slider {...settings}>
                           {fullnessArray.map((anomaly, index) => (
                             <div
-                              onClick={() => handleImageClick(anomaly.img_url)}
+                              onClick={() => handleImageClick(anomaly.img_url, anomaly.store_anomalies.analysis_id)}
                               key={index}
                               className="rounded-md border shadow-md h-[147px]"
                             >
@@ -519,7 +542,7 @@ const Customers = () => {
                         <Slider {...settings}>
                           {colorArray.map((anomaly, index) => (
                             <div
-                              onClick={() => handleImageClick(anomaly.img_url)}
+                              onClick={() => handleImageClick(anomaly.img_url, anomaly.store_anomalies.analysis_id)}
                               key={index}
                               className="rounded-md border shadow-md h-[147px]"
                             >
