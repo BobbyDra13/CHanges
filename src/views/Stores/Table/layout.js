@@ -146,7 +146,6 @@ const StoreLayout = () => {
     handleCloseBay();
     setCurrentShelf(item);
     setOpenShelves(true);
-    
   };
   // console.log('updated parts', updatedPartDetails);
   const handleBack = () => {
@@ -387,7 +386,7 @@ const StoreLayout = () => {
           <div
             className={`lg:w-[45%] w-[70%]  lg:h-[67vh] h-[45vh]`}
             style={{
-              perspective: '900px'
+              perspective: '56.25rem'
             }}
           >
             <div
@@ -402,17 +401,20 @@ const StoreLayout = () => {
                   return (
                     <div
                       key={index}
-                      className="border-emerald-500 border-[5px] rounded-lg col-span-1 cursor-pointer row-start-2 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500"
+                      className={`border-emerald-500 border-[5px] rounded-lg col-span-1 cursor-pointer row-start-2  text-xl font-semibold hover:bg-emerald-200 duration-500`}
                       style={{
-                        gridRowEnd: 8
+                        gridRowEnd: 8,
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center'
                       }}
                       onClick={() => {
                         handleOpenShelves(item);
                       }}
                     >
-                      <div className="h-full flex justify-center items-center">
-                        <p className="-rotate-90 border-0 border-red-500 m-0 w-24 text-center">shelf - 1</p>
-                      </div>
+                      <p className="-rotate-90 m-0 w-20 whitespace-nowrap">Shelf - 1</p>
+                      {/* <p className="-rotate-90 m-0 w-20 whitespace-nowrap"> Fullness: {item.shelf_fullness.toFixed(2)}%</p> */}
                     </div>
                   );
                 else if (item.location === 'right')
@@ -428,8 +430,12 @@ const StoreLayout = () => {
                         handleOpenShelves(item);
                       }}
                     >
-                      <div className="h-full flex justify-center items-center cursor-pointer">
-                        <p className="rotate-90 border-0 border-red-500 m-0 w-24 text-center">shelf - 3</p>
+                      <div className="h-full flex justify-between items-center cursor-pointer">
+                        {/* <p className="rotate-90 border-0 border-red-500 w-20 text-center mt-2  whitespace-nowrap">
+                          {' '}
+                          Fullness: {item.shelf_fullness.toFixed(2)}%
+                        </p> */}
+                        <p className="rotate-90 border-0 border-red-500 m-0 w-20 whitespace-nowrap">Shelf - 3</p>
                       </div>
                     </div>
                   );
@@ -437,7 +443,7 @@ const StoreLayout = () => {
                   return (
                     <div
                       key={index}
-                      className="border-emerald-500 cursor-pointer border-[5px] rounded-lg col-start-2 row-span-1 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500"
+                      className="border-emerald-500  flex-col cursor-pointer border-[5px] rounded-lg col-start-2 row-span-1 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500"
                       style={{
                         gridColumnEnd: 6,
                         gridRowStart: 1
@@ -446,13 +452,14 @@ const StoreLayout = () => {
                         handleOpenShelves(item);
                       }}
                     >
-                      <p className="">shelf - 2</p>
+                      <p className="">Shelf - 2</p>
+                      {/* <p className=""> Fullness: {item.shelf_fullness.toFixed(2)}%</p> */}
                     </div>
                   );
                 return (
                   <div
                     key={index}
-                    className="border-emerald-500 cursor-pointer border-[5px] rounded-lg col-start-2 row-span-1 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500"
+                    className="border-emerald-500 cursor-pointer border-[5px] rounded-lg col-start-2 row-span-1 flex flex-col justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500"
                     style={{
                       gridColumnEnd: 6,
                       gridRowStart: currentBay.id === 9 ? 9 : 8
@@ -461,7 +468,8 @@ const StoreLayout = () => {
                       handleOpenShelves(item);
                     }}
                   >
-                    <p className="border-0 border-red-500 ">shelf - 0</p>
+                    <p className="border-0 border-red-500 ">Shelf - 0</p>
+                    {/* <p className="border-0 border-red-500 w-15 text-center mt-2"> Fullness: {item.shelf_fullness.toFixed(2)}%</p> */}
                   </div>
                 );
               })}
@@ -507,9 +515,14 @@ const StoreLayout = () => {
                           <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
                         </div>
                       )}
-                      <img src={item.img_url} alt={`Shelf ${index}`} className="w-full h-full object-cover cursor-pointer " onLoad={() => {
-                        setImgLoading(false);
-                      }}/>
+                      <img
+                        src={item.img_url}
+                        alt={`Shelf ${index}`}
+                        className="w-full h-full object-cover cursor-pointer "
+                        onLoad={() => {
+                          setImgLoading(false);
+                        }}
+                      />
                     </div>
                   ) : (
                     <img
