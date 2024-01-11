@@ -124,7 +124,7 @@ const AnomaliesBarChart = ({ date }) => {
       try {
         const data = await GetAnomaliesBarChartData(body);
         if (data) {
-          // console.log('BarDATA', data);
+          console.log('BarDATA', data.data);
           if (data.data.length > 0) {
             const extractedDates = data.data.map((item) => item.date);
             const extractedResolved = data.data.map((item) => item.resolveCounts.resolved ?? 0);

@@ -82,7 +82,7 @@ const discountPromoChart = {
   series: [
     {
       name: 'Promo %',
-      data: [50, 20, 10, 22, 50, 10, 40]
+      data: [0, 0, 0, 0, 0, 0, 0]
     }
   ]
 };

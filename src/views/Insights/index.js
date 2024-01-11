@@ -9,7 +9,8 @@ import {
   GetAnomaliesBarChartData,
   GetVMCompliance,
   GetVMComplianceForOneWeek,
-  GetFullnessForOneWeek
+  GetFullnessForOneWeek,
+  GetAnomaliesForOneWeek
 } from 'api';
 
 // Apex chart import
@@ -76,6 +77,7 @@ const Insights = () => {
   const [fullness, setFullness] = useState(false);
   const [vmc, setVmc] = useState(false);
   const [anomalies, setAnomalies] = useState(false);
+  const [anomaliesBarChart, setAnomaliesBarChart] =useState(false);
   const [brandDonut, setBrandDonut] = useState(false);
   const [brandChartOptions, setBrandChartOptions] = useState(BrandChartData.options);
   const [brandFullness, setBrandFullness] = useState([]);
@@ -122,6 +124,42 @@ const Insights = () => {
       {
         name: 'Fullness %',
         data: [67, 14, 52, 93, 30, 81, 45]
+      }
+    ],
+    options: {
+      ...chartsConfig,
+      colors: ['#10b981'],
+      stroke: {
+        lineCap: 'round',
+        curve: 'smooth'
+      },
+      markers: {
+        size: 4
+      },
+      grid: {
+        show: false
+      },
+      xaxis: {
+        ...chartsConfig.xaxis,
+        labels: {
+          show: false
+        },
+        categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+      },
+      yaxis: {
+        labels: {
+          show: false
+        }
+      }
+    }
+  });
+  const [anomaliesChartConfig, setAnomaliesChartConfig] = useState({
+    type: 'line',
+    height: 100,
+    series: [
+      {
+        name: 'Anomalies',
+        data: [72, 41, 89, 63, 27, 54, 94]
       }
     ],
     options: {
@@ -245,8 +283,48 @@ const Insights = () => {
     fetchFullnessLineChart();
   }, [selectedDate]);
 
-  console.log('chartConfig', chartConfig);
-  console.log('fullnessConfig', fullnessChartConfig);
+  useEffect(() => {
+    async function fetchAnomaliesChart() {
+      const body = {
+        start_date: selectedDate.toString(),
+        Store_IDs: ['6582be9ac5ed94d792a563b8'],
+        period: 7
+      };
+
+      try {
+        const response = await GetAnomaliesForOneWeek(body);
+        if (response && response.data) { 
+          const apiData = response.data;
+
+          const anomalies = apiData.map((item) => item.totalAnomalies);
+          const dates = apiData.map((item) => item.date);
+
+          const updatedChartConfig = {
+            ...chartConfig,
+            series: [
+              {
+                name: 'Anomalies',
+                data: anomalies
+              }
+            ],
+            options: {
+              ...chartConfig.options,
+              xaxis: {
+                ...chartConfig.options.xaxis,
+                categories: dates
+              }
+            }
+          };
+
+          setAnomaliesChartConfig(updatedChartConfig);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    fetchAnomaliesChart();
+  }, [selectedDate]);
   // const [brandNames, setBrandNames] = useState([]);
 
   // console.log('DATE SELECTED', selectedDate);
@@ -438,6 +516,7 @@ const Insights = () => {
         setFullness(false);
         setVmc(false);
         setAnomalies(false);
+        setAnomaliesBarChart(false);
         setBrandDonut(false);
 
         try {
@@ -485,11 +564,11 @@ const Insights = () => {
           }
 
           if (anomaliesKpiData) {
-            setAnomalies(anomaliesKpiData.data.toString());
+            setAnomalies(anomaliesKpiData.data);
           }
 
           if (anomaliesBarChartData) {
-            setAnomalies(anomaliesKpiData.data.toString());
+            setAnomaliesBarChart(anomaliesBarChartData.data);
           }
         } catch (error) {
           console.log(error);
@@ -499,8 +578,8 @@ const Insights = () => {
     }
     /* eslint-enable no-inner-declarations */
   }, [selectedDate]);
-  console.log('vmc', vmc);
-  console.log('fullness', fullness);
+ console.log("anomalies", anomalies);
+ console.log("anomalies bar", anomaliesBarChart);
 
   return (
     <Grid container spacing={gridSpacing}>
@@ -562,25 +641,27 @@ const Insights = () => {
               isLoaded={fullness}
               chart={statisticsChartsData[3].chart}
               title="Discounts & Promos Execution"
-              count="0%"
-              percentage={0.5}
+              count="NA"
+              percentage="NA"
               // isLoss
-              chipColor="success"
+              // chipColor="success"
               color={theme.palette.success.main}
             />
           </Grid>
           <Grid item lg={3} sm={6} xs={12}>
             <KpiCard
               isLoaded={anomalies}
-              chart={statisticsChartsData[4].chart}
+              chart={anomaliesChartConfig}
               title="Anomalies Found"
-              count={anomalies && anomalies}
+              count={`${anomalies && anomalies.currentDay ? Math.floor(anomalies.currentDay.totalAnomalies) : 0}`}
               // count="0%"
-              percentage={0.5}
-              isLoss
-              chipColor="error"
-              // chipColor="success"
-              // chipColor="warning"
+              percentage={`${
+                anomalies && anomalies.percentageChange ? Math.abs(Math.floor(anomalies.percentageChange)) : 0
+              }`}
+              chipColor={
+                anomalies && anomalies.percentageChange && anomalies.percentageChange < 0 ? 'error' : 'success'
+              }
+              isLoss={anomalies && anomalies.percentageChange && anomalies.percentageChange < 0}
               color={theme.palette.error.main}
             />
           </Grid>
