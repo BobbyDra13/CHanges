@@ -94,7 +94,7 @@ export const GetStoreLayout = async (data) => {
         Accept: "application/json",
       },
     });
-    console.log("api response", res);
+    // console.log("api response", res);
     return res;
   } catch (error) {
     console.log("Error Calling all Store API: ", error);
@@ -108,7 +108,7 @@ export const GetImagesFromSignedUrl = async (data) => {
         Accept: "application/json",
       },
     });
-    console.log("api image response", res);
+    // console.log("api image response", res);
     return res;
   } catch (error) {
     console.log("Error Calling all Store API: ", error);
