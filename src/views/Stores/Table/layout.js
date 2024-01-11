@@ -289,29 +289,29 @@ const StoreLayout = () => {
       }
     }
   };
-  const handlePrevPart = () => {
+  const handlePrevPart = () => { 
     let sortedPartsArray = updatedPartDetails.sort((a, b) => {
       return a.name.localeCompare(b.name);
     });
     parseInt(selectedImage?.name?.split('  ')[1]) === 1
       ? setSelectedImage(sortedPartsArray[updatedPartDetails.length - 1])
       : setSelectedImage(sortedPartsArray[parseInt(selectedImage?.name?.split('  ')[1]) - 2]);
-  };
+  }
   const handleNextPart = () => {
-    let sortedPartsArray = updatedPartDetails.sort((a, b) => {
-      return a.name.localeCompare(b.name);
-    });
+    let sortedPartsArray = updatedPartDetails.sort((a, b) => {  
+      return a.name.localeCompare(b.name);  
+    }); 
     parseInt(selectedImage?.name?.split('  ')[1]) === updatedPartDetails.length
       ? setSelectedImage(sortedPartsArray[0])
       : setSelectedImage(sortedPartsArray[parseInt(selectedImage?.name?.split('  ')[1])]);
-  };
-  const handleKeyDownPart = (e) => {
-    if (e.key === 'ArrowLeft') {
-      handlePrevPart();
-    } else if (e.key === 'ArrowRight') {
-      handleNextPart();
     }
-  };
+    const handleKeyDownPart = (e) => {
+      if (e.key === 'ArrowLeft') {
+        handlePrevPart();
+      } else if (e.key === 'ArrowRight') {
+        handleNextPart();
+      } 
+    };
   const findDimensions = (event) => {
     setLoading(false);
     const { naturalWidth } = event.target;
@@ -653,7 +653,7 @@ const StoreLayout = () => {
                     title={
                       <Stack direction={'row'} justifyContent={'space-between'}>
                         <Typography>{`Fullness: ${item.avg_full || 0}%`}</Typography>
-                        {item?.timestamps && <Typography>{`Date: ${item?.timestamps?.split('T')[0]}`}</Typography>}
+                        <Typography>{`Date: ${item?.timestamps.split('T')[0]}`}</Typography>
                       </Stack>
                     }
                     subtitle={item.name + '/' + updatedPartDetails.length}
