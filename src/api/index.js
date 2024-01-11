@@ -53,11 +53,13 @@ export const GetAnomaliesKpi = async (data) => {
         //   Authorization: await token(),
       }
     });
+    console.log("anomaliesData", res);
     return res;
   } catch (error) {
     console.log('Error Calling GetAnomaliesKpi API: ', error);
   }
 };
+
 
 export const GetAnomaliesBarChartData = async (data) => {
   try {
@@ -67,11 +69,13 @@ export const GetAnomaliesBarChartData = async (data) => {
         //   Authorization: await token(),
       }
     });
+    console.log("anomalies chart", res);
     return res;
   } catch (error) {
     console.log('Error Calling GetAnomaliesKpi API: ', error);
   }
 };
+
 
 // API FOR THE LAYOUT OF THE STORE
 export const GetStoreLayout = async (data) => {
@@ -207,3 +211,16 @@ export const GetFullnessForOneWeek = async (data) => {
     console.log('Error calling fullness for a week api', error);
   }
 };
+
+export const GetAnomaliesForOneWeek = async (data) => {
+  try {
+    const res = await axios.post(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/timeseries_anomalies`, data, {
+      headers: {
+        Accept: 'application/json'
+      }
+    });
+    return res;
+  } catch(error) {
+    console.log("Error calling anomalies for a week api", error);
+  }
+}
