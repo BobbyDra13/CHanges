@@ -213,26 +213,69 @@ export const GetVMComplianceForOneWeek = async (data) => {
 
 export const GetFullnessForOneWeek = async (data) => {
   try {
-    const res = await axios.post(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/timeseries_fullness`, data, {
-      headers: {
-        Accept: 'application/json'
+    const res = await axios.post(
+      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/timeseries_fullness`,
+      data,
+      {
+        headers: {
+          Accept: 'application/json'
+        }
       }
-    });
+    );
     return res;
-  } catch(error) {
+  } catch (error) {
     console.log('Error calling fullness for a week api', error);
   }
 };
 
-export const GetAnomaliesForOneWeek = async (data) => {
+export const GetAnomalyDetails = async (data) => {
   try {
-    const res = await axios.post(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/timeseries_anomalies`, data, {
+    const res = await axios.get(`${lambUrl}/store/get_analysis_data?analysisID=${data}`, {
       headers: {
         Accept: 'application/json'
       }
     });
     return res;
-  } catch(error) {
-    console.log("Error calling anomalies for a week api", error);
+  } catch (error) {
+    console.log('Error Calling GetAnomalyDetails API: ', error);
+  }
+}
+
+
+export const checkId = async (user_id) => {
+  try {
+    const res = await axios.post(
+      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/timeseries_anomalies`,
+      data,
+      {
+        headers: {
+          Accept: 'application/json'
+        }
+      }
+    );
+    return res;
+  } catch (error) {
+    console.log('Error calling anomalies for a week api', error);
+  }
+}
+
+
+export const checkId = async (user_id) => {
+  try {
+    const response = await axios.get(`http://localhost:8081/data/user/checkUserId?user_id=${user_id}`);
+    return response.data;
+  } catch(error){
+    console.log('Error');
+    throw error;
+  }
+}
+
+export const allStoresId = async () => {
+  try{
+    const response = await axios.get(`http://localhost:8081/data/user/allStoresId`);
+    return response.data.storesId;
+  }catch(error){
+    console.log('Error occured');
+    throw error;
   }
 }
