@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from 'react';
 
 // API imports
-import { GetCaptureProgress, GetBrandDonutData, GetFullnessKpi, GetAnomaliesKpi, GetAnomaliesBarChartData } from 'api';
+import { GetCaptureProgress, GetBrandDonutData, GetFullnessKpi, GetAnomaliesKpi, GetAnomaliesBarChartData, GetVMCompliance } from 'api';
 
 // Apex chart import
 import Chart from 'react-apexcharts';
@@ -63,6 +63,7 @@ const Insights = () => {
   const [capProgress, setCapProgress] = useState(false);
   const [avgCapProgress, setAvgCapProgress] = useState(false);
   const [fullness, setFullness] = useState(false);
+  const [vmc, setVmc] = useState(false);
   const [anomalies, setAnomalies] = useState(false);
   const [brandDonut, setBrandDonut] = useState(false);
   const [brandChartOptions, setBrandChartOptions] = useState(BrandChartData.options);
@@ -256,17 +257,20 @@ const Insights = () => {
         setAvgCapProgress(false);
         setCapProgress(false);
         setFullness(false);
+        setVmc(false);
         setAnomalies(false);
         setBrandDonut(false);
 
         try {
-          const [capProgressData, brandDonutData, fullnessKpiData, anomaliesKpiData, anomaliesBarChartData] = await Promise.all([
-            GetCaptureProgress(commonBody),
-            GetBrandDonutData(brandDonutBody),
-            GetFullnessKpi(commonBody),
-            GetAnomaliesKpi(commonBody),
-            GetAnomaliesBarChartData(commonBody)
-          ]);
+          const [capProgressData, brandDonutData, fullnessKpiData, vmComplianceKpiData, anomaliesKpiData, anomaliesBarChartData] =
+            await Promise.all([
+              GetCaptureProgress(commonBody),
+              GetBrandDonutData(brandDonutBody),
+              GetFullnessKpi(commonBody),
+              GetVMCompliance(commonBody),
+              GetAnomaliesKpi(commonBody),
+              GetAnomaliesBarChartData(commonBody)
+            ]);
           if (capProgressData) {
             if (capProgressData.data.length > 0) {
               const totalCapturePercentage = capProgressData.data.reduce((acc, item) => acc + item.capture_percentage, 0);
@@ -297,6 +301,10 @@ const Insights = () => {
             setFullness(fullnessKpiData.data);
           }
 
+          if (vmComplianceKpiData) {
+            setVmc(vmComplianceKpiData.data.data);
+          }
+
           if (anomaliesKpiData) {
             setAnomalies(anomaliesKpiData.data.toString());
           }
@@ -312,6 +320,7 @@ const Insights = () => {
     }
     /* eslint-enable no-inner-declarations */
   }, [selectedDate]);
+  console.log('vmc', vmc);
 
   return (
     <Grid container spacing={gridSpacing}>
@@ -353,12 +362,17 @@ const Insights = () => {
           </Grid>
           <Grid item lg={3} sm={6} xs={12}>
             <KpiCard
-              isLoaded={fullness}
+              isLoaded={vmc}
               chart={statisticsChartsData[2].chart}
               title="Visual Merchandising Compliance"
-              count="0%"
-              percentage={2}
-              chipColor="success"
+              count={`${vmc && vmc.currentDay ? Math.floor(vmc.currentDay.withoutAnomalyPercentage) : 0}%`}
+              percentage={`${
+                vmc && vmc.differencePercentage ? Math.abs(Math.floor(vmc.differencePercentage.withoutAnomalyPercentageDifference)) : 0
+              }`}
+              chipColor={
+                vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0 ? 'error' : 'success'
+              }
+              isLoss={vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0}
               color={theme.palette.success.main}
             />
           </Grid>
@@ -379,7 +393,7 @@ const Insights = () => {
               isLoaded={anomalies}
               chart={statisticsChartsData[4].chart}
               title="Anomalies Found"
-              count={(anomalies && anomalies) + '%'}
+              count={anomalies && anomalies}
               // count="0%"
               percentage={0.5}
               isLoss

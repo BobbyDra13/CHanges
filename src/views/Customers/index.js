@@ -62,9 +62,9 @@ const Customers = () => {
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [storesData, setStoresData] = useState(false);
-  // const [upKeepData, setUpKeepData] = useState(false);
-  // const [vmData, setVmData] = useState(false);
-  // const [popData, setPopata] = useState(false);
+  const [colorArray, setColorArray] = useState([]);
+  const [promoArray, setPromoArray] = useState([]);
+  const [fullnessArray, setFullnessArray] = useState([]);
   const [clickedBar, setClickedBar] = useState({
     isUpKeep: false,
     isVm: false,
@@ -137,6 +137,17 @@ const Customers = () => {
       if (response) {
         console.log('Store Data', response.data);
         setStoresData(response.data);
+        const anomaliesByType = new Map();
+        response.data[0].store_anomalies.forEach((anomaly) => {
+          const type = anomaly.store_anomalies.anomalies_found[0].type;
+          anomaliesByType.set(type, anomaliesByType.get(type) || []);
+          anomaliesByType.get(type).push(anomaly);
+        });
+
+        // Set the state values based on the Map
+        setColorArray(anomaliesByType.get('color_assortment') || []);
+        setPromoArray(anomaliesByType.get('promo_assortment') || []);
+        setFullnessArray(anomaliesByType.get('fullness_assortment') || []);
       }
     } catch (error) {
       console.log(error);
@@ -175,16 +186,19 @@ const Customers = () => {
 
   // console.log('Stores Data', storesData && storesData.map((item) => item.store_id));
   // console.log('Stores Data', storesData);
+  console.log('Color Data', colorArray);
+  console.log('Promo Data', promoArray);
+  console.log('Fullness Data', fullnessArray);
   // console.log('Anomaly Data', anomalyImgs);
   // console.log('Clicked', clickedBar);
   return (
     <>
-      <Breadcrumb title="Stores New">
+      <Breadcrumb title="Stores">
         <Typography component={Link} to="/" variant="subtitle2" color="inherit" className="link-breadcrumb">
           Insights
         </Typography>
         <Typography variant="subtitle2" color="primary" className="link-breadcrumb">
-          Stores New
+          Stores
         </Typography>
       </Breadcrumb>
       <Grid container spacing={gridSpacing}>
@@ -453,14 +467,14 @@ const Customers = () => {
                       <Slider {...settings}>
                         {item.store_anomalies.map((anomaly, index) => (
                           <div
-                            onClick={() => handleImageClick(anomaly.store_anomalies.image_url)}
+                            onClick={() => handleImageClick(anomaly.img_url)}
                             key={index}
                             className="rounded-md border shadow-md h-[147px]"
                           >
                             <img
                               style={{ width: '100%', objectFit: 'cover' }}
                               className="rounded-md shadow-md h-full hover:cursor-pointer"
-                              src={anomaly.store_anomalies.image_url}
+                              src={anomaly.img_url}
                               alt="no Img"
                             />
                           </div>
