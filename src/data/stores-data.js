@@ -10,7 +10,7 @@ import Img6 from '../assets/images/AnomalyImages/img6.jpg';
 import Img7 from '../assets/images/AnomalyImages/img7.jpg';
 import Img8 from '../assets/images/AnomalyImages/img8.jpg';
 
-export const storesData = [
+export const dummyStoresData = [
   {
     active: true,
     disabled: false,
@@ -256,4 +256,4 @@ export const storesData = [
   }
 ];
 
-export default storesData;
+export default dummyStoresData;

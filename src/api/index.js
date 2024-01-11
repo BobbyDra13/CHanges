@@ -76,16 +76,12 @@ export const GetAnomaliesBarChartData = async (data) => {
 // API FOR THE LAYOUT OF THE STORE
 export const GetStoreLayout = async (data) => {
   try {
-    const res = await axios.post(
-      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/store/analysis`,
-      data,
-      {
-        headers: {
-          Accept: 'application/json'
-        }
-      }
-    );
-    console.log('api response', res);
+    const res = await axios.post(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/store/analysis`, data, {
+      headers: {
+        Accept: "application/json",
+      },
+    });
+    // console.log("api response", res);
     return res;
   } catch (error) {
     console.log('Error Calling all Store API: ', error);
@@ -99,7 +95,7 @@ export const GetImagesFromSignedUrl = async (data) => {
         Accept: 'application/json'
       }
     });
-    console.log('api image response', res);
+    // console.log("api image response", res);
     return res;
   } catch (error) {
     console.log('Error Calling all Store API: ', error);

@@ -1,10 +1,16 @@
-import { React, useState } from 'react';
+import { React, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { useNavigate } from 'react-router-dom';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+
+// api imports
+import {
+  GetStoreLayout
+  // GetImagesFromSignedUrl
+} from 'api';
 
 // material-ui
 import {
@@ -22,7 +28,8 @@ import {
   Menu,
   MenuItem,
   Dialog,
-  DialogContent
+  DialogContent,
+  Skeleton
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
@@ -36,9 +43,12 @@ import { ImCross } from 'react-icons/im';
 import Breadcrumb from 'component/Breadcrumb';
 import { gridSpacing } from 'config.js';
 import settings from '../../configs/react-slick-config';
-import storesData from 'data/stores-data';
+// import dummyStoresData from 'data/stores-data';
 // import Map from './map';
+
 // assets
+import OrionImg from '../../assets/images/MapImages/orion.png';
+import CheckMarkImg from '../../assets/images/checkmark.png';
 // import MapImg from '../../assets/images/mapImg.png';
 // import OrionImg from '../../assets/images/MapImages/orion.png';
 
@@ -48,15 +58,29 @@ import storesData from 'data/stores-data';
 //   lng: -122.08427
 // };
 
+const totalParts = 142;
+
 // ==============================|| CUSTOMERS PAGE ||============================== //
 
 const Customers = () => {
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [storesData, setStoresData] = useState(false);
+  const [colorArray, setColorArray] = useState([]);
+  // const [promoArray, setPromoArray] = useState([]);
+  const [fullnessArray, setFullnessArray] = useState([]);
+  const [clickedBar, setClickedBar] = useState({
+    isUpKeep: false,
+    isVm: false,
+    isPop: false
+  });
   const theme = useTheme();
   const success = theme.palette.success.main;
+  const successDark = theme.palette.success.dark;
   const warning = theme.palette.warning.main;
+  const warningDark = theme.palette.warning.dark;
   const error = theme.palette.error.main;
+  const errorDark = theme.palette.error.dark;
   const navigate = useNavigate();
   const options = [
     { label: 'View', icon: <VisibilityIcon />, onClick: () => navigate('/main/stores/layout') },
@@ -74,6 +98,28 @@ const Customers = () => {
     setAnchorEl(null);
   };
 
+  const upKeepClicked = () => {
+    if (!clickedBar.isUpKeep) {
+      setClickedBar({ isUpKeep: true, isVm: false, isPop: false });
+    } else {
+      setClickedBar({ isUpKeep: false, isVm: false, isPop: false });
+    }
+  };
+  const vMClicked = () => {
+    if (!clickedBar.isVm) {
+      setClickedBar({ isUpKeep: false, isVm: true, isPop: false });
+    } else {
+      setClickedBar({ isUpKeep: false, isVm: false, isPop: false });
+    }
+  };
+  const popClicked = () => {
+    // if (!clickedBar.isPop) {
+    //   setClickedBar({ isUpKeep: false, isVm: false, isPop: true });
+    // } else {
+    //   setClickedBar({ isUpKeep: false, isVm: false, isPop: false });
+    // }
+  };
+
   const handleImageClick = (url) => {
     if (!isImageDialogOpen) {
       setSelectedImage(url);
@@ -81,6 +127,74 @@ const Customers = () => {
     setIsImageDialogOpen(!isImageDialogOpen);
   };
 
+  const date = new Date();
+  const today = date.toISOString().split('T')[0];
+  const getStoresData = async () => {
+    const input = {
+      Store_IDs: ['6582be9ac5ed94d792a563b8'],
+      // start_date: '2024-01-01'
+      start_date: today
+    };
+    setStoresData(false);
+    try {
+      const response = await GetStoreLayout(input);
+      if (response) {
+        console.log('Store Data', response.data);
+        setStoresData(response.data);
+        const anomaliesByType = new Map();
+        response.data[0].store_anomalies.forEach((anomaly) => {
+          const type = anomaly.store_anomalies.anomalies_found[0].type;
+          anomaliesByType.set(type, anomaliesByType.get(type) || []);
+          anomaliesByType.get(type).push(anomaly);
+        });
+
+        // Set the state values based on the Map
+        setColorArray(anomaliesByType.get('color_assortment') || []);
+        // setPromoArray(anomaliesByType.get('promo_assortment') || []);
+        setFullnessArray(anomaliesByType.get('fullness_assortment') || []);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // const getSignedImg = async (input) => {
+  //   try {
+  //     const final_dict = input.map((item) => item.store_anomalies);
+  //     const response = await GetImagesFromSignedUrl(final_dict);
+
+  //     if (response && response.data) {
+  //       // console.log('Signed Img', response.data);
+  //       // return response.data; // Return the correct data property
+  //       setAnomalyImgs(response.data);
+  //     } else {
+  //       // Handle the case where response is not successful or data is missing
+  //       // return []; // Or return a default value
+  //       setAnomalyImgs([]);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching signed images:', error);
+  //     // return []; // Or handle the error differently
+  //     setAnomalyImgs([]);
+  //   }
+  // };
+
+  useEffect(() => {
+    getStoresData();
+  }, []);
+  // useEffect(() => {
+  //   if (storesData) {
+  //     getSignedImg(Object.values(storesData[0].store_anomalies));
+  //   }
+  // }, [storesData]);
+
+  // console.log('Stores Data', storesData && storesData.map((item) => item.store_id));
+  // console.log('Stores Data', storesData);
+  // console.log('Color Data', colorArray);
+  // console.log('Promo Data', promoArray);
+  // console.log('Fullness Data', fullnessArray);
+  // console.log('Anomaly Data', anomalyImgs);
+  // console.log('Clicked', clickedBar);
   return (
     <>
       <Breadcrumb title="Stores">
@@ -92,7 +206,7 @@ const Customers = () => {
         </Typography>
       </Breadcrumb>
       <Grid container spacing={gridSpacing}>
-        {storesData &&
+        {storesData ? (
           storesData.map((item, index) => (
             <Grid key={index} xs={12} item>
               <Card className="shadow-xl" sx={{ padding: 1 }}>
@@ -100,11 +214,13 @@ const Customers = () => {
                   <Grid item lg={5} md={6} sm={9} xs={12}>
                     <Grid container spacing={0}>
                       <Grid sx={{ paddingRight: 1 }} item>
-                        <Tooltip title={item.mapData.address}>
+                        <Tooltip
+                          title={'Plot no: 311, Orion Mall, near ST Bus Depot, Forest Colony, Panvel, Navi Mumbai, Maharashtra 410206'}
+                        >
                           <img
                             style={{ display: 'block', objectFit: 'cover' }}
                             className="rounded-md border border-gray-300 max-[600px]:w-24 w-32 h-[153px] drop-shadow-md hover:cursor-pointer"
-                            src={item.mapData.imgUrl}
+                            src={OrionImg}
                             alt="noImg"
                           />
                         </Tooltip>
@@ -117,16 +233,17 @@ const Customers = () => {
                           <Box sx={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'space-between' }}>
                             <Stack direction={'row'} spacing={1}>
                               <div className="h-full flex flex-col justify-center">
-                                <Tooltip title={item.active ? 'Active' : 'Inactive'}>
+                                <Tooltip title={'Active'}>
                                   <div
-                                    className={`shadow-md mb-0.5 rounded-full hover:cursor-pointer w-3 h-3 ${
-                                      item.active ? 'bg-emerald-500' : 'bg-gray-400'
-                                    }`}
+                                    className="shadow-md mb-0.5 rounded-full hover:cursor-pointer w-3 h-3 bg-emerald-500"
+                                    // className={`shadow-md mb-0.5 rounded-full hover:cursor-pointer w-3 h-3 ${
+                                    //   item.active ? 'bg-emerald-500' : 'bg-gray-400'
+                                    // }`}
                                   ></div>
                                 </Tooltip>
                               </div>
                               <Typography className="drop-shadow-md self-center" variant="h5">
-                                {item.storeId}
+                                {item.store_id} - {item.name}
                               </Typography>
                             </Stack>
                             <IconButton
@@ -179,7 +296,7 @@ const Customers = () => {
                             </Menu>
                           </Box>
                           <Stack direction={'row'} justifyContent={'space-between'}>
-                            <Typography sx={{ width: 90 }} variant="subtitle1">
+                            <Typography sx={{ width: 95 }} variant="subtitle1">
                               Capture %
                             </Typography>
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
@@ -193,18 +310,18 @@ const Customers = () => {
                                   }
                                 }}
                                 variant="determinate"
-                                value={item.kpiValues.capture}
+                                value={(item.capture_count / totalParts) * 100}
                                 color="secondary"
                               />
-                              <div className="absolute w-full h-full flex justify-center place-items-center">
+                              <button className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center">
                                 <Typography sx={{ color: 'white' }} variant="subtitle2">
-                                  {item.kpiValues.capture} %
+                                  {(item.capture_count / totalParts) * 100} %
                                 </Typography>
-                              </div>
+                              </button>
                             </Box>
                           </Stack>
                           <Stack direction={'row'} justifyContent={'space-between'}>
-                            <Typography sx={{ width: 90 }} variant="subtitle1">
+                            <Typography sx={{ width: 95 }} variant={clickedBar.isUpKeep ? 'h6' : 'subtitle1'}>
                               Up-Keep Score
                             </Typography>
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
@@ -213,23 +330,41 @@ const Customers = () => {
                                   width: '100%',
                                   borderRadius: 3,
                                   height: 20,
+                                  // '& .MuiLinearProgress-bar': {
+                                  //   backgroundColor: warning
+                                  // }
                                   '& .MuiLinearProgress-bar': {
-                                    backgroundColor: item.kpiValues.upKeep >= 80 ? success : item.kpiValues.upKeep < 50 ? error : warning
+                                    backgroundColor:
+                                      Math.floor(item.store_fullness) >= 80 && !clickedBar.isUpKeep
+                                        ? success
+                                        : Math.floor(item.store_fullness) >= 80 && clickedBar.isUpKeep
+                                        ? successDark
+                                        : Math.floor(item.store_fullness) < 50 && !clickedBar.isUpKeep
+                                        ? error
+                                        : Math.floor(item.store_fullness) < 50 && clickedBar.isUpKeep
+                                        ? errorDark
+                                        : !clickedBar.isUpKeep
+                                        ? warning
+                                        : warningDark
                                   }
                                 }}
                                 variant="determinate"
-                                value={item.kpiValues.upKeep}
+                                // value={78}
+                                value={Math.floor(item.store_fullness)}
                                 color="secondary"
                               />
-                              <div className="absolute w-full h-full flex justify-center place-items-center">
+                              <button
+                                onClick={upKeepClicked}
+                                className="absolute hover:cursor-pointer w-full h-full flex justify-center place-items-center"
+                              >
                                 <Typography sx={{ color: 'white' }} variant="subtitle2">
-                                  {item.kpiValues.upKeep} %
+                                  {Math.floor(item.store_fullness)} %
                                 </Typography>
-                              </div>
+                              </button>
                             </Box>
                           </Stack>
                           <Stack direction={'row'} justifyContent={'space-between'}>
-                            <Typography sx={{ width: 90 }} variant="subtitle1">
+                            <Typography sx={{ width: 95 }} variant={clickedBar.isVm ? 'h6' : 'subtitle1'}>
                               VM Score
                             </Typography>
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
@@ -239,22 +374,36 @@ const Customers = () => {
                                   borderRadius: 3,
                                   height: 20,
                                   '& .MuiLinearProgress-bar': {
-                                    backgroundColor: item.kpiValues.vm >= 80 ? success : item.kpiValues.vm < 50 ? error : warning
+                                    backgroundColor:
+                                      Math.floor((item.store_anomalies.length / totalParts) * 100) >= 80 && !clickedBar.isVm
+                                        ? success
+                                        : Math.floor((item.store_anomalies.length / totalParts) * 100) >= 80 && clickedBar.isVm
+                                        ? successDark
+                                        : Math.floor((item.store_anomalies.length / totalParts) * 100) < 50 && !clickedBar.isVm
+                                        ? error
+                                        : Math.floor((item.store_anomalies.length / totalParts) * 100) < 50 && clickedBar.isVm
+                                        ? errorDark
+                                        : !clickedBar.isVm
+                                        ? warning
+                                        : warningDark
                                   }
                                 }}
                                 variant="determinate"
-                                value={item.kpiValues.vm}
+                                value={Math.floor((item.store_anomalies.length / totalParts) * 100)}
                                 color="secondary"
                               />
-                              <div className="absolute w-full h-full flex justify-center place-items-center">
+                              <button
+                                onClick={vMClicked}
+                                className="absolute hover:cursor-pointer w-full h-full flex justify-center place-items-center"
+                              >
                                 <Typography sx={{ color: 'white' }} variant="subtitle2">
-                                  {item.kpiValues.vm} %
+                                  {Math.floor((item.store_anomalies.length / totalParts) * 100)} %
                                 </Typography>
-                              </div>
+                              </button>
                             </Box>
                           </Stack>
                           <Stack direction={'row'} justifyContent={'space-between'}>
-                            <Typography sx={{ width: 90 }} variant="subtitle1">
+                            <Typography sx={{ width: 95 }} variant={clickedBar.isPop ? 'h6' : 'subtitle1'}>
                               PoP Score
                             </Typography>
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
@@ -264,18 +413,24 @@ const Customers = () => {
                                   borderRadius: 3,
                                   height: 20,
                                   '& .MuiLinearProgress-bar': {
-                                    backgroundColor: item.kpiValues.pop >= 80 ? success : item.kpiValues.pop < 50 ? error : warning
+                                    backgroundColor: clickedBar.isPop ? successDark : success
                                   }
+                                  // '& .MuiLinearProgress-bar': {
+                                  //   backgroundColor: item.kpiValues.pop >= 80 ? success : item.kpiValues.pop < 50 ? error : warning
+                                  // }
                                 }}
                                 variant="determinate"
-                                value={item.kpiValues.pop}
+                                value={0}
                                 color="secondary"
                               />
-                              <div className="absolute w-full h-full flex justify-center place-items-center">
+                              <button
+                                onClick={popClicked}
+                                className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center"
+                              >
                                 <Typography sx={{ color: 'white' }} variant="subtitle2">
-                                  {item.kpiValues.pop} %
+                                  NA
                                 </Typography>
-                              </div>
+                              </button>
                             </Box>
                           </Stack>
                         </Stack>
@@ -286,7 +441,7 @@ const Customers = () => {
                     <div className="w-full flex flex-col justify-center place-items-center min-[600px]:border-l border-r border-gray-300 h-full">
                       <Stack direction={'column'}>
                         <Typography className="drop-shadow-md" align="center" variant="h2">
-                          {item.anomalies.resolved}/{item.anomalies.total}
+                          0/{item.store_anomalies.length}
                         </Typography>
                         <Typography className="drop-shadow-md" align="center" variant="h6">
                           Anomalies solved
@@ -298,7 +453,7 @@ const Customers = () => {
                             }}
                             max={2}
                           >
-                            {item.agents.map((agent, index) => (
+                            {item.agentsDetails.map((agent, index) => (
                               <Tooltip
                                 key={index}
                                 title={
@@ -306,12 +461,17 @@ const Customers = () => {
                                     <Typography sx={{ width: '100%', color: 'white' }} variant="h6">
                                       Agent Details
                                     </Typography>
-                                    <Typography variant="subtitle2">Name: {agent.name}</Typography>
-                                    <Typography variant="subtitle2">Number: {agent.number}</Typography>
+                                    <Typography variant="subtitle2">Name: {agent.agentsDetails.user_name}</Typography>
+                                    <Typography variant="subtitle2">Number: {agent.agentsDetails.number}</Typography>
                                   </div>
                                 }
                               >
-                                <Avatar className="hover:cursor-pointer" sx={{ bgcolor: success }} alt={agent.name} src="/example.jpg" />
+                                <Avatar
+                                  className="hover:cursor-pointer"
+                                  sx={{ bgcolor: success }}
+                                  alt={agent.agentsDetails.user_name}
+                                  src="/example.jpg"
+                                />
                               </Tooltip>
                             ))}
                           </AvatarGroup>
@@ -321,28 +481,104 @@ const Customers = () => {
                   </Grid>
                   <Grid item lg={5.5} md={4} sm={12} xs={7}>
                     <div className="w-full px-4 flex flex-col justify-center h-full">
-                      <Slider {...settings}>
-                        {item.anomalies.images.map((anomaly) => (
-                          <div
-                            onClick={() => handleImageClick(anomaly.url)}
-                            key={anomaly.url}
-                            className="rounded-md border shadow-md h-[147px]"
-                          >
-                            <img
-                              style={{ width: '100%', objectFit: 'cover' }}
-                              className="rounded-md shadow-md h-full hover:cursor-pointer"
-                              src={anomaly.url}
-                              alt="no Img"
-                            />
-                          </div>
-                        ))}
-                      </Slider>
+                      {!clickedBar.isUpKeep && !clickedBar.isVm && !clickedBar.isPop ? (
+                        <Slider {...settings}>
+                          {item.store_anomalies.map((anomaly, index) => (
+                            <div
+                              onClick={() => handleImageClick(anomaly.img_url)}
+                              key={index}
+                              className="rounded-md border shadow-md h-[147px]"
+                            >
+                              <img
+                                style={{ width: '100%', objectFit: 'cover' }}
+                                className="rounded-md shadow-md h-full hover:cursor-pointer"
+                                src={anomaly.img_url}
+                                alt="no Img"
+                              />
+                            </div>
+                          ))}
+                        </Slider>
+                      ) : clickedBar.isUpKeep && !clickedBar.isVm && !clickedBar.isPop && fullnessArray.length > 0 ? (
+                        <Slider {...settings}>
+                          {fullnessArray.map((anomaly, index) => (
+                            <div
+                              onClick={() => handleImageClick(anomaly.img_url)}
+                              key={index}
+                              className="rounded-md border shadow-md h-[147px]"
+                            >
+                              <img
+                                style={{ width: '100%', objectFit: 'cover' }}
+                                className="rounded-md shadow-md h-full hover:cursor-pointer"
+                                src={anomaly.img_url}
+                                alt="no Img"
+                              />
+                            </div>
+                          ))}
+                        </Slider>
+                      ) : !clickedBar.isUpKeep && clickedBar.isVm && !clickedBar.isPop && colorArray.length > 0 ? (
+                        <Slider {...settings}>
+                          {colorArray.map((anomaly, index) => (
+                            <div
+                              onClick={() => handleImageClick(anomaly.img_url)}
+                              key={index}
+                              className="rounded-md border shadow-md h-[147px]"
+                            >
+                              <img
+                                style={{ width: '100%', objectFit: 'cover' }}
+                                className="rounded-md shadow-md h-full hover:cursor-pointer"
+                                src={anomaly.img_url}
+                                alt="no Img"
+                              />
+                            </div>
+                          ))}
+                        </Slider>
+                      ) : (
+                        <div className=" w-full h-full flex justify-center place-items-center">
+                          <Stack direction={'column'} spacing={1}>
+                            <div className="w-28 flex justify-center ">
+                              <img src={CheckMarkImg} alt="complete" className="w-20" />
+                            </div>
+                            <button
+                              onClick={() => navigate('/main/stores/layout')}
+                              className="rounded-xl w-28 h-8 border border-emerald-600 hover:bg-emerald-600 hover:text-white hover:shadow-lg text-base"
+                            >
+                              No Anomalies
+                            </button>
+                          </Stack>
+                        </div>
+                      )}
                     </div>
+                    {/* {storesData && console.log('Array', getSignedImg(Object.values(item.store_anomalies)))} */}
                   </Grid>
                 </Grid>
               </Card>
             </Grid>
-          ))}
+          ))
+        ) : (
+          <Stack marginLeft={3} width={'100%'} paddingTop={3} spacing={gridSpacing}>
+            <Grid xs={12} item>
+              <Card className="shadow-xl" sx={{ padding: 1 }}>
+                <Grid container>
+                  <Skeleton animation="wave" variant="rounded" width={'100%'} height={160} />
+                </Grid>
+              </Card>
+            </Grid>
+            <Grid xs={12} item>
+              <Card className="shadow-xl" sx={{ padding: 1 }}>
+                <Grid container>
+                  <Skeleton animation="wave" variant="rounded" width={'100%'} height={160} />
+                </Grid>
+              </Card>
+            </Grid>
+            <Grid xs={12} item>
+              <Card className="shadow-xl" sx={{ padding: 1 }}>
+                <Grid container>
+                  <Skeleton animation="wave" variant="rounded" width={'100%'} height={160} />
+                </Grid>
+              </Card>
+            </Grid>
+          </Stack>
+        )}
       </Grid>
       <Dialog
         fullScreen
