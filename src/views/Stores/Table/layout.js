@@ -734,16 +734,16 @@ const StoreLayout = () => {
                     />
                   </div>
                   <div className="  border-red-500 absolute left-[10%] top-1/2 -translate-y-1/2 w-80 h-80 flex flex-col justify-center items-start text-white">
-                    <Typography variant="h2" className="text-white">
+                    <Typography variant="h3" className="text-white">
                       {selectedImage?.userDetails?.user_name}
                     </Typography>
-                    <Typography variant="h2" className="text-white">
+                    <Typography variant="h3" className="text-white">
                       {selectedImage?.userDetails?.number}
                     </Typography>
-                    <Typography variant="h2" className="text-white">
+                    <Typography variant="h3" className="text-white">
                       {selectedImage?.userDetails?.store_id} - {layoutData?.name}
                     </Typography>
-                    <Typography variant="h2" className="text-white">
+                    <Typography variant="h3" className="text-white">
                       {currentBay?.bay_name?.split(' ')[1]} / {currentShelf?.shelf_name?.split(' ')[2]}
                     </Typography>
                   </div>
