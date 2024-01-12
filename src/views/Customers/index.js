@@ -342,7 +342,7 @@ const Customers = () => {
                               />
                               <button className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center">
                                 <Typography sx={{ color: 'white' }} variant="subtitle2">
-                                  {Math.floor((item.capture_count || 0 / totalParts) * 100)} %
+                                  {Math.floor((item.capture_count / totalParts) * 100)} %
                                 </Typography>
                               </button>
                             </Box>
