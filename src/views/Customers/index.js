@@ -5,11 +5,14 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { useNavigate } from 'react-router-dom';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import './zoom-card-item.css';
 
 // api imports
 import {
+  GetAnomalyDetails,
   GetStoreLayout
-  // GetImagesFromSignedUrl
+  // GetImagesFromSignedUrl,
+  // GetAnolamayDetails
 } from 'api';
 
 // material-ui
@@ -29,7 +32,8 @@ import {
   MenuItem,
   Dialog,
   DialogContent,
-  Skeleton
+  Skeleton,
+  Divider
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
@@ -37,12 +41,15 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
 // react icons import
-import { ImCross } from 'react-icons/im';
+// import { ImCross } from 'react-icons/im';
+import { RiErrorWarningLine } from 'react-icons/ri';
+import { IoIosClose } from 'react-icons/io';
 
 // project import
 import Breadcrumb from 'component/Breadcrumb';
 import { gridSpacing } from 'config.js';
 import settings from '../../configs/react-slick-config';
+// import { ZoomCardItem } from 'component/ZoomCardItem';
 // import dummyStoresData from 'data/stores-data';
 // import Map from './map';
 
@@ -69,6 +76,9 @@ const Customers = () => {
   const [colorArray, setColorArray] = useState([]);
   // const [promoArray, setPromoArray] = useState([]);
   const [fullnessArray, setFullnessArray] = useState([]);
+  const [anomalyDetails, setAnonmalyDetails] = useState([]);
+  // const [analysisId, setAnalysisId] = useState('');
+  const [anomalyType, setAnomalyType] = useState('');
   const [clickedBar, setClickedBar] = useState({
     isUpKeep: false,
     isVm: false,
@@ -120,9 +130,23 @@ const Customers = () => {
     // }
   };
 
-  const handleImageClick = (url) => {
+  const getAnomalyDetails = async (id) => {
+    try {
+      const response = await GetAnomalyDetails(id);
+      if (response) {
+        // console.log('AnomalyDetails', response);
+        setAnonmalyDetails(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleImageClick = (url, id, type) => {
     if (!isImageDialogOpen) {
       setSelectedImage(url);
+      getAnomalyDetails(id);
+      setAnomalyType(type);
     }
     setIsImageDialogOpen(!isImageDialogOpen);
   };
@@ -139,7 +163,7 @@ const Customers = () => {
     try {
       const response = await GetStoreLayout(input);
       if (response) {
-        console.log('Store Data', response.data);
+        // console.log('Store Data', response.data);
         setStoresData(response.data);
         const anomaliesByType = new Map();
         response.data[0].store_anomalies.forEach((anomaly) => {
@@ -151,7 +175,7 @@ const Customers = () => {
         // Set the state values based on the Map
         setColorArray(anomaliesByType.get('color_assortment') || []);
         // setPromoArray(anomaliesByType.get('promo_assortment') || []);
-        setFullnessArray(anomaliesByType.get('fullness_assortment') || []);
+        setFullnessArray(anomaliesByType.get('empty_bin') || []);
       }
     } catch (error) {
       console.log(error);
@@ -189,12 +213,15 @@ const Customers = () => {
   // }, [storesData]);
 
   // console.log('Stores Data', storesData && storesData.map((item) => item.store_id));
-  // console.log('Stores Data', storesData);
+  console.log('Stores Data', storesData);
+  console.log('Anomaly Type', anomalyType);
   // console.log('Color Data', colorArray);
   // console.log('Promo Data', promoArray);
   // console.log('Fullness Data', fullnessArray);
   // console.log('Anomaly Data', anomalyImgs);
   // console.log('Clicked', clickedBar);
+  // console.log('Analysis Id', analysisId);
+  // console.log('AnomalyDetails', anomalyDetails);
   return (
     <>
       <Breadcrumb title="Stores">
@@ -206,7 +233,7 @@ const Customers = () => {
         </Typography>
       </Breadcrumb>
       <Grid container spacing={gridSpacing}>
-        {storesData ? (
+        {storesData && storesData.length > 0 ? (
           storesData.map((item, index) => (
             <Grid key={index} xs={12} item>
               <Card className="shadow-xl" sx={{ padding: 1 }}>
@@ -310,12 +337,12 @@ const Customers = () => {
                                   }
                                 }}
                                 variant="determinate"
-                                value={(item.capture_count / totalParts) * 100}
+                                value={Math.floor((item.capture_count / totalParts) * 100)}
                                 color="secondary"
                               />
                               <button className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center">
                                 <Typography sx={{ color: 'white' }} variant="subtitle2">
-                                  {(item.capture_count / totalParts) * 100} %
+                                  {Math.floor((item.capture_count / totalParts) * 100)} %
                                 </Typography>
                               </button>
                             </Box>
@@ -441,7 +468,12 @@ const Customers = () => {
                     <div className="w-full flex flex-col justify-center place-items-center min-[600px]:border-l border-r border-gray-300 h-full">
                       <Stack direction={'column'}>
                         <Typography className="drop-shadow-md" align="center" variant="h2">
-                          0/{item.store_anomalies.length}
+                          0/
+                          {!clickedBar.isUpKeep && !clickedBar.isVm && !clickedBar.isPop
+                            ? item.store_anomalies.length
+                            : clickedBar.isUpKeep
+                            ? fullnessArray.length
+                            : colorArray.length}
                         </Typography>
                         <Typography className="drop-shadow-md" align="center" variant="h6">
                           Anomalies solved
@@ -485,7 +517,13 @@ const Customers = () => {
                         <Slider {...settings}>
                           {item.store_anomalies.map((anomaly, index) => (
                             <div
-                              onClick={() => handleImageClick(anomaly.img_url)}
+                              onClick={() =>
+                                handleImageClick(
+                                  anomaly.img_url,
+                                  anomaly.store_anomalies.analysis_id,
+                                  anomaly.store_anomalies.anomalies_found[0].type
+                                )
+                              }
                               key={index}
                               className="rounded-md border shadow-md h-[147px]"
                             >
@@ -502,7 +540,13 @@ const Customers = () => {
                         <Slider {...settings}>
                           {fullnessArray.map((anomaly, index) => (
                             <div
-                              onClick={() => handleImageClick(anomaly.img_url)}
+                              onClick={() =>
+                                handleImageClick(
+                                  anomaly.img_url,
+                                  anomaly.store_anomalies.analysis_id,
+                                  anomaly.store_anomalies.anomalies_found[0].type
+                                )
+                              }
                               key={index}
                               className="rounded-md border shadow-md h-[147px]"
                             >
@@ -519,7 +563,13 @@ const Customers = () => {
                         <Slider {...settings}>
                           {colorArray.map((anomaly, index) => (
                             <div
-                              onClick={() => handleImageClick(anomaly.img_url)}
+                              onClick={() =>
+                                handleImageClick(
+                                  anomaly.img_url,
+                                  anomaly.store_anomalies.analysis_id,
+                                  anomaly.store_anomalies.anomalies_found[0].type
+                                )
+                              }
                               key={index}
                               className="rounded-md border shadow-md h-[147px]"
                             >
@@ -548,7 +598,6 @@ const Customers = () => {
                         </div>
                       )}
                     </div>
-                    {/* {storesData && console.log('Array', getSignedImg(Object.values(item.store_anomalies)))} */}
                   </Grid>
                 </Grid>
               </Card>
@@ -580,36 +629,122 @@ const Customers = () => {
           </Stack>
         )}
       </Grid>
-      <Dialog
-        fullScreen
-        open={isImageDialogOpen}
-        // onClose={handleImageClick}
-        PaperProps={{
-          sx: {
-            width: '100%',
-            maxHeight: '1300px',
-            background: 'black',
-            boxShadow: 'none'
-          }
-        }}
-      >
-        <TransformWrapper>
-          <DialogContent className="w-full h-full flex justify-center relative overflow-hidden">
-            <div className="self-center">
-              <ImCross
-                onClick={handleImageClick}
-                className="z-20 text-xl cursor-pointer text-white opacity-60 hover:opacity-100 absolute"
-                style={{
-                  right: '4%',
-                  top: '2%'
-                }}
-              />
-              <TransformComponent>
-                <img src={selectedImage} alt="Full-screen" className="self-center" style={{ maxHeight: '95svh' }} />
-              </TransformComponent>
-            </div>
-          </DialogContent>
-        </TransformWrapper>
+      <Dialog maxWidth={600} open={isImageDialogOpen} onClose={handleImageClick}>
+        <DialogContent>
+          {anomalyDetails.length > 0 &&
+            anomalyDetails.map((details, index) => (
+              <div key={index} className="zoom-container">
+                <div className="image-container">
+                  <TransformWrapper>
+                    <div className="image-wrapper rounded-md">
+                      <TransformComponent>
+                        <img className="image rounded-md" src={selectedImage} alt={'No img found'} />
+                      </TransformComponent>
+                    </div>
+                  </TransformWrapper>
+                </div>
+                <div className="w-[30vw] ml-[1.5vw] h-[80vh] flex flex-col">
+                  <div className="flex-grow flex flex-col space-y-1.5 overflow-y-auto">
+                    <div className="w-full flex justify-between place-items-center">
+                      <Typography variant="h3">
+                        {details.store_id} - {details.store_name}
+                      </Typography>
+                      <button onClick={handleImageClick}>
+                        <IoIosClose className="text-4xl" />
+                      </button>
+                    </div>
+                    <Divider />
+                    <Typography paddingBottom={1.5} width={'100%'} variant="h5">
+                      / {details.bay_id} / {details.shelf_id}
+                    </Typography>
+                    <Typography width={'100%'} variant="h3">
+                      Brands
+                    </Typography>
+                    <Divider />
+                    <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
+                      <div className="bg-[#002F01] rounded-full">
+                        <Typography color={'white'} paddingY={1} paddingX={2} variant="h5">
+                          {details.brand_name}
+                        </Typography>
+                      </div>
+                    </div>
+                    <Typography width={'100%'} variant="h3">
+                      Anomalies
+                    </Typography>
+                    <Divider />
+                    <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
+                      {anomalyType === 'color_assortment' ? (
+                        <Box
+                          paddingX={0.2}
+                          paddingY={0.04}
+                          className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center"
+                        >
+                          <RiErrorWarningLine className="text-4xl mr-0.5 text-purple-500" />
+                          <Typography paddingRight={2} variant="h6">
+                            Colour
+                          </Typography>
+                        </Box>
+                      ) : (
+                        <Box
+                          paddingX={0.2}
+                          paddingY={0.04}
+                          className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center"
+                        >
+                          <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
+                          <Typography paddingRight={2} variant="h6">
+                            Empty
+                          </Typography>
+                        </Box>
+                      )}
+                    </div>
+                    <Typography width={'100%'} variant="h3">
+                      Team
+                    </Typography>
+                    <Divider />
+                    <div className="w-full flex justify-start">
+                      <AvatarGroup
+                        sx={{
+                          '& .MuiAvatar-root': { width: 40, height: 40, fontSize: 24 }
+                        }}
+                        max={2}
+                      >
+                        <Tooltip
+                          title={
+                            <div className="w-[200px] p-2 flex flex-col space-y-2">
+                              <Typography sx={{ width: '100%', color: 'white' }} variant="h6">
+                                Agent Details
+                              </Typography>
+                              <Typography variant="subtitle2">Name: {details.user_name}</Typography>
+                              <Typography variant="subtitle2">Number: {details.user_number}</Typography>
+                            </div>
+                          }
+                        >
+                          <Avatar className="hover:cursor-pointer" sx={{ bgcolor: success }} alt={details.user_name} src="/example.jpg" />
+                        </Tooltip>
+                      </AvatarGroup>
+                    </div>
+                  </div>
+                  <div className="w-full flex flex-row-reverse gap-3">
+                    <button className="rounded-full w-[125px] hover:cursor-not-allowed border-2 border-gray-400">
+                      <Typography paddingY={1.5} variant="h5">
+                        Ignore
+                      </Typography>
+                    </button>
+                    <button className="rounded-full w-[125px] hover:cursor-not-allowed" style={{ backgroundColor: success }}>
+                      <Typography color={'white'} paddingY={1.5} variant="h5">
+                        Solved
+                      </Typography>
+                    </button>
+                    <button className="rounded-full w-[125px] hover:cursor-not-allowed" style={{ backgroundColor: error }}>
+                      <Typography color={'white'} paddingY={1.5} variant="h5">
+                        Alert Store
+                      </Typography>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+        </DialogContent>
       </Dialog>
     </>
   );
