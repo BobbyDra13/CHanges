@@ -14,7 +14,8 @@ import {
   ImageListItem,
   ImageListItemBar,
   useMediaQuery,
-  Button
+  ToggleButton,
+  ToggleButtonGroup
 } from '@mui/material';
 import {
   Dialog,
@@ -26,7 +27,8 @@ import {
   ImageListItem,
   ImageListItemBar,
   useMediaQuery,
-  Button
+  ToggleButton,
+  ToggleButtonGroup
 } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { GetStoreLayout, GetImagesFromSignedUrl } from '../../../api/index';
@@ -289,29 +291,29 @@ const StoreLayout = () => {
       }
     }
   };
-  const handlePrevPart = () => { 
+  const handlePrevPart = () => {
     let sortedPartsArray = updatedPartDetails.sort((a, b) => {
       return a.name.localeCompare(b.name);
     });
     parseInt(selectedImage?.name?.split('  ')[1]) === 1
       ? setSelectedImage(sortedPartsArray[updatedPartDetails.length - 1])
       : setSelectedImage(sortedPartsArray[parseInt(selectedImage?.name?.split('  ')[1]) - 2]);
-  }
+  };
   const handleNextPart = () => {
-    let sortedPartsArray = updatedPartDetails.sort((a, b) => {  
-      return a.name.localeCompare(b.name);  
-    }); 
+    let sortedPartsArray = updatedPartDetails.sort((a, b) => {
+      return a.name.localeCompare(b.name);
+    });
     parseInt(selectedImage?.name?.split('  ')[1]) === updatedPartDetails.length
       ? setSelectedImage(sortedPartsArray[0])
       : setSelectedImage(sortedPartsArray[parseInt(selectedImage?.name?.split('  ')[1])]);
+  };
+  const handleKeyDownPart = (e) => {
+    if (e.key === 'ArrowLeft') {
+      handlePrevPart();
+    } else if (e.key === 'ArrowRight') {
+      handleNextPart();
     }
-    const handleKeyDownPart = (e) => {
-      if (e.key === 'ArrowLeft') {
-        handlePrevPart();
-      } else if (e.key === 'ArrowRight') {
-        handleNextPart();
-      } 
-    };
+  };
   const findDimensions = (event) => {
     setLoading(false);
     const { naturalWidth } = event.target;
@@ -322,13 +324,8 @@ const StoreLayout = () => {
   const handleToggleImage = () => {
     setImgLoading(true);
     setLiveImg(!liveImg);
-    console.log('toggle image');
   };
-  const handleToggleImage = () => {
-    setImgLoading(true);
-    setLiveImg(!liveImg);
-    console.log('toggle image');
-  };
+  console.log(layoutData);
   return (
     // <div className="w-full flex border border-black">
     <div className="w-full h-full flex-col flex overflow-x-hidden">
@@ -474,16 +471,16 @@ const StoreLayout = () => {
                         gridRowEnd: 8
                       }}
                       onClick={() => {
-                        if (item.shelf_fullness != 0) {
+                        if (item?.shelf_fullness != 0) {
                           handleOpenShelves(item);
                         }
                       }}
                     >
                       <div className="h-full flex justify-center items-center">
-                        <p className="-rotate-90 border-0 border-red-500 m-0 w-24 text-center">
+                        <p className="-rotate-90 border-0 border-red-500 m-0 w-28 text-center">
                           shelf - 1
                           <br />
-                          {Math.floor(item.shelf_fullness) + '%'}
+                          {isNaN(item?.shelf_fullness) ? 'No Capture' : Math.floor(item?.shelf_fullness) + '%'}
                         </p>
                         {/* <p className="-rotate-90 border-0 border-red-500 m-0 w-24 text-center">{item.shelf_fullness}</p> */}
                       </div>
@@ -493,7 +490,16 @@ const StoreLayout = () => {
                   return (
                     <div
                       key={index}
-                      className="border-emerald-500 border-[5px] rounded-lg col-span-1 row-start-2 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500"
+                      className={`${
+                        item?.shelf_fullness >= 80
+                          ? 'border-emerald-500 hover:bg-emerald-200'
+                          : item?.shelf_fullness >= 50 && item?.shelf_fullness < 80
+                          ? 'border-orange-500 hover:bg-orange-200'
+                          : item?.shelf_fullness < 50
+                          ? 'border-red-600 hover:bg-red-200'
+                          : 'border-gray-500 hover:bg-gray-200'
+                      }
+                      border-emerald-500 border-[5px] rounded-lg col-span-1 row-start-2 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500`}
                       style={{
                         gridRowEnd: 8,
                         gridColumnStart: 6
@@ -503,10 +509,10 @@ const StoreLayout = () => {
                       }}
                     >
                       <div className="h-full flex justify-center items-center cursor-pointer">
-                        <p className="rotate-90 border-0 border-red-500 m-0 w-24 text-center">
+                        <p className="rotate-90 border-0 border-red-500 m-0 w-28 text-center">
                           shelf - 3
                           <br />
-                          {Math.floor(item.shelf_fullness) + '%'}
+                          {isNaN(item?.shelf_fullness) ? 'No Capture' : Math.floor(item?.shelf_fullness) + '%'}
                         </p>
                         {/* <p className="-rotate-90 border-0 border-red-500 m-0 w-24 text-center">{item.shelf_fullness}</p> */}
                       </div>
@@ -516,7 +522,16 @@ const StoreLayout = () => {
                   return (
                     <div
                       key={index}
-                      className="border-emerald-500 cursor-pointer border-[5px] rounded-lg col-start-2 row-span-1 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500"
+                      className={`${
+                        item?.shelf_fullness >= 80
+                          ? 'border-emerald-500 hover:bg-emerald-200'
+                          : item?.shelf_fullness >= 50 && item?.shelf_fullness < 80
+                          ? 'border-orange-500 hover:bg-orange-200'
+                          : item?.shelf_fullness < 50
+                          ? 'border-red-600 hover:bg-red-200'
+                          : 'border-gray-500 hover:bg-gray-200'
+                      }
+                      border-emerald-500 cursor-pointer border-[5px] rounded-lg col-start-2 row-span-1 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500`}
                       style={{
                         gridColumnEnd: 6,
                         gridRowStart: 1
@@ -528,15 +543,23 @@ const StoreLayout = () => {
                       <p className="">
                         shelf - 2
                         <br />
-                        {Math.floor(item.shelf_fullness) + '%'}
+                        {isNaN(item?.shelf_fullness) ? 'No Capture' : Math.floor(item?.shelf_fullness) + '%'}
                       </p>
-                      {/* <p className="-rotate-90 border-0 border-red-500 m-0 w-24 text-center">{item.shelf_fullness}</p> */}
                     </div>
                   );
                 return (
                   <div
                     key={index}
-                    className="border-emerald-500 cursor-pointer border-[5px] rounded-lg col-start-2 row-span-1 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500"
+                    className={`${
+                      item?.shelf_fullness >= 80
+                        ? 'border-emerald-500 hover:bg-emerald-200'
+                        : item?.shelf_fullness >= 50 && item?.shelf_fullness < 80
+                        ? 'border-orange-500 hover:bg-orange-200'
+                        : item?.shelf_fullness < 50
+                        ? 'border-red-600 hover:bg-red-200'
+                        : 'border-gray-500 hover:bg-gray-200'
+                    }
+                    border-emerald-500 cursor-pointer border-[5px] rounded-lg col-start-2 row-span-1 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500`}
                     style={{
                       gridColumnEnd: 6,
                       gridRowStart: currentBay.id === 9 ? 9 : 8
@@ -548,7 +571,7 @@ const StoreLayout = () => {
                     <p className="border-0 border-red-500 ">
                       shelf - 0
                       <br />
-                      {Math.floor(item.shelf_fullness) + '%'}
+                      {isNaN(item?.shelf_fullness) ? 'No Capture' : Math.floor(item?.shelf_fullness) + '%'}
                     </p>
                   </div>
                 );
@@ -577,7 +600,6 @@ const StoreLayout = () => {
             tabIndex="0"
           />
           <div className="w-full h-full flex lg:justify-center text-3xl font-semibold  py-6 overflow-auto">
-            {/* <div className="overflow-auto w-full "> */}
             <ImageList
               sx={{
                 minWidth: '680px',
@@ -586,10 +608,14 @@ const StoreLayout = () => {
               cols={currentShelf?.partsDetails?.length / 2}
               gap={10}
             >
-              {console.log(currentShelf)}
               {updatedPartDetails?.map((item, index) => (
-                <ImageListItem key={index} onClick={() => handleImageClick(item)}>
-                <ImageListItem key={index} onClick={() => handleImageClick(item)}>
+                <ImageListItem
+                  key={index}
+                  onClick={() => handleImageClick(item)}
+                  sx={{
+                    gridRow: index % 2 === 0 ? '1' : '2'
+                  }}
+                >
                   {item.img_url ? (
                     <div className="relative w-full h-full">
                       {imgLoading && (
@@ -629,7 +655,7 @@ const StoreLayout = () => {
                     title={
                       <Stack direction={'row'} justifyContent={'space-between'}>
                         <Typography>{`Fullness: ${item.avg_full || 0}%`}</Typography>
-                        <Typography>{`Date: ${item?.timestamps.split('T')[0]}`}</Typography>
+                        {item?.timestamps && <Typography>{`Date: ${item?.timestamps?.split('T')[0]}`}</Typography>}
                       </Stack>
                     }
                     subtitle={item.name + '/' + updatedPartDetails.length}
@@ -657,18 +683,18 @@ const StoreLayout = () => {
             >
               <DialogContent className="w-full h-full flex justify-center relative overflow-hidden">
                 <div className="self-center ">
-                <ChevronLeftRounded
-            onClick={handlePrevPart}
-            className="text-gray-400 opacity-100 hover:opacity-100 text-7xl absolute z-10 cursor-pointer lg:left-[2%] lg:top-[45%] left-0 top-[35%]"
-            onKeyDown={handleKeyDownPart}
-            tabIndex="0"
-          />
-          <ChevronRightRounded
-            onClick={handleNextPart}
-            className="text-gray-400 opacity-100 hover:opacity-100 text-7xl absolute z-10 cursor-pointer lg:right-[2%] lg:top-[45%] right-0 top-[35%]"
-            onKeyDown={handleKeyDownPart}
-            tabIndex="0"
-          />
+                  <ChevronLeftRounded
+                    onClick={handlePrevPart}
+                    className="text-gray-400 opacity-100 hover:opacity-100 text-7xl absolute z-10 cursor-pointer lg:left-[2%] lg:top-[45%] left-0 top-[35%]"
+                    onKeyDown={handleKeyDownPart}
+                    tabIndex="0"
+                  />
+                  <ChevronRightRounded
+                    onClick={handleNextPart}
+                    className="text-gray-400 opacity-100 hover:opacity-100 text-7xl absolute z-10 cursor-pointer lg:right-[2%] lg:top-[45%] right-0 top-[35%]"
+                    onKeyDown={handleKeyDownPart}
+                    tabIndex="0"
+                  />
                   <ImCross
                     onClick={handleCloseImageDialog}
                     className="z-20 text-xl cursor-pointer text-white opacity-60 hover:opacity-100 absolute"
@@ -677,16 +703,21 @@ const StoreLayout = () => {
                       top: '3%'
                     }}
                   />
-                  <Button
+                  <ToggleButtonGroup
                     color="primary"
-                    size="sm"
-                    variant="outlined"
-                    style={{ left: '10%', top: '2%' }}
-                    className=" absolute"
-                    onClick={handleToggleImage}
+                    value={liveImg}
+                    exclusive
+                    onChange={handleToggleImage}
+                    aria-label="Platform"
+                    className="absolute left-[10%] top-[2%] text-white"
                   >
-                    {liveImg ? 'Reference' : 'Live'}
-                  </Button>
+                    <ToggleButton value={true} style={{ backgroundColor: liveImg ? 'rgb(16, 185, 129' : '', color: 'white' }}>
+                      Live
+                    </ToggleButton>
+                    <ToggleButton value={false} style={{ backgroundColor: !liveImg ? 'rgb(16, 185, 129' : '', color: 'white' }}>
+                      Reference
+                    </ToggleButton>
+                  </ToggleButtonGroup>
                   <div className="relative w-full h-full">
                     {imgLoading && (
                       <div className="flex justify-center items-center absolute top-0 left-0 z-10  overflow-x-hidden bg-white w-full h-full">
@@ -704,14 +735,47 @@ const StoreLayout = () => {
                   </div>
                   <div className="  border-red-500 absolute left-[10%] top-1/2 -translate-y-1/2 w-80 h-80 flex flex-col justify-center items-start text-white">
                     <Typography variant="h2" className="text-white">
-                      Name: {selectedImage?.userDetails?.user_name}
+                      {selectedImage?.userDetails?.user_name}
                     </Typography>
                     <Typography variant="h2" className="text-white">
-                      Number: {selectedImage?.userDetails?.number}
+                      {selectedImage?.userDetails?.number}
                     </Typography>
                     <Typography variant="h2" className="text-white">
-                      Role: {selectedImage?.userDetails?.user_role}
+                      {selectedImage?.userDetails?.store_id} - {layoutData?.name}
                     </Typography>
+                    <Typography variant="h2" className="text-white">
+                      {currentBay?.bay_name?.split(' ')[1]} / {currentShelf?.shelf_name?.split(' ')[2]}
+                    </Typography>
+                  </div>
+                  <div
+                    className="  border-red-500 absolute right-[10%] top-1/2 -translate-y-1/2 w-96 h-96 grid text-white gap-4"
+                    style={{
+                      gridTemplateColumns: `repeat(${selectedImage?.tray_detail?.length}, 1fr)`,
+                      gridTemplateRows: `repeat(${selectedImage?.tray_detail[0]?.length}, 1fr)`
+                    }}
+                  >
+                    {selectedImage?.tray_detail?.length > 0 &&
+                      selectedImage?.tray_detail?.map((item, index) => {
+                        return (
+                          <div key={index} className="flex flex-col h-96">
+                            {item?.map((value, i) => {
+                              console.log(value.rgb);
+                              return (
+                                <Box
+                                  className={` border-white border flex justify-center items-center col-span-1 row-span-1 w-full h-full`}
+                                  style={{ backgroundColor: `rgb(${value?.rgb})` }}
+                                  key={i}
+                                >
+                                  <span className="text-lg">{value?.color_family}</span>
+                                </Box>
+                              );
+                            })}
+                          </div>
+                        );
+                      })}
+                    {/* (<Box
+                  className="border border-red-500 flex justify-center items-center col-span-1 row-span-1"
+                   ></Box>) */}
                   </div>
                 </div>
               </DialogContent>
