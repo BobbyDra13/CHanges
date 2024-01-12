@@ -669,7 +669,7 @@ const Customers = () => {
                       </div>
                     </div>
                     <Typography width={'100%'} variant="h3">
-                      5 Anomalies
+                      Anomalies
                     </Typography>
                     <Divider />
                     <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
