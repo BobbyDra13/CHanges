@@ -730,7 +730,7 @@ const StoreLayout = () => {
                       }}
                     />
                   </div>
-                  <div className="  border-red-500 absolute left-[10%] top-1/2 -translate-y-1/2 w-80 h-80 flex flex-col justify-center items-start text-white">
+                  <div className="  border-red-500 absolute left-[10%] bottom-0 w-80 h-80 flex flex-col justify-center items-start text-white">
                     <Typography variant="h3" className="text-white">
                       {selectedImage?.userDetails?.user_name}
                     </Typography>
@@ -741,7 +741,7 @@ const StoreLayout = () => {
                       {selectedImage?.userDetails?.store_id} - {layoutData?.name}
                     </Typography>
                     <Typography variant="h3" className="text-white">
-                      {currentBay?.bay_name?.split(' ')[1]} / {currentShelf?.shelf_name?.split(' ')[2]}
+                      {currentBay?.bay_name} / {currentShelf?.shelf_name}
                     </Typography>
                   </div>
                   <div
@@ -762,7 +762,7 @@ const StoreLayout = () => {
                                   style={{ backgroundColor: `rgb(${value?.rgb})` }}
                                   key={i}
                                 >
-                                  <span className="text-lg">{value?.color_family}</span>
+                                  {value?.rgb ? <span className="text-lg">{value?.color_family}</span> : <span className="text-lg">Failed to extract</span>}
                                 </Box>
                               );
                             })}
