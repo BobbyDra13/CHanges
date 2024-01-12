@@ -92,7 +92,7 @@ const StoreLayout = () => {
   //   setIsImageDialogOpen(true);
   // };
   const handleImageClick = (item) => {
-    if(item?.img_url){
+    if (item?.img_url) {
       setSelectedImage(item);
       setIsImageDialogOpen(true);
     }
@@ -323,6 +323,7 @@ const StoreLayout = () => {
     setImgLoading(true);
     setLiveImg(!liveImg);
   };
+  console.log(layoutData);
   return (
     // <div className="w-full flex border border-black">
     <div className="w-full h-full flex-col flex overflow-x-hidden">
