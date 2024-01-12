@@ -78,8 +78,10 @@ const StoreLayout = () => {
   //   setIsImageDialogOpen(true);
   // };
   const handleImageClick = (item) => {
-    setSelectedImage(item);
-    setIsImageDialogOpen(true);
+    if(item?.img_url){
+      setSelectedImage(item);
+      setIsImageDialogOpen(true);
+    }
   };
 
   const date = new Date();
@@ -143,7 +145,6 @@ const StoreLayout = () => {
     if (input.length > 0) {
       data = await GetImagesFromSignedUrl(input);
       // console.log('api data', data);
-      console.log('image data', data);
     }
     const mergedPartsDetails = item.partsDetails.map((originalPart) => {
       const matchingApiData = data?.data?.find((apiPart) => apiPart.name === originalPart.name);
@@ -308,7 +309,6 @@ const StoreLayout = () => {
     setImgLoading(true);
     setLiveImg(!liveImg);
   };
-  console.log(layoutData);
   return (
     // <div className="w-full flex border border-black">
     <div className="w-full h-full flex-col flex overflow-x-hidden">
@@ -722,7 +722,7 @@ const StoreLayout = () => {
                     className="  border-red-500 absolute right-[10%] top-1/2 -translate-y-1/2 w-96 h-96 grid text-white gap-4"
                     style={{
                       gridTemplateColumns: `repeat(${selectedImage?.tray_detail?.length}, 1fr)`,
-                      gridTemplateRows: `repeat(${selectedImage?.tray_detail[0]?.length}, 1fr)`
+                      gridTemplateRows: `repeat(${selectedImage?.tray_detail?.[0]?.length}, 1fr)`
                     }}
                   >
                     {selectedImage?.tray_detail?.length > 0 &&
@@ -730,7 +730,6 @@ const StoreLayout = () => {
                         return (
                           <div key={index} className="flex flex-col h-96">
                             {item?.map((value, i) => {
-                              console.log(value.rgb);
                               return (
                                 <Box
                                   className={` border-white border flex justify-center items-center col-span-1 row-span-1 w-full h-full`}
