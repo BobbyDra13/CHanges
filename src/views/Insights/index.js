@@ -612,7 +612,7 @@ const Insights = () => {
             <KpiCard
               isLoaded={fullness}
               chart={fullnessChartConfig}
-              title="Average Shelf-fullness"
+              title="Up-Keep Score"
               count={`${fullness && fullness.currentDay ? Math.floor(fullness.currentDay.fullness) : 0}%`}
               percentage={`${fullness && fullness.difference ? Math.abs(Math.floor(fullness.difference)) : 0}`}
               chipColor={fullness && fullness.difference < 0 ? 'error' : 'success'}
@@ -624,7 +624,7 @@ const Insights = () => {
             <KpiCard
               isLoaded={vmc}
               chart={chartConfig}
-              title="Visual Merchandising Compliance"
+              title="VM Score"
               count={`${vmc && vmc.currentDay ? Math.floor(vmc.currentDay.withoutAnomalyPercentage) : 0}%`}
               percentage={`${
                 vmc && vmc.differencePercentage ? Math.abs(Math.floor(vmc.differencePercentage.withoutAnomalyPercentageDifference)) : 0
@@ -640,7 +640,7 @@ const Insights = () => {
             <KpiCard
               isLoaded={fullness}
               chart={statisticsChartsData[3].chart}
-              title="Discounts & Promos Execution"
+              title="PoP Score"
               count="NA"
               percentage="NA"
               // isLoss
