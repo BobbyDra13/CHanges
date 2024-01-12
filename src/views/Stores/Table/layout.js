@@ -92,7 +92,7 @@ const StoreLayout = () => {
   //   setIsImageDialogOpen(true);
   // };
   const handleImageClick = (item) => {
-    if(item?.img_url){
+    if (item?.img_url) {
       setSelectedImage(item);
       setIsImageDialogOpen(true);
     }
@@ -323,6 +323,7 @@ const StoreLayout = () => {
     setImgLoading(true);
     setLiveImg(!liveImg);
   };
+  console.log(layoutData);
   return (
     // <div className="w-full flex border border-black">
     <div className="w-full h-full flex-col flex overflow-x-hidden">
@@ -738,10 +739,16 @@ const StoreLayout = () => {
                       {selectedImage?.userDetails?.number}
                     </Typography>
                     <Typography variant="h3" className="text-white">
+                      {`Up-Keep: ${Math.floor(selectedImage?.avg_full) || 0}%`}
+                    </Typography>
+                    <Typography variant="h3" className="text-white">
                       {selectedImage?.userDetails?.store_id} - {layoutData?.name}
                     </Typography>
                     <Typography variant="h3" className="text-white">
                       {currentBay?.bay_name} / {currentShelf?.shelf_name}
+                    </Typography>
+                    <Typography variant="h3" className="text-white">
+                      {`Date: ${selectedImage?.timestamps?.split('T')[0]}`}
                     </Typography>
                   </div>
                   <div
@@ -756,13 +763,18 @@ const StoreLayout = () => {
                         return (
                           <div key={index} className="flex flex-col h-96">
                             {item?.map((value, i) => {
+                              // console.log(value?.rgb);
                               return (
                                 <Box
                                   className={` border-white border flex justify-center items-center col-span-1 row-span-1 w-full h-full`}
-                                  style={{ backgroundColor: `rgb(${value?.rgb})` }}
+                                  style={{ backgroundColor: value?.rgb ? `rgb(${value?.rgb})` : 'transparent' }}
                                   key={i}
                                 >
-                                  {value?.rgb ? <span className="text-lg">{value?.color_family}</span> : <span className="text-lg">Failed to extract</span>}
+                                  {value?.rgb ? (
+                                    <span className="text-lg">{value?.color_family}</span>
+                                  ) : (
+                                    <span className="text-lg">Failed to extract</span>
+                                  )}
                                 </Box>
                               );
                             })}
