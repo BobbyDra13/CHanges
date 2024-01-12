@@ -337,12 +337,12 @@ const Customers = () => {
                                   }
                                 }}
                                 variant="determinate"
-                                value={Math.floor((item.capture_count / totalParts) * 100)}
+                                value={Math.floor((item.capture_count || 0 / totalParts) * 100)}
                                 color="secondary"
                               />
                               <button className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center">
                                 <Typography sx={{ color: 'white' }} variant="subtitle2">
-                                  {Math.floor((item.capture_count / totalParts) * 100)} %
+                                  {Math.floor((item.capture_count || 0 / totalParts) * 100)} %
                                 </Typography>
                               </button>
                             </Box>
@@ -377,7 +377,7 @@ const Customers = () => {
                                 }}
                                 variant="determinate"
                                 // value={78}
-                                value={Math.floor(item.store_fullness)}
+                                value={Math.floor(item.store_fullness) || 0}
                                 color="secondary"
                               />
                               <button
@@ -385,7 +385,7 @@ const Customers = () => {
                                 className="absolute hover:cursor-pointer w-full h-full flex justify-center place-items-center"
                               >
                                 <Typography sx={{ color: 'white' }} variant="subtitle2">
-                                  {Math.floor(item.store_fullness)} %
+                                  {Math.floor(item.store_fullness) || 0} %
                                 </Typography>
                               </button>
                             </Box>
