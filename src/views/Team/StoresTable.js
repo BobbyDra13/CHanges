@@ -78,7 +78,7 @@ const StoresTable = ({
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [deleteUserId, setDeleteUserId] = useState(null);
   const [deletionInProgress, setDeletionInProgress] = useState(false);
-  const [deletionSuccess, setDeletionSuccess] = useState(false);
+  const [deletionSuccess, setDeletionSuccess] = useState(null);
 
   const handleConfirmDialogOpen = (userId) => {
     setDeleteUserId(userId);
