@@ -741,7 +741,8 @@ const StoreLayout = () => {
                               return (
                                 <Box
                                   className={` border-white border flex justify-center items-center col-span-1 row-span-1 w-full h-full`}
-                                  style={{ backgroundColor: value?.rgb ? `rgb(${value?.rgb})` : 'transparent' }}
+                                  style={{ backgroundColor: value?.rgb ? `transparent` : 'transparent' }}
+                                  // style={{ backgroundColor: value?.rgb ? `rgb(${value?.rgb})` : 'transparent' }}
                                   key={i}
                                 >
                                   {value?.rgb ? (
