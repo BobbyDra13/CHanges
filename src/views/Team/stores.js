@@ -59,11 +59,12 @@ const AllStores = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+    setSearchQuery(event.target.value)
   };
 
   const prepareExportData = () => {
     const dataForExport = rows.map((row) => ({
+      Department: row.user_dept,
       Role: row.user_role,
       ID: row.user_id,
       Name: row.user_name,
@@ -132,6 +133,7 @@ const AllStores = () => {
 
       const searchQueryLowerCase = searchQuery.toLowerCase();
       return (
+        // row.user_dept.toLowerCase().includes(searchQueryLowerCase) ||
         row.user_role.toLowerCase().includes(searchQueryLowerCase) ||
         row.user_id.toLowerCase().includes(searchQueryLowerCase) ||
         row.user_name.toLowerCase().includes(searchQueryLowerCase) ||

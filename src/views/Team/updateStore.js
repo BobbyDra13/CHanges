@@ -11,11 +11,13 @@ import {
   Paper,
   Divider,
   useTheme,
-  LinearProgress,
   CircularProgress
 } from '@mui/material';
 import { allStoresId, getOneUser, updateUser } from 'api';
 import { Link } from 'react-router-dom';
+import { bouncy } from 'ldrs';
+bouncy.register();
+
 
 const initialValue = {
   user_role: '',
@@ -150,16 +152,8 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
   return (
     <Paper elevation={6} sx={{ padding: '20px', borderRadius: '12px' }}>
       {loading ? (
-        <Box sx={{ width: '600px' }}>
-          <LinearProgress
-            color="primary"
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: 0,
-              width: '100%'
-            }}
-          />
+        <Box >
+          <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
         </Box>
       ) : (
         <>
