@@ -14,7 +14,6 @@ bouncy.register();
 // api imports
 import {
   GetAnomalyDetails,
-  GetAnomalyDetails,
   GetStoreLayout
   // GetImagesFromSignedUrl,
   // GetAnolamayDetails
@@ -243,7 +242,6 @@ const Customers = () => {
         </Typography>
       </Breadcrumb>
       <Grid container spacing={gridSpacing}>
-        {storesData && storesData.length > 0 ? (
         {storesData && storesData.length > 0 ? (
           storesData.map((item, index) => (
             <Grid key={index} xs={12} item>

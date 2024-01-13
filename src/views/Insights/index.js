@@ -11,8 +11,6 @@ import {
   GetVMComplianceForOneWeek,
   GetFullnessForOneWeek,
   GetAnomaliesForOneWeek
-  GetFullnessForOneWeek,
-  GetAnomaliesForOneWeek
 } from 'api';
 
 // Apex chart import
@@ -80,7 +78,6 @@ const Insights = () => {
   const [vmc, setVmc] = useState(false);
   const [anomalies, setAnomalies] = useState(false);
   const [anomaliesBarChart, setAnomaliesBarChart] =useState(false);
-  const [anomaliesBarChart, setAnomaliesBarChart] =useState(false);
   const [brandDonut, setBrandDonut] = useState(false);
   const [brandChartOptions, setBrandChartOptions] = useState(BrandChartData.options);
   const [brandFullness, setBrandFullness] = useState([]);
@@ -127,42 +124,6 @@ const Insights = () => {
       {
         name: 'Fullness %',
         data: [67, 14, 52, 93, 30, 81, 45]
-      }
-    ],
-    options: {
-      ...chartsConfig,
-      colors: ['#10b981'],
-      stroke: {
-        lineCap: 'round',
-        curve: 'smooth'
-      },
-      markers: {
-        size: 4
-      },
-      grid: {
-        show: false
-      },
-      xaxis: {
-        ...chartsConfig.xaxis,
-        labels: {
-          show: false
-        },
-        categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-      },
-      yaxis: {
-        labels: {
-          show: false
-        }
-      }
-    }
-  });
-  const [anomaliesChartConfig, setAnomaliesChartConfig] = useState({
-    type: 'line',
-    height: 100,
-    series: [
-      {
-        name: 'Anomalies',
-        data: [72, 41, 89, 63, 27, 54, 94]
       }
     ],
     options: {
@@ -739,18 +700,9 @@ const Insights = () => {
             <KpiCard
               isLoaded={anomalies}
               chart={anomaliesChartConfig}
-              chart={anomaliesChartConfig}
               title="Anomalies Found"
               count={`${anomalies && anomalies.currentDay ? Math.floor(anomalies.currentDay.totalAnomalies) : 0}`}
-              count={`${anomalies && anomalies.currentDay ? Math.floor(anomalies.currentDay.totalAnomalies) : 0}`}
               // count="0%"
-              percentage={`${
-                anomalies && anomalies.percentageChange ? Math.abs(Math.floor(anomalies.percentageChange)) : 0
-              }`}
-              chipColor={
-                anomalies && anomalies.percentageChange && anomalies.percentageChange < 0 ? 'error' : 'success'
-              }
-              isLoss={anomalies && anomalies.percentageChange && anomalies.percentageChange < 0}
               percentage={`${
                 anomalies && anomalies.percentageChange ? Math.abs(Math.floor(anomalies.percentageChange)) : 0
               }`}
