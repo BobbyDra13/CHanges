@@ -6,6 +6,8 @@ import 'slick-carousel/slick/slick-theme.css';
 import { useNavigate } from 'react-router-dom';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import './zoom-card-item.css';
+import { bouncy } from 'ldrs';
+bouncy.register();
 
 // api imports
 import {
@@ -79,6 +81,7 @@ const Customers = () => {
   const [anomalyDetails, setAnonmalyDetails] = useState([]);
   // const [analysisId, setAnalysisId] = useState('');
   const [anomalyType, setAnomalyType] = useState('');
+  const [loading, setLoading] = useState(false);
   const [clickedBar, setClickedBar] = useState({
     isUpKeep: false,
     isVm: false,
@@ -131,11 +134,14 @@ const Customers = () => {
   };
 
   const getAnomalyDetails = async (id) => {
+    setLoading(true);
     try {
       const response = await GetAnomalyDetails(id);
       if (response) {
         // console.log('AnomalyDetails', response);
         setAnonmalyDetails(response.data);
+        setLoading(false);
+
       }
     } catch (error) {
       console.log(error);
@@ -629,6 +635,11 @@ const Customers = () => {
           </Stack>
         )}
       </Grid>
+      {loading ? (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minheight: '100vh' }}>
+          <l-bouncy size="45" speed="1" color="black"></l-bouncy>
+        </div>
+      ) : (
       <Dialog maxWidth={600} open={isImageDialogOpen} onClose={handleImageClick}>
         <DialogContent>
           {anomalyDetails.length > 0 &&
@@ -746,6 +757,7 @@ const Customers = () => {
             ))}
         </DialogContent>
       </Dialog>
+      )}
     </>
   );
 };

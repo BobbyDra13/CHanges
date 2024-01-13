@@ -10,8 +10,8 @@ const FilterationButton = ({ handleNavigationClick }) => {
   };
 
   const navLinks = [
-    { label: 'All Users', value: 'All Users'},
-    { label: 'Agent', value: 'Agent'},
+    { label: 'All Users', value: 'All Users' },
+    { label: 'Agent', value: 'Agent' },
     { label: 'Department Manager', value: 'Department Manager' },
     { label: 'Store Manager', value: 'Store Manager' },
     { label: 'Cluster Manager', value: 'Cluster Manager' },
@@ -22,7 +22,6 @@ const FilterationButton = ({ handleNavigationClick }) => {
     <div>
       <FormControl variant="outlined" fullWidth>
         <Select
-          
           value={selectedItem}
           onChange={handleSelectChange}
           displayEmpty
@@ -33,8 +32,8 @@ const FilterationButton = ({ handleNavigationClick }) => {
             outlineWidth: '8px',
             borderColor: 'white',
             '& .MuiSelect-outlined': {
-              padding: '15px 15px',
-            },  
+              padding: '15px 15px'
+            }
           }}
         >
           <MenuItem value="" disabled>
