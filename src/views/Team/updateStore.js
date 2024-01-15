@@ -11,7 +11,9 @@ import {
   Paper,
   Divider,
   useTheme,
-  CircularProgress
+  CircularProgress,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import { allStoresId, checkId, getOneUser, updateUser } from 'api';
 import { Link } from 'react-router-dom';
@@ -20,6 +22,7 @@ bouncy.register();
 
 
 const initialValue = {
+  user_dept:'',
   user_role: '',
   user_id: '',
   user_name: '',
@@ -29,17 +32,30 @@ const initialValue = {
 };
 const roles = ['Agent', 'Department Manager', 'Store Manager', 'Cluster Manager', 'NHK Super User'];
 // const stores = ['Lakme', 'Adidas', 'Trends', 'Loreal', 'Heads and Shoulders'];
+const depts = ['Operations', 'VM', 'Marketing','Analysis'];
+
 
 const EditStore = ({ rowId, handleEditUserDialogClose }) => {
   const theme = useTheme();
   const [user, setUser] = useState(initialValue);
-  const { user_role, user_id, user_name, store_id, number } = user;
+  const { user_dept,user_role, user_id, user_name, store_id, number } = user;
   const [isEmailEditable, setIsEmailEditable] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(true);
   const [stores, updateStores] = useState([]);
   const [apiResponded, setApiResponded] = useState(true);
   const [email, setEmail] = useState('');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+
+  const handleSnackbarOpen = () => {
+    setSnackbarOpen(true);
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -53,6 +69,10 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
 
   const validateForm = async () => {
     let formErrors = {};
+
+    if(!user_dept){
+      formErrors = {...formErrors, user_dept:'User Department is required'};
+    }
 
     if (!user_role) {
       formErrors = { ...formErrors, user_role: 'User Role is required' };
@@ -139,7 +159,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
     }
   };
 
-  const onValueChange = (e) => {
+  const onValueChange = async (e) => {
     const { name, value } = e.target;
     setUser((prevUser) => ({
       ...prevUser,
@@ -147,7 +167,46 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
     }));
     if (name === 'user_role') {
       setIsEmailEditable(value === 'Cluster Manager' || value === 'NHK Super User');
+      if (!(value === 'Cluster Manager' || value === 'NHK Super User')) {
+        setEmail('');
+      }
     }
+    let fieldError = '';
+    switch(name){
+      case 'user_role':
+        fieldError = !value ? 'User Role is required' : '';
+        break;
+
+      case 'user_id':
+        fieldError = !value ? 'User ID is required' : value.length < 4 ? 'User ID must be at least 4 characters': '';
+        if (!fieldError) {
+          const { isAvailable } = await checkId(value);
+          if (!isAvailable) {
+            fieldError = 'This ID is already taken. User ID must be unique.';
+          }
+        }
+        break;
+
+      case 'user_name':
+        fieldError = !value ? 'User Name is required' : '';
+        break;
+
+      case 'store_id':
+        fieldError = !value ? 'Store ID is required' : '';
+        break;
+
+      case 'email':
+          fieldError = isEmailEditable && !validateEmail(value) ? 'Please enter a valid email address' : '';
+          break;
+
+      case 'number':
+            fieldError = !value ? 'Phone Number is required' : !validatePhoneNumber(value) ? 'Please enter a valid phone number' : '';
+            break;
+      default:
+        break;
+
+    }
+    setErrors({ ...errors, [name]: fieldError });
   };
 
   return (
@@ -168,7 +227,64 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
             <Divider sx={{ mb: 2 }} />
 
             <Grid container spacing={3}>
-              <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
+            <TextField
+              label="User Department"
+              onChange={(e) => onValueChange(e)}
+              name="user_dept"
+              value={user_dept}
+              id="my-input"
+              variant="outlined"
+              fullWidth
+              select
+              required="true"
+              sx={{
+                '& .MuiInputLabel-root': {
+                  color: 'rgba(0, 0, 0, 0.4)',
+                  '&.Mui-focused': {
+                    color: 'black'
+                  }
+                },
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '10px',
+                  '& fieldset': {
+                    borderColor: 'rgba(0, 0, 0, 0.2)'
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'black'
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'black'
+                  }
+                }
+              }}
+              error={!!errors.user_dept}
+              helperText={errors.user_dept}
+            >
+              {depts.map((name) => (
+                <MenuItem
+                  key={name}
+                  value={name}
+                  sx={{
+                    padding: '6px 8px',
+                    lineHeight: '1.57143',
+                    fontSize: '0.875rem',
+                    fontWeight: '400',
+                    borderRadius: '6px',
+                    display: 'flex',
+                    marginBottom: '4px',
+                    height: '40px',
+                    '&:focus, &:hover': {
+                      bgcolor: '#f4f6f8'
+                    }
+                  }}
+                >
+                  <ListItemText primary={<Typography variant="body2">{name}</Typography>} />
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   label="User Role"
                   onChange={(e) => onValueChange(e)}
@@ -178,6 +294,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
                   variant="outlined"
                   fullWidth
                   select
+                  required="true"
                   sx={{
                     '& .MuiInputLabel-root': {
                       color: 'rgba(0, 0, 0, 0.4)',
@@ -233,6 +350,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
                   id="my-input"
                   variant="outlined"
                   fullWidth
+                  required="true"
                   sx={{
                     '& .MuiInputLabel-root': {
                       color: 'rgba(0, 0, 0, 0.4)',
@@ -266,6 +384,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
                   id="my-input"
                   variant="outlined"
                   fullWidth
+                  required="true"
                   sx={{
                     '& .MuiInputLabel-root': {
                       color: 'rgba(0, 0, 0, 0.4)',
@@ -308,6 +427,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
                   variant="outlined"
                   fullWidth
                   select
+                  required="true"
                   sx={{
                     '& .MuiInputLabel-root': {
                       color: 'rgba(0, 0, 0, 0.4)',
@@ -388,7 +508,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
                       }
                     }
                   }}
-                  error={!!errors.email}
+                  error={!!errors.email && isEmailEditable}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -400,6 +520,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
                   id="my-input"
                   variant="outlined"
                   fullWidth
+                  required="true"
                   sx={{
                     '& .MuiInputLabel-root': {
                       color: 'rgba(0, 0, 0, 0.4)',
@@ -472,6 +593,23 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
                 >
                   Cancel
                 </Button>
+                        <Snackbar
+                    open={snackbarOpen}
+                    autoHideDuration={6000}
+                    onClose={handleSnackbarClose}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'right'
+                  }}
+                >
+                  <Alert
+                    onClose={handleSnackbarClose}
+                    severity={snackbarMessage.includes('successfully') ? 'success' : snackbarMessage.includes('Failed') ? 'error' : 'info'}
+                    sx={{ width: '100%' }}
+                  >
+                    {snackbarMessage}
+                  </Alert>
+                </Snackbar>     
               </>
             )}
           </Box>
