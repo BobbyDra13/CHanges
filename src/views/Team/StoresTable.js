@@ -150,6 +150,7 @@ const StoresTable = ({
               }}
             >
               <TableCell padding="checkbox"></TableCell>
+              <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_dept')} sortedKey="user_dept" label="User Department" />
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_role')} sortedKey="user_role" label="User Role" />
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_id')} sortedKey="user_id" label="User ID" />
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_name')} sortedKey="user_name" label="User Name" />
@@ -175,8 +176,9 @@ const StoresTable = ({
                   <Checkbox checked={isSelected(row.id)} onChange={() => handleRowSelect(row.id)} />
                 </TableCell>
                 <TableCell component={'th'} scope="row">
-                  {row.user_role}
+                  {row.user_dept}
                 </TableCell>
+                <TableCell align="left">{row.user_role}</TableCell>
                 <TableCell align="left">{row.user_id}</TableCell>
                 <TableCell align="left">{row.user_name}</TableCell>
                 <TableCell align="left">{row.store_id}</TableCell>
@@ -206,17 +208,7 @@ const StoresTable = ({
                       <EditIcon />
                     </IconButton>
 
-                    <Dialog
-                      key={row.id}
-                      open={editRowId === row.id && showEditUserDialog}
-                      onClose={() => handleEditUserDialogClose()}
-                      PaperProps={{
-                        style: {
-                          maxWidth: '100%',
-                          maxHeight: '100%'
-                        }
-                      }}
-                    >
+                    <Dialog key={row.id} open={editRowId === row.id && showEditUserDialog} onClose={() => handleEditUserDialogClose()}>
                       <EditStore rowId={row.id} handleEditUserDialogClose={handleEditUserDialogClose} />
                     </Dialog>
 
