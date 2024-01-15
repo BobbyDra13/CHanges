@@ -13,7 +13,7 @@ import {
   useTheme,
   CircularProgress
 } from '@mui/material';
-import { allStoresId, getOneUser, updateUser } from 'api';
+import { allStoresId, checkId, getOneUser, updateUser } from 'api';
 import { Link } from 'react-router-dom';
 import { bouncy } from 'ldrs';
 bouncy.register();
@@ -33,12 +33,13 @@ const roles = ['Agent', 'Department Manager', 'Store Manager', 'Cluster Manager'
 const EditStore = ({ rowId, handleEditUserDialogClose }) => {
   const theme = useTheme();
   const [user, setUser] = useState(initialValue);
-  const { user_role, user_id, user_name, store_id, email, number } = user;
+  const { user_role, user_id, user_name, store_id, number } = user;
   const [isEmailEditable, setIsEmailEditable] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(true);
   const [stores, updateStores] = useState([]);
   const [apiResponded, setApiResponded] = useState(true);
+  const [email, setEmail] = useState('');
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
