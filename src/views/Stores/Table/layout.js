@@ -582,8 +582,7 @@ const StoreLayout = () => {
           <div className="w-full h-full flex lg:justify-center text-3xl font-semibold  py-6 overflow-auto">
             <ImageList
               sx={{
-                minWidth: '680px',
-                maxWidth: '70%'
+                alignItems: 'center',
               }}
               cols={currentShelf?.partsDetails?.length / 2}
               gap={10}
@@ -593,7 +592,9 @@ const StoreLayout = () => {
                   key={index}
                   onClick={() => handleImageClick(item)}
                   sx={{
-                    gridRow: index % 2 === 0 ? '1' : '2'
+                    gridRow: index % 2 === 0 ? '1' : '2',
+                    width: '200px',
+                    height:'200px'
                   }}
                 >
                   {item.img_url ? (
@@ -625,10 +626,11 @@ const StoreLayout = () => {
                   {/* `Fullness: ${item.avg_full || 0}%` */}
                   <ImageListItemBar
                     title={
-                      <Stack direction={'row'} justifyContent={'space-between'}>
+                      <Stack direction={'column'} spacing={-1}>
                         <Typography>{`Fullness: ${item.avg_full || 0}%`}</Typography>
                         {item?.timestamps && <Typography>{`Date: ${item?.timestamps?.split('T')[0]}`}</Typography>}
-                      </Stack>
+                        {item?.timestamps && (<Typography>{`Time: ${new Date(item.timestamps).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`}</Typography>)}                     
+                         </Stack>
                     }
                     subtitle={item.name + '/' + updatedPartDetails.length}
                   />
@@ -723,6 +725,9 @@ const StoreLayout = () => {
                     </Typography>
                     <Typography variant="h3" className="text-white">
                       {`Date: ${selectedImage?.timestamps?.split('T')[0]}`}
+                    </Typography>
+                    <Typography variant="h3" className="text-white">
+                    {`Time: ${new Date(selectedImage?.timestamps).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`}
                     </Typography>
                   </div>
                   <div
