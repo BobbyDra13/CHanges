@@ -128,7 +128,7 @@ const Header = ({ drawerToggle }) => {
               location.pathname === '/main/team' ? 'border-b-2 border-emerald-500 text-emerald-600' : ''
             }`}
           >
-            Team
+            Teams
           </Link>
 
           {/* {TopNavItems.map((item) => {

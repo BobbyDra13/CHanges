@@ -336,7 +336,6 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
               variant="outlined"
               fullWidth
               required="true"
-
               sx={{
                 '& .MuiInputLabel-root': {
                   color: 'rgba(0, 0, 0, 0.4)',
