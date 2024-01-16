@@ -9,7 +9,6 @@ import { auth } from 'firebase.config';
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import toast, { Toaster } from 'react-hot-toast';
 
-
 import { GetVerifiedUsers } from 'api';
 // import FadeLoader from "react-spinners/FadeLoader";
 // import { css } from '@emotion/react';
@@ -116,10 +115,10 @@ const FirebaseLogin = () => {
       })
       .catch((error) => {
         console.error('Error verifying OTP:', error);
-      }).finally(() => {
-        setLoading(false);
       })
-      ;
+      .finally(() => {
+        setLoading(false);
+      });
   }
   useEffect(() => {
     localStorage.setItem('Token', JSON.stringify(accessToken));
@@ -184,28 +183,28 @@ const FirebaseLogin = () => {
               />
             </div>
             {showOTPInput && (
-            <div className="flex flex-col justify-center items-center">
-              <p className="mt-2 py-2 px-2">Enter OTP</p>
-              <OtpInput
-                value={otp}
-                onChange={handleOtpChange}
-                inputStyle="m-[0.75rem] text-lg rounded-md border border-solid border-gray-300 focus:border-transparent focus:outline-none focus:ring-1 focus:ring-emerald-300"
-                numInputs={6}
-                shouldAutoFocus
-                renderSeparator={<span>-</span>}
-                renderInput={(props) => (
-                  <input
-                    {...props}
-                    style={{
-                      padding: '0.5rem',
-                      width: '2rem',
-                      height: '2rem'
-                    }}
-                    disabled={!phone || buttonLabel !== 'Submit'}
-                  />
-                )}
-              />
-            </div>
+              <div className="flex flex-col justify-center items-center">
+                <p className="mt-2 py-2 px-2">Enter OTP</p>
+                <OtpInput
+                  value={otp}
+                  onChange={handleOtpChange}
+                  inputStyle="m-[0.75rem] text-lg rounded-md border border-solid border-gray-300 focus:border-transparent focus:outline-none focus:ring-1 focus:ring-emerald-300"
+                  numInputs={6}
+                  shouldAutoFocus
+                  renderSeparator={<span>-</span>}
+                  renderInput={(props) => (
+                    <input
+                      {...props}
+                      style={{
+                        padding: '0.5rem',
+                        width: '2rem',
+                        height: '2rem'
+                      }}
+                      disabled={!phone || buttonLabel !== 'Submit'}
+                    />
+                  )}
+                />
+              </div>
             )}
 
             {errors.submit && (
@@ -219,14 +218,14 @@ const FirebaseLogin = () => {
                 <>
                   <Button
                     // color="primary"
-                    disabled={!phone || phone.length !== 10 || otpEntered}
+                    disabled={!phone || phone.length !== 10 || otpEntered || loading}
                     fullWidth
                     size="large"
                     type="button"
                     variant="outlined"
                     onClick={onSignup}
                   >
-                  {loading ? 'Sending OTP...' : 'Send OTP'}
+                    {loading ? 'Sending OTP...' : 'Send OTP'}
                   </Button>
                 </>
               )}

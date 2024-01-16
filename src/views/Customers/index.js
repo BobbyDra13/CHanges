@@ -257,7 +257,7 @@ const Customers = () => {
                         >
                           <img
                             style={{ display: 'block', objectFit: 'cover' }}
-                            className="rounded-md border border-gray-300 max-[600px]:w-24 w-32 h-[153px] drop-shadow-md hover:cursor-pointer"
+                            className="rounded-md border border-gray-300 max-[600px]:w-24 w-36 h-[153px] drop-shadow-md hover:cursor-pointer"
                             src={OrionImg}
                             alt="noImg"
                             onClick={() => navigate('/main/stores/layout')}
@@ -335,7 +335,7 @@ const Customers = () => {
                             </Menu>
                           </Box>
                           <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
-                            <Typography sx={{ width: 120 }} variant="h6" color={'#06b6d4'}>
+                            <Typography sx={{ width: 120 }} variant="h6">
                               Capture %
                             </Typography>
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'start' }}>
@@ -344,13 +344,14 @@ const Customers = () => {
                                   width: '100%',
                                   borderRadius: 3,
                                   height: 20,
+                                  backgroundColor: '#e5e7eb',
                                   '& .MuiLinearProgress-bar': {
                                     backgroundColor: '#06b6d4'
                                   }
                                 }}
                                 variant="determinate"
                                 value={item.capture_count ? Math.min(Math.floor((item.capture_count / totalParts) * 100), 100) : 0}
-                                color="secondary"
+                                // color="secondary"
                               />
                               <button className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center">
                                 <Typography sx={{ color: 'white' }} variant="subtitle2">
@@ -360,23 +361,7 @@ const Customers = () => {
                             </Box>
                           </Stack>
                           <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
-                            <Typography
-                              sx={{ width: 120 }}
-                              variant={clickedBar.isUpKeep ? 'h5' : 'h6'}
-                              color={
-                                Math.floor(item.store_fullness) >= 80 && !clickedBar.isUpKeep
-                                  ? success
-                                  : Math.floor(item.store_fullness) >= 80 && clickedBar.isUpKeep
-                                  ? successDark
-                                  : Math.floor(item.store_fullness) < 50 && !clickedBar.isUpKeep
-                                  ? error
-                                  : Math.floor(item.store_fullness) < 50 && clickedBar.isUpKeep
-                                  ? errorDark
-                                  : !clickedBar.isUpKeep
-                                  ? warning
-                                  : warningDark
-                              }
-                            >
+                            <Typography sx={{ width: 120 }} variant={clickedBar.isUpKeep ? 'h5' : 'h6'}>
                               Up-Keep Score
                             </Typography>
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
@@ -388,6 +373,7 @@ const Customers = () => {
                                   // '& .MuiLinearProgress-bar': {
                                   //   backgroundColor: warning
                                   // }
+                                  backgroundColor: '#e5e7eb',
                                   '& .MuiLinearProgress-bar': {
                                     backgroundColor:
                                       Math.floor(item.store_fullness) >= 80 && !clickedBar.isUpKeep
@@ -406,7 +392,7 @@ const Customers = () => {
                                 variant="determinate"
                                 // value={78}
                                 value={Math.floor(item.store_fullness) || 0}
-                                color="secondary"
+                                // color="secondary"
                               />
                               <button
                                 onClick={upKeepClicked}
@@ -419,23 +405,7 @@ const Customers = () => {
                             </Box>
                           </Stack>
                           <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
-                            <Typography
-                              sx={{ width: 120 }}
-                              variant={clickedBar.isVm ? 'h5' : 'h6'}
-                              color={
-                                Math.floor((item.store_anomalies.length / totalParts) * 100) >= 80 && !clickedBar.isVm
-                                  ? success
-                                  : Math.floor((item.store_anomalies.length / totalParts) * 100) >= 80 && clickedBar.isVm
-                                  ? successDark
-                                  : Math.floor((item.store_anomalies.length / totalParts) * 100) < 50 && !clickedBar.isVm
-                                  ? error
-                                  : Math.floor((item.store_anomalies.length / totalParts) * 100) < 50 && clickedBar.isVm
-                                  ? errorDark
-                                  : !clickedBar.isVm
-                                  ? warning
-                                  : warningDark
-                              }
-                            >
+                            <Typography sx={{ width: 120 }} variant={clickedBar.isVm ? 'h5' : 'h6'}>
                               VM Score
                             </Typography>
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
@@ -444,6 +414,7 @@ const Customers = () => {
                                   width: '100%',
                                   borderRadius: 3,
                                   height: clickedBar.isVm ? 25 : 20,
+                                  backgroundColor: '#e5e7eb',
                                   '& .MuiLinearProgress-bar': {
                                     backgroundColor:
                                       Math.floor((item.store_anomalies.length / totalParts) * 100) >= 80 && !clickedBar.isVm
@@ -461,7 +432,7 @@ const Customers = () => {
                                 }}
                                 variant="determinate"
                                 value={Math.floor((item.store_anomalies.length / totalParts) * 100)}
-                                color="secondary"
+                                // color="secondary"
                               />
                               <button
                                 onClick={vMClicked}
@@ -483,6 +454,7 @@ const Customers = () => {
                                   width: '100%',
                                   borderRadius: 3,
                                   height: 20,
+                                  backgroundColor: '#e5e7eb',
                                   '& .MuiLinearProgress-bar': {
                                     backgroundColor: clickedBar.isPop ? successDark : success
                                   }
@@ -492,7 +464,7 @@ const Customers = () => {
                                 }}
                                 variant="determinate"
                                 value={0}
-                                color="secondary"
+                                // color="secondary"
                               />
                               <button
                                 onClick={popClicked}

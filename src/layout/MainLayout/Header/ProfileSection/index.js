@@ -37,7 +37,7 @@ const ProfileSection = () => {
       });
   };
 
-  const [selectedIndex, setSelectedIndex] = React.useState(1);
+  const [selectedIndex, setSelectedIndex] = React.useState();
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
 
@@ -116,13 +116,13 @@ const ProfileSection = () => {
                     borderRadius: '10px'
                   }}
                 >
-                  <ListItemButton selected={selectedIndex === 0} onClick={(event) => handleListItemClick(event, 0)}>
+                  <ListItemButton disabled selected={selectedIndex === 0} onClick={(event) => handleListItemClick(event, 0)}>
                     <ListItemIcon>
                       <SettingsTwoToneIcon />
                     </ListItemIcon>
                     <ListItemText primary="Settings" />
                   </ListItemButton>
-                  <ListItemButton selected={selectedIndex === 1} onClick={(event) => handleListItemClick(event, 1)}>
+                  <ListItemButton disabled selected={selectedIndex === 1} onClick={(event) => handleListItemClick(event, 1)}>
                     <ListItemIcon>
                       <PersonTwoToneIcon />
                     </ListItemIcon>
