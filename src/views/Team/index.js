@@ -15,12 +15,12 @@ const Team = () => {
     <>
       <Grid container >
         <Grid item xs={12}>
-          <Breadcrumb title="Team">
+          <Breadcrumb title="Teams">
             <Typography component={Link} to="/" variant="subtitle2" color="inherit" className="link-breadcrumb">
               Insights
             </Typography>
             <Typography variant="subtitle2" color="primary" className="link-breadcrumb">
-              Team
+              Teams
             </Typography>
           </Breadcrumb>
           <Grid container spacing={gridSpacing}>
