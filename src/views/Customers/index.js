@@ -35,7 +35,8 @@ import {
   Dialog,
   DialogContent,
   Skeleton,
-  Divider
+  Divider,
+  ImageListItemBar
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
@@ -79,7 +80,7 @@ const Customers = () => {
   // const [promoArray, setPromoArray] = useState([]);
   const [fullnessArray, setFullnessArray] = useState([]);
   const [anomalyDetails, setAnonmalyDetails] = useState([]);
-  // const [analysisId, setAnalysisId] = useState('');
+  const [timestamps, setTimestamps] = useState({ date: '', time: '' });
   const [anomalyType, setAnomalyType] = useState('');
   const [loading, setLoading] = useState(false);
   const [clickedBar, setClickedBar] = useState({
@@ -141,18 +142,22 @@ const Customers = () => {
         // console.log('AnomalyDetails', response);
         setAnonmalyDetails(response.data);
         setLoading(false);
-
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleImageClick = (url, id, type) => {
+  const handleImageClick = (url, id, type, time) => {
+    const dateTime = new Date(time);
+    const formattedDate = dateTime.toLocaleDateString();
+    const formattedTime = dateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+    console.log('time', time);
     if (!isImageDialogOpen) {
       setSelectedImage(url);
       getAnomalyDetails(id);
       setAnomalyType(type);
+      setTimestamps({ date: formattedDate, time: formattedTime });
     }
     setIsImageDialogOpen(!isImageDialogOpen);
   };
@@ -255,6 +260,7 @@ const Customers = () => {
                             className="rounded-md border border-gray-300 max-[600px]:w-24 w-32 h-[153px] drop-shadow-md hover:cursor-pointer"
                             src={OrionImg}
                             alt="noImg"
+                            onClick={() => navigate('/main/stores/layout')}
                           />
                         </Tooltip>
                         {/* <div className="rounded-md border border-gray-300 w-20 h-[105px] drop-shadow-md">
@@ -328,11 +334,11 @@ const Customers = () => {
                               ))}
                             </Menu>
                           </Box>
-                          <Stack direction={'row'} justifyContent={'space-between'}>
-                            <Typography sx={{ width: 95 }} variant="subtitle1">
+                          <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
+                            <Typography sx={{ width: 120 }} variant="h6" color={'#06b6d4'}>
                               Capture %
                             </Typography>
-                            <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
+                            <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'start' }}>
                               <LinearProgress
                                 sx={{
                                   width: '100%',
@@ -353,8 +359,24 @@ const Customers = () => {
                               </button>
                             </Box>
                           </Stack>
-                          <Stack direction={'row'} justifyContent={'space-between'}>
-                            <Typography sx={{ width: 95 }} variant={clickedBar.isUpKeep ? 'h6' : 'subtitle1'}>
+                          <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
+                            <Typography
+                              sx={{ width: 120 }}
+                              variant={clickedBar.isUpKeep ? 'h5' : 'h6'}
+                              color={
+                                Math.floor(item.store_fullness) >= 80 && !clickedBar.isUpKeep
+                                  ? success
+                                  : Math.floor(item.store_fullness) >= 80 && clickedBar.isUpKeep
+                                  ? successDark
+                                  : Math.floor(item.store_fullness) < 50 && !clickedBar.isUpKeep
+                                  ? error
+                                  : Math.floor(item.store_fullness) < 50 && clickedBar.isUpKeep
+                                  ? errorDark
+                                  : !clickedBar.isUpKeep
+                                  ? warning
+                                  : warningDark
+                              }
+                            >
                               Up-Keep Score
                             </Typography>
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
@@ -362,7 +384,7 @@ const Customers = () => {
                                 sx={{
                                   width: '100%',
                                   borderRadius: 3,
-                                  height: 20,
+                                  height: clickedBar.isUpKeep ? 25 : 20,
                                   // '& .MuiLinearProgress-bar': {
                                   //   backgroundColor: warning
                                   // }
@@ -390,14 +412,30 @@ const Customers = () => {
                                 onClick={upKeepClicked}
                                 className="absolute hover:cursor-pointer w-full h-full flex justify-center place-items-center"
                               >
-                                <Typography sx={{ color: 'white' }} variant="subtitle2">
+                                <Typography sx={{ color: 'white' }} variant="subtitle1">
                                   {Math.floor(item.store_fullness) || 0} %
                                 </Typography>
                               </button>
                             </Box>
                           </Stack>
-                          <Stack direction={'row'} justifyContent={'space-between'}>
-                            <Typography sx={{ width: 95 }} variant={clickedBar.isVm ? 'h6' : 'subtitle1'}>
+                          <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
+                            <Typography
+                              sx={{ width: 120 }}
+                              variant={clickedBar.isVm ? 'h5' : 'h6'}
+                              color={
+                                Math.floor((item.store_anomalies.length / totalParts) * 100) >= 80 && !clickedBar.isVm
+                                  ? success
+                                  : Math.floor((item.store_anomalies.length / totalParts) * 100) >= 80 && clickedBar.isVm
+                                  ? successDark
+                                  : Math.floor((item.store_anomalies.length / totalParts) * 100) < 50 && !clickedBar.isVm
+                                  ? error
+                                  : Math.floor((item.store_anomalies.length / totalParts) * 100) < 50 && clickedBar.isVm
+                                  ? errorDark
+                                  : !clickedBar.isVm
+                                  ? warning
+                                  : warningDark
+                              }
+                            >
                               VM Score
                             </Typography>
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
@@ -405,7 +443,7 @@ const Customers = () => {
                                 sx={{
                                   width: '100%',
                                   borderRadius: 3,
-                                  height: 20,
+                                  height: clickedBar.isVm ? 25 : 20,
                                   '& .MuiLinearProgress-bar': {
                                     backgroundColor:
                                       Math.floor((item.store_anomalies.length / totalParts) * 100) >= 80 && !clickedBar.isVm
@@ -429,14 +467,14 @@ const Customers = () => {
                                 onClick={vMClicked}
                                 className="absolute hover:cursor-pointer w-full h-full flex justify-center place-items-center"
                               >
-                                <Typography sx={{ color: 'white' }} variant="subtitle2">
+                                <Typography sx={{ color: 'white' }} variant="subtitle1">
                                   {Math.floor((item.store_anomalies.length / totalParts) * 100)} %
                                 </Typography>
                               </button>
                             </Box>
                           </Stack>
-                          <Stack direction={'row'} justifyContent={'space-between'}>
-                            <Typography sx={{ width: 95 }} variant={clickedBar.isPop ? 'h6' : 'subtitle1'}>
+                          <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
+                            <Typography sx={{ width: 120 }} variant={clickedBar.isPop ? 'h5' : 'h6'}>
                               PoP Score
                             </Typography>
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
@@ -527,7 +565,8 @@ const Customers = () => {
                                 handleImageClick(
                                   anomaly.img_url,
                                   anomaly.store_anomalies.analysis_id,
-                                  anomaly.store_anomalies.anomalies_found[0].type
+                                  anomaly.store_anomalies.anomalies_found[0].type,
+                                  anomaly.store_anomalies.timestamps
                                 )
                               }
                               key={index}
@@ -538,6 +577,7 @@ const Customers = () => {
                                 className="rounded-md shadow-md h-full hover:cursor-pointer"
                                 src={anomaly.img_url}
                                 alt="no Img"
+                                loading="lazy"
                               />
                             </div>
                           ))}
@@ -550,7 +590,8 @@ const Customers = () => {
                                 handleImageClick(
                                   anomaly.img_url,
                                   anomaly.store_anomalies.analysis_id,
-                                  anomaly.store_anomalies.anomalies_found[0].type
+                                  anomaly.store_anomalies.anomalies_found[0].type,
+                                  anomaly.store_anomalies.timestamps
                                 )
                               }
                               key={index}
@@ -561,6 +602,7 @@ const Customers = () => {
                                 className="rounded-md shadow-md h-full hover:cursor-pointer"
                                 src={anomaly.img_url}
                                 alt="no Img"
+                                loading="lazy"
                               />
                             </div>
                           ))}
@@ -573,7 +615,8 @@ const Customers = () => {
                                 handleImageClick(
                                   anomaly.img_url,
                                   anomaly.store_anomalies.analysis_id,
-                                  anomaly.store_anomalies.anomalies_found[0].type
+                                  anomaly.store_anomalies.anomalies_found[0].type,
+                                  anomaly.store_anomalies.timestamps
                                 )
                               }
                               key={index}
@@ -584,6 +627,7 @@ const Customers = () => {
                                 className="rounded-md shadow-md h-full hover:cursor-pointer"
                                 src={anomaly.img_url}
                                 alt="no Img"
+                                loading="lazy"
                               />
                             </div>
                           ))}
@@ -640,123 +684,124 @@ const Customers = () => {
           <l-bouncy size="45" speed="1" color="black"></l-bouncy>
         </div>
       ) : (
-      <Dialog maxWidth={600} open={isImageDialogOpen} onClose={handleImageClick}>
-        <DialogContent>
-          {anomalyDetails.length > 0 &&
-            anomalyDetails.map((details, index) => (
-              <div key={index} className="zoom-container">
-                <div className="image-container">
-                  <TransformWrapper>
-                    <div className="image-wrapper rounded-md">
-                      <TransformComponent>
-                        <img className="image rounded-md" src={selectedImage} alt={'No img found'} />
-                      </TransformComponent>
-                    </div>
-                  </TransformWrapper>
-                </div>
-                <div className="w-[30vw] ml-[1.5vw] h-[80vh] flex flex-col">
-                  <div className="flex-grow flex flex-col space-y-1.5 overflow-y-auto">
-                    <div className="w-full flex justify-between place-items-center">
-                      <Typography variant="h3">
-                        {details.store_id} - {details.store_name}
-                      </Typography>
-                      <button onClick={handleImageClick}>
-                        <IoIosClose className="text-4xl" />
-                      </button>
-                    </div>
-                    <Divider />
-                    <Typography paddingBottom={1.5} width={'100%'} variant="h5">
-                      / {details.bay_id} / {details.shelf_id}
-                    </Typography>
-                    <Typography width={'100%'} variant="h3">
-                      Brands
-                    </Typography>
-                    <Divider />
-                    <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
-                      <div className="bg-[#002F01] rounded-full">
-                        <Typography color={'white'} paddingY={1} paddingX={2} variant="h5">
-                          {details.brand_name}
+        <Dialog maxWidth={600} open={isImageDialogOpen} onClose={handleImageClick}>
+          <DialogContent>
+            {anomalyDetails.length > 0 &&
+              anomalyDetails.map((details, index) => (
+                <div key={index} className="zoom-container">
+                  <div className="image-container flex justify-center items-center lg:mb-0 mb-10">
+                    <TransformWrapper>
+                      <div className="image-wrapper rounded-md md:w-full w-4/5 ">
+                        <TransformComponent>
+                          <img className="image rounded-md" src={selectedImage} alt={'No img found'} />
+                          <ImageListItemBar title={`Date: ${timestamps?.date}`} subtitle={`Time: ${timestamps?.time}`} />
+                        </TransformComponent>
+                      </div>
+                    </TransformWrapper>
+                  </div>
+                  <div className="md:w-[30vw] md:ml-[1.5vw] h-[80vh] flex flex-col w-full">
+                    <div className="flex-grow flex flex-col space-y-1.5 overflow-y-auto">
+                      <div className="w-full flex justify-between place-items-center">
+                        <Typography variant="h3" className="">
+                          {details.store_id} - {details.store_name}
                         </Typography>
+                        <button onClick={handleImageClick} className="md:static absolute top-5 right-5 ">
+                          <IoIosClose className="md:text-4xl text-2xl" />
+                        </button>
+                      </div>
+                      <Divider />
+                      <Typography paddingBottom={1.5} width={'100%'} variant="h5">
+                        / {details.bay_id} / {details.shelf_id}
+                      </Typography>
+                      <Typography width={'100%'} variant="h3">
+                        Brands
+                      </Typography>
+                      <Divider />
+                      <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
+                        <div className="bg-[#002F01] rounded-full">
+                          <Typography color={'white'} paddingY={1} paddingX={2} variant="h5">
+                            {details.brand_name}
+                          </Typography>
+                        </div>
+                      </div>
+                      <Typography width={'100%'} variant="h3">
+                        Anomalies
+                      </Typography>
+                      <Divider />
+                      <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
+                        {anomalyType === 'color_assortment' ? (
+                          <Box
+                            paddingX={0.2}
+                            paddingY={0.04}
+                            className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center"
+                          >
+                            <RiErrorWarningLine className="text-4xl mr-0.5 text-purple-500" />
+                            <Typography paddingRight={2} variant="h6">
+                              Colour
+                            </Typography>
+                          </Box>
+                        ) : (
+                          <Box
+                            paddingX={0.2}
+                            paddingY={0.04}
+                            className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center"
+                          >
+                            <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
+                            <Typography paddingRight={2} variant="h6">
+                              Empty
+                            </Typography>
+                          </Box>
+                        )}
+                      </div>
+                      <Typography width={'100%'} variant="h3">
+                        Team
+                      </Typography>
+                      <Divider />
+                      <div className="w-full flex justify-start">
+                        <AvatarGroup
+                          sx={{
+                            '& .MuiAvatar-root': { width: 40, height: 40, fontSize: 24 }
+                          }}
+                          max={2}
+                        >
+                          <Tooltip
+                            title={
+                              <div className="w-[200px] p-2 flex flex-col space-y-2">
+                                <Typography sx={{ width: '100%', color: 'white' }} variant="h6">
+                                  Agent Details
+                                </Typography>
+                                <Typography variant="subtitle2">Name: {details.user_name}</Typography>
+                                <Typography variant="subtitle2">Number: {details.user_number}</Typography>
+                              </div>
+                            }
+                          >
+                            <Avatar className="hover:cursor-pointer" sx={{ bgcolor: success }} alt={details.user_name} src="/example.jpg" />
+                          </Tooltip>
+                        </AvatarGroup>
                       </div>
                     </div>
-                    <Typography width={'100%'} variant="h3">
-                      Anomalies
-                    </Typography>
-                    <Divider />
-                    <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
-                      {anomalyType === 'color_assortment' ? (
-                        <Box
-                          paddingX={0.2}
-                          paddingY={0.04}
-                          className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center"
-                        >
-                          <RiErrorWarningLine className="text-4xl mr-0.5 text-purple-500" />
-                          <Typography paddingRight={2} variant="h6">
-                            Colour
-                          </Typography>
-                        </Box>
-                      ) : (
-                        <Box
-                          paddingX={0.2}
-                          paddingY={0.04}
-                          className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center"
-                        >
-                          <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
-                          <Typography paddingRight={2} variant="h6">
-                            Empty
-                          </Typography>
-                        </Box>
-                      )}
-                    </div>
-                    <Typography width={'100%'} variant="h3">
-                      Team
-                    </Typography>
-                    <Divider />
-                    <div className="w-full flex justify-start">
-                      <AvatarGroup
-                        sx={{
-                          '& .MuiAvatar-root': { width: 40, height: 40, fontSize: 24 }
-                        }}
-                        max={2}
+                    <div className="w-full flex flex-row-reverse gap-3">
+                      <button className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 hover:cursor-not-allowed border-2 border-gray-400">
+                        <Typography>Ignore</Typography>
+                      </button>
+                      <button
+                        className="lg:rounded-full rounded-xl md:w-[125px]  hover:cursor-not-allowed text-lg lg:text-2xl p-2.5"
+                        style={{ backgroundColor: success }}
                       >
-                        <Tooltip
-                          title={
-                            <div className="w-[200px] p-2 flex flex-col space-y-2">
-                              <Typography sx={{ width: '100%', color: 'white' }} variant="h6">
-                                Agent Details
-                              </Typography>
-                              <Typography variant="subtitle2">Name: {details.user_name}</Typography>
-                              <Typography variant="subtitle2">Number: {details.user_number}</Typography>
-                            </div>
-                          }
-                        >
-                          <Avatar className="hover:cursor-pointer" sx={{ bgcolor: success }} alt={details.user_name} src="/example.jpg" />
-                        </Tooltip>
-                      </AvatarGroup>
+                        <Typography color={'white'}>Solved</Typography>
+                      </button>
+                      <button
+                        className="lg:rounded-full rounded-xl md:w-[125px] hover:cursor-not-allowed text-lg lg:text-2xl p-2.5"
+                        style={{ backgroundColor: error }}
+                      >
+                        <Typography color={'white'}>Alert Store</Typography>
+                      </button>
                     </div>
-                  </div>
-                  <div className="w-full flex flex-row-reverse gap-3">
-                    <button className="rounded-full w-[125px] hover:cursor-not-allowed border-2 border-gray-400">
-                      <Typography paddingY={1.5} variant="h5">
-                        Ignore
-                      </Typography>
-                    </button>
-                    <button className="rounded-full w-[125px] hover:cursor-not-allowed" style={{ backgroundColor: success }}>
-                      <Typography color={'white'} paddingY={1.5} variant="h5">
-                        Solved
-                      </Typography>
-                    </button>
-                    <button className="rounded-full w-[125px] hover:cursor-not-allowed" style={{ backgroundColor: error }}>
-                      <Typography color={'white'} paddingY={1.5} variant="h5">
-                        Alert Store
-                      </Typography>
-                    </button>
                   </div>
                 </div>
-              </div>
-            ))}
-        </DialogContent>
-      </Dialog>
+              ))}
+          </DialogContent>
+        </Dialog>
       )}
     </>
   );
