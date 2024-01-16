@@ -9,6 +9,7 @@ import { auth } from 'firebase.config';
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import toast, { Toaster } from 'react-hot-toast';
 
+
 import { GetVerifiedUsers } from 'api';
 // import FadeLoader from "react-spinners/FadeLoader";
 // import { css } from '@emotion/react';
@@ -32,6 +33,8 @@ const FirebaseLogin = () => {
   const [otpEntered, setOtpEntered] = useState(false);
   const [verifyData, setVerifyData] = useState(false);
   const [accessToken, setAccessToken] = useState('');
+  const [showOTPInput, setShowOTPInput] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const onCaptchVerify = () => {
     window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
@@ -70,6 +73,7 @@ const FirebaseLogin = () => {
     } else {
       onCaptchVerify();
       let appVerifier = window.recaptchaVerifier;
+      setLoading(true);
 
       try {
         signInWithPhoneNumber(auth, getPhoneNumber, appVerifier)
@@ -78,21 +82,29 @@ const FirebaseLogin = () => {
             if (confirmationResult) {
               setSnackbarOpen(true);
               setButtonLabel('Submit');
+              setShowOTPInput(true);
             }
           })
           .catch((error) => {
             console.log(error);
+          })
+          .finally(() => {
+            setLoading(false);
           });
       } catch (error) {
         console.log('Error in signInWithPhoneNumber:', error);
+        toast.error('Error sending OTP. Please try again. ');
+        setLoading(false);
       }
     }
   }
   function onOTPVerify() {
     let confirmationResult = window.confirmationResult;
+    setLoading(true);
 
     if (!confirmationResult) {
       console.error('Confirmation result is not available.');
+      setLoading(false);
       return;
     }
 
@@ -104,7 +116,10 @@ const FirebaseLogin = () => {
       })
       .catch((error) => {
         console.error('Error verifying OTP:', error);
-      });
+      }).finally(() => {
+        setLoading(false);
+      })
+      ;
   }
   useEffect(() => {
     localStorage.setItem('Token', JSON.stringify(accessToken));
@@ -168,6 +183,7 @@ const FirebaseLogin = () => {
                 className="px-4 py-2 w-full transition duration-300 border border-gray-300 rounded bg-gray-100 focus:border-transparent focus:outline-none focus:ring-1 focus:ring-emerald-300"
               />
             </div>
+            {showOTPInput && (
             <div className="flex flex-col justify-center items-center">
               <p className="mt-2 py-2 px-2">Enter OTP</p>
               <OtpInput
@@ -175,6 +191,7 @@ const FirebaseLogin = () => {
                 onChange={handleOtpChange}
                 inputStyle="m-[0.75rem] text-lg rounded-md border border-solid border-gray-300 focus:border-transparent focus:outline-none focus:ring-1 focus:ring-emerald-300"
                 numInputs={6}
+                shouldAutoFocus
                 renderSeparator={<span>-</span>}
                 renderInput={(props) => (
                   <input
@@ -189,6 +206,7 @@ const FirebaseLogin = () => {
                 )}
               />
             </div>
+            )}
 
             {errors.submit && (
               <Box mt={3}>
@@ -208,7 +226,7 @@ const FirebaseLogin = () => {
                     variant="outlined"
                     onClick={onSignup}
                   >
-                    Send OTP
+                  {loading ? 'Sending OTP...' : 'Send OTP'}
                   </Button>
                 </>
               )}
@@ -221,7 +239,7 @@ const FirebaseLogin = () => {
                   variant="outlined"
                   onClick={onOTPVerify}
                 >
-                  Submit
+                  {loading ? 'Verifying...' : 'Submit'}
                 </Button>
               )}
             </Box>
