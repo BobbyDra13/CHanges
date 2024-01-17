@@ -259,10 +259,17 @@ export const checkId = async (user_id) => {
 };
 
 export const allStoresId = async () => {
+<<<<<<< HEAD
+  try {
+    const response = await axios.get(`http://localhost:8081/data/user/allStoresId`);
+    return response.data.storesId;
+  } catch (error) {
+=======
   try{
     const response = await axios.get(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/store/get_all_store`);
     return response.data;
   }catch(error){
+>>>>>>> 7d8cfdb (added new api's)
     console.log('Error occured');
     throw error;
   }

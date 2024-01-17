@@ -102,7 +102,8 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
     const { name, value } = e.target;
 
     if (name === 'store_id') {
-      setUser({ ...user, store_id: value.store_id, stores: value.id});
+      const selectedStore = storesList.find(store => store.store_id === value);
+      setUser({ ...user, store_id: value, stores: selectedStore.id});
     } else {
       setUser({ ...user, [name]: value });
     }
@@ -380,7 +381,7 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
             <TextField
               label="Store"
               onChange={(e) => {onValueChange(e)
-                  console.log(e.target.value);
+                  // console.log(e.target.value);
               }}
               name="store_id"
               value={user.store_id}
@@ -415,7 +416,7 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
               {storesList.map((store) => (
                 <MenuItem
                   key={store.store_id}
-                  value={store}
+                  value={store.store_id}
                   sx={{
                     padding: '6px 8px',
                     lineHeight: '1.57143',

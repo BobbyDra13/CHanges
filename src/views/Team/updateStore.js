@@ -168,7 +168,8 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
   const onValueChange = async (e) => {
     const { name, value } = e.target;
     if (name === 'store_id') {
-      setUser({ ...user, store_id: value.store_id, stores: value.id});
+      const selectedStore = storesList.find(store => store.store_id === value);
+      setUser({ ...user, store_id: value, stores: selectedStore});
     } else {
       setUser({ ...user, [name]: value });
     }
@@ -462,7 +463,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
                   {storesList.map((store) => (
                     <MenuItem
                       key={store.store_id}
-                      value={store}
+                      value={store.store_id}
                       sx={{
                         padding: '6px 8px',
                         lineHeight: '1.57143',
