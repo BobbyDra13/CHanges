@@ -16,12 +16,12 @@ const initialValue = {
 };
 
 const roles = ['Agent', 'Department Manager', 'Store Manager', 'Cluster Manager', 'NHK Super User'];
-const depts = ['Operations', 'VM', 'Marketing','Analysis'];
+const depts = ['Operations', 'VM', 'Marketing', 'Analysis'];
 
 const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMessage }) => {
   const theme = useTheme();
   const [user, setUser] = useState(initialValue);
-  const { user_dept, user_role, user_id, user_name, store_id,number } = user;
+  const { user_dept, user_role, user_id, user_name, store_id, number } = user;
   const [isEmailEditable, setIsEmailEditable] = useState(false);
   const [email, setEmail] = useState('');
   const [storesList, updateStores] = useState([]);
@@ -39,8 +39,8 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
 
   const validateForm = async () => {
     let formErrors = {};
-    if(!user_dept){
-      formErrors = {...formErrors, user_dept:'User Department is required'};
+    if (!user_dept) {
+      formErrors = { ...formErrors, user_dept: 'User Department is required' };
     }
 
     if (!user_role) {
@@ -85,8 +85,8 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
     const fetchData = async () => {
       try {
         const fetchedStoreIDs = await allStoresId();
-        const storesData = fetchedStoreIDs.map(store => ({
-          store_id :store.store_id,
+        const storesData = fetchedStoreIDs.map((store) => ({
+          store_id: store.store_id,
           id: store.id
         }));
         updateStores(storesData);
@@ -102,8 +102,8 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
     const { name, value } = e.target;
 
     if (name === 'store_id') {
-      const selectedStore = storesList.find(store => store.store_id === value);
-      setUser({ ...user, store_id: value, stores: selectedStore.id});
+      const selectedStore = storesList.find((store) => store.store_id === value);
+      setUser({ ...user, store_id: value, stores: selectedStore.id });
     } else {
       setUser({ ...user, [name]: value });
     }
@@ -115,13 +115,13 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
     }
 
     let fieldError = '';
-    switch(name){
+    switch (name) {
       case 'user_role':
         fieldError = !value ? 'User Role is required' : '';
         break;
 
       case 'user_id':
-        fieldError = !value ? 'User ID is required' : value.length < 4 ? 'User ID must be at least 4 characters': '';
+        fieldError = !value ? 'User ID is required' : value.length < 4 ? 'User ID must be at least 4 characters' : '';
         if (!fieldError) {
           const response = await checkId(value);
           if (response != null) {
@@ -139,25 +139,22 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
         break;
 
       case 'email':
-          fieldError = isEmailEditable && !validateEmail(value) ? 'Please enter a valid email address' : '';
-          break;
-
-      case 'number':
-            fieldError = !value ? 'Phone Number is required' : !validatePhoneNumber(value) ? 'Please enter a valid phone number' : '';
-            break;
-      default:
+        fieldError = isEmailEditable && !validateEmail(value) ? 'Please enter a valid email address' : '';
         break;
 
+      case 'number':
+        fieldError = !value ? 'Phone Number is required' : !validatePhoneNumber(value) ? 'Please enter a valid phone number' : '';
+        break;
+      default:
+        break;
     }
     setErrors({ ...errors, [name]: fieldError });
-
-
   };
 
   const addUserDetails = async () => {
     try {
       const isFormValid = await validateForm();
-      if(isFormValid){
+      if (isFormValid) {
         setApiResponded(false);
         await createUser(user);
         handleSnackbarOpen();
@@ -185,7 +182,7 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
         </Typography>
         <Divider sx={{ mb: 2 }} />
         <Grid container spacing={3}>
-        <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={6}>
             <TextField
               label="User Department"
               onChange={(e) => onValueChange(e)}
@@ -302,9 +299,9 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
           <Grid item xs={12} sm={6}>
             <TextField
               label="User ID"
-              onChange={(e) => { onValueChange(e);
-              }
-              }
+              onChange={(e) => {
+                onValueChange(e);
+              }}
               name="user_id"
               value={user_id}
               id="my-input"
@@ -380,8 +377,9 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
           <Grid item xs={12}>
             <TextField
               label="Store"
-              onChange={(e) => {onValueChange(e)
-                  // console.log(e.target.value);
+              onChange={(e) => {
+                onValueChange(e);
+                // console.log(e.target.value);
               }}
               name="store_id"
               value={user.store_id}
@@ -470,7 +468,8 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
                   }
                 }
               }}
-              error={!!errors.email && isEmailEditable}/>
+              error={!!errors.email && isEmailEditable}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
