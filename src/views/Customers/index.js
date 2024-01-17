@@ -677,7 +677,7 @@ const Customers = () => {
                     </TransformWrapper>
                   </div>
                   <div className="md:w-[30vw] md:ml-[1.5vw] h-[80vh] flex flex-col w-full">
-                    <div className="flex-grow flex flex-col space-y-1.5 overflow-y-auto">
+                    <div className="flex-grow flex flex-col space-y-1.5 overflow-y-auto scrollbar">
                       <div className="w-full flex justify-between place-items-center">
                         <Typography variant="h3" className="">
                           {details.store_id} - {details.store_name}
@@ -769,7 +769,7 @@ const Customers = () => {
                         rows={4}
                       />
                     </div>
-                    <div className="w-full flex flex-row-reverse gap-3">
+                    <div className="w-full bg-white mt-5 flex flex-row-reverse gap-3">
                       <button className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 hover:cursor-not-allowed border-2 border-gray-400">
                         <Typography>Ignore</Typography>
                       </button>
