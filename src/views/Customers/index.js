@@ -734,7 +734,7 @@ const Customers = () => {
                         Team
                       </Typography>
                       <Divider />
-                      <div className="w-full flex justify-start">
+                      <div style={{ paddingBottom: 13 }} className="w-full flex justify-start">
                         <AvatarGroup
                           sx={{
                             '& .MuiAvatar-root': { width: 40, height: 40, fontSize: 24 }
@@ -756,7 +756,18 @@ const Customers = () => {
                           </Tooltip>
                         </AvatarGroup>
                       </div>
-                    <TextField id="outlined-textarea" label="Comments" placeholder="Give your Comments" multiline rows={4} />
+                      <Typography sx={{ paddingBottom: 1 }} width={'100%'} variant="h3">
+                        Comments
+                      </Typography>
+                      {/* <Divider /> */}
+                      <TextField
+                        // sx={{ paddingTop: 2 }}
+                        id="outlined-textarea"
+                        label="Add a comment"
+                        placeholder="Give your Comments"
+                        multiline
+                        rows={4}
+                      />
                     </div>
                     <div className="w-full flex flex-row-reverse gap-3">
                       <button className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 hover:cursor-not-allowed border-2 border-gray-400">
