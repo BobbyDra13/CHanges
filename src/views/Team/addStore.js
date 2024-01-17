@@ -11,20 +11,20 @@ const initialValue = {
   user_name: '',
   store_id: '',
   email: '',
+  stores: '',
   number: ''
 };
 
 const roles = ['Agent', 'Department Manager', 'Store Manager', 'Cluster Manager', 'NHK Super User'];
-// const stores = ['Lakme', 'Adidas', 'Trends', 'Loreal', 'Heads and Shoulders'];
 const depts = ['Operations', 'VM', 'Marketing','Analysis'];
 
 const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMessage }) => {
   const theme = useTheme();
   const [user, setUser] = useState(initialValue);
-  const { user_dept, user_role, user_id, user_name, store_id, number } = user;
+  const { user_dept, user_role, user_id, user_name, store_id,number } = user;
   const [isEmailEditable, setIsEmailEditable] = useState(false);
   const [email, setEmail] = useState('');
-  const [stores, updateStores] = useState([]);
+  const [storesList, updateStores] = useState([]);
   const [apiResponded, setApiResponded] = useState(true);
 
   const validateEmail = (email) => {
@@ -52,8 +52,8 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
     } else if (user_id.length < 4) {
       formErrors = { ...formErrors, user_id: 'User ID must be at least 4 characters' };
     } else {
-      const { isAvailable } = await checkId(user_id);
-      if (!isAvailable) {
+      const response = await checkId(user_id);
+      if (response != null) {
         formErrors = { ...formErrors, user_id: 'This ID is already taken. User ID must be unique.' };
       }
     }
@@ -85,7 +85,11 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
     const fetchData = async () => {
       try {
         const fetchedStoreIDs = await allStoresId();
-        updateStores(fetchedStoreIDs);
+        const storesData = fetchedStoreIDs.map(store => ({
+          store_id :store.store_id,
+          id: store.id
+        }));
+        updateStores(storesData);
       } catch (error) {
         console.error('Error fetching store IDs:', error);
       }
@@ -96,8 +100,13 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
 
   const onValueChange = async (e) => {
     const { name, value } = e.target;
-    setUser({ ...user, [name]: value });
 
+    if (name === 'store_id') {
+      const selectedStore = storesList.find(store => store.store_id === value);
+      setUser({ ...user, store_id: value, stores: selectedStore.id});
+    } else {
+      setUser({ ...user, [name]: value });
+    }
     if (name === 'user_role') {
       setIsEmailEditable(value === 'Cluster Manager' || value === 'NHK Super User');
       if (!(value === 'Cluster Manager' || value === 'NHK Super User')) {
@@ -114,8 +123,8 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
       case 'user_id':
         fieldError = !value ? 'User ID is required' : value.length < 4 ? 'User ID must be at least 4 characters': '';
         if (!fieldError) {
-          const { isAvailable } = await checkId(value);
-          if (!isAvailable) {
+          const response = await checkId(value);
+          if (response != null) {
             fieldError = 'This ID is already taken. User ID must be unique.';
           }
         }
@@ -371,14 +380,16 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
           <Grid item xs={12}>
             <TextField
               label="Store"
-              onChange={(e) => onValueChange(e)}
+              onChange={(e) => {onValueChange(e)
+                  // console.log(e.target.value);
+              }}
               name="store_id"
-              value={store_id}
+              value={user.store_id}
               id="my-input"
               variant="outlined"
               fullWidth
               select
-              required="true"
+              required
               sx={{
                 '& .MuiInputLabel-root': {
                   color: 'rgba(0, 0, 0, 0.4)',
@@ -402,10 +413,10 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
               error={!!errors.store_id}
               helperText={errors.store_id}
             >
-              {stores.map((name) => (
+              {storesList.map((store) => (
                 <MenuItem
-                  key={name}
-                  value={name}
+                  key={store.store_id}
+                  value={store.store_id}
                   sx={{
                     padding: '6px 8px',
                     lineHeight: '1.57143',
@@ -420,7 +431,7 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
                     }
                   }}
                 >
-                  <ListItemText primary={<Typography variant="body2">{name}</Typography>} />
+                  <ListItemText primary={<Typography variant="body2">{store.store_id}</Typography>} />
                 </MenuItem>
               ))}
             </TextField>
