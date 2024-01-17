@@ -3,7 +3,7 @@ function SamplePrevArrow(props) {
   return (
     <div
       className={`${className} rounded-[11px] shadow-md ml-1`}
-      style={{ ...style, display: 'block', background: '#d1d5db' }}
+      style={{ ...style, display: 'block', background: '#e5e7eb' }}
       onClick={onClick}
     />
   );
@@ -14,7 +14,7 @@ function SampleNextArrow(props) {
   return (
     <div
       className={`${className} rounded-[11px] shadow-md mr-1`}
-      style={{ ...style, display: 'block', background: '#d1d5db' }}
+      style={{ ...style, display: 'block', background: '#e5e7eb' }}
       onClick={onClick}
     />
   );
@@ -26,7 +26,7 @@ export const settings = {
   infinite: false,
   speed: 500,
   slidesToShow: 5,
-  slidesToScroll: 1,
+  slidesToScroll: 5,
   // initialSlide: 0,
   nextArrow: <SampleNextArrow />,
   prevArrow: <SamplePrevArrow />,
@@ -35,60 +35,60 @@ export const settings = {
       breakpoint: 1526,
       settings: {
         slidesToShow: 5,
-        slidesToScroll: 1
+        slidesToScroll: 5
       }
     },
     {
       breakpoint: 1350,
       settings: {
         slidesToShow: 4,
-        slidesToScroll: 1
+        slidesToScroll: 4
       }
     },
     {
       breakpoint: 1200,
       settings: {
         slidesToShow: 3,
-        slidesToScroll: 1
+        slidesToScroll: 3
       }
     },
     {
       breakpoint: 1040,
       settings: {
         slidesToShow: 2,
-        slidesToScroll: 1
+        slidesToScroll: 2
       }
     },
     {
       breakpoint: 900,
       settings: {
         slidesToShow: 5,
-        slidesToScroll: 1,
-        initialSlide: 1
+        slidesToScroll: 5,
+        // initialSlide: 1
       }
     },
     {
       breakpoint: 800,
       settings: {
         slidesToShow: 4,
-        slidesToScroll: 1,
-        initialSlide: 1
+        slidesToScroll: 4,
+        // initialSlide: 1
       }
     },
     {
       breakpoint: 700,
       settings: {
         slidesToShow: 3,
-        slidesToScroll: 1,
-        initialSlide: 1
+        slidesToScroll: 3,
+        // initialSlide: 1
       }
     },
     {
       breakpoint: 600,
       settings: {
         slidesToShow: 2,
-        slidesToScroll: 1,
-        initialSlide: 1
+        slidesToScroll: 2,
+        // initialSlide: 1
       }
     },
     {

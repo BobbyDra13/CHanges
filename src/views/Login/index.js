@@ -18,6 +18,7 @@ const Login = () => {
   const theme = useTheme();
 
   return (
+    <div style={{ height: '100%', minHeight: '100vh', overflow:'auto' }}>
     <Grid
       container
       justifyContent="center"
@@ -32,7 +33,7 @@ const Login = () => {
         backgroundPosition: 'center' // Center the background image
       }}
     >
-      <Grid item xs={11} sm={7} md={6} lg={4}>
+      {/* <Grid item xs={11} sm={7} md={6} lg={4}> */}
         <Card
           // className='shadow-xl drop-shadow-md'
           sx={{
@@ -86,7 +87,8 @@ const Login = () => {
           </CardContent>
         </Card>
       </Grid>
-    </Grid>
+    {/* </Grid> */}
+    </div>
   );
 };
 

@@ -14,7 +14,8 @@ import {
   ImageListItem,
   ImageListItemBar,
   useMediaQuery,
-  Button
+  ToggleButton,
+  ToggleButtonGroup
 } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { GetStoreLayout, GetImagesFromSignedUrl } from '../../../api/index';
@@ -77,8 +78,10 @@ const StoreLayout = () => {
   //   setIsImageDialogOpen(true);
   // };
   const handleImageClick = (item) => {
-    setSelectedImage(item);
-    setIsImageDialogOpen(true);
+    if (item?.img_url) {
+      setSelectedImage(item);
+      setIsImageDialogOpen(true);
+    }
   };
 
   const date = new Date();
@@ -142,7 +145,6 @@ const StoreLayout = () => {
     if (input.length > 0) {
       data = await GetImagesFromSignedUrl(input);
       // console.log('api data', data);
-      console.log('image data', data);
     }
     const mergedPartsDetails = item.partsDetails.map((originalPart) => {
       const matchingApiData = data?.data?.find((apiPart) => apiPart.name === originalPart.name);
@@ -273,7 +275,29 @@ const StoreLayout = () => {
       }
     }
   };
-
+  const handlePrevPart = () => {
+    let sortedPartsArray = updatedPartDetails.sort((a, b) => {
+      return a.name.localeCompare(b.name);
+    });
+    parseInt(selectedImage?.name?.split('  ')[1]) === 1
+      ? setSelectedImage(sortedPartsArray[updatedPartDetails.length - 1])
+      : setSelectedImage(sortedPartsArray[parseInt(selectedImage?.name?.split('  ')[1]) - 2]);
+  };
+  const handleNextPart = () => {
+    let sortedPartsArray = updatedPartDetails.sort((a, b) => {
+      return a.name.localeCompare(b.name);
+    });
+    parseInt(selectedImage?.name?.split('  ')[1]) === updatedPartDetails.length
+      ? setSelectedImage(sortedPartsArray[0])
+      : setSelectedImage(sortedPartsArray[parseInt(selectedImage?.name?.split('  ')[1])]);
+  };
+  const handleKeyDownPart = (e) => {
+    if (e.key === 'ArrowLeft') {
+      handlePrevPart();
+    } else if (e.key === 'ArrowRight') {
+      handleNextPart();
+    }
+  };
   const findDimensions = (event) => {
     setLoading(false);
     const { naturalWidth } = event.target;
@@ -284,8 +308,8 @@ const StoreLayout = () => {
   const handleToggleImage = () => {
     setImgLoading(true);
     setLiveImg(!liveImg);
-    console.log('toggle image');
   };
+  console.log(layoutData);
   return (
     // <div className="w-full flex border border-black">
     <div className="w-full h-full flex-col flex overflow-x-hidden">
@@ -413,118 +437,124 @@ const StoreLayout = () => {
               {currentBay?.shelves?.map((item, index) => {
                 if (item.location === 'left')
                   return (
-                    <Tooltip
-                    key={index}
-                      title={
-                        <div className="flex flex-col">
-                          <span> Fullness: {item.shelf_fullness.toFixed(2)}%</span>
-                        </div>
-                      }
+                    <div
+                      key={index}
+                      className={`${
+                        item?.shelf_fullness >= 80
+                          ? 'border-emerald-500 hover:bg-emerald-200'
+                          : item?.shelf_fullness >= 50 && item?.shelf_fullness < 80
+                          ? 'border-orange-500 hover:bg-orange-200'
+                          : item?.shelf_fullness < 50
+                          ? 'border-red-600 hover:bg-red-200'
+                          : 'border-gray-500 hover:bg-gray-200'
+                      } border-[5px] rounded-lg col-span-1 cursor-pointer row-start-2 flex justify-center items-center text-xl font-semibold  duration-500`}
+                      style={{
+                        gridRowEnd: 8
+                      }}
+                      onClick={() => {
+                        if (item?.shelf_fullness != 0) {
+                          handleOpenShelves(item);
+                        }
+                      }}
                     >
-                      <div
-                        key={index}
-                        className={`${
-                          item?.shelf_fullness >= 80
-                            ? 'border-emerald-500 hover:bg-emerald-200'
-                            : item?.shelf_fullness >= 50 && item?.shelf_fullness < 80
-                            ? 'border-orange-500 hover:bg-orange-200'
-                            : item?.shelf_fullness < 50
-                            ? 'border-red-600 hover:bg-red-200'
-                            : 'border-gray-500 hover:bg-gray-200'
-                        } border-[5px] rounded-lg col-span-1 cursor-pointer row-start-2 flex justify-center items-center text-xl font-semibold  duration-500`}
-                        style={{
-                          gridRowEnd: 8
-                        }}
-                        onClick={() => {
-                          if (item.shelf_fullness != 0) {
-                            handleOpenShelves(item);
-                          }
-                        }}
-                      >
-                        <div className="h-full flex justify-center items-center">
-                          <p className="-rotate-90 border-0 border-red-500 m-0 w-24 text-center">shelf - 1</p>
-                          {/* <p className="-rotate-90 border-0 border-red-500 m-0 w-24 text-center">{item.shelf_fullness}</p> */}
-                        </div>
+                      <div className="h-full flex justify-center items-center">
+                        <p className="-rotate-90 border-0 border-red-500 m-0 w-28 text-center">
+                          shelf - 1
+                          <br />
+                          {isNaN(item?.shelf_fullness) ? 'No Capture' : Math.floor(item?.shelf_fullness) + '%'}
+                        </p>
+                        {/* <p className="-rotate-90 border-0 border-red-500 m-0 w-24 text-center">{item.shelf_fullness}</p> */}
                       </div>
-                    </Tooltip>
+                    </div>
                   );
                 else if (item.location === 'right')
                   return (
-                    <Tooltip
-                    key={index}
-                      title={
-                        <div className="flex flex-col">
-                          <span> Fullness: {item.shelf_fullness.toFixed(2)}%</span>
-                        </div>
-                      }
-                    >
-                      <div
-                        key={index}
-                        className="border-emerald-500 border-[5px] rounded-lg col-span-1 row-start-2 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500"
-                        style={{
-                          gridRowEnd: 8,
-                          gridColumnStart: 6
-                        }}
-                        onClick={() => {
-                          handleOpenShelves(item);
-                        }}
-                      >
-                        <div className="h-full flex justify-center items-center cursor-pointer">
-                          <p className="rotate-90 border-0 border-red-500 m-0 w-24 text-center">shelf - 3</p>
-                          {/* <p className="-rotate-90 border-0 border-red-500 m-0 w-24 text-center">{item.shelf_fullness}</p> */}
-                        </div>
-                      </div>
-                    </Tooltip>
-                  );
-                else if (item.location === 'top')
-                  return (
-                    <Tooltip
-                    key={index}
-                      title={
-                        <div className="flex flex-col">
-                          <span> Fullness: {item.shelf_fullness.toFixed(2)}%</span>
-                        </div>
-                      }
-                    >
-                      <div
-                        key={index}
-                        className="border-emerald-500 cursor-pointer border-[5px] rounded-lg col-start-2 row-span-1 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500"
-                        style={{
-                          gridColumnEnd: 6,
-                          gridRowStart: 1
-                        }}
-                        onClick={() => {
-                          handleOpenShelves(item);
-                        }}
-                      >
-                        <p className="">shelf - 2</p>
-                        {/* <p className="-rotate-90 border-0 border-red-500 m-0 w-24 text-center">{item.shelf_fullness}</p> */}
-                      </div>
-                    </Tooltip>
-                  );
-                return (
-                  <Tooltip
-                  key={index}
-                    title={
-                      <div className="flex flex-col">
-                        <span> Fullness: {item.shelf_fullness.toFixed(2)}%</span>
-                      </div>
-                    }
-                  >
                     <div
                       key={index}
-                      className="border-emerald-500 cursor-pointer border-[5px] rounded-lg col-start-2 row-span-1 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500"
+                      className={`${
+                        item?.shelf_fullness >= 80
+                          ? 'border-emerald-500 hover:bg-emerald-200'
+                          : item?.shelf_fullness >= 50 && item?.shelf_fullness < 80
+                          ? 'border-orange-500 hover:bg-orange-200'
+                          : item?.shelf_fullness < 50
+                          ? 'border-red-600 hover:bg-red-200'
+                          : 'border-gray-500 hover:bg-gray-200'
+                      }
+                      border-emerald-500 border-[5px] rounded-lg col-span-1 row-start-2 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500`}
                       style={{
-                        gridColumnEnd: 6,
-                        gridRowStart: currentBay.id === 9 ? 9 : 8
+                        gridRowEnd: 8,
+                        gridColumnStart: 6
                       }}
                       onClick={() => {
                         handleOpenShelves(item);
                       }}
                     >
-                      <p className="border-0 border-red-500 ">shelf - 0</p>
+                      <div className="h-full flex justify-center items-center cursor-pointer">
+                        <p className="rotate-90 border-0 border-red-500 m-0 w-28 text-center">
+                          shelf - 3
+                          <br />
+                          {isNaN(item?.shelf_fullness) ? 'No Capture' : Math.floor(item?.shelf_fullness) + '%'}
+                        </p>
+                        {/* <p className="-rotate-90 border-0 border-red-500 m-0 w-24 text-center">{item.shelf_fullness}</p> */}
+                      </div>
                     </div>
-                  </Tooltip>
+                  );
+                else if (item.location === 'top')
+                  return (
+                    <div
+                      key={index}
+                      className={`${
+                        item?.shelf_fullness >= 80
+                          ? 'border-emerald-500 hover:bg-emerald-200'
+                          : item?.shelf_fullness >= 50 && item?.shelf_fullness < 80
+                          ? 'border-orange-500 hover:bg-orange-200'
+                          : item?.shelf_fullness < 50
+                          ? 'border-red-600 hover:bg-red-200'
+                          : 'border-gray-500 hover:bg-gray-200'
+                      }
+                      border-emerald-500 cursor-pointer border-[5px] rounded-lg col-start-2 row-span-1 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500`}
+                      style={{
+                        gridColumnEnd: 6,
+                        gridRowStart: 1
+                      }}
+                      onClick={() => {
+                        handleOpenShelves(item);
+                      }}
+                    >
+                      <p className="">
+                        shelf - 2
+                        <br />
+                        {isNaN(item?.shelf_fullness) ? 'No Capture' : Math.floor(item?.shelf_fullness) + '%'}
+                      </p>
+                    </div>
+                  );
+                return (
+                  <div
+                    key={index}
+                    className={`${
+                      item?.shelf_fullness >= 80
+                        ? 'border-emerald-500 hover:bg-emerald-200'
+                        : item?.shelf_fullness >= 50 && item?.shelf_fullness < 80
+                        ? 'border-orange-500 hover:bg-orange-200'
+                        : item?.shelf_fullness < 50
+                        ? 'border-red-600 hover:bg-red-200'
+                        : 'border-gray-500 hover:bg-gray-200'
+                    }
+                    border-emerald-500 cursor-pointer border-[5px] rounded-lg col-start-2 row-span-1 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500`}
+                    style={{
+                      gridColumnEnd: 6,
+                      gridRowStart: currentBay.id === 9 ? 9 : 8
+                    }}
+                    onClick={() => {
+                      handleOpenShelves(item);
+                    }}
+                  >
+                    <p className="border-0 border-red-500 ">
+                      shelf - 0
+                      <br />
+                      {isNaN(item?.shelf_fullness) ? 'No Capture' : Math.floor(item?.shelf_fullness) + '%'}
+                    </p>
+                  </div>
                 );
               })}
 
@@ -550,18 +580,23 @@ const StoreLayout = () => {
             tabIndex="0"
           />
           <div className="w-full h-full flex lg:justify-center text-3xl font-semibold  py-6 overflow-auto">
-            {/* <div className="overflow-auto w-full "> */}
             <ImageList
               sx={{
-                minWidth: '680px',
-                maxWidth: '70%'
+                alignItems: 'center',
               }}
               cols={currentShelf?.partsDetails?.length / 2}
               gap={10}
             >
-              {console.log(currentShelf)}
               {updatedPartDetails?.map((item, index) => (
-                <ImageListItem key={index} onClick={() => handleImageClick(item)}>
+                <ImageListItem
+                  key={index}
+                  onClick={() => handleImageClick(item)}
+                  sx={{
+                    gridRow: index % 2 === 0 ? '1' : '2',
+                    width: '200px',
+                    height:'200px'
+                  }}
+                >
                   {item.img_url ? (
                     <div className="relative w-full h-full">
                       {imgLoading && (
@@ -588,7 +623,17 @@ const StoreLayout = () => {
                       }}
                     />
                   )}
-                  <ImageListItemBar title={`Fullness: ${item.avg_full || 0}%`} subtitle={item.name + '/' + updatedPartDetails.length} />
+                  {/* `Fullness: ${item.avg_full || 0}%` */}
+                  <ImageListItemBar
+                    title={
+                      <Stack direction={'column'} spacing={-1}>
+                        <Typography>{`Fullness: ${item.avg_full || 0}%`}</Typography>
+                        {item?.timestamps && <Typography>{`Date: ${item?.timestamps?.split('T')[0]}`}</Typography>}
+                        {item?.timestamps && (<Typography>{`Time: ${new Date(item.timestamps).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`}</Typography>)}                     
+                         </Stack>
+                    }
+                    subtitle={item.name + '/' + updatedPartDetails.length}
+                  />
                 </ImageListItem>
               ))}
             </ImageList>
@@ -612,6 +657,18 @@ const StoreLayout = () => {
             >
               <DialogContent className="w-full h-full flex justify-center relative overflow-hidden">
                 <div className="self-center ">
+                  <ChevronLeftRounded
+                    onClick={handlePrevPart}
+                    className="text-gray-400 opacity-100 hover:opacity-100 text-7xl absolute z-10 cursor-pointer lg:left-[2%] lg:top-[45%] left-0 top-[35%]"
+                    onKeyDown={handleKeyDownPart}
+                    tabIndex="0"
+                  />
+                  <ChevronRightRounded
+                    onClick={handleNextPart}
+                    className="text-gray-400 opacity-100 hover:opacity-100 text-7xl absolute z-10 cursor-pointer lg:right-[2%] lg:top-[45%] right-0 top-[35%]"
+                    onKeyDown={handleKeyDownPart}
+                    tabIndex="0"
+                  />
                   <ImCross
                     onClick={handleCloseImageDialog}
                     className="z-20 text-xl cursor-pointer text-white opacity-60 hover:opacity-100 absolute"
@@ -620,16 +677,21 @@ const StoreLayout = () => {
                       top: '3%'
                     }}
                   />
-                  <Button
+                  <ToggleButtonGroup
                     color="primary"
-                    size="sm"
-                    variant="outlined"
-                    style={{ left: '10%', top: '2%' }}
-                    className=" absolute"
-                    onClick={handleToggleImage}
+                    value={liveImg}
+                    exclusive
+                    onChange={handleToggleImage}
+                    aria-label="Platform"
+                    className="absolute left-[10%] top-[2%] text-white"
                   >
-                    {liveImg ? 'Reference' : 'Live'}
-                  </Button>
+                    <ToggleButton value={true} style={{ backgroundColor: liveImg ? 'rgb(16, 185, 129' : '', color: 'white' }}>
+                      Live
+                    </ToggleButton>
+                    <ToggleButton value={false} style={{ backgroundColor: !liveImg ? 'rgb(16, 185, 129' : '', color: 'white' }}>
+                      Reference
+                    </ToggleButton>
+                  </ToggleButtonGroup>
                   <div className="relative w-full h-full">
                     {imgLoading && (
                       <div className="flex justify-center items-center absolute top-0 left-0 z-10  overflow-x-hidden bg-white w-full h-full">
@@ -644,6 +706,64 @@ const StoreLayout = () => {
                         setImgLoading(false);
                       }}
                     />
+                  </div>
+                  <div className="  border-red-500 absolute left-[10%] bottom-0 w-80 h-80 flex flex-col justify-center items-start text-white">
+                    <Typography variant="h3" className="text-white">
+                      {selectedImage?.userDetails?.user_name}
+                    </Typography>
+                    <Typography variant="h3" className="text-white">
+                      {selectedImage?.userDetails?.number}
+                    </Typography>
+                    <Typography variant="h3" className="text-white">
+                      {`Up-Keep: ${Math.floor(selectedImage?.avg_full) || 0}%`}
+                    </Typography>
+                    <Typography variant="h3" className="text-white">
+                      {selectedImage?.userDetails?.store_id} - {layoutData?.name}
+                    </Typography>
+                    <Typography variant="h3" className="text-white">
+                      {currentBay?.bay_name} / {currentShelf?.shelf_name}
+                    </Typography>
+                    <Typography variant="h3" className="text-white">
+                      {`Date: ${selectedImage?.timestamps?.split('T')[0]}`}
+                    </Typography>
+                    <Typography variant="h3" className="text-white">
+                    {`Time: ${new Date(selectedImage?.timestamps).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`}
+                    </Typography>
+                  </div>
+                  <div
+                    className="  border-red-500 absolute right-[10%] top-1/2 -translate-y-1/2 w-96 h-96 grid text-white gap-4"
+                    style={{
+                      gridTemplateColumns: `repeat(${selectedImage?.tray_detail?.length}, 1fr)`,
+                      gridTemplateRows: `repeat(${selectedImage?.tray_detail?.[0]?.length}, 1fr)`
+                    }}
+                  >
+                    {selectedImage?.tray_detail?.length > 0 &&
+                      selectedImage?.tray_detail?.map((item, index) => {
+                        return (
+                          <div key={index} className="flex flex-col h-96">
+                            {item?.map((value, i) => {
+                              // console.log(value?.rgb);
+                              return (
+                                <Box
+                                  className={` border-white border flex justify-center items-center col-span-1 row-span-1 w-full h-full`}
+                                  style={{ backgroundColor: value?.rgb ? `transparent` : 'transparent' }}
+                                  // style={{ backgroundColor: value?.rgb ? `rgb(${value?.rgb})` : 'transparent' }}
+                                  key={i}
+                                >
+                                  {value?.rgb ? (
+                                    <span className="text-lg">{value?.color_family}</span>
+                                  ) : (
+                                    <span className="text-lg">Failed to extract</span>
+                                  )}
+                                </Box>
+                              );
+                            })}
+                          </div>
+                        );
+                      })}
+                    {/* (<Box
+                  className="border border-red-500 flex justify-center items-center col-span-1 row-span-1"
+                   ></Box>) */}
                   </div>
                 </div>
               </DialogContent>

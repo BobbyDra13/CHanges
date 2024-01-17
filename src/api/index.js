@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const lambUrl = 'https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp';
+// const lambUrl = 'https://wfsajq7upd.execute-api.ap-south-1.amazonaws.com/prod/neodisha-fashion-webapp';
 
 export const GetCaptureProgress = async (data) => {
   try {
@@ -38,7 +39,7 @@ export const GetFullnessKpi = async (data) => {
         //   Authorization: await token(),
       }
     });
-    console.log("fullness res", res);
+    console.log('fullness res', res);
     return res;
   } catch (error) {
     console.log('Error Calling GetFullnessKpi API: ', error);
@@ -53,13 +54,12 @@ export const GetAnomaliesKpi = async (data) => {
         //   Authorization: await token(),
       }
     });
-    console.log("anomaliesData", res);
+    console.log('anomaliesData', res);
     return res;
   } catch (error) {
     console.log('Error Calling GetAnomaliesKpi API: ', error);
   }
 };
-
 
 export const GetAnomaliesBarChartData = async (data) => {
   try {
@@ -69,7 +69,7 @@ export const GetAnomaliesBarChartData = async (data) => {
         //   Authorization: await token(),
       }
     });
-    console.log("anomalies chart", res);
+    console.log('anomalies chart', res);
     return res;
   } catch (error) {
     console.log('Error Calling GetAnomaliesKpi API: ', error);
@@ -95,11 +95,15 @@ export const GetAnomaliesBarChartData = async (data) => {
 // API FOR THE LAYOUT OF THE STORE
 export const GetStoreLayout = async (data) => {
   try {
-    const res = await axios.post(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/store/analysis`, data, {
-      headers: {
-        Accept: "application/json",
-      },
-    });
+    const res = await axios.post(
+      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/store/analysis`,
+      data,
+      {
+        headers: {
+          Accept: 'application/json'
+        }
+      }
+    );
     // console.log("api response", res);
     return res;
   } catch (error) {
@@ -188,12 +192,16 @@ export const GetVerifiedUsers = async (phoneNumber) => {
 
 export const GetVMCompliance = async (data) => {
   try {
-    const res = await axios.post(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/vmc_fullness`, data, {
-      headers: {
-        Accept: 'application/json'
-        //   Authorization: await token(),
+    const res = await axios.post(
+      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/vmc_fullness`,
+      data,
+      {
+        headers: {
+          Accept: 'application/json'
+          //   Authorization: await token(),
+        }
       }
-    });
+    );
     return res;
   } catch (error) {
     console.log('Error Calling GetVMCompliance API: ', error);
@@ -202,12 +210,16 @@ export const GetVMCompliance = async (data) => {
 
 export const GetVMComplianceForOneWeek = async (data) => {
   try {
-    const res = await axios.post(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/timeseries_vmc`, data, {
-      headers: {
-        Accept: 'application/json'
+    const res = await axios.post(
+      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/timeseries_vmc`,
+      data,
+      {
+        headers: {
+          Accept: 'application/json'
+        }
       }
-    });
-    console.log("result", res);
+    );
+    console.log('result', res);
     return res;
   } catch (error) {
     console.log('Error calling vm compliance for a week api', error);
@@ -216,29 +228,71 @@ export const GetVMComplianceForOneWeek = async (data) => {
 
 export const GetFullnessForOneWeek = async (data) => {
   try {
-    const res = await axios.post(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/timeseries_fullness`, data, {
+    const res = await axios.post(
+      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/timeseries_fullness`,
+      data,
+      {
+        headers: {
+          Accept: 'application/json'
+        }
+      }
+    );
+    return res;
+  } catch (error) {
+    console.log('Error calling fullness for a week api', error);
+  }
+};
+
+export const GetAnomalyDetails = async (data) => {
+  try {
+    const res = await axios.get(`${lambUrl}/store/get_analysis_data?analysisID=${data}`, {
       headers: {
         Accept: 'application/json'
+        //   Authorization: await token(),
       }
     });
     return res;
-  } catch(error) {
-    console.log('Error calling fullness for a week api', error);
+  } catch (error) {
+    console.log('Error Calling GetAnomalyDetails API: ', error);
   }
 };
 
 export const GetAnomaliesForOneWeek = async (data) => {
   try {
-    const res = await axios.post(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/timeseries_anomalies`, data, {
-      headers: {
-        Accept: 'application/json'
+    const res = await axios.post(
+      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/timeseries_anomalies`,
+      data,
+      {
+        headers: {
+          Accept: 'application/json'
+        }
       }
-    });
+    );
     return res;
-  } catch(error) {
-    console.log("Error calling anomalies for a week api", error);
+  } catch (error) {
+    console.log('Error calling anomalies for a week api', error);
   }
-}
+};
+
+export const checkId = async (user_id) => {
+  try {
+    const response = await axios.get(`http://localhost:8081/data/user/checkUserId?user_id=${user_id}`);
+    return response.data;
+  } catch (error) {
+    console.log('Error');
+    throw error;
+  }
+};
+
+export const allStoresId = async () => {
+  try {
+    const response = await axios.get(`http://localhost:8081/data/user/allStoresId`);
+    return response.data.storesId;
+  } catch (error) {
+    console.log('Error occured');
+    throw error;
+  }
+};
 
 export const GetBarChartData = async (data) => {
   try {
@@ -252,4 +306,5 @@ export const GetBarChartData = async (data) => {
   } catch(error) {
     console.log("Error calling bar chart api", error);
   }
-}
+};
+

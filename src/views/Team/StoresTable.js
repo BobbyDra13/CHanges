@@ -47,7 +47,6 @@ const THead = styled(TableRow)`
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 0;
   }
 `;
 
@@ -78,7 +77,7 @@ const StoresTable = ({
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [deleteUserId, setDeleteUserId] = useState(null);
   const [deletionInProgress, setDeletionInProgress] = useState(false);
-  const [deletionSuccess, setDeletionSuccess] = useState(false);
+  const [deletionSuccess, setDeletionSuccess] = useState(null);
 
   const handleConfirmDialogOpen = (userId) => {
     setDeleteUserId(userId);
@@ -150,9 +149,10 @@ const StoresTable = ({
               }}
             >
               <TableCell padding="checkbox"></TableCell>
-              <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_role')} sortedKey="user_role" label="User Role" />
-              <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_id')} sortedKey="user_id" label="User ID" />
-              <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_name')} sortedKey="user_name" label="User Name" />
+              <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_dept')} sortedKey="user_dept" label="Department" />
+              <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_role')} sortedKey="user_role" label="Role" />
+              <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_id')} sortedKey="user_id" label="ID" />
+              <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_name')} sortedKey="user_name" label="Name" />
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('store_id')} sortedKey="store_id" label="Store" />
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('email')} sortedKey="email" label="Email" />
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('number')} sortedKey="number" label="Phone Number" />
@@ -175,8 +175,9 @@ const StoresTable = ({
                   <Checkbox checked={isSelected(row.id)} onChange={() => handleRowSelect(row.id)} />
                 </TableCell>
                 <TableCell component={'th'} scope="row">
-                  {row.user_role}
+                  {row.user_dept}
                 </TableCell>
+                <TableCell align="left">{row.user_role}</TableCell>
                 <TableCell align="left">{row.user_id}</TableCell>
                 <TableCell align="left">{row.user_name}</TableCell>
                 <TableCell align="left">{row.store_id}</TableCell>
@@ -206,17 +207,7 @@ const StoresTable = ({
                       <EditIcon />
                     </IconButton>
 
-                    <Dialog
-                      key={row.id}
-                      open={editRowId === row.id && showEditUserDialog}
-                      onClose={() => handleEditUserDialogClose()}
-                      PaperProps={{
-                        style: {
-                          maxWidth: '100%',
-                          maxHeight: '100%'
-                        }
-                      }}
-                    >
+                    <Dialog key={row.id} open={editRowId === row.id && showEditUserDialog} onClose={() => handleEditUserDialogClose()}>
                       <EditStore rowId={row.id} handleEditUserDialogClose={handleEditUserDialogClose} />
                     </Dialog>
 

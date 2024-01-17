@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, TextField, Grid, MenuItem, Typography, Paper, Box, ListItemText, Divider, CircularProgress } from '@mui/material';
-import { createUser } from 'api';
+import { allStoresId, checkId, createUser } from 'api';
 import { useTheme } from '@emotion/react';
 import { Link } from 'react-router-dom';
 
 const initialValue = {
+  user_dept: '',
   user_role: '',
   user_id: '',
   user_name: '',
@@ -14,15 +15,16 @@ const initialValue = {
 };
 
 const roles = ['Agent', 'Department Manager', 'Store Manager', 'Cluster Manager', 'NHK Super User'];
-const stores = ['Lakme', 'Adidas', 'Trends', 'Loreal', 'Heads and Shoulders'];
+// const stores = ['Lakme', 'Adidas', 'Trends', 'Loreal', 'Heads and Shoulders'];
+const depts = ['Operations', 'VM', 'Marketing','Analysis'];
 
 const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMessage }) => {
   const theme = useTheme();
   const [user, setUser] = useState(initialValue);
-  const { user_role, user_id, user_name, store_id, number } = user;
+  const { user_dept, user_role, user_id, user_name, store_id, number } = user;
   const [isEmailEditable, setIsEmailEditable] = useState(false);
   const [email, setEmail] = useState('');
-
+  const [stores, updateStores] = useState([]);
   const [apiResponded, setApiResponded] = useState(true);
 
   const validateEmail = (email) => {
@@ -35,8 +37,11 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
   };
   const [errors, setErrors] = useState({});
 
-  const validateForm = () => {
+  const validateForm = async () => {
     let formErrors = {};
+    if(!user_dept){
+      formErrors = {...formErrors, user_dept:'User Department is required'};
+    }
 
     if (!user_role) {
       formErrors = { ...formErrors, user_role: 'User Role is required' };
@@ -44,9 +49,12 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
 
     if (!user_id) {
       formErrors = { ...formErrors, user_id: 'User ID is required' };
+    } else if (user_id.length < 4) {
+      formErrors = { ...formErrors, user_id: 'User ID must be at least 4 characters' };
     } else {
-      if (user_id.length < 4) {
-        formErrors = { ...formErrors, user_id: 'User ID must be at least 4 characters' };
+      const { isAvailable } = await checkId(user_id);
+      if (!isAvailable) {
+        formErrors = { ...formErrors, user_id: 'This ID is already taken. User ID must be unique.' };
       }
     }
 
@@ -62,15 +70,31 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
       formErrors = { ...formErrors, email: 'Please enter a valid email address' };
     }
 
-    if (number && !validatePhoneNumber(number)) {
-      formErrors = { ...formErrors, number: 'Please enter a valid phone number' };
+    if (!number) {
+      formErrors = { ...formErrors, number: 'Phone Number is required' };
+    } else {
+      if (!validatePhoneNumber(number)) {
+        formErrors = { ...formErrors, number: 'Please enter a valid phone number' };
+      }
     }
 
     setErrors(formErrors);
     return Object.keys(formErrors).length === 0;
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const fetchedStoreIDs = await allStoresId();
+        updateStores(fetchedStoreIDs);
+      } catch (error) {
+        console.error('Error fetching store IDs:', error);
+      }
+    };
 
-  const onValueChange = (e) => {
+    fetchData();
+  }, []);
+
+  const onValueChange = async (e) => {
     const { name, value } = e.target;
     setUser({ ...user, [name]: value });
 
@@ -80,11 +104,51 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
         setEmail('');
       }
     }
+
+    let fieldError = '';
+    switch(name){
+      case 'user_role':
+        fieldError = !value ? 'User Role is required' : '';
+        break;
+
+      case 'user_id':
+        fieldError = !value ? 'User ID is required' : value.length < 4 ? 'User ID must be at least 4 characters': '';
+        if (!fieldError) {
+          const { isAvailable } = await checkId(value);
+          if (!isAvailable) {
+            fieldError = 'This ID is already taken. User ID must be unique.';
+          }
+        }
+        break;
+
+      case 'user_name':
+        fieldError = !value ? 'User Name is required' : '';
+        break;
+
+      case 'store_id':
+        fieldError = !value ? 'Store ID is required' : '';
+        break;
+
+      case 'email':
+          fieldError = isEmailEditable && !validateEmail(value) ? 'Please enter a valid email address' : '';
+          break;
+
+      case 'number':
+            fieldError = !value ? 'Phone Number is required' : !validatePhoneNumber(value) ? 'Please enter a valid phone number' : '';
+            break;
+      default:
+        break;
+
+    }
+    setErrors({ ...errors, [name]: fieldError });
+
+
   };
 
   const addUserDetails = async () => {
     try {
-      if (validateForm()) {
+      const isFormValid = await validateForm();
+      if(isFormValid){
         setApiResponded(false);
         await createUser(user);
         handleSnackbarOpen();
@@ -112,7 +176,64 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
         </Typography>
         <Divider sx={{ mb: 2 }} />
         <Grid container spacing={3}>
-          <Grid item xs={12}>
+        <Grid item xs={12} sm={6}>
+            <TextField
+              label="User Department"
+              onChange={(e) => onValueChange(e)}
+              name="user_dept"
+              value={user_dept}
+              id="my-input"
+              variant="outlined"
+              fullWidth
+              select
+              required="true"
+              sx={{
+                '& .MuiInputLabel-root': {
+                  color: 'rgba(0, 0, 0, 0.4)',
+                  '&.Mui-focused': {
+                    color: 'black'
+                  }
+                },
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '10px',
+                  '& fieldset': {
+                    borderColor: 'rgba(0, 0, 0, 0.2)'
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'black'
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'black'
+                  }
+                }
+              }}
+              error={!!errors.user_dept}
+              helperText={errors.user_dept}
+            >
+              {depts.map((name) => (
+                <MenuItem
+                  key={name}
+                  value={name}
+                  sx={{
+                    padding: '6px 8px',
+                    lineHeight: '1.57143',
+                    fontSize: '0.875rem',
+                    fontWeight: '400',
+                    borderRadius: '6px',
+                    display: 'flex',
+                    marginBottom: '4px',
+                    height: '40px',
+                    '&:focus, &:hover': {
+                      bgcolor: '#f4f6f8'
+                    }
+                  }}
+                >
+                  <ListItemText primary={<Typography variant="body2">{name}</Typography>} />
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+          <Grid item xs={12} sm={6}>
             <TextField
               label="User Role"
               onChange={(e) => onValueChange(e)}
@@ -122,6 +243,7 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
               variant="outlined"
               fullWidth
               select
+              required="true"
               sx={{
                 '& .MuiInputLabel-root': {
                   color: 'rgba(0, 0, 0, 0.4)',
@@ -171,12 +293,15 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
           <Grid item xs={12} sm={6}>
             <TextField
               label="User ID"
-              onChange={(e) => onValueChange(e)}
+              onChange={(e) => { onValueChange(e);
+              }
+              }
               name="user_id"
               value={user_id}
               id="my-input"
               variant="outlined"
               fullWidth
+              required="true"
               sx={{
                 '& .MuiInputLabel-root': {
                   color: 'rgba(0, 0, 0, 0.4)',
@@ -210,6 +335,7 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
               id="my-input"
               variant="outlined"
               fullWidth
+              required="true"
               sx={{
                 '& .MuiInputLabel-root': {
                   color: 'rgba(0, 0, 0, 0.4)',
@@ -252,6 +378,7 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
               variant="outlined"
               fullWidth
               select
+              required="true"
               sx={{
                 '& .MuiInputLabel-root': {
                   color: 'rgba(0, 0, 0, 0.4)',
@@ -310,6 +437,7 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
               id="my-input"
               variant="outlined"
               required={isEmailEditable}
+              helperText={isEmailEditable && !email ? 'Email is required' : ''}
               fullWidth
               sx={{
                 '& .MuiInputLabel-root': {
@@ -331,9 +459,7 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
                   }
                 }
               }}
-              error={!!errors.email}
-              helperText={errors.email}
-            />
+              error={!!errors.email && isEmailEditable}/>
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
@@ -344,6 +470,7 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
               id="my-input"
               variant="outlined"
               fullWidth
+              required="true"
               sx={{
                 '& .MuiInputLabel-root': {
                   color: 'rgba(0, 0, 0, 0.4)',
