@@ -10,7 +10,8 @@ import {
   GetVMCompliance,
   GetVMComplianceForOneWeek,
   GetFullnessForOneWeek,
-  GetAnomaliesForOneWeek
+  GetAnomaliesForOneWeek,
+  GetBarChartData
 } from 'api';
 
 // Apex chart import
@@ -28,6 +29,7 @@ import DatePickerComp from './DatePicker';
 import BrandDonutChart from './BrandDonutChart';
 import BrandChartData from './chart/brand-chart';
 import KpiCard from './KpiCard';
+import KpiPop from './KpiCard/kpiPop';
 import { gridSpacing } from 'config.js';
 import AnomaliesBarChart from './AnomaliesBarChart';
 
@@ -45,16 +47,19 @@ const histogramChartRequirements = {
   totalStores: 150,
   selectOptions: [
     {
-      label: 'Avg. shelf-fullness',
-      value: 'ASUK'
+      label: 'Up keep score',
+      value: 'ASUK',
+      disabled: false
     },
     {
-      label: 'Vis. Merch. Compliance',
-      value: 'VMC'
+      label: 'VM score',
+      value: 'VMC',
+      disabled: true
     },
     {
-      label: 'Disc. & Promos Exe.',
-      value: 'DPE'
+      label: 'PoP score',
+      value: 'DPE',
+      disabled: true
     }
   ]
 };
@@ -67,7 +72,7 @@ const Insights = () => {
   const accentColLight = theme.palette.success.light;
   const accentColMain = theme.palette.success.main;
 
-  const { totalStores } = histogramChartRequirements;
+  // const { totalStores } = histogramChartRequirements;
   const { selectOptions } = histogramChartRequirements;
   const [selected, setSelected] = useState(selectOptions[0].value);
   const [seriesData, setSeriesData] = useState(histogramData.asuk);
@@ -77,10 +82,11 @@ const Insights = () => {
   const [fullness, setFullness] = useState(false);
   const [vmc, setVmc] = useState(false);
   const [anomalies, setAnomalies] = useState(false);
-  const [anomaliesBarChart, setAnomaliesBarChart] =useState(false);
+  const [anomaliesBarChart, setAnomaliesBarChart] = useState(false);
   const [brandDonut, setBrandDonut] = useState(false);
   const [brandChartOptions, setBrandChartOptions] = useState(BrandChartData.options);
   const [brandFullness, setBrandFullness] = useState([]);
+  const [barChartData, setBarChartData] = useState(false);
   const [chartConfig, setChartConfig] = useState({
     type: 'line',
     height: 100,
@@ -114,6 +120,22 @@ const Insights = () => {
         labels: {
           show: false
         }
+      },
+      annotations: {
+        yaxis: [
+          {
+            y: 15,
+            borderColor: '#00E396',
+            label: {
+              borderColor: '#00E396',
+              style: {
+                color: '#fff',
+                background: '#00E396'
+              },
+              text: 'Y Axis Annotation'
+            }
+          }
+        ]
       }
     }
   });
@@ -126,6 +148,7 @@ const Insights = () => {
         data: [67, 14, 52, 93, 30, 81, 45]
       }
     ],
+
     options: {
       ...chartsConfig,
       colors: ['#10b981'],
@@ -150,6 +173,22 @@ const Insights = () => {
         labels: {
           show: false
         }
+      },
+      annotations: {
+        yaxis: [
+          {
+            y: 15,
+            borderColor: '#00E396',
+            label: {
+              borderColor: '#00E396',
+              style: {
+                color: '#fff',
+                background: '#00E396'
+              },
+              text: 'Y Axis Annotation'
+            }
+          }
+        ]
       }
     }
   });
@@ -164,7 +203,7 @@ const Insights = () => {
     ],
     options: {
       ...chartsConfig,
-      colors: ['#10b981'],
+      colors: ['#d32f2f'],
       stroke: {
         lineCap: 'round',
         curve: 'smooth'
@@ -186,6 +225,22 @@ const Insights = () => {
         labels: {
           show: false
         }
+      },
+      annotations: {
+        yaxis: [
+          {
+            y: 15,
+            borderColor: '#00E396',
+            label: {
+              borderColor: '#00E396',
+              style: {
+                color: '#fff',
+                background: '#00E396'
+              },
+              text: 'Y Axis Annotation'
+            }
+          }
+        ]
       }
     }
   });
@@ -223,6 +278,22 @@ const Insights = () => {
               xaxis: {
                 ...chartConfig.options.xaxis,
                 categories: dates
+              },
+              annotations: {
+                yaxis: [
+                  {
+                    y: 50.0,
+                    borderColor: '#FF0000',
+                    label: {
+                      borderColor: '#FF0000',
+                      style: {
+                        color: '#fff',
+                        background: '#FF0000'
+                      },
+                      text: '50%'
+                    }
+                  }
+                ]
               }
             }
           };
@@ -264,11 +335,28 @@ const Insights = () => {
                 data: fullness
               }
             ],
+
             options: {
-              ...chartConfig.options,
+              ...fullnessChartConfig.options,
               xaxis: {
-                ...chartConfig.options.xaxis,
+                ...fullnessChartConfig.options.xaxis,
                 categories: dates
+              },
+              annotations: {
+                yaxis: [
+                  {
+                    y: 50.0,
+                    borderColor: '#FF0000',
+                    label: {
+                      borderColor: '#FF0000',
+                      style: {
+                        color: '#fff',
+                        background: '#FF0000'
+                      },
+                      text: '50%'
+                    }
+                  }
+                ]
               }
             }
           };
@@ -293,14 +381,14 @@ const Insights = () => {
 
       try {
         const response = await GetAnomaliesForOneWeek(body);
-        if (response && response.data) { 
+        if (response && response.data) {
           const apiData = response.data;
 
           const anomalies = apiData.map((item) => item.totalAnomalies);
           const dates = apiData.map((item) => item.date);
 
           const updatedChartConfig = {
-            ...chartConfig,
+            ...anomaliesChartConfig,
             series: [
               {
                 name: 'Anomalies',
@@ -308,10 +396,26 @@ const Insights = () => {
               }
             ],
             options: {
-              ...chartConfig.options,
+              ...anomaliesChartConfig.options,
               xaxis: {
-                ...chartConfig.options.xaxis,
+                ...anomaliesChartConfig.options.xaxis,
                 categories: dates
+              },
+              annotations: {
+                yaxis: [
+                  {
+                    y: 50.0,
+                    borderColor: '#FF0000',
+                    label: {
+                      borderColor: '#FF0000',
+                      style: {
+                        color: '#fff',
+                        background: '#FF0000'
+                      },
+                      text: '50%'
+                    }
+                  }
+                ]
               }
             }
           };
@@ -328,90 +432,6 @@ const Insights = () => {
   // const [brandNames, setBrandNames] = useState([]);
 
   // console.log('DATE SELECTED', selectedDate);
-
-  let series = [
-    {
-      name: 'stores',
-      data: seriesData.map((value, i) => ({
-        x: 5 + i * 10,
-        y: value
-      }))
-    }
-  ];
-
-  const histogramOptions = {
-    options: {
-      chart: {
-        type: 'bar',
-        height: 297,
-        toolbar: {
-          show: false
-        }
-      },
-      colors: ['#fff'],
-      plotOptions: {
-        bar: {
-          columnWidth: '65%',
-          borderRadius: 4
-        }
-      },
-      dataLabels: {
-        enabled: false
-      },
-      xaxis: {
-        type: 'numeric',
-        min: 0,
-        max: 100,
-        tickAmount: 10,
-
-        categories: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-
-        labels: {
-          show: true,
-          formatter: (x) => x + '%',
-          style: {
-            colors: '#fff',
-            fontWeight: 'bold'
-          }
-        },
-        show: false,
-        // categories: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
-        axisBorder: {
-          show: false
-        },
-        axisTicks: {
-          show: false
-        }
-      },
-      yaxis: {
-        labels: {
-          show: false
-        },
-
-        title: {
-          text: 'Number of Stores',
-          style: {
-            color: '#fff',
-            fontSize: '12px'
-          }
-        },
-
-        min: 0,
-        max: Math.max(...seriesData)
-      },
-      tooltip: {
-        theme: 'dark',
-        x: {
-          formatter: (x) => {
-            return 'Range: ' + (x - 5) + '-' + (x + 5) + ' %';
-          }
-        }
-      },
-      grid: {
-        show: false
-      }
-    }
-  };
 
   const progressChart = {
     options: {
@@ -471,22 +491,6 @@ const Insights = () => {
     series: [68]
   };
 
-  useEffect(() => {
-    switch (selected) {
-      case 'ASUK':
-        setSeriesData(histogramData.asuk);
-        break;
-      case 'VMC':
-        setSeriesData(histogramData.vmc);
-        break;
-      case 'DPE':
-        setSeriesData(histogramData.dpe);
-        break;
-      default:
-      // Handle default case
-    }
-  }, [selected]);
-
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
     // Set the component to be mounted when the effect is run
@@ -518,16 +522,18 @@ const Insights = () => {
         setAnomalies(false);
         setAnomaliesBarChart(false);
         setBrandDonut(false);
+        setBarChartData(false);
 
         try {
-          const [capProgressData, brandDonutData, fullnessKpiData, vmComplianceKpiData, anomaliesKpiData, anomaliesBarChartData] =
+          const [capProgressData, brandDonutData, fullnessKpiData, vmComplianceKpiData, anomaliesKpiData, anomaliesBarChartData, barChart] =
             await Promise.all([
               GetCaptureProgress(commonBody),
               GetBrandDonutData(brandDonutBody),
               GetFullnessKpi(commonBody),
               GetVMCompliance(commonBody),
               GetAnomaliesKpi(commonBody),
-              GetAnomaliesBarChartData(commonBody)
+              GetAnomaliesBarChartData(commonBody),
+              GetBarChartData(commonBody)
             ]);
           if (capProgressData) {
             if (capProgressData.data.length > 0) {
@@ -569,6 +575,11 @@ const Insights = () => {
 
           if (anomaliesBarChartData) {
             setAnomaliesBarChart(anomaliesBarChartData.data);
+            console.log('anomaliesBarChartData', anomaliesBarChartData);
+          }
+          if (barChart) {
+            setBarChartData(barChart.data);
+            console.log('barchartdata', barChart);
           }
         } catch (error) {
           console.log(error);
@@ -578,8 +589,120 @@ const Insights = () => {
     }
     /* eslint-enable no-inner-declarations */
   }, [selectedDate]);
- console.log("anomalies", anomalies);
- console.log("anomalies bar", anomaliesBarChart);
+  console.log('bar', barChartData);
+  useEffect(() => {
+    if (barChartData && barChartData.length > 0) {
+      let chart = barChartData[0]?.data.ranges;
+      console.log('chartttt', chart);
+
+      let sortedKeys = Object.keys(chart || {}).sort((a, b) => {
+        let [aStart, aEnd] = a.split('-').map(Number);
+        let [bStart, bEnd] = b.split('-').map(Number);
+
+        return aStart - bStart || aEnd - bEnd;
+      });
+
+      // Retrieve values in the sorted order
+      const barchart = {
+        asuk: sortedKeys.map((key) => chart[key])
+      };
+
+      console.log('barchart', barchart);
+
+      setSeriesData(barchart.asuk);
+    }
+  }, [barChartData]);
+
+  let series = [
+    {
+      name: 'bays',
+      data: seriesData.map((value, i) => ({
+        x: 5 + i * 10,
+        y: value
+      }))
+    }
+  ];
+
+  const histogramOptions = {
+    options: {
+      chart: {
+        type: 'bar',
+        height: 297,
+        toolbar: {
+          show: false
+        }
+      },
+      colors: ['#fff'],
+      plotOptions: {
+        bar: {
+          columnWidth: '65%',
+          borderRadius: 4
+        }
+      },
+      dataLabels: {
+        enabled: false
+      },
+      xaxis: {
+        type: 'numeric',
+        min: 0,
+        max: 100,
+        tickAmount: 10,
+
+        categories: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+
+        labels: {
+          show: true,
+          formatter: (x) => x + '%',
+          style: {
+            colors: '#fff',
+            fontWeight: 'bold'
+          }
+        },
+        show: false,
+        axisBorder: {
+          show: false
+        },
+        axisTicks: {
+          show: false
+        }
+      },
+      yaxis: {
+        labels: {
+          show: true,
+          style: {
+            colors: '#fff',
+            fontWeight: 'bold'
+          }
+        },
+
+        title: {
+          text: 'Number of Bays',
+          style: {
+            color: '#fff',
+            fontSize: '12px'
+          }
+        },
+
+        min: 0,
+        max: Math.max(...seriesData)
+      },
+      tooltip: {
+        theme: 'dark',
+        x: {
+          formatter: (x) => {
+            return 'Range: ' + (x - 5) + '-' + (x + 5) + ' %';
+          }
+        }
+      },
+      grid: {
+        show: true
+      }
+    }
+  };
+
+  console.log('seriesData', seriesData);
+  console.log('anomalies', anomalies);
+  console.log('anomalies bar', anomaliesBarChart);
 
   return (
     <Grid container spacing={gridSpacing}>
@@ -612,7 +735,7 @@ const Insights = () => {
             <KpiCard
               isLoaded={fullness}
               chart={fullnessChartConfig}
-              title="Average Shelf-fullness"
+              title="Up-Keep Score"
               count={`${fullness && fullness.currentDay ? Math.floor(fullness.currentDay.fullness) : 0}%`}
               percentage={`${fullness && fullness.difference ? Math.abs(Math.floor(fullness.difference)) : 0}`}
               chipColor={fullness && fullness.difference < 0 ? 'error' : 'success'}
@@ -624,7 +747,7 @@ const Insights = () => {
             <KpiCard
               isLoaded={vmc}
               chart={chartConfig}
-              title="Visual Merchandising Compliance"
+              title="VM Score"
               count={`${vmc && vmc.currentDay ? Math.floor(vmc.currentDay.withoutAnomalyPercentage) : 0}%`}
               percentage={`${
                 vmc && vmc.differencePercentage ? Math.abs(Math.floor(vmc.differencePercentage.withoutAnomalyPercentageDifference)) : 0
@@ -637,10 +760,10 @@ const Insights = () => {
             />
           </Grid>
           <Grid item lg={3} sm={6} xs={12}>
-            <KpiCard
+            <KpiPop
               isLoaded={fullness}
               chart={statisticsChartsData[3].chart}
-              title="Discounts & Promos Execution"
+              title="PoP Score"
               count="NA"
               percentage="NA"
               // isLoss
@@ -655,12 +778,8 @@ const Insights = () => {
               title="Anomalies Found"
               count={`${anomalies && anomalies.currentDay ? Math.floor(anomalies.currentDay.totalAnomalies) : 0}`}
               // count="0%"
-              percentage={`${
-                anomalies && anomalies.percentageChange ? Math.abs(Math.floor(anomalies.percentageChange)) : 0
-              }`}
-              chipColor={
-                anomalies && anomalies.percentageChange && anomalies.percentageChange < 0 ? 'error' : 'success'
-              }
+              percentage={`${anomalies && anomalies.percentageChange ? Math.abs(Math.floor(anomalies.percentageChange)) : 0}`}
+              chipColor={anomalies && anomalies.percentageChange && anomalies.percentageChange < 0 ? 'success' : 'error'}
               isLoss={anomalies && anomalies.percentageChange && anomalies.percentageChange < 0}
               color={theme.palette.error.main}
             />
@@ -675,7 +794,7 @@ const Insights = () => {
                 <Grid container spacing={gridSpacing}>
                   <Grid item xs={12}>
                     <Card>
-                      {brandDonut.length > 0 ? (
+                      {barChartData.length > 0 ? (
                         <CardContent sx={{ padding: 0, paddingBottom: '0 !important' }}>
                           <Box color="#fff" bgcolor={theme.palette.primary.main} p={3}>
                             <Grid container justifyContent="space-between" alignItems="center">
@@ -683,10 +802,10 @@ const Insights = () => {
                                 <Grid container spacing={1}>
                                   <Stack direction={'row'} spacing={1}>
                                     <Typography variant="h2" color="inherit">
-                                      {totalStores}
+                                      {barChartData[0].data.totalBaysCount}
                                     </Typography>
                                     <Typography paddingBottom={0.6} className="self-end" variant="h5" color="inherit">
-                                      Stores
+                                      Bays
                                     </Typography>
                                   </Stack>
                                 </Grid>
@@ -710,7 +829,7 @@ const Insights = () => {
                                     }}
                                   >
                                     {histogramChartRequirements.selectOptions.map((option) => (
-                                      <MenuItem key={option.value} value={option.value}>
+                                      <MenuItem key={option.value} value={option.value} disabled={option.disabled}>
                                         {option.label}
                                       </MenuItem>
                                     ))}
@@ -728,7 +847,7 @@ const Insights = () => {
                             </Grid>
                           </Box>
                         </CardContent>
-                      ) : brandDonut.length === 0 ? (
+                      ) : barChartData.length === 0 ? (
                         <div className="w-full h-full flex justify-center place-items-center">
                           <img style={{ height: '392px' }} src={NoDataImg} alt="No data" />
                         </div>

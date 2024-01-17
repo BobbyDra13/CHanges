@@ -1,5 +1,5 @@
 import React from 'react';
-// import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -34,7 +34,7 @@ const Login = () => {
     >
       <Grid item xs={11} sm={7} md={6} lg={4}>
         <Card
-        // className='shadow-xl drop-shadow-md'
+          // className='shadow-xl drop-shadow-md'
           sx={{
             overflow: 'visible',
             display: 'flex',
@@ -61,12 +61,12 @@ const Login = () => {
                     </Typography>
                   </Grid>
                   <Grid item>
-                    {/* <RouterLink to="/"> */}
+                    <RouterLink to="/main/insights">
                       {/* <img alt="Auth method" src={Logo} /> */}
                       <Typography sx={{ paddingTop: 1 }} color="textPrimary" gutterBottom variant="h3">
                         Disha
                       </Typography>
-                    {/* </RouterLink> */}
+                    </RouterLink>
                   </Grid>
                 </Grid>
               </Grid>

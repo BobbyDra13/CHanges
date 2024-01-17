@@ -43,7 +43,7 @@ const Header = ({ drawerToggle }) => {
             <Grid item>
               <Box mt={0.5}>
                 <Typography
-                  onClick={() => window.open('/', '_self')}
+                  onClick={() => window.open('/main/insights', '_self')}
                   variant="h2"
                   align="left"
                   className="black cursor-pointer"
