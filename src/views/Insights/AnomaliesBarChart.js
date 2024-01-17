@@ -74,12 +74,12 @@ const columnChartOptions = {
   legend: {
     position: 'top',
     horizontalAlign: 'right',
-    show: false,
+    show: true,
     fontFamily: `'Public Sans', sans-serif`,
     offsetX: 10,
     offsetY: 10,
     labels: {
-      useSeriesColors: false,
+      useSeriesColors: true,
       colors: grey[400]
     },
     markers: {
@@ -90,7 +90,7 @@ const columnChartOptions = {
       offsexY: 2
     },
     itemMargin: {
-      horizontal: 0,
+      horizontal: 10,
       vertical: 0
     }
   },
@@ -99,7 +99,7 @@ const columnChartOptions = {
       breakpoint: 3000,
       options: {
         yaxis: {
-          show: false
+          show: true
         }
       }
     }
@@ -116,7 +116,8 @@ const AnomaliesBarChart = ({ date }) => {
   useEffect(() => {
     async function fetchBarChartData() {
       const body = {
-        start_date: date.toString(),
+        // start_date: date.toString(),
+        start_date: "2024-01-12",
         Store_IDs: ['6582be9ac5ed94d792a563b8']
       };
       setChartData(false);
@@ -153,6 +154,7 @@ const AnomaliesBarChart = ({ date }) => {
       }
     }
     fetchBarChartData();
+    console.log("chart data", chartData);
   }, [date]);
 
   // console.log('Dates', extractedDates);
