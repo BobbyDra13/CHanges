@@ -173,7 +173,7 @@ const Insights = () => {
     ],
     options: {
       ...chartsConfig,
-      colors: ['#d32f2f'],
+      colors: ['#ff413a'],
       stroke: {
         lineCap: 'round',
         curve: 'smooth'
