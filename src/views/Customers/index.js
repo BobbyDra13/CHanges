@@ -36,7 +36,8 @@ import {
   DialogContent,
   Skeleton,
   Divider,
-  ImageListItemBar
+  ImageListItemBar,
+  TextField
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
@@ -150,7 +151,11 @@ const Customers = () => {
 
   const handleImageClick = (url, id, type, time) => {
     const dateTime = new Date(time);
-    const formattedDate = dateTime.toLocaleDateString();
+    const day = dateTime.toLocaleDateString(undefined, { day: '2-digit' });
+    const month = dateTime.toLocaleDateString(undefined, { month: '2-digit' });
+    const year = dateTime.toLocaleDateString(undefined, { year: 'numeric' });
+
+    const formattedDate = `${day}/${month}/${year}`;
     const formattedTime = dateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
     console.log('time', time);
     if (!isImageDialogOpen) {
@@ -751,6 +756,7 @@ const Customers = () => {
                           </Tooltip>
                         </AvatarGroup>
                       </div>
+                    <TextField id="outlined-textarea" label="Comments" placeholder="Give your Comments" multiline rows={4} />
                     </div>
                     <div className="w-full flex flex-row-reverse gap-3">
                       <button className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 hover:cursor-not-allowed border-2 border-gray-400">
