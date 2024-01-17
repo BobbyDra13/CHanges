@@ -20,9 +20,8 @@ import { Link } from 'react-router-dom';
 import { bouncy } from 'ldrs';
 bouncy.register();
 
-
 const initialValue = {
-  user_dept:'',
+  user_dept: '',
   user_role: '',
   user_id: '',
   user_name: '',
@@ -31,13 +30,12 @@ const initialValue = {
   number: ''
 };
 const roles = ['Agent', 'Department Manager', 'Store Manager', 'Cluster Manager', 'NHK Super User'];
-const depts = ['Operations', 'VM', 'Marketing','Analysis'];
-
+const depts = ['Operations', 'VM', 'Marketing', 'Analysis'];
 
 const EditStore = ({ rowId, handleEditUserDialogClose }) => {
   const theme = useTheme();
   const [user, setUser] = useState(initialValue);
-  const { user_dept,user_role, user_id, user_name, store_id, number } = user;
+  const { user_dept, user_role, user_id, user_name, store_id, number } = user;
   const [isEmailEditable, setIsEmailEditable] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(true);
@@ -56,7 +54,6 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
     setSnackbarOpen(false);
   };
 
-
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -70,8 +67,8 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
   const validateForm = async () => {
     let formErrors = {};
 
-    if(!user_dept){
-      formErrors = {...formErrors, user_dept:'User Department is required'};
+    if (!user_dept) {
+      formErrors = { ...formErrors, user_dept: 'User Department is required' };
     }
 
     if (!user_role) {
@@ -133,8 +130,8 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
     const fetchData = async () => {
       try {
         const fetchedStoreIDs = await allStoresId();
-        const storesData = fetchedStoreIDs.map(store => ({
-          store_id :store.store_id,
+        const storesData = fetchedStoreIDs.map((store) => ({
+          store_id: store.store_id,
           id: store.id
         }));
         updateStores(storesData);
@@ -168,8 +165,8 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
   const onValueChange = async (e) => {
     const { name, value } = e.target;
     if (name === 'store_id') {
-      const selectedStore = storesList.find(store => store.store_id === value);
-      setUser({ ...user, store_id: value, stores: selectedStore});
+      const selectedStore = storesList.find((store) => store.store_id === value);
+      setUser({ ...user, store_id: value, stores: selectedStore });
     } else {
       setUser({ ...user, [name]: value });
     }
@@ -181,13 +178,13 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
       }
     }
     let fieldError = '';
-    switch(name){
+    switch (name) {
       case 'user_role':
         fieldError = !value ? 'User Role is required' : '';
         break;
 
       case 'user_id':
-        fieldError = !value ? 'User ID is required' : value.length < 4 ? 'User ID must be at least 4 characters': '';
+        fieldError = !value ? 'User ID is required' : value.length < 4 ? 'User ID must be at least 4 characters' : '';
         if (!fieldError) {
           const response = await checkId(value);
           if (response != null && response.user_id !== currentUserId) {
@@ -205,15 +202,14 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
         break;
 
       case 'email':
-          fieldError = isEmailEditable && !validateEmail(value) ? 'Please enter a valid email address' : '';
-          break;
-
-      case 'number':
-            fieldError = !value ? 'Phone Number is required' : !validatePhoneNumber(value) ? 'Please enter a valid phone number' : '';
-            break;
-      default:
+        fieldError = isEmailEditable && !validateEmail(value) ? 'Please enter a valid email address' : '';
         break;
 
+      case 'number':
+        fieldError = !value ? 'Phone Number is required' : !validatePhoneNumber(value) ? 'Please enter a valid phone number' : '';
+        break;
+      default:
+        break;
     }
     setErrors({ ...errors, [name]: fieldError });
   };
@@ -221,7 +217,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
   return (
     <Paper elevation={6} sx={{ padding: '20px', borderRadius: '12px' }}>
       {loading ? (
-        <Box >
+        <Box>
           <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
         </Box>
       ) : (
@@ -236,63 +232,63 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
             <Divider sx={{ mb: 2 }} />
 
             <Grid container spacing={3}>
-            <Grid item xs={12} sm={6}>
-            <TextField
-              label="User Department"
-              onChange={(e) => onValueChange(e)}
-              name="user_dept"
-              value={user_dept}
-              id="my-input"
-              variant="outlined"
-              fullWidth
-              select
-              required="true"
-              sx={{
-                '& .MuiInputLabel-root': {
-                  color: 'rgba(0, 0, 0, 0.4)',
-                  '&.Mui-focused': {
-                    color: 'black'
-                  }
-                },
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '10px',
-                  '& fieldset': {
-                    borderColor: 'rgba(0, 0, 0, 0.2)'
-                  },
-                  '&:hover fieldset': {
-                    borderColor: 'black'
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: 'black'
-                  }
-                }
-              }}
-              error={!!errors.user_dept}
-              helperText={errors.user_dept}
-            >
-              {depts.map((name) => (
-                <MenuItem
-                  key={name}
-                  value={name}
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="User Department"
+                  onChange={(e) => onValueChange(e)}
+                  name="user_dept"
+                  value={user_dept}
+                  id="my-input"
+                  variant="outlined"
+                  fullWidth
+                  select
+                  required="true"
                   sx={{
-                    padding: '6px 8px',
-                    lineHeight: '1.57143',
-                    fontSize: '0.875rem',
-                    fontWeight: '400',
-                    borderRadius: '6px',
-                    display: 'flex',
-                    marginBottom: '4px',
-                    height: '40px',
-                    '&:focus, &:hover': {
-                      bgcolor: '#f4f6f8'
+                    '& .MuiInputLabel-root': {
+                      color: 'rgba(0, 0, 0, 0.4)',
+                      '&.Mui-focused': {
+                        color: 'black'
+                      }
+                    },
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '10px',
+                      '& fieldset': {
+                        borderColor: 'rgba(0, 0, 0, 0.2)'
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'black'
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: 'black'
+                      }
                     }
                   }}
+                  error={!!errors.user_dept}
+                  helperText={errors.user_dept}
                 >
-                  <ListItemText primary={<Typography variant="body2">{name}</Typography>} />
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
+                  {depts.map((name) => (
+                    <MenuItem
+                      key={name}
+                      value={name}
+                      sx={{
+                        padding: '6px 8px',
+                        lineHeight: '1.57143',
+                        fontSize: '0.875rem',
+                        fontWeight: '400',
+                        borderRadius: '6px',
+                        display: 'flex',
+                        marginBottom: '4px',
+                        height: '40px',
+                        '&:focus, &:hover': {
+                          bgcolor: '#f4f6f8'
+                        }
+                      }}
+                    >
+                      <ListItemText primary={<Typography variant="body2">{name}</Typography>} />
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   label="User Role"
@@ -602,13 +598,13 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
                 >
                   Cancel
                 </Button>
-                        <Snackbar
-                    open={snackbarOpen}
-                    autoHideDuration={6000}
-                    onClose={handleSnackbarClose}
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'right'
+                <Snackbar
+                  open={snackbarOpen}
+                  autoHideDuration={6000}
+                  onClose={handleSnackbarClose}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right'
                   }}
                 >
                   <Alert
@@ -618,7 +614,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
                   >
                     {snackbarMessage}
                   </Alert>
-                </Snackbar>     
+                </Snackbar>
               </>
             )}
           </Box>
