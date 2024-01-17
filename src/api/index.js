@@ -250,7 +250,7 @@ export const GetAnomaliesForOneWeek = async (data) => {
 
 export const checkId = async (user_id) => {
   try {
-    const response = await axios.get(`http://localhost:8081/data/user/checkUserId?user_id=${user_id}`);
+    const response = await axios.get(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/check_users?user_id=${user_id}`);
     return response.data;
   } catch (error) {
     console.log('Error');
@@ -259,10 +259,10 @@ export const checkId = async (user_id) => {
 };
 
 export const allStoresId = async () => {
-  try {
-    const response = await axios.get(`http://localhost:8081/data/user/allStoresId`);
-    return response.data.storesId;
-  } catch (error) {
+  try{
+    const response = await axios.get(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/store/get_all_store`);
+    return response.data;
+  }catch(error){
     console.log('Error occured');
     throw error;
   }

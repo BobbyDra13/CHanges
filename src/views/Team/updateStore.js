@@ -31,7 +31,6 @@ const initialValue = {
   number: ''
 };
 const roles = ['Agent', 'Department Manager', 'Store Manager', 'Cluster Manager', 'NHK Super User'];
-// const stores = ['Lakme', 'Adidas', 'Trends', 'Loreal', 'Heads and Shoulders'];
 const depts = ['Operations', 'VM', 'Marketing','Analysis'];
 
 
@@ -42,11 +41,12 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
   const [isEmailEditable, setIsEmailEditable] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(true);
-  const [stores, updateStores] = useState([]);
+  const [storesList, updateStores] = useState([]);
   const [apiResponded, setApiResponded] = useState(true);
   const [email, setEmail] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [currentUserId, setCurrentUserId] = useState('');
 
   const handleSnackbarOpen = () => {
     setSnackbarOpen(true);
@@ -83,8 +83,9 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
     } else if (user_id.length < 4) {
       formErrors = { ...formErrors, user_id: 'User ID must be at least 4 characters' };
     } else {
-      const { isAvailable } = await checkId(user_id);
-      if (!isAvailable) {
+      const response = await checkId(user_id);
+      console.log(response.user_id);
+      if (response != null && response.user_id !== currentUserId) {
         formErrors = { ...formErrors, user_id: 'This ID is already taken. User ID must be unique.' };
       }
     }
@@ -119,6 +120,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
         const response = await getOneUser(rowId);
         setUser(response.data);
         setLoading(false);
+        setCurrentUserId(response.data.user_id);
       } catch (error) {
         console.error('Error Fetching user details:', error);
         setLoading(false);
@@ -131,7 +133,11 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
     const fetchData = async () => {
       try {
         const fetchedStoreIDs = await allStoresId();
-        updateStores(fetchedStoreIDs);
+        const storesData = fetchedStoreIDs.map(store => ({
+          store_id :store.store_id,
+          id: store.id
+        }));
+        updateStores(storesData);
       } catch (error) {
         console.error('Error fetching store IDs:', error);
       }
@@ -161,10 +167,12 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
 
   const onValueChange = async (e) => {
     const { name, value } = e.target;
-    setUser((prevUser) => ({
-      ...prevUser,
-      [e.target.name]: e.target.value
-    }));
+    if (name === 'store_id') {
+      setUser({ ...user, store_id: value.store_id, stores: value.id});
+    } else {
+      setUser({ ...user, [name]: value });
+    }
+
     if (name === 'user_role') {
       setIsEmailEditable(value === 'Cluster Manager' || value === 'NHK Super User');
       if (!(value === 'Cluster Manager' || value === 'NHK Super User')) {
@@ -180,8 +188,8 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
       case 'user_id':
         fieldError = !value ? 'User ID is required' : value.length < 4 ? 'User ID must be at least 4 characters': '';
         if (!fieldError) {
-          const { isAvailable } = await checkId(value);
-          if (!isAvailable) {
+          const response = await checkId(value);
+          if (response != null && response.user_id !== currentUserId) {
             fieldError = 'This ID is already taken. User ID must be unique.';
           }
         }
@@ -451,10 +459,10 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
                   error={!!errors.store_id}
                   helperText={errors.store_id}
                 >
-                  {stores.map((name) => (
+                  {storesList.map((store) => (
                     <MenuItem
-                      key={name}
-                      value={name}
+                      key={store.store_id}
+                      value={store}
                       sx={{
                         padding: '6px 8px',
                         lineHeight: '1.57143',
@@ -469,7 +477,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
                         }
                       }}
                     >
-                      <ListItemText primary={<Typography variant="body2">{name}</Typography>} />
+                      <ListItemText primary={<Typography variant="body2">{store.store_id}</Typography>} />
                     </MenuItem>
                   ))}
                 </TextField>
