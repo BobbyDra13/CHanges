@@ -80,7 +80,7 @@ export const GetAnomaliesBarChartData = async (data) => {
 export const GetStoreLayout = async (data) => {
   try {
     const res = await axios.post(
-      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/store/analysis`,
+      `${lambUrl}/store/analysis`,
       data,
       {
         headers: {
@@ -97,7 +97,7 @@ export const GetStoreLayout = async (data) => {
 // API FOR THE LAYOUT OF THE STORE
 export const GetImagesFromSignedUrl = async (data) => {
   try {
-    const res = await axios.post(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-app/signed_image`, data, {
+    const res = await axios.post(`${lambUrl}/signed_image`, data, {
       headers: {
         Accept: 'application/json'
       }
@@ -111,7 +111,7 @@ export const GetImagesFromSignedUrl = async (data) => {
 
 export const getUsers = async () => {
   try {
-    return await axios.get(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/getalluser`);
+    return await axios.get(`${lambUrl}/team/getalluser`);
   } catch (error) {
     console.log('Error while calling team API :', error);
   }
@@ -120,7 +120,7 @@ export const getUsers = async () => {
 export const getOneUser = async (id) => {
   try {
     return await axios.get(
-      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/get_one_user?userID=${id}`
+      `${lambUrl}/team/get_one_user?userID=${id}`
     );
   } catch (error) {
     console.log('Error while calling team api :', error);
@@ -130,7 +130,7 @@ export const getOneUser = async (id) => {
 export const deleteUser = async (id) => {
   try {
     return await axios.get(
-      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/delete_user?userID=${id}`
+      `${lambUrl}/team/delete_user?userID=${id}`
     );
   } catch (error) {
     console.log('Error while calling team api :', error);
@@ -140,7 +140,7 @@ export const deleteUser = async (id) => {
 export const updateUser = async (id, user) => {
   try {
     return await axios.post(
-      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/update_user?userID=${id}`,
+      `${lambUrl}/team/update_user?userID=${id}`,
       user
     );
   } catch (error) {
@@ -150,7 +150,7 @@ export const updateUser = async (id, user) => {
 
 export const createUser = async (user) => {
   try {
-    return await axios.post(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/create`, user);
+    return await axios.post(`${lambUrl}/team/create`, user);
   } catch (error) {
     console.log('Error while calling team api :', error);
   }
@@ -159,7 +159,7 @@ export const createUser = async (user) => {
 export const GetVerifiedUsers = async (phoneNumber) => {
   try {
     const res = await axios.get(
-      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-app/user/auth_user_cred?numbers=${phoneNumber}`,
+      `${lambUrl}/user/auth_user_cred?numbers=${phoneNumber}`,
       {
         headers: {
           Accept: 'application/json'
@@ -177,7 +177,7 @@ export const GetVerifiedUsers = async (phoneNumber) => {
 export const GetVMCompliance = async (data) => {
   try {
     const res = await axios.post(
-      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/vmc_fullness`,
+      `${lambUrl}/dashboard/vmc_fullness`,
       data,
       {
         headers: {
@@ -195,7 +195,7 @@ export const GetVMCompliance = async (data) => {
 export const GetVMComplianceForOneWeek = async (data) => {
   try {
     const res = await axios.post(
-      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/timeseries_vmc`,
+      `${lambUrl}/dashboard/timeseries_vmc`,
       data,
       {
         headers: {
@@ -213,7 +213,7 @@ export const GetVMComplianceForOneWeek = async (data) => {
 export const GetFullnessForOneWeek = async (data) => {
   try {
     const res = await axios.post(
-      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/timeseries_fullness`,
+      `${lambUrl}/dashboard/timeseries_fullness`,
       data,
       {
         headers: {
@@ -244,7 +244,7 @@ export const GetAnomalyDetails = async (data) => {
 export const GetAnomaliesForOneWeek = async (data) => {
   try {
     const res = await axios.post(
-      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/timeseries_anomalies`,
+      `${lambUrl}/dashboard/timeseries_anomalies`,
       data,
       {
         headers: {
