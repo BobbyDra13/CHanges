@@ -19,7 +19,7 @@ const KpiPop = ({ isLoaded, color, chipColor, title, count, percentage, isLoss, 
       <Stack spacing={0.5}>
         <Box>
           {isLoaded ? (
-            <div className='pb-5'>{chart && <Chart width={'100%'} {...chart} />}</div> //className='pb-10'
+            <div className='pb-[18px]'>{chart && <Chart width={'100%'} {...chart} />}</div> //className='pb-10'
           ) : (
             <Skeleton animation="wave" variant="rectangular" width={'100%'} height={133} />
           )}

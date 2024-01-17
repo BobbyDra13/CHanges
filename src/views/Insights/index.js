@@ -119,24 +119,9 @@ const Insights = () => {
       yaxis: {
         labels: {
           show: false
-        }
+        },
+        max: 100,
       },
-      annotations: {
-        yaxis: [
-          {
-            y: 15,
-            borderColor: '#00E396',
-            label: {
-              borderColor: '#00E396',
-              style: {
-                color: '#fff',
-                background: '#00E396'
-              },
-              text: 'Y Axis Annotation'
-            }
-          }
-        ]
-      }
     }
   });
   const [fullnessChartConfig, setFullChartConfig] = useState({
@@ -172,24 +157,9 @@ const Insights = () => {
       yaxis: {
         labels: {
           show: false
-        }
+        },
+        max: 100,
       },
-      annotations: {
-        yaxis: [
-          {
-            y: 15,
-            borderColor: '#00E396',
-            label: {
-              borderColor: '#00E396',
-              style: {
-                color: '#fff',
-                background: '#00E396'
-              },
-              text: 'Y Axis Annotation'
-            }
-          }
-        ]
-      }
     }
   });
   const [anomaliesChartConfig, setAnomaliesChartConfig] = useState({
@@ -226,22 +196,6 @@ const Insights = () => {
           show: false
         }
       },
-      annotations: {
-        yaxis: [
-          {
-            y: 15,
-            borderColor: '#00E396',
-            label: {
-              borderColor: '#00E396',
-              style: {
-                color: '#fff',
-                background: '#00E396'
-              },
-              text: 'Y Axis Annotation'
-            }
-          }
-        ]
-      }
     }
   });
 
@@ -401,22 +355,6 @@ const Insights = () => {
                 ...anomaliesChartConfig.options.xaxis,
                 categories: dates
               },
-              annotations: {
-                yaxis: [
-                  {
-                    y: 50.0,
-                    borderColor: '#FF0000',
-                    label: {
-                      borderColor: '#FF0000',
-                      style: {
-                        color: '#fff',
-                        background: '#FF0000'
-                      },
-                      text: '50%'
-                    }
-                  }
-                ]
-              }
             }
           };
 
@@ -801,7 +739,7 @@ const Insights = () => {
                               <Grid item>
                                 <Grid container spacing={1}>
                                   <Stack direction={'row'} spacing={1}>
-                                    <Typography variant="h2" color="inherit">
+                                    <Typography sx={{paddingLeft: 2}} variant="h2" color="inherit">
                                       {barChartData[0].data.totalBaysCount}
                                     </Typography>
                                     <Typography paddingBottom={0.6} className="self-end" variant="h5" color="inherit">
