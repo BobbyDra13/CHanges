@@ -516,7 +516,7 @@ const Insights = () => {
             console.log('anomaliesBarChartData', anomaliesBarChartData);
           }
           if (barChart) {
-            setBarChartData(barChart.data);
+            setBarChartData(barChart.data.data);
             console.log('barchartdata', barChart);
           }
         } catch (error) {
@@ -530,7 +530,7 @@ const Insights = () => {
   console.log('bar', barChartData);
   useEffect(() => {
     if (barChartData && barChartData.length > 0) {
-      let chart = barChartData[0]?.data.ranges;
+      let chart = barChartData[0]?.data.bayAnalysis[0]?.ranges;
       console.log('chartttt', chart);
 
       let sortedKeys = Object.keys(chart || {}).sort((a, b) => {
@@ -610,6 +610,9 @@ const Insights = () => {
           style: {
             colors: '#fff',
             fontWeight: 'bold'
+          },
+          formatter: (value) => {
+            return Number.isInteger(value) ? value.toString() : value.toFixed(1);
           }
         },
 
@@ -732,7 +735,7 @@ const Insights = () => {
                 <Grid container spacing={gridSpacing}>
                   <Grid item xs={12}>
                     <Card>
-                      {barChartData.length > 0 ? (
+                      {barChartData[0]?.data?.bayAnalysis?.length > 0 ? (
                         <CardContent sx={{ padding: 0, paddingBottom: '0 !important' }}>
                           <Box color="#fff" bgcolor={theme.palette.primary.main} p={3}>
                             <Grid container justifyContent="space-between" alignItems="center">
@@ -740,7 +743,7 @@ const Insights = () => {
                                 <Grid container spacing={1}>
                                   <Stack direction={'row'} spacing={1}>
                                     <Typography sx={{paddingLeft: 2}} variant="h2" color="inherit">
-                                      {barChartData[0].data.totalBaysCount}
+                                      {barChartData[0]?.data?.bayAnalysis[0]?.totalBaysCount}
                                     </Typography>
                                     <Typography paddingBottom={0.6} className="self-end" variant="h5" color="inherit">
                                       Bays
@@ -785,7 +788,7 @@ const Insights = () => {
                             </Grid>
                           </Box>
                         </CardContent>
-                      ) : barChartData.length === 0 ? (
+                      ) : barChartData[0]?.data?.bayAnalysis?.length === 0 ? (
                         <div className="w-full h-full flex justify-center place-items-center">
                           <img style={{ height: '392px' }} src={NoDataImg} alt="No data" />
                         </div>

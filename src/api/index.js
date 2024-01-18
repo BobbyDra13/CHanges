@@ -294,9 +294,23 @@ export const allStoresId = async () => {
   }
 };
 
+// export const GetBarChartData = async (data) => {
+//   try {
+//     const res = await axios.post(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/bay_wise_fullness`, data, {
+//       headers: {
+//         Accept: 'application/json'
+//       }
+//     });
+//     console.log("bar chart data", res);
+//     return res;
+//   } catch(error) {
+//     console.log("Error calling bar chart api", error);
+//   }
+// };
+
 export const GetBarChartData = async (data) => {
   try {
-    const res = await axios.post(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/bay_wise_fullness`, data, {
+    const res = await axios.post(`http://localhost:8080/anomalies/bayData`, data, {
       headers: {
         Accept: 'application/json'
       }
@@ -307,4 +321,3 @@ export const GetBarChartData = async (data) => {
     console.log("Error calling bar chart api", error);
   }
 };
-
