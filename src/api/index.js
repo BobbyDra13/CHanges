@@ -151,7 +151,7 @@ export const createUser = async (user) => {
 
 export const GetVerifiedUsers = async (phoneNumber) => {
   try {
-    const res = await axios.get(`${lambUrl}/user/auth_user_cred?numbers=${phoneNumber}`, {
+    const res = await axios.get(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-app/user/auth_user_cred?numbers=${phoneNumber}`, {
       headers: {
         Accept: 'application/json'
         // Authorization: await token(),
