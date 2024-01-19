@@ -91,7 +91,6 @@ export const GetAnomaliesBarChartData = async (data) => {
 //   }
 // };
 
-
 // API FOR THE LAYOUT OF THE STORE
 export const GetStoreLayout = async (data) => {
   try {
@@ -109,15 +108,11 @@ export const GetStoreLayout = async (data) => {
 // API FOR THE LAYOUT OF THE STORE
 export const GetImagesFromSignedUrl = async (data) => {
   try {
-    const res = await axios.post(
-      `https://wfsajq7upd.execute-api.ap-south-1.amazonaws.com/prod/neodisha-fashion-app/signed_image`,
-      data,
-      {
-        headers: {
-          Accept: 'application/json'
-        }
+    const res = await axios.post(`https://wfsajq7upd.execute-api.ap-south-1.amazonaws.com/prod/neodisha-fashion-app/signed_image`, data, {
+      headers: {
+        Accept: 'application/json'
       }
-    );
+    });
     // console.log("api image response", res);
     return res;
   } catch (error) {
@@ -167,13 +162,16 @@ export const createUser = async (user) => {
 
 export const GetVerifiedUsers = async (phoneNumber) => {
   try {
-    const res = await axios.get(`${lambUrl}/user/auth_user_cred?numbers=${phoneNumber}`, {
-      headers: {
-        Accept: 'application/json'
-        // Authorization: await token(),
+    const res = await axios.get(
+      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-app/user/auth_user_cred?numbers=${phoneNumber}`,
+      {
+        headers: {
+          Accept: 'application/json'
+          // Authorization: await token(),
+        }
       }
-    });
-    console.log("users",res.data);
+    );
+    // console.log(res.data);
     return res;
   } catch (error) {
     console.log('Error Calling users API: ', error);
@@ -259,10 +257,10 @@ export const checkId = async (user_id) => {
 };
 
 export const allStoresId = async () => {
-  try{
+  try {
     const response = await axios.get(`${lambUrl}/store/get_all_store`);
     return response.data;
-  }catch(error){
+  } catch (error) {
     console.log('Error occured');
     throw error;
   }
@@ -275,23 +273,9 @@ export const GetBarChartData = async (data) => {
         Accept: 'application/json'
       }
     });
-    console.log("bar chart data", res);
+    console.log('bar chart data', res);
     return res;
-  } catch(error) {
-    console.log("Error calling bar chart api", error);
+  } catch (error) {
+    console.log('Error calling bar chart api', error);
   }
 };
-
-// export const GetBarChartData = async (data) => {
-//   try {
-//     const res = await axios.post(`http://localhost:8080/anomalies/bayData`, data, {
-//       headers: {
-//         Accept: 'application/json'
-//       }
-//     });
-//     console.log("bar chart data", res);
-//     return res;
-//   } catch(error) {
-//     console.log("Error calling bar chart api", error);
-//   }
-// };
