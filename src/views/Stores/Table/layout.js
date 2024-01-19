@@ -717,7 +717,8 @@ const StoreLayout = () => {
                         style={{
                           backgroundColor: liveImg ? 'rgb(16, 185, 129)' : '',
                           color: liveImg ? 'white' : '#10b981',
-                          borderColor: '#10b981'
+                          borderColor: '#10b981',
+                          width: 100
                         }}
                       >
                         Live
@@ -727,7 +728,9 @@ const StoreLayout = () => {
                         style={{
                           backgroundColor: !liveImg ? 'rgb(16, 185, 129)' : '',
                           color: !liveImg ? 'white' : '#10b981',
-                          borderColor: '#10b981'
+                          borderColor: '#10b981',
+                          width: 100
+
                         }}
                       >
                         Reference
