@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Breadcrumb from 'component/Breadcrumb';
 import { ChevronLeftRounded, ChevronRightRounded } from '@mui/icons-material';
 import { ImCross } from 'react-icons/im';
+import toast, { Toaster } from 'react-hot-toast';
 import Tooltip from '@mui/material/Tooltip';
 import {
   Dialog,
@@ -15,7 +16,8 @@ import {
   ImageListItemBar,
   useMediaQuery,
   ToggleButton,
-  ToggleButtonGroup
+  ToggleButtonGroup,
+  Button
 } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { GetStoreLayout, GetImagesFromSignedUrl } from '../../../api/index';
@@ -309,6 +311,9 @@ const StoreLayout = () => {
     setImgLoading(true);
     setLiveImg(!liveImg);
   };
+  const handleSaveForRetraining = () => {
+    toast.error('This feature is not available yet');
+  };
   console.log(layoutData);
   return (
     // <div className="w-full flex border border-black">
@@ -373,6 +378,18 @@ const StoreLayout = () => {
                     <div className="flex flex-col">
                       <span>Brand: {item?.brand_name || ''}</span>
                       <span>Fullness: {isNaN(item?.bay_fullness) ? 'No Capture' : Math.floor(item?.bay_fullness) + '%'}</span>
+                         <span>
+                         {/* Timestamp: {item?.timestamps || ''} */}
+                         {`Date: ${item?.timestamps?.split('T')[0]}`}
+                       </span>
+                       <span>
+                       {`Time: ${new Date(item?.timestamps).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          second: '2-digit'
+                        })}`}
+                       </span>
+                     
                     </div>
                   }
                 >
@@ -582,7 +599,7 @@ const StoreLayout = () => {
           <div className="w-full h-full flex lg:justify-center text-3xl font-semibold  py-6 overflow-auto">
             <ImageList
               sx={{
-                alignItems: 'center',
+                alignItems: 'center'
               }}
               cols={currentShelf?.partsDetails?.length / 2}
               gap={10}
@@ -594,7 +611,7 @@ const StoreLayout = () => {
                   sx={{
                     gridRow: index % 2 === 0 ? '1' : '2',
                     width: '200px',
-                    height:'200px'
+                    height: '200px'
                   }}
                 >
                   {item.img_url ? (
@@ -629,8 +646,14 @@ const StoreLayout = () => {
                       <Stack direction={'column'} spacing={-1}>
                         <Typography>{`Fullness: ${item.avg_full || 0}%`}</Typography>
                         {item?.timestamps && <Typography>{`Date: ${item?.timestamps?.split('T')[0]}`}</Typography>}
-                        {item?.timestamps && (<Typography>{`Time: ${new Date(item.timestamps).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`}</Typography>)}                     
-                         </Stack>
+                        {item?.timestamps && (
+                          <Typography>{`Time: ${new Date(item.timestamps).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                          })}`}</Typography>
+                        )}
+                      </Stack>
                     }
                     subtitle={item.name + '/' + updatedPartDetails.length}
                   />
@@ -677,21 +700,47 @@ const StoreLayout = () => {
                       top: '3%'
                     }}
                   />
-                  <ToggleButtonGroup
-                    color="primary"
-                    value={liveImg}
-                    exclusive
-                    onChange={handleToggleImage}
-                    aria-label="Platform"
-                    className="absolute left-[10%] top-[2%] text-white"
-                  >
-                    <ToggleButton value={true} style={{ backgroundColor: liveImg ? 'rgb(16, 185, 129' : '', color: 'white' }}>
-                      Live
-                    </ToggleButton>
-                    <ToggleButton value={false} style={{ backgroundColor: !liveImg ? 'rgb(16, 185, 129' : '', color: 'white' }}>
-                      Reference
-                    </ToggleButton>
-                  </ToggleButtonGroup>
+                  <div className="flex absolute right-[7%] top-[2%]">
+                    {/* ToggleButtonGroup */}
+                    <ToggleButtonGroup
+                      color="primary"
+                      value={liveImg}
+                      exclusive
+                      onChange={handleToggleImage}
+                      aria-label="Platform"
+                      className="text-white bg-white"
+                    >
+                      <ToggleButton
+                        value={true}
+                        style={{
+                          backgroundColor: liveImg ? 'rgb(16, 185, 129)' : '',
+                          color: liveImg ? 'white' : '#10b981',
+                          borderColor: '#10b981'
+                        }}
+                      >
+                        Live
+                      </ToggleButton>
+                      <ToggleButton
+                        value={false}
+                        style={{
+                          backgroundColor: !liveImg ? 'rgb(16, 185, 129)' : '',
+                          color: !liveImg ? 'white' : '#10b981',
+                          borderColor: '#10b981'
+                        }}
+                      >
+                        Reference
+                      </ToggleButton>
+                    </ToggleButtonGroup>
+
+                    <div style={{ marginLeft: '10px' }} />
+
+                    {/* Button */}
+                    <Button className="bg-emerald-500 text-white hover:bg-emerald-600" onClick={handleSaveForRetraining}>
+                      Save for Retraining
+                    </Button>
+                    <Toaster />
+                  </div>
+
                   <div className="relative w-full h-full">
                     {imgLoading && (
                       <div className="flex justify-center items-center absolute top-0 left-0 z-10  overflow-x-hidden bg-white w-full h-full">
@@ -707,31 +756,57 @@ const StoreLayout = () => {
                       }}
                     />
                   </div>
-                  <div className="  border-red-500 absolute left-[10%] bottom-0 w-80 h-80 flex flex-col justify-center items-start text-white">
+                  <div  className=" text-xl cursor-pointer text-white absolute"
+                    style={{
+                      left: '4%',
+                      top: '3%'
+                    }}>
                     <Typography variant="h3" className="text-white">
-                      {selectedImage?.userDetails?.user_name}
-                    </Typography>
-                    <Typography variant="h3" className="text-white">
-                      {selectedImage?.userDetails?.number}
-                    </Typography>
-                    <Typography variant="h3" className="text-white">
-                      {`Up-Keep: ${Math.floor(selectedImage?.avg_full) || 0}%`}
-                    </Typography>
-                    <Typography variant="h3" className="text-white">
-                      {selectedImage?.userDetails?.store_id} - {layoutData?.name}
-                    </Typography>
-                    <Typography variant="h3" className="text-white">
-                      {currentBay?.bay_name} / {currentShelf?.shelf_name}
-                    </Typography>
-                    <Typography variant="h3" className="text-white">
-                      {`Date: ${selectedImage?.timestamps?.split('T')[0]}`}
-                    </Typography>
-                    <Typography variant="h3" className="text-white">
-                    {`Time: ${new Date(selectedImage?.timestamps).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`}
-                    </Typography>
-                  </div>
+                        {selectedImage?.userDetails?.store_id} - {layoutData?.name}
+                      </Typography>
+                      <Typography variant="h3" className="text-white">
+                        {currentBay?.bay_name} / {currentShelf?.shelf_name}
+                      </Typography>
+                    </div>
+                    <div className=" text-xl cursor-pointer text-white absolute"
+                     style={{
+                      left: '4%',
+                      top: '25%'
+                    }}
+                   >
+                      <Typography variant="h3" className="text-white">
+                        {`Up-Keep score: ${Math.floor(selectedImage?.avg_full) || 0}%`}
+                      </Typography>
+                      <Typography variant="h3" className="text-white">
+                        {`VM score: ${Math.floor(selectedImage?.vm_score) || 0}%`}
+                      </Typography>
+                    </div>
+                     <div  className=" text-xl cursor-pointer text-white absolute"
+                    style={{
+                      left: '4%',
+                      bottom: '3%'
+                    }}>
+                      
+                      <Typography variant="h3" className="text-white">
+                        {`Name: ${selectedImage?.userDetails?.user_name}`}
+                      </Typography>
+                      <Typography variant="h3" className="text-white">
+                        {`Number: ${selectedImage?.userDetails?.number}`}
+                      </Typography>
+                      <Typography variant="h3" className="text-white">
+                        {`Date: ${selectedImage?.timestamps?.split('T')[0]}`}
+                      </Typography>
+                      <Typography variant="h3" className="text-white">
+                        {`Time: ${new Date(selectedImage?.timestamps).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          second: '2-digit'
+                        })}`}
+                      </Typography>
+                    </div>
+
                   <div
-                    className="  border-red-500 absolute right-[10%] top-1/2 -translate-y-1/2 w-96 h-96 grid text-white gap-4"
+                    className="  border-red-500 absolute right-[7%] top-1/2 -translate-y-1/2 w-96 h-96 grid text-white gap-4"
                     style={{
                       gridTemplateColumns: `repeat(${selectedImage?.tray_detail?.length}, 1fr)`,
                       gridTemplateRows: `repeat(${selectedImage?.tray_detail?.[0]?.length}, 1fr)`

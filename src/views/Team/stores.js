@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 
-import { Button, Paper, IconButton, Dialog, useTheme, Snackbar, Alert } from '@mui/material';
+import { Button, Paper, IconButton, Dialog, useTheme, Snackbar, Alert, Box } from '@mui/material';
 import { Delete as DeleteIcon, Add as AddIcon } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { CiExport } from 'react-icons/ci';
@@ -10,6 +10,8 @@ import StoresTable from './StoresTable';
 import AddStore from './addStore';
 import FilterationButton from './FilterationButton';
 import { deleteUser, getUsers } from 'api';
+import { bouncy } from 'ldrs';
+bouncy.register();
 
 const AllStores = () => {
   const theme = useTheme();
@@ -18,6 +20,7 @@ const AllStores = () => {
   const [page, setPage] = useState(0);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [loading, setLoading] = useState(true);
 
   const handleSnackbarOpen = () => {
     setSnackbarOpen(true);
@@ -50,16 +53,19 @@ const AllStores = () => {
 
   const getAllUsers = async () => {
     try {
+      setLoading(true);
       let response = await getUsers();
       rowchange(response?.data);
     } catch (error) {
       console.error('Error Fetching Users: ', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const [searchQuery, setSearchQuery] = useState('');
   const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value)
+    setSearchQuery(event.target.value);
   };
 
   const prepareExportData = () => {
@@ -275,23 +281,28 @@ const AllStores = () => {
             </CSVLink>
           </div>
         </div>
-
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <StoresTable
-            rows={filteredAndSortedRows}
-            getAllUsers={getAllUsers}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            handleChangePage={handleChangePage}
-            handleChangeRowsPerPage={handleChangeRowsPerPage}
-            isSelected={isSelected}
-            handleRowSelect={handleRowSelect}
-            deleteUserData={deleteUserData}
-            formatDate={formatDate}
-            sortConfig={sortConfig}
-            requestSort={requestSort}
-          />
-        </div>
+        {loading ? (
+          <Box sx={{ textAlign: 'center', marginTop: '20px' }}>
+            <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
+          </Box>
+        ) : (
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <StoresTable
+              rows={filteredAndSortedRows}
+              getAllUsers={getAllUsers}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              handleChangePage={handleChangePage}
+              handleChangeRowsPerPage={handleChangeRowsPerPage}
+              isSelected={isSelected}
+              handleRowSelect={handleRowSelect}
+              deleteUserData={deleteUserData}
+              formatDate={formatDate}
+              sortConfig={sortConfig}
+              requestSort={requestSort}
+            />
+          </div>
+        )}
       </Paper>
     </>
   );
