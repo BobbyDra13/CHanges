@@ -1,5 +1,8 @@
 name: disha-website-deployment-pipeline
-on: [push]
+on:
+  push:
+    branches:
+      - dishaTest
 
 jobs:
     web-deploy:
