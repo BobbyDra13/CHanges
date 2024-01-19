@@ -314,7 +314,9 @@ const StoreLayout = () => {
   const handleSaveForRetraining = () => {
     toast.error('This feature is not available yet');
   };
-  console.log(layoutData);
+  console.log("Layout",layoutData);
+  console.log("Image Details",selectedImage);
+
   return (
     // <div className="w-full flex border border-black">
     <div className="w-full h-full flex-col flex overflow-x-hidden">
@@ -762,7 +764,7 @@ const StoreLayout = () => {
                       top: '3%'
                     }}>
                     <Typography variant="h3" className="text-white">
-                        {selectedImage?.userDetails?.store_id} - {layoutData?.name}
+                        {layoutData?.store_id} - {layoutData?.name}
                       </Typography>
                       <Typography variant="h3" className="text-white">
                         {currentBay?.bay_name} / {currentShelf?.shelf_name}
