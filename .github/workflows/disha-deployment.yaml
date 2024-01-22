@@ -1,9 +1,12 @@
 name: dishatest-website-deployment-pipelinenew
-on: [push]
+on:
+  push:
+    branches:
+      - dishaTest
 
 jobs:
     web-deploy:
-      name: 🎉 Deploy-dishatest
+      name: 🎉 Deploy-main-branch
       runs-on: ubuntu-latest
       steps:
         - name: 🚚 Get latest code
@@ -38,5 +41,5 @@ jobs:
           with:
             local-dir: '/home/runner/work/disha_fashion/disha_fashion/build/'
             server: '217.21.91.239'
-            username: u134273879.dishatest_ftp
-            password: ${{ secrets.DISHATEST_FTP_PWD }}
+            username: u134273879.disha_fashion_ftp
+            password: ${{ secrets.DISHA_FTP_PWD }}
