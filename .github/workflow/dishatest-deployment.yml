@@ -1,4 +1,4 @@
-name: dishatest-website-deployment-pipeline
+name: dishatest-website-deployment-pipelinenew
 on:
   push:
     branches:
