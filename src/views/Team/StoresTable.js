@@ -132,7 +132,7 @@ const StoresTable = ({
 
   return (
     <>
-      <TableContainer sx={{ maxHeight: 440, marginTop: 1 }}>
+      <TableContainer className="overflow-y-auto scrollbar" sx={{ maxHeight: 440, marginTop: 1 }}>
         <StyledTable>
           <TableHead>
             <THead
@@ -160,7 +160,7 @@ const StoresTable = ({
             </THead>
           </TableHead>
           <TableBody>
-            {rows.slice(page, rowsPerPage).map((row) => (
+            {rows.slice(page * rowsPerPage, (page + 1) * rowsPerPage).map((row) => (
               <TRow
                 key={row.user_id}
                 sx={{

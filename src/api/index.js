@@ -63,18 +63,37 @@ export const GetAnomaliesKpi = async (data) => {
 
 export const GetAnomaliesBarChartData = async (data) => {
   try {
-    const res = await axios.post(`${lambUrl}/dashboard/anomalies_barchart`, data, {
-      headers: {
-        Accept: 'application/json'
-        //   Authorization: await token(),
+    const res = await axios.post(
+      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/anomalies_barchart`,
+      data,
+      {
+        headers: {
+          Accept: 'application/json'
+          //   Authorization: await token(),
+        }
       }
-    });
+    );
     console.log('anomalies chart', res);
     return res;
   } catch (error) {
     console.log('Error Calling GetAnomaliesKpi API: ', error);
   }
 };
+
+// export const GetAnomaliesBarChartData = async (data) => {
+//   try {
+//     const res = await axios.post(`http://localhost:8080/anomalies/anomalies_bar_chart`, data, {
+//       headers: {
+//         Accept: 'application/json'
+//         //   Authorization: await token(),
+//       }
+//     });
+//     console.log("anomalies chart", res);
+//     return res;
+//   } catch (error) {
+//     console.log('Error Calling GetAnomaliesKpi API: ', error);
+//   }
+// };
 
 // API FOR THE LAYOUT OF THE STORE
 export const GetStoreLayout = async (data) => {
@@ -93,15 +112,11 @@ export const GetStoreLayout = async (data) => {
 // API FOR THE LAYOUT OF THE STORE
 export const GetImagesFromSignedUrl = async (data) => {
   try {
-    const res = await axios.post(
-      `https://wfsajq7upd.execute-api.ap-south-1.amazonaws.com/prod/neodisha-fashion-app/signed_image`,
-      data,
-      {
-        headers: {
-          Accept: 'application/json'
-        }
+    const res = await axios.post(`https://wfsajq7upd.execute-api.ap-south-1.amazonaws.com/prod/neodisha-fashion-app/signed_image`, data, {
+      headers: {
+        Accept: 'application/json'
       }
-    );
+    });
     // console.log("api image response", res);
     return res;
   } catch (error) {
@@ -111,7 +126,7 @@ export const GetImagesFromSignedUrl = async (data) => {
 
 export const getUsers = async () => {
   try {
-    return await axios.get(`${lambUrl}/team/getalluser`);
+    return await axios.get(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/getalluser`);
   } catch (error) {
     console.log('Error while calling team API :', error);
   }
@@ -143,7 +158,7 @@ export const updateUser = async (id, user) => {
 
 export const createUser = async (user) => {
   try {
-    return await axios.post(`${lambUrl}/team/create`, user);
+    return await axios.post(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/create`, user);
   } catch (error) {
     console.log('Error while calling team api :', error);
   }
@@ -151,12 +166,15 @@ export const createUser = async (user) => {
 
 export const GetVerifiedUsers = async (phoneNumber) => {
   try {
-    const res = await axios.get(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-app/user/auth_user_cred?numbers=${phoneNumber}`, {
-      headers: {
-        Accept: 'application/json'
-        // Authorization: await token(),
+    const res = await axios.get(
+      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-app/user/auth_user_cred?numbers=${phoneNumber}`,
+      {
+        headers: {
+          Accept: 'application/json'
+          // Authorization: await token(),
+        }
       }
-    });
+    );
     // console.log(res.data);
     return res;
   } catch (error) {
@@ -221,11 +239,15 @@ export const GetAnomalyDetails = async (data) => {
 
 export const GetAnomaliesForOneWeek = async (data) => {
   try {
-    const res = await axios.post(`${lambUrl}/dashboard/timeseries_anomalies`, data, {
-      headers: {
-        Accept: 'application/json'
+    const res = await axios.post(
+      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/timeseries_anomalies`,
+      data,
+      {
+        headers: {
+          Accept: 'application/json'
+        }
       }
-    });
+    );
     return res;
   } catch (error) {
     console.log('Error calling anomalies for a week api', error);
@@ -234,7 +256,7 @@ export const GetAnomaliesForOneWeek = async (data) => {
 
 export const checkId = async (user_id) => {
   try {
-    const response = await axios.get(`http://localhost:8081/data/user/checkUserId?user_id=${user_id}`);
+    const response = await axios.get(`${lambUrl}/team/check_users?user_id=${user_id}`);
     return response.data;
   } catch (error) {
     console.log('Error');
@@ -244,10 +266,28 @@ export const checkId = async (user_id) => {
 
 export const allStoresId = async () => {
   try {
-    const response = await axios.get(`http://localhost:8081/data/user/allStoresId`);
-    return response.data.storesId;
+    const response = await axios.get(`${lambUrl}/store/get_all_store`);
+    return response.data;
   } catch (error) {
     console.log('Error occured');
     throw error;
+  }
+};
+
+export const GetBarChartData = async (data) => {
+  try {
+    const res = await axios.post(
+      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/bay_wise_fullness`,
+      data,
+      {
+        headers: {
+          Accept: 'application/json'
+        }
+      }
+    );
+    console.log('bar chart data', res);
+    return res;
+  } catch (error) {
+    console.log('Error calling bar chart api', error);
   }
 };

@@ -13,13 +13,13 @@ import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 
 // ==============================|| REPORT CARD ||============================== //
 
-const KpiCard = ({ isLoaded, color, chipColor, title, count, percentage, isLoss, chart }) => {
+const KpiPop = ({ isLoaded, color, chipColor, title, count, percentage, isLoss, chart }) => {
   return (
     <Card sx={{ paddingTop: isLoaded ? 2.25 : 0, paddingBottom: 2.25 }}>
       <Stack spacing={0.5}>
         <Box>
           {isLoaded ? (
-            <div>{chart && <Chart width={'100%'} {...chart} />}</div> //className='pb-10'
+            <div className='pb-[18px]'>{chart && <Chart width={'100%'} {...chart} />}</div> //className='pb-10'
           ) : (
             <Skeleton animation="wave" variant="rectangular" width={'100%'} height={133} />
           )}
@@ -79,4 +79,4 @@ const KpiCard = ({ isLoaded, color, chipColor, title, count, percentage, isLoss,
 //   color: PropTypes.string
 // };
 
-export default KpiCard;
+export default KpiPop;

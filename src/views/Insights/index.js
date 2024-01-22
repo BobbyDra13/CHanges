@@ -10,7 +10,8 @@ import {
   GetVMCompliance,
   GetVMComplianceForOneWeek,
   GetFullnessForOneWeek,
-  GetAnomaliesForOneWeek
+  GetAnomaliesForOneWeek,
+  GetBarChartData
 } from 'api';
 
 // Apex chart import
@@ -28,6 +29,7 @@ import DatePickerComp from './DatePicker';
 import BrandDonutChart from './BrandDonutChart';
 import BrandChartData from './chart/brand-chart';
 import KpiCard from './KpiCard';
+import KpiPop from './KpiCard/kpiPop';
 import { gridSpacing } from 'config.js';
 import AnomaliesBarChart from './AnomaliesBarChart';
 
@@ -45,16 +47,19 @@ const histogramChartRequirements = {
   totalStores: 150,
   selectOptions: [
     {
-      label: 'Avg. shelf-fullness',
-      value: 'ASUK'
+      label: 'Up keep score',
+      value: 'ASUK',
+      disabled: false
     },
     {
-      label: 'Vis. Merch. Compliance',
-      value: 'VMC'
+      label: 'VM score',
+      value: 'VMC',
+      disabled: true
     },
     {
-      label: 'Disc. & Promos Exe.',
-      value: 'DPE'
+      label: 'PoP score',
+      value: 'DPE',
+      disabled: true
     }
   ]
 };
@@ -67,7 +72,7 @@ const Insights = () => {
   const accentColLight = theme.palette.success.light;
   const accentColMain = theme.palette.success.main;
 
-  const { totalStores } = histogramChartRequirements;
+  // const { totalStores } = histogramChartRequirements;
   const { selectOptions } = histogramChartRequirements;
   const [selected, setSelected] = useState(selectOptions[0].value);
   const [seriesData, setSeriesData] = useState(histogramData.asuk);
@@ -77,10 +82,11 @@ const Insights = () => {
   const [fullness, setFullness] = useState(false);
   const [vmc, setVmc] = useState(false);
   const [anomalies, setAnomalies] = useState(false);
-  const [anomaliesBarChart, setAnomaliesBarChart] =useState(false);
+  const [anomaliesBarChart, setAnomaliesBarChart] = useState(false);
   const [brandDonut, setBrandDonut] = useState(false);
   const [brandChartOptions, setBrandChartOptions] = useState(BrandChartData.options);
   const [brandFullness, setBrandFullness] = useState([]);
+  const [barChartData, setBarChartData] = useState(false);
   const [chartConfig, setChartConfig] = useState({
     type: 'line',
     height: 100,
@@ -113,7 +119,8 @@ const Insights = () => {
       yaxis: {
         labels: {
           show: false
-        }
+        },
+        max: 100
       }
     }
   });
@@ -126,6 +133,7 @@ const Insights = () => {
         data: [67, 14, 52, 93, 30, 81, 45]
       }
     ],
+
     options: {
       ...chartsConfig,
       colors: ['#10b981'],
@@ -149,7 +157,8 @@ const Insights = () => {
       yaxis: {
         labels: {
           show: false
-        }
+        },
+        max: 100
       }
     }
   });
@@ -164,7 +173,7 @@ const Insights = () => {
     ],
     options: {
       ...chartsConfig,
-      colors: ['#10b981'],
+      colors: ['#ff413a'],
       stroke: {
         lineCap: 'round',
         curve: 'smooth'
@@ -190,228 +199,10 @@ const Insights = () => {
     }
   });
 
-  useEffect(() => {
-    async function fetchLineChart() {
-      const body = {
-        start_date: selectedDate.toString(),
-        Store_IDs: ['6582be9ac5ed94d792a563b8'],
-        period: 7
-      };
-
-      try {
-        const response = await GetVMComplianceForOneWeek(body);
-        console.log('response', response);
-        if (response && response.data) {
-          const apiData = response.data;
-          console.log('apiData', apiData);
-
-          const anomalyPercentages = apiData.map((item) => item.withoutAnomalyPercentage);
-          const dates = apiData.map((item) => item.date);
-
-          const complianceData = anomalyPercentages.map((percentage) => `${percentage}%`);
-
-          const updatedChartConfig = {
-            ...chartConfig,
-            series: [
-              {
-                name: 'Compliance %',
-                data: complianceData
-              }
-            ],
-            options: {
-              ...chartConfig.options,
-              xaxis: {
-                ...chartConfig.options.xaxis,
-                categories: dates
-              }
-            }
-          };
-
-          setChartConfig(updatedChartConfig);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    fetchLineChart();
-  }, [selectedDate]);
-
-  useEffect(() => {
-    async function fetchFullnessLineChart() {
-      const body = {
-        start_date: selectedDate.toString(),
-        Store_IDs: ['6582be9ac5ed94d792a563b8'],
-        period: 7
-      };
-
-      try {
-        const response = await GetFullnessForOneWeek(body);
-        if (response && response.data) {
-          const fullnessData = response.data;
-          console.log('fullnessData', fullnessData);
-
-          const fullnessPercentage = fullnessData.map((item) => item.fullness);
-          const dates = fullnessData.map((item) => item.date);
-
-          const fullness = fullnessPercentage.map((percentage) => `${percentage.toFixed(2)}%`);
-
-          const updatedFullnessChartConfig = {
-            ...fullnessChartConfig,
-            series: [
-              {
-                name: 'Fullness %',
-                data: fullness
-              }
-            ],
-            options: {
-              ...chartConfig.options,
-              xaxis: {
-                ...chartConfig.options.xaxis,
-                categories: dates
-              }
-            }
-          };
-
-          setFullChartConfig(updatedFullnessChartConfig);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    fetchFullnessLineChart();
-  }, [selectedDate]);
-
-  useEffect(() => {
-    async function fetchAnomaliesChart() {
-      const body = {
-        start_date: selectedDate.toString(),
-        Store_IDs: ['6582be9ac5ed94d792a563b8'],
-        period: 7
-      };
-
-      try {
-        const response = await GetAnomaliesForOneWeek(body);
-        if (response && response.data) { 
-          const apiData = response.data;
-
-          const anomalies = apiData.map((item) => item.totalAnomalies);
-          const dates = apiData.map((item) => item.date);
-
-          const updatedChartConfig = {
-            ...chartConfig,
-            series: [
-              {
-                name: 'Anomalies',
-                data: anomalies
-              }
-            ],
-            options: {
-              ...chartConfig.options,
-              xaxis: {
-                ...chartConfig.options.xaxis,
-                categories: dates
-              }
-            }
-          };
-
-          setAnomaliesChartConfig(updatedChartConfig);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    fetchAnomaliesChart();
-  }, [selectedDate]);
+ 
   // const [brandNames, setBrandNames] = useState([]);
 
   // console.log('DATE SELECTED', selectedDate);
-
-  let series = [
-    {
-      name: 'stores',
-      data: seriesData.map((value, i) => ({
-        x: 5 + i * 10,
-        y: value
-      }))
-    }
-  ];
-
-  const histogramOptions = {
-    options: {
-      chart: {
-        type: 'bar',
-        height: 297,
-        toolbar: {
-          show: false
-        }
-      },
-      colors: ['#fff'],
-      plotOptions: {
-        bar: {
-          columnWidth: '65%',
-          borderRadius: 4
-        }
-      },
-      dataLabels: {
-        enabled: false
-      },
-      xaxis: {
-        type: 'numeric',
-        min: 0,
-        max: 100,
-        tickAmount: 10,
-
-        categories: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-
-        labels: {
-          show: true,
-          formatter: (x) => x + '%',
-          style: {
-            colors: '#fff',
-            fontWeight: 'bold'
-          }
-        },
-        show: false,
-        // categories: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
-        axisBorder: {
-          show: false
-        },
-        axisTicks: {
-          show: false
-        }
-      },
-      yaxis: {
-        labels: {
-          show: false
-        },
-
-        title: {
-          text: 'Number of Stores',
-          style: {
-            color: '#fff',
-            fontSize: '12px'
-          }
-        },
-
-        min: 0,
-        max: Math.max(...seriesData)
-      },
-      tooltip: {
-        theme: 'dark',
-        x: {
-          formatter: (x) => {
-            return 'Range: ' + (x - 5) + '-' + (x + 5) + ' %';
-          }
-        }
-      },
-      grid: {
-        show: false
-      }
-    }
-  };
 
   const progressChart = {
     options: {
@@ -471,22 +262,6 @@ const Insights = () => {
     series: [68]
   };
 
-  useEffect(() => {
-    switch (selected) {
-      case 'ASUK':
-        setSeriesData(histogramData.asuk);
-        break;
-      case 'VMC':
-        setSeriesData(histogramData.vmc);
-        break;
-      case 'DPE':
-        setSeriesData(histogramData.dpe);
-        break;
-      default:
-      // Handle default case
-    }
-  }, [selected]);
-
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
     // Set the component to be mounted when the effect is run
@@ -511,6 +286,11 @@ const Insights = () => {
           start_date: selectedDate.toString(),
           Store_IDs: ['6582be9ac5ed94d792a563b8']
         };
+        const body = {
+          start_date: selectedDate.toString(),
+          Store_IDs: ['6582be9ac5ed94d792a563b8'],
+          period: 7
+        };
         setAvgCapProgress(false);
         setCapProgress(false);
         setFullness(false);
@@ -518,17 +298,255 @@ const Insights = () => {
         setAnomalies(false);
         setAnomaliesBarChart(false);
         setBrandDonut(false);
+        setBarChartData(false);
+        setFullChartConfig({
+          type: 'line',
+          height: 100,
+          series: [
+            {
+              name: 'Fullness %',
+              data: [67, 14, 52, 93, 30, 81, 45]
+            }
+          ],
 
+          options: {
+            ...chartsConfig,
+            colors: ['#10b981'],
+            stroke: {
+              lineCap: 'round',
+              curve: 'smooth'
+            },
+            markers: {
+              size: 4
+            },
+            grid: {
+              show: false
+            },
+            xaxis: {
+              ...chartsConfig.xaxis,
+              labels: {
+                show: false
+              },
+              categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+            },
+            yaxis: {
+              labels: {
+                show: false
+              },
+              max: 100
+            }
+          }
+        });
+
+        setChartConfig({
+          type: 'line',
+          height: 100,
+          series: [
+            {
+              name: 'Compliance %',
+              data: [67, 14, 52, 93, 30, 81, 45]
+            }
+          ],
+          options: {
+            ...chartsConfig,
+            colors: ['#10b981'],
+            stroke: {
+              lineCap: 'round',
+              curve: 'smooth'
+            },
+            markers: {
+              size: 4
+            },
+            grid: {
+              show: false
+            },
+            xaxis: {
+              ...chartsConfig.xaxis,
+              labels: {
+                show: false
+              },
+              categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+            },
+            yaxis: {
+              labels: {
+                show: false
+              },
+              max: 100
+            }
+          }
+        });
+        setAnomaliesChartConfig({
+          type: 'line',
+          height: 100,
+          series: [
+            {
+              name: 'Anomalies',
+              data: [72, 41, 89, 63, 27, 54, 94]
+            }
+          ],
+          options: {
+            ...chartsConfig,
+            colors: ['#ff413a'],
+            stroke: {
+              lineCap: 'round',
+              curve: 'smooth'
+            },
+            markers: {
+              size: 4
+            },
+            grid: {
+              show: false
+            },
+            xaxis: {
+              ...chartsConfig.xaxis,
+              labels: {
+                show: false
+              },
+              categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+            },
+            yaxis: {
+              labels: {
+                show: false
+              }
+            }
+          }
+        });
         try {
-          const [capProgressData, brandDonutData, fullnessKpiData, vmComplianceKpiData, anomaliesKpiData, anomaliesBarChartData] =
-            await Promise.all([
-              GetCaptureProgress(commonBody),
-              GetBrandDonutData(brandDonutBody),
-              GetFullnessKpi(commonBody),
-              GetVMCompliance(commonBody),
-              GetAnomaliesKpi(commonBody),
-              GetAnomaliesBarChartData(commonBody)
-            ]);
+          const [
+            capProgressData,
+            brandDonutData,
+            fullnessKpiData,
+            vmComplianceKpiData,
+            anomaliesKpiData,
+            anomaliesBarChartData,
+            barChart,
+            fullnessLineChart,
+            vmcLineChart,
+            anomaliesLineChart
+          ] = await Promise.all([
+            GetCaptureProgress(commonBody),
+            GetBrandDonutData(brandDonutBody),
+            GetFullnessKpi(commonBody),
+            GetVMCompliance(commonBody),
+            GetAnomaliesKpi(commonBody),
+            GetAnomaliesBarChartData(commonBody),
+            GetBarChartData(commonBody),
+            GetFullnessForOneWeek(body),
+            GetVMComplianceForOneWeek(body),
+            GetAnomaliesForOneWeek(body)
+          ]);
+          if (fullnessLineChart) {
+            const fullnessData = fullnessLineChart.data;
+            const fullnessPercentage = fullnessData.map((item) => item.fullness);
+            const dates = fullnessData.map((item) => item.date);
+
+            const fullness = fullnessPercentage.map((percentage) => `${percentage.toFixed(2)}%`);
+
+            const updatedFullnessChartConfig = {
+              ...fullnessChartConfig,
+              series: [
+                {
+                  name: 'Fullness %',
+                  data: fullness
+                }
+              ],
+
+              options: {
+                ...fullnessChartConfig.options,
+                xaxis: {
+                  ...fullnessChartConfig.options.xaxis,
+                  categories: dates
+                },
+                annotations: {
+                  yaxis: [
+                    {
+                      y: 50.0,
+                      borderColor: '#FF0000',
+                      label: {
+                        borderColor: '#FF0000',
+                        style: {
+                          color: '#fff',
+                          background: '#FF0000'
+                        },
+                        text: '50%'
+                      }
+                    }
+                  ]
+                }
+              }
+            };
+
+            setFullChartConfig(updatedFullnessChartConfig);
+          }
+          if (vmcLineChart) {
+            const apiData = vmcLineChart.data;
+            console.log('apiData', apiData);
+
+            const anomalyPercentages = apiData.map((item) => item.withoutAnomalyPercentage);
+            const dates = apiData.map((item) => item.date);
+
+            const complianceData = anomalyPercentages.map((percentage) => `${percentage}%`);
+
+            const updatedChartConfig = {
+              ...chartConfig,
+              series: [
+                {
+                  name: 'Compliance %',
+                  data: complianceData
+                }
+              ],
+              options: {
+                ...chartConfig.options,
+                xaxis: {
+                  ...chartConfig.options.xaxis,
+                  categories: dates
+                },
+                annotations: {
+                  yaxis: [
+                    {
+                      y: 50.0,
+                      borderColor: '#FF0000',
+                      label: {
+                        borderColor: '#FF0000',
+                        style: {
+                          color: '#fff',
+                          background: '#FF0000'
+                        },
+                        text: '50%'
+                      }
+                    }
+                  ]
+                }
+              }
+            };
+
+            setChartConfig(updatedChartConfig);
+          }
+          if (anomaliesLineChart) {
+            const apiData = anomaliesLineChart.data;
+
+            const anomalies = apiData.map((item) => item.totalAnomalies);
+            const dates = apiData.map((item) => item.date);
+
+            const updatedChartConfig = {
+              ...anomaliesChartConfig,
+              series: [
+                {
+                  name: 'Anomalies',
+                  data: anomalies
+                }
+              ],
+              options: {
+                ...anomaliesChartConfig.options,
+                xaxis: {
+                  ...anomaliesChartConfig.options.xaxis,
+                  categories: dates
+                }
+              }
+            };
+
+            setAnomaliesChartConfig(updatedChartConfig);
+          }
           if (capProgressData) {
             if (capProgressData.data.length > 0) {
               const totalCapturePercentage = capProgressData.data.reduce((acc, item) => acc + item.capture_percentage, 0);
@@ -569,6 +587,11 @@ const Insights = () => {
 
           if (anomaliesBarChartData) {
             setAnomaliesBarChart(anomaliesBarChartData.data);
+            console.log('anomaliesBarChartData', anomaliesBarChartData);
+          }
+          if (barChart) {
+            setBarChartData(barChart.data);
+            console.log('barchartdata', barChart);
           }
         } catch (error) {
           console.log(error);
@@ -578,8 +601,129 @@ const Insights = () => {
     }
     /* eslint-enable no-inner-declarations */
   }, [selectedDate]);
- console.log("anomalies", anomalies);
- console.log("anomalies bar", anomaliesBarChart);
+  console.log('bar', barChartData);
+  useEffect(() => {
+    if (barChartData && barChartData.length > 0) {
+      let chart = barChartData[0]?.data.bayAnalysis;
+      console.log('chartttt', chart);
+      let allRanges = Array.from({ length: 10 }, (_, i) => `${i * 10}-${(i + 1) * 10}%`);
+      console.log('allRanges', allRanges);
+      let chartDataMap = Object.fromEntries(allRanges.map((range) => [range, chart[range] || 0]));
+      console.log('chartDataMap', chartDataMap);
+
+      let sortedKeys = Object.keys(chartDataMap).sort((a, b) => {
+        let [aStart, aEnd] = a.split('-').map(Number);
+        let [bStart, bEnd] = b.split('-').map(Number);
+
+        return aStart - bStart || aEnd - bEnd;
+      });
+
+      // Retrieve values in the sorted order
+      const barchart = {
+        asuk: sortedKeys.map((key) => chartDataMap[key])
+      };
+
+      console.log('barchart', barchart);
+
+      setSeriesData(barchart.asuk);
+    }
+  }, [barChartData]);
+
+  let series = [
+    {
+      name: 'bays',
+      data: seriesData.map((value, i) => ({
+        x: 5 + i * 10,
+        y: value
+      }))
+    }
+  ];
+  console.log('series', series);
+
+  const histogramOptions = {
+    options: {
+      chart: {
+        type: 'bar',
+        height: 297,
+        toolbar: {
+          show: false
+        }
+      },
+      colors: ['#fff'],
+      plotOptions: {
+        bar: {
+          columnWidth: '65%',
+          borderRadius: 4
+        }
+      },
+      dataLabels: {
+        enabled: false
+      },
+      xaxis: {
+        type: 'numeric',
+        min: 0,
+        max: 100,
+        tickAmount: 10,
+
+        categories: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+
+        labels: {
+          show: true,
+          formatter: (x) => x + '%',
+          style: {
+            colors: '#fff',
+            fontWeight: 'bold'
+          }
+        },
+        show: false,
+        axisBorder: {
+          show: false
+        },
+        axisTicks: {
+          show: false
+        }
+      },
+      yaxis: {
+        labels: {
+          show: true,
+          style: {
+            colors: '#fff',
+            fontWeight: 'bold'
+          },
+          formatter: (value) => {
+            return Math.round(value);
+          }
+        },
+
+        title: {
+          text: 'Number of Bays',
+          style: {
+            color: '#fff',
+            fontSize: '12px'
+          }
+        },
+
+        min: 0,
+        max: Math.max(...seriesData),
+        forceNiceScale: true
+      },
+      tooltip: {
+        theme: 'dark',
+        x: {
+          formatter: (x) => {
+            return 'Range: ' + (x - 5) + '-' + (x + 5) + ' %';
+          }
+        }
+      },
+      grid: {
+        show: true
+      }
+    }
+  };
+
+  console.log('seriesData', seriesData);
+  console.log('anomalies', anomalies);
+  console.log('anomalies bar', anomaliesBarChart);
 
   return (
     <Grid container spacing={gridSpacing}>
@@ -637,7 +781,7 @@ const Insights = () => {
             />
           </Grid>
           <Grid item lg={3} sm={6} xs={12}>
-            <KpiCard
+            <KpiPop
               isLoaded={fullness}
               chart={statisticsChartsData[3].chart}
               title="PoP Score"
@@ -655,12 +799,8 @@ const Insights = () => {
               title="Anomalies Found"
               count={`${anomalies && anomalies.currentDay ? Math.floor(anomalies.currentDay.totalAnomalies) : 0}`}
               // count="0%"
-              percentage={`${
-                anomalies && anomalies.percentageChange ? Math.abs(Math.floor(anomalies.percentageChange)) : 0
-              }`}
-              chipColor={
-                anomalies && anomalies.percentageChange && anomalies.percentageChange < 0 ? 'error' : 'success'
-              }
+              percentage={`${anomalies && anomalies.percentageChange ? Math.abs(Math.floor(anomalies.percentageChange)) : 0}`}
+              chipColor={anomalies && anomalies.percentageChange && anomalies.percentageChange < 0 ? 'success' : 'error'}
               isLoss={anomalies && anomalies.percentageChange && anomalies.percentageChange < 0}
               color={theme.palette.error.main}
             />
@@ -675,18 +815,18 @@ const Insights = () => {
                 <Grid container spacing={gridSpacing}>
                   <Grid item xs={12}>
                     <Card>
-                      {brandDonut.length > 0 ? (
+                      {barChartData?.length > 0 && barChartData[0]?.data?.bayAnalysis['0-10%'] !== 9 ? (
                         <CardContent sx={{ padding: 0, paddingBottom: '0 !important' }}>
                           <Box color="#fff" bgcolor={theme.palette.primary.main} p={3}>
                             <Grid container justifyContent="space-between" alignItems="center">
                               <Grid item>
                                 <Grid container spacing={1}>
                                   <Stack direction={'row'} spacing={1}>
-                                    <Typography variant="h2" color="inherit">
-                                      {totalStores}
+                                    <Typography sx={{ paddingLeft: 2 }} variant="h2" color="inherit">
+                                      {barChartData[0]?.data?.totalBaysCount}
                                     </Typography>
                                     <Typography paddingBottom={0.6} className="self-end" variant="h5" color="inherit">
-                                      Stores
+                                      Bays
                                     </Typography>
                                   </Stack>
                                 </Grid>
@@ -710,7 +850,7 @@ const Insights = () => {
                                     }}
                                   >
                                     {histogramChartRequirements.selectOptions.map((option) => (
-                                      <MenuItem key={option.value} value={option.value}>
+                                      <MenuItem key={option.value} value={option.value} disabled={option.disabled}>
                                         {option.label}
                                       </MenuItem>
                                     ))}
@@ -728,7 +868,7 @@ const Insights = () => {
                             </Grid>
                           </Box>
                         </CardContent>
-                      ) : brandDonut.length === 0 ? (
+                      ) : barChartData[0]?.data?.bayAnalysis['0-10%'] === 9 ? (
                         <div className="w-full h-full flex justify-center place-items-center">
                           <img style={{ height: '392px' }} src={NoDataImg} alt="No data" />
                         </div>

@@ -241,7 +241,7 @@ const Customers = () => {
   return (
     <>
       <Breadcrumb title="Stores">
-        <Typography component={Link} to="/" variant="subtitle2" color="inherit" className="link-breadcrumb">
+        <Typography component={Link} to="/main/insights" variant="subtitle2" color="inherit" className="link-breadcrumb">
           Insights
         </Typography>
         <Typography variant="subtitle2" color="primary" className="link-breadcrumb">
