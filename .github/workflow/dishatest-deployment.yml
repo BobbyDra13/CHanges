@@ -1,12 +1,9 @@
 name: dishatest-website-deployment-pipelinenew
-on:
-  push:
-    branches:
-      - dishaTest
+on: [push]
 
 jobs:
     web-deploy:
-      name: 🎉 Deploy
+      name: 🎉 Deploy-dishatest
       runs-on: ubuntu-latest
       steps:
         - name: 🚚 Get latest code
