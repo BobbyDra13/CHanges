@@ -1,12 +1,9 @@
-name: disha-website-deployment-pipeline
-on:
-  push:
-    branches:
-      - main
+name: disha-website-deployment-pipeline-new
+on: [push]
 
 jobs:
     web-deploy:
-      name: 🎉 Deploy
+      name: 🎉 Deploy-main-branch
       runs-on: ubuntu-latest
       steps:
         - name: 🚚 Get latest code
