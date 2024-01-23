@@ -137,6 +137,16 @@ const FirebaseLogin = () => {
     setOtpEntered(value.length === 6);
   };
 
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      if (buttonLabel === 'Send OTP') {
+        onSignup();
+      } else if (buttonLabel === 'Submit') {
+        onOTPVerify();
+      }
+    }
+  };
   return (
     <>
       <Formik
@@ -156,7 +166,7 @@ const FirebaseLogin = () => {
         })}
       >
         {({ errors }) => (
-          <form noValidate>
+          <form noValidate onKeyDown={handleKeyPress}>
             <div id="rubikFont" className="flex flex-row space-x-2">
               <div id="recaptcha-container"></div>
 
