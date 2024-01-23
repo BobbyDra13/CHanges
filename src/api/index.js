@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// const lambUrl = 'https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp';
-const lambUrl = 'https://wfsajq7upd.execute-api.ap-south-1.amazonaws.com/prod/neodisha-fashion-webapp';
+const lambUrl = 'https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp';
+// const lambUrl = 'https://wfsajq7upd.execute-api.ap-south-1.amazonaws.com/prod/neodisha-fashion-webapp';
 
 export const GetCaptureProgress = async (data) => {
   try {
@@ -63,16 +63,12 @@ export const GetAnomaliesKpi = async (data) => {
 
 export const GetAnomaliesBarChartData = async (data) => {
   try {
-    const res = await axios.post(
-      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/anomalies_barchart`,
-      data,
-      {
-        headers: {
-          Accept: 'application/json'
-          //   Authorization: await token(),
-        }
+    const res = await axios.post(`${lambUrl}/dashboard/anomalies_barchart`, data, {
+      headers: {
+        Accept: 'application/json'
+        //   Authorization: await token(),
       }
-    );
+    });
     console.log('anomalies chart', res);
     return res;
   } catch (error) {
@@ -126,7 +122,7 @@ export const GetImagesFromSignedUrl = async (data) => {
 
 export const getUsers = async () => {
   try {
-    return await axios.get(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/getalluser`);
+    return await axios.get(`${lambUrl}/team/getalluser`);
   } catch (error) {
     console.log('Error while calling team API :', error);
   }
@@ -158,7 +154,7 @@ export const updateUser = async (id, user) => {
 
 export const createUser = async (user) => {
   try {
-    return await axios.post(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/create`, user);
+    return await axios.post(`${lambUrl}/team/create`, user);
   } catch (error) {
     console.log('Error while calling team api :', error);
   }
@@ -239,15 +235,11 @@ export const GetAnomalyDetails = async (data) => {
 
 export const GetAnomaliesForOneWeek = async (data) => {
   try {
-    const res = await axios.post(
-      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/timeseries_anomalies`,
-      data,
-      {
-        headers: {
-          Accept: 'application/json'
-        }
+    const res = await axios.post(`${lambUrl}/dashboard/timeseries_anomalies`, data, {
+      headers: {
+        Accept: 'application/json'
       }
-    );
+    });
     return res;
   } catch (error) {
     console.log('Error calling anomalies for a week api', error);
@@ -276,15 +268,11 @@ export const allStoresId = async () => {
 
 export const GetBarChartData = async (data) => {
   try {
-    const res = await axios.post(
-      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/bay_wise_fullness`,
-      data,
-      {
-        headers: {
-          Accept: 'application/json'
-        }
+    const res = await axios.post(`${lambUrl}/dashboard/bay_wise_fullness`, data, {
+      headers: {
+        Accept: 'application/json'
       }
-    );
+    });
     console.log('bar chart data', res);
     return res;
   } catch (error) {
