@@ -116,6 +116,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
       try {
         const response = await getOneUser(rowId);
         setUser(response.data);
+        setEmail(response.data.email);
         setLoading(false);
         setCurrentUserId(response.data.user_id);
       } catch (error) {

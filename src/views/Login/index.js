@@ -88,7 +88,7 @@ const Login = () => {
         </Card>
       </Grid>
     {/* </Grid> */}
-    <Typography sx={{position: "absolute", left: 3, bottom: 2}} color="black" variant='subtitle'>Version: 0.02</Typography>
+    <Typography sx={{position: "absolute", left: 3, bottom: 2}} color="black" variant='subtitle'>Version: 0.03</Typography>
     </div>
   );
 };
