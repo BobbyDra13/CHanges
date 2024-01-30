@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import OtpInput from 'react-otp-input';
 import { COUNTRYCODE } from './countryCode';
 import { Box, Button, FormHelperText, Snackbar } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 // import { useTheme } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import { auth } from 'firebase.config';
-import { RecaptchaVerifier, onAuthStateChanged, signInWithPhoneNumber } from 'firebase/auth';
+import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import toast, { Toaster } from 'react-hot-toast';
 
 import { GetVerifiedUsers } from 'api';
@@ -15,16 +15,14 @@ import { GetVerifiedUsers } from 'api';
 
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-// third party
-import {useDispatch } from 'react-redux';
-//action type login for auth
-import {LOGIN} from '../../store/actions'
+
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
 const FirebaseLogin = () => {
   // const theme = useTheme();
+
   const navigate = useNavigate();
   const [otp, setOtp] = useState('');
   const [phone, setPhone] = useState('');
@@ -33,12 +31,9 @@ const FirebaseLogin = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [otpEntered, setOtpEntered] = useState(false);
   const [verifyData, setVerifyData] = useState(false);
-  const [fullPageLoading, setFullPageLoading] = useState(true);
   const [accessToken, setAccessToken] = useState('');
   const [showOTPInput, setShowOTPInput] = useState(false);
   const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch();
-  // const location = useLocation();
 
   const onCaptchVerify = () => {
     window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
@@ -54,12 +49,7 @@ const FirebaseLogin = () => {
   }
 
   const getPhoneNumber = countryCode + phone;
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      navigate('/main/insights');
-    } 
-    if(fullPageLoading) setFullPageLoading(false);
-  });
+
   useEffect(() => {
     const checkUsers = async () => {
       try {
@@ -121,8 +111,6 @@ const FirebaseLogin = () => {
       .confirm(otp)
       .then((userCredential) => {
         const user = userCredential.user;
-        dispatch({ type: LOGIN });
-        navigate('/main/insights');
         setAccessToken(user.accessToken);
       })
       .catch((error) => {
@@ -135,9 +123,9 @@ const FirebaseLogin = () => {
   useEffect(() => {
     localStorage.setItem('Token', JSON.stringify(accessToken));
   }, [accessToken]);
-  // if (accessToken) {
-  //   navigate('/main/insights');
-  // }
+  if (accessToken) {
+    navigate('/main/insights');
+  }
 
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
@@ -161,12 +149,6 @@ const FirebaseLogin = () => {
   };
   return (
     <>
-    {fullPageLoading && (
-      <div className="flex justify-center items-center fixed top-0 left-0 z-10 text-5xl overflow-x-hidden bg-white w-screen h-screen">
-        <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
-      </div>
-    )}
-    
       <Formik
         initialValues={{
           phone: '',
