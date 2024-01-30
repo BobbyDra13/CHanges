@@ -92,8 +92,7 @@ const StoreLayout = () => {
   const getLayoutData = async () => {
     const input = {
       Store_IDs: ['6582be9ac5ed94d792a563b8'],
-      start_date: "2024-01-12"
-      // start_date: today
+      start_date: today
     };
     const response = await GetStoreLayout(input);
     console.log(response.data[0]);
