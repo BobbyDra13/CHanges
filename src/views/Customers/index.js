@@ -6,7 +6,6 @@ import 'slick-carousel/slick/slick-theme.css';
 import { useNavigate } from 'react-router-dom';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import './zoom-card-item.css';
-// import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import { bouncy } from 'ldrs';
 bouncy.register();
 
@@ -38,14 +37,10 @@ import {
   Skeleton,
   Divider,
   ImageListItemBar,
-  // ToggleButton,
-  // ToggleButtonGroup,
+  ToggleButton,
+  ToggleButtonGroup,
   TextField,
-  FormGroup,
-  FormControlLabel,
-  Switch
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
@@ -78,60 +73,6 @@ import CheckMarkImg from '../../assets/images/checkmark.png';
 // };
 
 const totalParts = 142;
-
-const MaterialUISwitch = styled((props) => <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />)(({ theme }) => ({
-  width: 42,
-  height: 26,
-  padding: 0,
-  '& .MuiSwitch-switchBase': {
-    padding: 0,
-    margin: 2,
-    transitionDuration: '300ms',
-    '&.Mui-checked': {
-      color: '#fff',
-      transform: 'translateX(16px)',
-      '& .MuiSwitch-thumb:before': {
-        backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 20 20"><rect x="6" y="4" width="8" height="6" fill="${encodeURIComponent(
-          '#fff'
-        )}"/><circle cx="10" cy="7" r="2" fill="${encodeURIComponent(
-          '#fff'
-        )}"/><path d="M18 16c0 .552-.447 1-1 1H3c-.553 0-1-.448-1-1v-9h16v9zM10 14a3 3 0 100-6 3 3 0 000 6z" fill="${encodeURIComponent(
-          '#fff'
-        )}"/></svg>')`
-      },
-      '& + .MuiSwitch-track': {
-        opacity: 1,
-        backgroundColor: theme.palette.mode === 'dark' ? '#8796A5' : '#aab4be'
-      }
-    }
-  },
-  '& .MuiSwitch-thumb': {
-    backgroundColor: theme.palette.mode === 'dark' ? '#003892' : '#001e3c',
-    boxSizing: 'border-box',
-    width: 22,
-    height: 22,
-    '&::before': {
-      content: "''",
-      position: 'absolute',
-      width: '100%',
-      height: '100%',
-      left: 0,
-      top: 0,
-      backgroundRepeat: 'no-repeat',
-      backgroundPosition: 'center',
-      backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 20 20"><rect width="14" height="14" x="3" y="3" fill="${encodeURIComponent(
-        '#fff'
-      )}"/><text x="10" y="10" text-anchor="middle" alignment-baseline="middle" font-size="10" fill="${encodeURIComponent(
-        '#000'
-      )}">ref</text></svg>')`
-    }
-  },
-  '& .MuiSwitch-track': {
-    opacity: 1,
-    backgroundColor: theme.palette.mode === 'dark' ? '#8796A5' : '#aab4be',
-    borderRadius: 26 / 2
-  }
-}));
 
 // ==============================|| CUSTOMERS PAGE ||============================== //
 
@@ -237,8 +178,8 @@ const Customers = () => {
     setIsImageDialogOpen(!isImageDialogOpen);
   };
 
-  // const date = new Date();
-  // const today = date.toISOString().split('T')[0];
+  const date = new Date();
+  const today = date.toISOString().split('T')[0];
   const getStoresData = async () => {
     const input = {
       Store_IDs: ['6582be9ac5ed94d792a563b8'],
@@ -310,7 +251,7 @@ const Customers = () => {
   return (
     <>
       <Breadcrumb title="Stores">
-        <Typography component={Link} to="/main/insights" variant="subtitle2" color="inherit" className="link-breadcrumb">
+        <Typography component={Link} to="/" variant="subtitle2" color="inherit" className="link-breadcrumb">
           Insights
         </Typography>
         <Typography variant="subtitle2" color="primary" className="link-breadcrumb">
@@ -735,15 +676,15 @@ const Customers = () => {
             {anomalyDetails.length > 0 &&
               anomalyDetails.map((details, index) => (
                 <div key={index} className="zoom-container">
-                  <div className="image-container relative rounded-md md:w-full w-4/5 ">
+                  <div className="image-container flex justify-center items-center lg:mb-0 mb-10 relative">
                     <TransformWrapper>
-                      <div className="image-wrapper">
+                      <div className="image-wrapper rounded-md md:w-full w-4/5">
                         <TransformComponent>
-                          {imageLoading && (
-                            <div className="flex justify-center items-center absolute top-0 left-0 z-10  overflow-x-hidden bg-white w-full h-full">
-                              <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
-                            </div>
-                          )}
+                        {imageLoading && (
+                      <div className="flex justify-center items-center absolute top-0 left-0 z-10  overflow-x-hidden bg-white w-full h-full">
+                        <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
+                      </div>
+                    )}
                           <img
                             className="image rounded-md"
                             src={liveAnomalyImg ? selectedImage : anomalyDetails[0]?.reference_img}
@@ -752,18 +693,8 @@ const Customers = () => {
                               setImageLoading(false);
                             }}
                           />
-                          <div className="toggle-button-container absolute top-2 right-1">
-                            <FormGroup>
-                              <FormControlLabel
-                                control={<MaterialUISwitch sx={{ m: 1 }} defaultChecked={liveAnomalyImg} onClick={handleToggleImage} />}
-                                label={
-                                  <Typography variant="body1" style={{ color: 'white', fontWeight: '400', fontSize: '18px' }}>
-                                    {liveAnomalyImg ? 'Live' : 'Reference'}
-                                  </Typography>
-                                }
-                              />
-                            </FormGroup>
-                            {/* <ToggleButtonGroup
+                          <div className="toggle-button-container absolute top-1 right-2">
+                            <ToggleButtonGroup
                               color="primary"
                               value={liveAnomalyImg}
                               exclusive
@@ -776,7 +707,6 @@ const Customers = () => {
                                 style={{
                                   backgroundColor: liveAnomalyImg ? 'rgb(16, 185, 129)' : '',
                                   color: liveAnomalyImg ? 'white' : '#10b981',
-                                  borderColor: '#10b981'
                                 }}
                               >
                                 Live
@@ -786,12 +716,11 @@ const Customers = () => {
                                 style={{
                                   backgroundColor: !liveAnomalyImg ? 'rgb(16, 185, 129)' : '',
                                   color: !liveAnomalyImg ? 'white' : '#10b981',
-                                  borderColor: '#10b981'
                                 }}
                               >
                                 Reference
                               </ToggleButton>
-                            </ToggleButtonGroup> */}
+                            </ToggleButtonGroup>
                           </div>
                           <ImageListItemBar title={`Date: ${timestamps?.date}`} subtitle={`Time: ${timestamps?.time}`} />
                         </TransformComponent>
