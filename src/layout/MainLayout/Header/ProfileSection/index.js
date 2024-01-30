@@ -19,11 +19,13 @@ import MeetingRoomTwoToneIcon from '@mui/icons-material/MeetingRoomTwoTone';
 // ==============================|| PROFILE SECTION ||============================== //
 
 const ProfileSection = () => {
+
   const theme = useTheme();
   const userData = localStorage.getItem("userData");
   const users = JSON.parse(userData);
 
   const navigateTo = useNavigate();
+
 
   const handleLogout = () => {
     signOut(auth)
@@ -65,6 +67,10 @@ const ProfileSection = () => {
 
     prevOpen.current = open;
   }, [open]);
+
+  if (!auth) {
+    return null; // or render a loading/error message
+  }
 
   return (
     <>
