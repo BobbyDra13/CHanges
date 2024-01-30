@@ -315,7 +315,9 @@ const StoreLayout = () => {
   const handleSaveForRetraining = () => {
     toast.error('This feature is not available yet');
   };
-  console.log(layoutData);
+  console.log('Layout', layoutData);
+  console.log('Image Details', selectedImage);
+
   return (
     // <div className="w-full flex border border-black">
     <div className="w-full h-full flex-col flex overflow-x-hidden">
@@ -379,17 +381,17 @@ const StoreLayout = () => {
                     <div className="flex flex-col">
                       <span>Brand: {item?.brand_name || ''}</span>
                       <span>Fullness: {isNaN(item?.bay_fullness) ? 'No Capture' : Math.floor(item?.bay_fullness) + '%'}</span>
-                         <span>
-                         {`Date: ${item?.timestamps?.split('T')[0]}`}
-                       </span>
-                       <span>
-                       {`Time: ${new Date(item?.timestamps).toLocaleTimeString([], {
+                      <span>
+                        {/* Timestamp: {item?.timestamps || ''} */}
+                        {`Date: ${item?.timestamps?.split('T')[0]}`}
+                      </span>
+                      <span>
+                        {`Time: ${new Date(item?.timestamps).toLocaleTimeString([], {
                           hour: '2-digit',
                           minute: '2-digit',
                           second: '2-digit'
                         })}`}
-                       </span>
-                     
+                      </span>
                     </div>
                   }
                 >
@@ -405,10 +407,12 @@ const StoreLayout = () => {
                         : 'bg-gray-500 disabled:'
                     } rounded-lg text-xs  h-4 md:h-10 text-white md:rotate-0 md:px-2 px-1`}
                     style={{
-                      top: `${findMidpoint(item.coordinates, item.dimensions).y * scaleFactor}px`,
+                      top: isMdOrLarger
+                        ? `${findMidpoint(item.coordinates, item.dimensions).y * scaleFactor}px`
+                        : `${findMidpoint(item.coordinates, item.dimensions).y * scaleFactor * 1.4}px`,
                       left: isMdOrLarger
                         ? `${findMidpoint(item.coordinates, item.dimensions).x * scaleFactor}px`
-                        : `${findMidpoint(item.coordinates, item.dimensions).x * scaleFactor * 1.2}px`
+                        : `${findMidpoint(item.coordinates, item.dimensions).x * scaleFactor * 1.58}px`
                     }}
                     onClick={() => {
                       handleOpenBay(item);
@@ -715,7 +719,8 @@ const StoreLayout = () => {
                         style={{
                           backgroundColor: liveImg ? 'rgb(16, 185, 129)' : '',
                           color: liveImg ? 'white' : '#10b981',
-                          borderColor: '#10b981'
+                          borderColor: '#10b981',
+                          width: 100
                         }}
                       >
                         Live
@@ -725,7 +730,8 @@ const StoreLayout = () => {
                         style={{
                           backgroundColor: !liveImg ? 'rgb(16, 185, 129)' : '',
                           color: !liveImg ? 'white' : '#10b981',
-                          borderColor: '#10b981'
+                          borderColor: '#10b981',
+                          width: 100
                         }}
                       >
                         Reference
@@ -756,54 +762,58 @@ const StoreLayout = () => {
                       }}
                     />
                   </div>
-                  <div  className=" text-xl cursor-pointer text-white absolute"
+                  <div
+                    className=" text-xl cursor-pointer text-white absolute"
                     style={{
                       left: '4%',
                       top: '3%'
-                    }}>
+                    }}
+                  >
                     <Typography variant="h3" className="text-white">
-                        {layoutData?.store_id} - {layoutData?.name}
-                      </Typography>
-                      <Typography variant="h3" className="text-white">
-                        {currentBay?.bay_name} / {currentShelf?.shelf_name}
-                      </Typography>
-                    </div>
-                    <div className=" text-xl cursor-pointer text-white absolute"
-                     style={{
+                      {layoutData?.store_id} - {layoutData?.name}
+                    </Typography>
+                    <Typography variant="h3" className="text-white">
+                      {currentBay?.bay_name} / {currentShelf?.shelf_name}
+                    </Typography>
+                  </div>
+                  <div
+                    className=" text-xl cursor-pointer text-white absolute"
+                    style={{
                       left: '4%',
                       top: '25%'
                     }}
-                   >
-                      <Typography variant="h3" className="text-white">
-                        {`Up-Keep score: ${Math.floor(selectedImage?.avg_full) || 0}%`}
-                      </Typography>
-                      <Typography variant="h3" className="text-white">
-                        {`VM score: ${Math.floor(selectedImage?.vm_score) || 0}%`}
-                      </Typography>
-                    </div>
-                     <div  className=" text-xl cursor-pointer text-white absolute"
+                  >
+                    <Typography variant="h3" className="text-white">
+                      {`Up-Keep score: ${Math.floor(selectedImage?.avg_full) || 0}%`}
+                    </Typography>
+                    <Typography variant="h3" className="text-white">
+                      {`VM score: ${Math.floor(selectedImage?.vm_score) || 0}%`}
+                    </Typography>
+                  </div>
+                  <div
+                    className=" text-xl cursor-pointer text-white absolute"
                     style={{
                       left: '4%',
                       bottom: '3%'
-                    }}>
-                      
-                      <Typography variant="h3" className="text-white">
-                        {`Name: ${selectedImage?.userDetails?.user_name}`}
-                      </Typography>
-                      <Typography variant="h3" className="text-white">
-                        {`Number: ${selectedImage?.userDetails?.number}`}
-                      </Typography>
-                      <Typography variant="h3" className="text-white">
-                        {`Date: ${selectedImage?.timestamps?.split('T')[0]}`}
-                      </Typography>
-                      <Typography variant="h3" className="text-white">
-                        {`Time: ${new Date(selectedImage?.timestamps).toLocaleTimeString([], {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                          second: '2-digit'
-                        })}`}
-                      </Typography>
-                    </div>
+                    }}
+                  >
+                    <Typography variant="h3" className="text-white">
+                      {`Name: ${selectedImage?.userDetails?.user_name}`}
+                    </Typography>
+                    <Typography variant="h3" className="text-white">
+                      {`Number: ${selectedImage?.userDetails?.number}`}
+                    </Typography>
+                    <Typography variant="h3" className="text-white">
+                      {`Date: ${selectedImage?.timestamps?.split('T')[0]}`}
+                    </Typography>
+                    <Typography variant="h3" className="text-white">
+                      {`Time: ${new Date(selectedImage?.timestamps).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                      })}`}
+                    </Typography>
+                  </div>
 
                   <div
                     className="  border-red-500 absolute right-[7%] top-1/2 -translate-y-1/2 w-96 h-96 grid text-white gap-4"
