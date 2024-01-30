@@ -69,7 +69,7 @@ const StoreLayout = () => {
 
   //   fetchData();
   // }, []);
-  const isMdOrLarger = useMediaQuery((theme) => theme.breakpoints.up('md'));
+  const isSmOrLarger = useMediaQuery((theme) => theme.breakpoints.up('sm'));
 
   const handleCloseImageDialog = () => {
     setIsImageDialogOpen(false);
@@ -369,7 +369,7 @@ const StoreLayout = () => {
         <div
           className={`w-full h-full relative ${
             openShelves || openBay ? 'hidden' : ''
-          } border-red-500  md:rotate-0 rotate-90 flex justify-start items-center  scale-[1.5] md:scale-100 md:top-0 top-48`}
+          } border-red-500  ${isSmOrLarger ? 'rotate-0 scale-100 top-0': 'rotate-90 scale-[1.5] top-48'}  flex justify-start items-center`}
         >
           <img src={layoutData?.image_url} alt="layout" loading="lazy" onLoad={findDimensions} ref={imageRef} className="lg:w-full" />
           <div className="absolute top-0 left-0 w-full h-full">
@@ -406,10 +406,10 @@ const StoreLayout = () => {
                         : 'bg-gray-500 disabled:'
                     } rounded-lg text-xs  h-4 md:h-10 text-white md:rotate-0 md:px-2 px-1`}
                     style={{
-                      top: isMdOrLarger
+                      top: isSmOrLarger
                         ? `${findMidpoint(item.coordinates, item.dimensions).y * scaleFactor}px`
                         : `${findMidpoint(item.coordinates, item.dimensions).y * scaleFactor * 1.4}px`,
-                      left: isMdOrLarger
+                      left: isSmOrLarger
                         ? `${findMidpoint(item.coordinates, item.dimensions).x * scaleFactor}px`
                         : `${findMidpoint(item.coordinates, item.dimensions).x * scaleFactor * 1.58}px`
                     }}
@@ -417,7 +417,7 @@ const StoreLayout = () => {
                       handleOpenBay(item);
                     }}
                   >
-                    {isMdOrLarger ? item.bay_name : item.bay_name.split(' ')[1]}
+                    {isSmOrLarger ? item.bay_name : item.bay_name.split(' ')[1]}
                   </button>
                 </Tooltip>
               </ThemeProvider>
@@ -442,7 +442,7 @@ const StoreLayout = () => {
           />
 
           <div
-            className={`lg:w-[45%] w-[70%]  lg:h-[67vh] h-[45vh]`}
+            className={`lg:w-[45%] w-[70%]  lg:h-[67vh] h-[45vh] md:[60vh] border-2 border-black`}
             style={{
               perspective: '900px'
             }}
@@ -478,7 +478,7 @@ const StoreLayout = () => {
                       }}
                     >
                       <div className="h-full flex justify-center items-center">
-                        <p className="-rotate-90 border-0 border-red-500 m-0 w-28 text-center">
+                        <p className="-rotate-90 border-0 border-red-500 m-0 w-28 text-center text-sm md:text-base">
                           shelf - 1
                           <br />
                           {isNaN(item?.shelf_fullness) ? 'No Capture' : Math.floor(item?.shelf_fullness) + '%'}
