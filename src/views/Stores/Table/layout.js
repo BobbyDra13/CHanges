@@ -88,14 +88,15 @@ const StoreLayout = () => {
 
   const date = new Date();
   const today = date.toISOString().split('T')[0];
+  console.log("today", today);
   const getLayoutData = async () => {
     const input = {
       Store_IDs: ['6582be9ac5ed94d792a563b8'],
-      // start_date: '2024-01-01'
-      start_date: today
+      start_date: "2024-01-12"
+      // start_date: today
     };
     const response = await GetStoreLayout(input);
-    // console.log(response.data[0]);
+    console.log(response.data[0]);
     setLayoutData(response.data[0]);
   };
 
@@ -379,7 +380,6 @@ const StoreLayout = () => {
                       <span>Brand: {item?.brand_name || ''}</span>
                       <span>Fullness: {isNaN(item?.bay_fullness) ? 'No Capture' : Math.floor(item?.bay_fullness) + '%'}</span>
                          <span>
-                         {/* Timestamp: {item?.timestamps || ''} */}
                          {`Date: ${item?.timestamps?.split('T')[0]}`}
                        </span>
                        <span>
@@ -762,7 +762,7 @@ const StoreLayout = () => {
                       top: '3%'
                     }}>
                     <Typography variant="h3" className="text-white">
-                        {selectedImage?.userDetails?.store_id} - {layoutData?.name}
+                        {layoutData?.store_id} - {layoutData?.name}
                       </Typography>
                       <Typography variant="h3" className="text-white">
                         {currentBay?.bay_name} / {currentShelf?.shelf_name}

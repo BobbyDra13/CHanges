@@ -6,6 +6,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import { useNavigate } from 'react-router-dom';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import './zoom-card-item.css';
+// import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import { bouncy } from 'ldrs';
 bouncy.register();
 
@@ -37,8 +38,15 @@ import {
   Skeleton,
   Divider,
   ImageListItemBar,
-  TextField
+  // ToggleButton,
+  // ToggleButtonGroup,
+  TextField,
+  FormGroup,
+  FormControlLabel,
+  Switch
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
+
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -71,6 +79,60 @@ import CheckMarkImg from '../../assets/images/checkmark.png';
 
 const totalParts = 142;
 
+const MaterialUISwitch = styled((props) => <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />)(({ theme }) => ({
+  width: 42,
+  height: 26,
+  padding: 0,
+  '& .MuiSwitch-switchBase': {
+    padding: 0,
+    margin: 2,
+    transitionDuration: '300ms',
+    '&.Mui-checked': {
+      color: '#fff',
+      transform: 'translateX(16px)',
+      '& .MuiSwitch-thumb:before': {
+        backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 20 20"><rect x="6" y="4" width="8" height="6" fill="${encodeURIComponent(
+          '#fff'
+        )}"/><circle cx="10" cy="7" r="2" fill="${encodeURIComponent(
+          '#fff'
+        )}"/><path d="M18 16c0 .552-.447 1-1 1H3c-.553 0-1-.448-1-1v-9h16v9zM10 14a3 3 0 100-6 3 3 0 000 6z" fill="${encodeURIComponent(
+          '#fff'
+        )}"/></svg>')`
+      },
+      '& + .MuiSwitch-track': {
+        opacity: 1,
+        backgroundColor: theme.palette.mode === 'dark' ? '#8796A5' : '#aab4be'
+      }
+    }
+  },
+  '& .MuiSwitch-thumb': {
+    backgroundColor: theme.palette.mode === 'dark' ? '#003892' : '#001e3c',
+    boxSizing: 'border-box',
+    width: 22,
+    height: 22,
+    '&::before': {
+      content: "''",
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+      left: 0,
+      top: 0,
+      backgroundRepeat: 'no-repeat',
+      backgroundPosition: 'center',
+      backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 20 20"><rect width="14" height="14" x="3" y="3" fill="${encodeURIComponent(
+        '#fff'
+      )}"/><text x="10" y="10" text-anchor="middle" alignment-baseline="middle" font-size="10" fill="${encodeURIComponent(
+        '#000'
+      )}">ref</text></svg>')`
+    }
+  },
+  '& .MuiSwitch-track': {
+    opacity: 1,
+    backgroundColor: theme.palette.mode === 'dark' ? '#8796A5' : '#aab4be',
+    borderRadius: 26 / 2
+  }
+}));
+
 // ==============================|| CUSTOMERS PAGE ||============================== //
 
 const Customers = () => {
@@ -89,6 +151,9 @@ const Customers = () => {
     isVm: false,
     isPop: false
   });
+  const [liveAnomalyImg, setLiveAnomalyImg] = useState(true);
+  const [imageLoading, setImageLoading] = useState(false);
+
   const theme = useTheme();
   const success = theme.palette.success.main;
   const successDark = theme.palette.success.dark;
@@ -111,6 +176,11 @@ const Customers = () => {
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleToggleImage = () => {
+    setImageLoading(true);
+    setLiveAnomalyImg(!liveAnomalyImg);
   };
 
   const upKeepClicked = () => {
@@ -140,7 +210,7 @@ const Customers = () => {
     try {
       const response = await GetAnomalyDetails(id);
       if (response) {
-        // console.log('AnomalyDetails', response);
+        console.log('AnomalyDetails', response);
         setAnonmalyDetails(response.data);
         setLoading(false);
       }
@@ -167,23 +237,23 @@ const Customers = () => {
     setIsImageDialogOpen(!isImageDialogOpen);
   };
 
-  const date = new Date();
-  const today = date.toISOString().split('T')[0];
+  // const date = new Date();
+  // const today = date.toISOString().split('T')[0];
   const getStoresData = async () => {
     const input = {
       Store_IDs: ['6582be9ac5ed94d792a563b8'],
-      // start_date: '2024-01-01'
-      start_date: today
+      start_date: '2024-01-12'
+      // start_date: today
     };
     setStoresData(false);
     try {
       const response = await GetStoreLayout(input);
       if (response) {
-        // console.log('Store Data', response.data);
+        console.log('Store Data', response.data);
         setStoresData(response.data);
         const anomaliesByType = new Map();
-        response.data[0].store_anomalies.forEach((anomaly) => {
-          const type = anomaly.store_anomalies.anomalies_found[0].type;
+        response.data[0]?.store_anomalies.forEach((anomaly) => {
+          const type = anomaly?.store_anomalies?.anomalies_found[0]?.type;
           anomaliesByType.set(type, anomaliesByType.get(type) || []);
           anomaliesByType.get(type).push(anomaly);
         });
@@ -237,7 +307,7 @@ const Customers = () => {
   // console.log('Anomaly Data', anomalyImgs);
   // console.log('Clicked', clickedBar);
   // console.log('Analysis Id', analysisId);
-  // console.log('AnomalyDetails', anomalyDetails);
+  console.log('AnomalyDetails', anomalyDetails[0]?.reference_img);
   return (
     <>
       <Breadcrumb title="Stores">
@@ -666,16 +736,70 @@ const Customers = () => {
             {anomalyDetails.length > 0 &&
               anomalyDetails.map((details, index) => (
                 <div key={index} className="zoom-container">
-                  <div className="image-container flex justify-center items-center lg:mb-0 mb-10">
+                  <div className="image-container relative rounded-md md:w-full w-4/5 ">
                     <TransformWrapper>
-                      <div className="image-wrapper rounded-md md:w-full w-4/5 ">
+                      <div className="image-wrapper">
                         <TransformComponent>
-                          <img className="image rounded-md" src={selectedImage} alt={'No img found'} />
+                          {imageLoading && (
+                            <div className="flex justify-center items-center absolute top-0 left-0 z-10  overflow-x-hidden bg-white w-full h-full">
+                              <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
+                            </div>
+                          )}
+                          <img
+                            className="image rounded-md"
+                            src={liveAnomalyImg ? selectedImage : anomalyDetails[0]?.reference_img}
+                            alt="No img found"
+                            onLoad={() => {
+                              setImageLoading(false);
+                            }}
+                          />
+                          <div className="toggle-button-container absolute top-2 right-1">
+                            <FormGroup>
+                              <FormControlLabel
+                                control={<MaterialUISwitch sx={{ m: 1 }} defaultChecked={liveAnomalyImg} onClick={handleToggleImage} />}
+                                label={
+                                  <Typography variant="body1" style={{ color: 'white', fontWeight: '400', fontSize: '18px' }}>
+                                    {liveAnomalyImg ? 'Live' : 'Reference'}
+                                  </Typography>
+                                }
+                              />
+                            </FormGroup>
+                            {/* <ToggleButtonGroup
+                              color="primary"
+                              value={liveAnomalyImg}
+                              exclusive
+                              onChange={handleToggleImage}
+                              aria-label="Platform"
+                              className="text-white bg-white"
+                            >
+                              <ToggleButton
+                                value={true}
+                                style={{
+                                  backgroundColor: liveAnomalyImg ? 'rgb(16, 185, 129)' : '',
+                                  color: liveAnomalyImg ? 'white' : '#10b981',
+                                  borderColor: '#10b981'
+                                }}
+                              >
+                                Live
+                              </ToggleButton>
+                              <ToggleButton
+                                value={false}
+                                style={{
+                                  backgroundColor: !liveAnomalyImg ? 'rgb(16, 185, 129)' : '',
+                                  color: !liveAnomalyImg ? 'white' : '#10b981',
+                                  borderColor: '#10b981'
+                                }}
+                              >
+                                Reference
+                              </ToggleButton>
+                            </ToggleButtonGroup> */}
+                          </div>
                           <ImageListItemBar title={`Date: ${timestamps?.date}`} subtitle={`Time: ${timestamps?.time}`} />
                         </TransformComponent>
                       </div>
                     </TransformWrapper>
                   </div>
+
                   <div className="md:w-[30vw] md:ml-[1.5vw] h-[80vh] flex flex-col w-full">
                     <div className="flex-grow flex flex-col space-y-1.5 overflow-y-auto scrollbar">
                       <div className="w-full flex justify-between place-items-center">

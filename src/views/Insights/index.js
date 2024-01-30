@@ -11,7 +11,8 @@ import {
   GetVMComplianceForOneWeek,
   GetFullnessForOneWeek,
   GetAnomaliesForOneWeek,
-  GetBarChartData
+  GetBarChartData,
+  GetVMscoreBar
 } from 'api';
 
 // Apex chart import
@@ -54,7 +55,7 @@ const histogramChartRequirements = {
     {
       label: 'VM score',
       value: 'VMC',
-      disabled: true
+      disabled: false
     },
     {
       label: 'PoP score',
@@ -87,6 +88,7 @@ const Insights = () => {
   const [brandChartOptions, setBrandChartOptions] = useState(BrandChartData.options);
   const [brandFullness, setBrandFullness] = useState([]);
   const [barChartData, setBarChartData] = useState(false);
+  const [vmChartData, setVmChartData] = useState(false);
   const [chartConfig, setChartConfig] = useState({
     type: 'line',
     height: 100,
@@ -299,6 +301,7 @@ const Insights = () => {
         setAnomaliesBarChart(false);
         setBrandDonut(false);
         setBarChartData(false);
+        setVmChartData(false);
         setFullChartConfig({
           type: 'line',
           height: 100,
@@ -420,6 +423,7 @@ const Insights = () => {
             anomaliesKpiData,
             anomaliesBarChartData,
             barChart,
+            vmcChart,
             fullnessLineChart,
             vmcLineChart,
             anomaliesLineChart
@@ -431,6 +435,7 @@ const Insights = () => {
             GetAnomaliesKpi(commonBody),
             GetAnomaliesBarChartData(commonBody),
             GetBarChartData(commonBody),
+            GetVMscoreBar(commonBody),
             GetFullnessForOneWeek(body),
             GetVMComplianceForOneWeek(body),
             GetAnomaliesForOneWeek(body)
@@ -593,6 +598,10 @@ const Insights = () => {
             setBarChartData(barChart.data);
             console.log('barchartdata', barChart);
           }
+          if (vmcChart) {
+            setVmChartData(vmcChart.data);
+            console.log('vmcchart', vmcChart);
+          }
         } catch (error) {
           console.log(error);
         }
@@ -602,32 +611,60 @@ const Insights = () => {
     /* eslint-enable no-inner-declarations */
   }, [selectedDate]);
   console.log('bar', barChartData);
+  console.log('vmc bar', vmChartData);
   useEffect(() => {
-    if (barChartData && barChartData.length > 0) {
+    if (barChartData && barChartData.length > 0 && selected === histogramChartRequirements.selectOptions[0].value) {
+      setSelected(histogramChartRequirements.selectOptions[0].value);
       let chart = barChartData[0]?.data.bayAnalysis;
       console.log('chartttt', chart);
       let allRanges = Array.from({ length: 10 }, (_, i) => `${i * 10}-${(i + 1) * 10}%`);
       console.log('allRanges', allRanges);
       let chartDataMap = Object.fromEntries(allRanges.map((range) => [range, chart[range] || 0]));
       console.log('chartDataMap', chartDataMap);
-
+  
       let sortedKeys = Object.keys(chartDataMap).sort((a, b) => {
         let [aStart, aEnd] = a.split('-').map(Number);
         let [bStart, bEnd] = b.split('-').map(Number);
-
+  
         return aStart - bStart || aEnd - bEnd;
       });
-
+  console.log("sortedKeys", sortedKeys);
       // Retrieve values in the sorted order
       const barchart = {
         asuk: sortedKeys.map((key) => chartDataMap[key])
       };
-
+  
       console.log('barchart', barchart);
-
+  
       setSeriesData(barchart.asuk);
+    } else if (vmChartData && vmChartData.length > 0 && selected === histogramChartRequirements.selectOptions[1].value) {
+      setSelected(histogramChartRequirements.selectOptions[1].value);
+      console.log("vmc clicked");
+      let chart = vmChartData[0]?.data?.anomaliesCount;
+      console.log('charttttvmc', chart);
+      let allRanges = Array.from({ length: 10 }, (_, i) => `${i * 10}-${(i + 1) * 10}%`);
+      console.log('allRangesvmc', allRanges);
+      let chartDataMap = Object.fromEntries(allRanges.map((range) => [range, chart[range] || 0]));
+      console.log('chartDataMapvmc', chartDataMap);
+  
+      let sortedKeys = Object.keys(chartDataMap).sort((a, b) => {
+        let [aStart, aEnd] = a.split('-').map(Number);
+        let [bStart, bEnd] = b.split('-').map(Number);
+  
+        return aStart - bStart || aEnd - bEnd;
+      });
+  
+      // Retrieve values in the sorted order
+      const barchart = {
+        vmc: sortedKeys.map((key) => chartDataMap[key])
+      };
+  
+      console.log('barchartvmc', barchart);
+  
+      setSeriesData(barchart.vmc);
     }
-  }, [barChartData]);
+  }, [barChartData, vmChartData, histogramChartRequirements.selectOptions, selected]);
+  
 
   let series = [
     {
@@ -815,7 +852,7 @@ const Insights = () => {
                 <Grid container spacing={gridSpacing}>
                   <Grid item xs={12}>
                     <Card>
-                      {barChartData?.length > 0 && barChartData[0]?.data?.bayAnalysis['0-10%'] !== 9 ? (
+                      {barChartData?.length > 0 && barChartData[0]?.data?.bayAnalysis['0-10%'] !== 9  ? (
                         <CardContent sx={{ padding: 0, paddingBottom: '0 !important' }}>
                           <Box color="#fff" bgcolor={theme.palette.primary.main} p={3}>
                             <Grid container justifyContent="space-between" alignItems="center">
