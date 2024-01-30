@@ -1,4 +1,5 @@
 import axios from 'axios';
+import token from './authToken';
 
 const lambUrl = 'https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp';
 // const lambUrl = 'https://wfsajq7upd.execute-api.ap-south-1.amazonaws.com/prod/neodisha-fashion-webapp';
@@ -7,8 +8,8 @@ export const GetCaptureProgress = async (data) => {
   try {
     const res = await axios.post(`${lambUrl}/dashboard_capture_progress`, data, {
       headers: {
-        Accept: 'application/json'
-        //   Authorization: await token(),
+        Accept: 'application/json',
+        Authorization: await token()
       }
     });
     return res;
@@ -21,8 +22,8 @@ export const GetBrandDonutData = async (data) => {
   try {
     const res = await axios.post(`${lambUrl}/dashboard/doughtnut/brand_wise_fullness`, data, {
       headers: {
-        Accept: 'application/json'
-        //   Authorization: await token(),
+        Accept: 'application/json',
+        Authorization: await token()
       }
     });
     return res;
@@ -35,8 +36,8 @@ export const GetFullnessKpi = async (data) => {
   try {
     const res = await axios.post(`${lambUrl}/dashboard_card_fullness`, data, {
       headers: {
-        Accept: 'application/json'
-        //   Authorization: await token(),
+        Accept: 'application/json',
+        Authorization: await token()
       }
     });
     console.log('fullness res', res);
@@ -50,8 +51,8 @@ export const GetAnomaliesKpi = async (data) => {
   try {
     const res = await axios.post(`${lambUrl}/dashboard/card_anomalies`, data, {
       headers: {
-        Accept: 'application/json'
-        //   Authorization: await token(),
+        Accept: 'application/json',
+        Authorization: await token()
       }
     });
     console.log('anomaliesData', res);
@@ -65,8 +66,8 @@ export const GetAnomaliesBarChartData = async (data) => {
   try {
     const res = await axios.post(`${lambUrl}/dashboard/anomalies_barchart`, data, {
       headers: {
-        Accept: 'application/json'
-        //   Authorization: await token(),
+        Accept: 'application/json',
+        Authorization: await token()
       }
     });
     console.log('anomalies chart', res);
@@ -96,10 +97,11 @@ export const GetStoreLayout = async (data) => {
   try {
     const res = await axios.post(`${lambUrl}/store/analysis`, data, {
       headers: {
-        Accept: 'application/json'
+        Accept: 'application/json',
+        Authorization: await token()
       }
     });
-    // console.log("api response", res);
+    console.log('api response', res);
     return res;
   } catch (error) {
     console.log('Error Calling all Store API: ', error);
@@ -110,7 +112,8 @@ export const GetImagesFromSignedUrl = async (data) => {
   try {
     const res = await axios.post(`https://wfsajq7upd.execute-api.ap-south-1.amazonaws.com/prod/neodisha-fashion-app/signed_image`, data, {
       headers: {
-        Accept: 'application/json'
+        Accept: 'application/json',
+        Authorization: await token()
       }
     });
     // console.log("api image response", res);
@@ -122,7 +125,14 @@ export const GetImagesFromSignedUrl = async (data) => {
 
 export const getUsers = async () => {
   try {
-    return await axios.get(`${lambUrl}/team/getalluser`);
+    const res = await axios.get(`${lambUrl}/team/getalluser`, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    // console.log("api image response", res);
+    return res;
   } catch (error) {
     console.log('Error while calling team API :', error);
   }
@@ -130,7 +140,14 @@ export const getUsers = async () => {
 
 export const getOneUser = async (id) => {
   try {
-    return await axios.get(`${lambUrl}/team/get_one_user?userID=${id}`);
+    const res = await axios.get(`${lambUrl}/team/get_one_user?userID=${id}`, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    // console.log("api image response", res);
+    return res;
   } catch (error) {
     console.log('Error while calling team api :', error);
   }
@@ -138,7 +155,14 @@ export const getOneUser = async (id) => {
 
 export const deleteUser = async (id) => {
   try {
-    return await axios.get(`${lambUrl}/team/delete_user?userID=${id}`);
+    const res = await axios.get(`${lambUrl}/team/delete_user?userID=${id}`, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    // console.log("api image response", res);
+    return res;
   } catch (error) {
     console.log('Error while calling team api :', error);
   }
@@ -146,7 +170,14 @@ export const deleteUser = async (id) => {
 
 export const updateUser = async (id, user) => {
   try {
-    return await axios.post(`${lambUrl}/team/update_user?userID=${id}`, user);
+    const res = await axios.post(`${lambUrl}/team/update_user?userID=${id}`, user, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    // console.log("api image response", res);
+    return res;
   } catch (error) {
     console.log('Error while calling team api :', error);
   }
@@ -154,7 +185,14 @@ export const updateUser = async (id, user) => {
 
 export const createUser = async (user) => {
   try {
-    return await axios.post(`${lambUrl}/team/create`, user);
+    const res = await axios.post(`${lambUrl}/team/create`, user, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    // console.log("api image response", res);
+    return res;
   } catch (error) {
     console.log('Error while calling team api :', error);
   }
@@ -166,8 +204,7 @@ export const GetVerifiedUsers = async (phoneNumber) => {
       `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-app/user/auth_user_cred?numbers=${phoneNumber}`,
       {
         headers: {
-          Accept: 'application/json'
-          // Authorization: await token(),
+          Accept: 'application/json',
         }
       }
     );
@@ -182,8 +219,8 @@ export const GetVMCompliance = async (data) => {
   try {
     const res = await axios.post(`${lambUrl}/dashboard/vmc_fullness`, data, {
       headers: {
-        Accept: 'application/json'
-        //   Authorization: await token(),
+        Accept: 'application/json',
+        Authorization: await token()
       }
     });
     return res;
@@ -196,7 +233,8 @@ export const GetVMComplianceForOneWeek = async (data) => {
   try {
     const res = await axios.post(`${lambUrl}/dashboard/timeseries_vmc`, data, {
       headers: {
-        Accept: 'application/json'
+        Accept: 'application/json',
+        Authorization: await token()
       }
     });
     console.log('result', res);
@@ -210,7 +248,8 @@ export const GetFullnessForOneWeek = async (data) => {
   try {
     const res = await axios.post(`${lambUrl}/dashboard/timeseries_fullness`, data, {
       headers: {
-        Accept: 'application/json'
+        Accept: 'application/json',
+        Authorization: await token()
       }
     });
     return res;
@@ -223,8 +262,8 @@ export const GetAnomalyDetails = async (data) => {
   try {
     const res = await axios.get(`${lambUrl}/store/get_analysis_data?analysisID=${data}`, {
       headers: {
-        Accept: 'application/json'
-        //   Authorization: await token(),
+        Accept: 'application/json',
+        Authorization: await token()
       }
     });
     return res;
@@ -237,7 +276,8 @@ export const GetAnomaliesForOneWeek = async (data) => {
   try {
     const res = await axios.post(`${lambUrl}/dashboard/timeseries_anomalies`, data, {
       headers: {
-        Accept: 'application/json'
+        Accept: 'application/json',
+        Authorization: await token()
       }
     });
     return res;
@@ -248,8 +288,13 @@ export const GetAnomaliesForOneWeek = async (data) => {
 
 export const checkId = async (user_id) => {
   try {
-    const response = await axios.get(`${lambUrl}/team/check_users?user_id=${user_id}`);
-    return response.data;
+    const res = await axios.get(`${lambUrl}/team/check_users?user_id=${user_id}`, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res.data;
   } catch (error) {
     console.log('Error');
     throw error;
@@ -258,8 +303,13 @@ export const checkId = async (user_id) => {
 
 export const allStoresId = async () => {
   try {
-    const response = await axios.get(`${lambUrl}/store/get_all_store`);
-    return response.data;
+    const res = await axios.get(`${lambUrl}/store/get_all_store`, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res.data;
   } catch (error) {
     console.log('Error occured');
     throw error;
@@ -270,10 +320,26 @@ export const GetBarChartData = async (data) => {
   try {
     const res = await axios.post(`${lambUrl}/dashboard/bay_wise_fullness`, data, {
       headers: {
-        Accept: 'application/json'
+        Accept: 'application/json',
+        Authorization: await token()
       }
     });
     console.log('bar chart data', res);
+    return res;
+  } catch (error) {
+    console.log('Error calling bar chart api', error);
+  }
+};
+
+export const GetVMscoreBar = async (data) => {
+  try {
+    const res = await axios.post(`${lambUrl}/dashboard/vmc-barchart`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    console.log('vmc data', res);
     return res;
   } catch (error) {
     console.log('Error calling bar chart api', error);

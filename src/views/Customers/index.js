@@ -37,8 +37,11 @@ import {
   Skeleton,
   Divider,
   ImageListItemBar,
-  TextField
+  ToggleButton,
+  ToggleButtonGroup,
+  TextField,
 } from '@mui/material';
+
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -89,6 +92,9 @@ const Customers = () => {
     isVm: false,
     isPop: false
   });
+  const [liveAnomalyImg, setLiveAnomalyImg] = useState(true);
+  const [imageLoading, setImageLoading] = useState(false);
+
   const theme = useTheme();
   const success = theme.palette.success.main;
   const successDark = theme.palette.success.dark;
@@ -111,6 +117,11 @@ const Customers = () => {
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleToggleImage = () => {
+    setImageLoading(true);
+    setLiveAnomalyImg(!liveAnomalyImg);
   };
 
   const upKeepClicked = () => {
@@ -140,7 +151,7 @@ const Customers = () => {
     try {
       const response = await GetAnomalyDetails(id);
       if (response) {
-        // console.log('AnomalyDetails', response);
+        console.log('AnomalyDetails', response);
         setAnonmalyDetails(response.data);
         setLoading(false);
       }
@@ -172,18 +183,17 @@ const Customers = () => {
   const getStoresData = async () => {
     const input = {
       Store_IDs: ['6582be9ac5ed94d792a563b8'],
-      // start_date: '2024-01-01'
       start_date: today
     };
     setStoresData(false);
     try {
       const response = await GetStoreLayout(input);
       if (response) {
-        // console.log('Store Data', response.data);
+        console.log('Store Data', response.data);
         setStoresData(response.data);
         const anomaliesByType = new Map();
-        response.data[0].store_anomalies.forEach((anomaly) => {
-          const type = anomaly.store_anomalies.anomalies_found[0].type;
+        response.data[0]?.store_anomalies.forEach((anomaly) => {
+          const type = anomaly?.store_anomalies?.anomalies_found[0]?.type;
           anomaliesByType.set(type, anomaliesByType.get(type) || []);
           anomaliesByType.get(type).push(anomaly);
         });
@@ -237,11 +247,11 @@ const Customers = () => {
   // console.log('Anomaly Data', anomalyImgs);
   // console.log('Clicked', clickedBar);
   // console.log('Analysis Id', analysisId);
-  // console.log('AnomalyDetails', anomalyDetails);
+  console.log('AnomalyDetails', anomalyDetails[0]?.reference_img);
   return (
     <>
       <Breadcrumb title="Stores">
-        <Typography component={Link} to="/main/insights" variant="subtitle2" color="inherit" className="link-breadcrumb">
+        <Typography component={Link} to="/" variant="subtitle2" color="inherit" className="link-breadcrumb">
           Insights
         </Typography>
         <Typography variant="subtitle2" color="primary" className="link-breadcrumb">
@@ -666,16 +676,58 @@ const Customers = () => {
             {anomalyDetails.length > 0 &&
               anomalyDetails.map((details, index) => (
                 <div key={index} className="zoom-container">
-                  <div className="image-container flex justify-center items-center lg:mb-0 mb-10">
+                  <div className="image-container flex justify-center items-center lg:mb-0 mb-10 relative">
                     <TransformWrapper>
-                      <div className="image-wrapper rounded-md md:w-full w-4/5 ">
+                      <div className="image-wrapper rounded-md md:w-full w-4/5">
                         <TransformComponent>
-                          <img className="image rounded-md" src={selectedImage} alt={'No img found'} />
+                        {imageLoading && (
+                      <div className="flex justify-center items-center absolute top-0 left-0 z-10  overflow-x-hidden bg-white w-full h-full">
+                        <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
+                      </div>
+                    )}
+                          <img
+                            className="image rounded-md"
+                            src={liveAnomalyImg ? selectedImage : anomalyDetails[0]?.reference_img}
+                            alt="No img found"
+                            onLoad={() => {
+                              setImageLoading(false);
+                            }}
+                          />
+                          <div className="toggle-button-container absolute top-1 right-2">
+                            <ToggleButtonGroup
+                              color="primary"
+                              value={liveAnomalyImg}
+                              exclusive
+                              onChange={handleToggleImage}
+                              aria-label="Platform"
+                              className="text-white bg-white"
+                            >
+                              <ToggleButton
+                                value={true}
+                                style={{
+                                  backgroundColor: liveAnomalyImg ? 'rgb(16, 185, 129)' : '',
+                                  color: liveAnomalyImg ? 'white' : '#10b981',
+                                }}
+                              >
+                                Live
+                              </ToggleButton>
+                              <ToggleButton
+                                value={false}
+                                style={{
+                                  backgroundColor: !liveAnomalyImg ? 'rgb(16, 185, 129)' : '',
+                                  color: !liveAnomalyImg ? 'white' : '#10b981',
+                                }}
+                              >
+                                Reference
+                              </ToggleButton>
+                            </ToggleButtonGroup>
+                          </div>
                           <ImageListItemBar title={`Date: ${timestamps?.date}`} subtitle={`Time: ${timestamps?.time}`} />
                         </TransformComponent>
                       </div>
                     </TransformWrapper>
                   </div>
+
                   <div className="md:w-[30vw] md:ml-[1.5vw] h-[80vh] flex flex-col w-full">
                     <div className="flex-grow flex flex-col space-y-1.5 overflow-y-auto scrollbar">
                       <div className="w-full flex justify-between place-items-center">
