@@ -733,7 +733,7 @@ const StoreLayout = () => {
                       top: '4%'
                     }}
                   />
-                  <div className="lg:flex absolute right-[7%] top-[2%] hidden">
+                  <div className="xl:flex absolute right-[7%] top-[2%] hidden">
                     {/* TOGGLE BUTTON GROUP FOR LIVE AND REFERENCE IMAGE */}
                     <ToggleButtonGroup
                       color="primary"
@@ -792,7 +792,7 @@ const StoreLayout = () => {
 
                   {/* STORE, BAY, SHELF */}
                   <div
-                    className=" text-xl cursor-pointer text-white absolute hidden md:block"
+                    className=" text-xl cursor-pointer text-white absolute hidden xl:block"
                     style={{
                       left: '4%',
                       top: '3%'
@@ -806,7 +806,7 @@ const StoreLayout = () => {
                     </Typography>
                   </div>
                   <div
-                    className=" text-xl cursor-pointer text-white absolute lg:block hidden"
+                    className=" text-xl cursor-pointer text-white absolute xl:block hidden"
                     style={{
                       left: '4%',
                       top: '25%'
@@ -820,7 +820,7 @@ const StoreLayout = () => {
                     </Typography>
                   </div>
                   <div
-                    className=" text-xl cursor-pointer text-white absolute lg:block hidden"
+                    className=" text-xl cursor-pointer text-white absolute xl:block hidden"
                     style={{
                       left: '4%',
                       bottom: '3%'
@@ -844,7 +844,7 @@ const StoreLayout = () => {
                     </Typography>
                   </div>
                   <IconButton
-                    className="absolute text-white left-[4%] top-[3%] "
+                    className="absolute text-white left-[4%] top-[3%] xl:hidden"
                     size="large"
                     aria-label="more"
                     id="long-button"
@@ -990,24 +990,9 @@ const StoreLayout = () => {
                       </MenuItem>
                     </MenuList>
 
-                    {/* {options.map((option) => (
-                      <MenuItem
-                        key={option.label}
-                        selected={option.label === 'View'}
-                        disabled={option.disabled} // Apply the disabled attribute conditionally
-                        onClick={() => {
-                          if (option.disabled != true) {
-                            console.log("here")
-                          }
-                        }}
-                      >
-                        {option.icon && <span style={{ marginRight: '8px', color: option.color }}>{option.icon}</span>}
-                        <span style={{ color: option.color }}>{option.label}</span>
-                      </MenuItem>
-                    ))} */}
                   </Menu>
                   <div
-                    className="  border-red-500 absolute right-[7%] top-1/2 -translate-y-1/2 w-96 h-96 lg:grid text-white gap-4 hidden"
+                    className="  border-red-500 absolute right-[7%] top-1/2 -translate-y-1/2 w-96 h-96 xl:grid text-white gap-4 hidden"
                     style={{
                       gridTemplateColumns: `repeat(${selectedImage?.tray_detail?.length}, 1fr)`,
                       gridTemplateRows: `repeat(${selectedImage?.tray_detail?.[0]?.length}, 1fr)`
