@@ -5,7 +5,7 @@ import MainLayout from 'layout/MainLayout';
 import Loadable from 'component/Loadable';
 import StoreLayout from 'views/Stores/Table/layout';
 import EditStore from 'views/Team/updateStore';
-
+import ProtectedRoute from './ProtectedRoute';
 
 
 const Insight = Loadable(lazy(() => import('../views/Insights')));
@@ -24,7 +24,7 @@ const SamplePage = Loadable(lazy(() => import('../views/SamplePage')));
 
 const MainRoutes = {
   path: '/main',
-  element: <MainLayout />,
+  element: <ProtectedRoute element={<MainLayout />} />,
   children: [
     {
       path: '/main/insights', // Make this path relative to '/main'
