@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 // import { GoChevronLeft, GoChevronRight } from "react-icons/go";
 import Breadcrumb from 'component/Breadcrumb';
-import { ChevronLeftRounded, ChevronRightRounded } from '@mui/icons-material';
+import { ChevronLeftRounded, ChevronRightRounded, MenuRounded } from '@mui/icons-material';
 import { ImCross } from 'react-icons/im';
 import toast, { Toaster } from 'react-hot-toast';
 import Tooltip from '@mui/material/Tooltip';
@@ -17,7 +17,13 @@ import {
   useMediaQuery,
   ToggleButton,
   ToggleButtonGroup,
-  Button
+  Button,
+  ListItemText,
+  Menu,
+  MenuItem,
+  IconButton,
+  MenuList,
+  Divider
 } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { GetStoreLayout, GetImagesFromSignedUrl } from '../../../api/index';
@@ -55,6 +61,8 @@ const StoreLayout = () => {
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [liveImg, setLiveImg] = useState(true);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
   const navigate = useNavigate();
 
   // useEffect(() => {
@@ -69,8 +77,15 @@ const StoreLayout = () => {
 
   //   fetchData();
   // }, []);
-  const isMdOrLarger = useMediaQuery((theme) => theme.breakpoints.up('md'));
+  const isSmOrLarger = useMediaQuery((theme) => theme.breakpoints.up('sm'));
+  const isLgOrLarger = useMediaQuery((theme) => theme.breakpoints.up('lg'));
 
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   const handleCloseImageDialog = () => {
     setIsImageDialogOpen(false);
   };
@@ -88,7 +103,7 @@ const StoreLayout = () => {
 
   const date = new Date();
   const today = date.toISOString().split('T')[0];
-  console.log("today", today);
+  console.log('today', today);
   const getLayoutData = async () => {
     const input = {
       Store_IDs: ['6582be9ac5ed94d792a563b8'],
@@ -101,7 +116,7 @@ const StoreLayout = () => {
 
   useEffect(() => {
     getLayoutData();
-  }, []);
+  });
 
   const findMidpoint = (coordinates, dimensions) => {
     const { x, y } = coordinates;
@@ -367,9 +382,9 @@ const StoreLayout = () => {
         </div>
 
         <div
-          className={`w-full h-full relative ${
-            openShelves || openBay ? 'hidden' : ''
-          } border-red-500  md:rotate-0 rotate-90 flex justify-start items-center  scale-[1.5] md:scale-100 md:top-0 top-48`}
+          className={`w-full h-full relative ${openShelves || openBay ? 'hidden' : ''} border-red-500  flex justify-start items-center  ${
+            isSmOrLarger ? 'rotate-0 top-0 scale-100' : 'rotate-90 top-48 scale-[1.5]'
+          }`}
         >
           <img src={layoutData?.image_url} alt="layout" loading="lazy" onLoad={findDimensions} ref={imageRef} className="lg:w-full" />
           <div className="absolute top-0 left-0 w-full h-full">
@@ -406,10 +421,10 @@ const StoreLayout = () => {
                         : 'bg-gray-500 disabled:'
                     } rounded-lg text-xs  h-4 md:h-10 text-white md:rotate-0 md:px-2 px-1`}
                     style={{
-                      top: isMdOrLarger
+                      top: isSmOrLarger
                         ? `${findMidpoint(item.coordinates, item.dimensions).y * scaleFactor}px`
                         : `${findMidpoint(item.coordinates, item.dimensions).y * scaleFactor * 1.4}px`,
-                      left: isMdOrLarger
+                      left: isSmOrLarger
                         ? `${findMidpoint(item.coordinates, item.dimensions).x * scaleFactor}px`
                         : `${findMidpoint(item.coordinates, item.dimensions).x * scaleFactor * 1.58}px`
                     }}
@@ -417,7 +432,7 @@ const StoreLayout = () => {
                       handleOpenBay(item);
                     }}
                   >
-                    {isMdOrLarger ? item.bay_name : item.bay_name.split(' ')[1]}
+                    {isLgOrLarger ? item.bay_name : item.bay_name.split(' ')[1]}
                   </button>
                 </Tooltip>
               </ThemeProvider>
@@ -430,13 +445,13 @@ const StoreLayout = () => {
         <div className={`w-full relative flex justify-center items-center ${loading ? 'h-0' : ''}`}>
           <ChevronLeftRounded
             onClick={handlePrevBay}
-            className="text-gray-400 opacity-50 hover:opacity-100 text-7xl absolute z-10 cursor-pointer lg:left-[2%] lg:top-[45%] left-0 top-[35%]"
+            className="text-gray-400 opacity-50 hover:opacity-100 absolute z-10 cursor-pointer lg:left-[2%] lg:top-[45%] left-0 top-[35%] w-10 h-10 md:w-20 md:h-20"
             onKeyDown={handleKeyDownBay}
             tabIndex="0"
           />
           <ChevronRightRounded
             onClick={handleNextBay}
-            className="text-gray-400 opacity-50 hover:opacity-100 text-7xl absolute z-10 cursor-pointer lg:right-[2%] lg:top-[45%] right-0 top-[35%]"
+            className="text-gray-400 opacity-50 hover:opacity-100 w-10 h-10 md:w-20 md:h-20 absolute z-10 cursor-pointer lg:right-[2%] lg:top-[45%] right-0 top-[35%]"
             onKeyDown={handleKeyDownBay}
             tabIndex="0"
           />
@@ -467,7 +482,7 @@ const StoreLayout = () => {
                           : item?.shelf_fullness < 50
                           ? 'border-red-600 hover:bg-red-200'
                           : 'border-gray-500 hover:bg-gray-200'
-                      } border-[5px] rounded-lg col-span-1 cursor-pointer row-start-2 flex justify-center items-center text-xl font-semibold  duration-500`}
+                      } border-[5px] rounded-lg col-span-1 cursor-pointer row-start-2 flex justify-center items-center lg:text-xl text-base font-semibold  duration-500`}
                       style={{
                         gridRowEnd: 8
                       }}
@@ -478,11 +493,11 @@ const StoreLayout = () => {
                       }}
                     >
                       <div className="h-full flex justify-center items-center">
-                        <p className="-rotate-90 border-0 border-red-500 m-0 w-28 text-center">
-                          shelf - 1
-                          <br />
-                          {isNaN(item?.shelf_fullness) ? 'No Capture' : Math.floor(item?.shelf_fullness) + '%'}
-                        </p>
+                        <div className="-rotate-90 border-0 border-red-500 m-0 w-48 text-center flex gap-4 justify-center">
+                          <p>Shelf - 1</p>
+                          {/* <br /> */}
+                          <p>{isNaN(item?.shelf_fullness) ? 'No Capture' : Math.floor(item?.shelf_fullness) + '%'}</p>
+                        </div>
                         {/* <p className="-rotate-90 border-0 border-red-500 m-0 w-24 text-center">{item.shelf_fullness}</p> */}
                       </div>
                     </div>
@@ -500,7 +515,7 @@ const StoreLayout = () => {
                           ? 'border-red-600 hover:bg-red-200'
                           : 'border-gray-500 hover:bg-gray-200'
                       }
-                      border-emerald-500 border-[5px] rounded-lg col-span-1 row-start-2 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500`}
+                      border-emerald-500 border-[5px] rounded-lg col-span-1 row-start-2 flex justify-center items-center lg:text-xl text-sm font-semibold hover:bg-emerald-200 duration-500`}
                       style={{
                         gridRowEnd: 8,
                         gridColumnStart: 6
@@ -510,11 +525,16 @@ const StoreLayout = () => {
                       }}
                     >
                       <div className="h-full flex justify-center items-center cursor-pointer">
-                        <p className="rotate-90 border-0 border-red-500 m-0 w-28 text-center">
+                        {/* <p className="rotate-90 border-0 border-red-500 m-0 w-28 text-center">
                           shelf - 3
                           <br />
                           {isNaN(item?.shelf_fullness) ? 'No Capture' : Math.floor(item?.shelf_fullness) + '%'}
-                        </p>
+                        </p> */}
+                        <div className="rotate-90 border-0 border-red-500 m-0 w-48 text-center flex gap-4 justify-center">
+                          <p>Shelf - 3</p>
+                          {/* <br /> */}
+                          <p>{isNaN(item?.shelf_fullness) ? 'No Capture' : Math.floor(item?.shelf_fullness) + '%'}</p>
+                        </div>
                         {/* <p className="-rotate-90 border-0 border-red-500 m-0 w-24 text-center">{item.shelf_fullness}</p> */}
                       </div>
                     </div>
@@ -532,7 +552,7 @@ const StoreLayout = () => {
                           ? 'border-red-600 hover:bg-red-200'
                           : 'border-gray-500 hover:bg-gray-200'
                       }
-                      border-emerald-500 cursor-pointer border-[5px] rounded-lg col-start-2 row-span-1 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500`}
+                      border-emerald-500 cursor-pointer border-[5px] rounded-lg col-start-2 row-span-1 flex justify-center items-center lg:text-xl text-sm font-semibold hover:bg-emerald-200 duration-500`}
                       style={{
                         gridColumnEnd: 6,
                         gridRowStart: 1
@@ -541,11 +561,16 @@ const StoreLayout = () => {
                         handleOpenShelves(item);
                       }}
                     >
-                      <p className="">
+                      {/* <p className="">
                         shelf - 2
                         <br />
                         {isNaN(item?.shelf_fullness) ? 'No Capture' : Math.floor(item?.shelf_fullness) + '%'}
-                      </p>
+                      </p> */}
+                      <div className="flex justify-center items-center gap-4">
+                        <p>Shelf - 2</p>
+                        {/* <br /> */}
+                        <p>{isNaN(item?.shelf_fullness) ? 'No Capture' : Math.floor(item?.shelf_fullness) + '%'}</p>
+                      </div>
                     </div>
                   );
                 return (
@@ -560,7 +585,7 @@ const StoreLayout = () => {
                         ? 'border-red-600 hover:bg-red-200'
                         : 'border-gray-500 hover:bg-gray-200'
                     }
-                    border-emerald-500 cursor-pointer border-[5px] rounded-lg col-start-2 row-span-1 flex justify-center items-center text-xl font-semibold hover:bg-emerald-200 duration-500`}
+                    border-emerald-500 cursor-pointer border-[5px] rounded-lg col-start-2 row-span-1 flex justify-center items-center lg:text-xl text-sm font-semibold hover:bg-emerald-200 duration-500`}
                     style={{
                       gridColumnEnd: 6,
                       gridRowStart: currentBay.id === 9 ? 9 : 8
@@ -569,11 +594,16 @@ const StoreLayout = () => {
                       handleOpenShelves(item);
                     }}
                   >
-                    <p className="border-0 border-red-500 ">
+                    {/* <p className="border-0 border-red-500 ">
                       shelf - 0
                       <br />
                       {isNaN(item?.shelf_fullness) ? 'No Capture' : Math.floor(item?.shelf_fullness) + '%'}
-                    </p>
+                    </p> */}
+                    <div className="flex justify-center items-center gap-4">
+                      <p>Shelf - 0</p>
+                      {/* <br /> */}
+                      <p>{isNaN(item?.shelf_fullness) ? 'No Capture' : Math.floor(item?.shelf_fullness) + '%'}</p>
+                    </div>
                   </div>
                 );
               })}
@@ -600,6 +630,7 @@ const StoreLayout = () => {
             tabIndex="0"
           />
           <div className="w-full h-full flex lg:justify-center text-3xl font-semibold  py-6 overflow-auto">
+            {/* MULTIPLE PARTS WITH IMAGE OF WITH OUT IMAGE */}
             <ImageList
               sx={{
                 alignItems: 'center'
@@ -663,9 +694,8 @@ const StoreLayout = () => {
                 </ImageListItem>
               ))}
             </ImageList>
-            {/* </div> */}
 
-            {/* <Dialog open={isImageDialogOpen} onClose={handleCloseImageDialog} maxWidth="lg"> */}
+            {/* OPEN A SINGLE IMAGE AND ITS DETAILS */}
             <Dialog
               // fullWidth={fullWidth}
               // maxWidth={maxWidth}
@@ -685,26 +715,26 @@ const StoreLayout = () => {
                 <div className="self-center ">
                   <ChevronLeftRounded
                     onClick={handlePrevPart}
-                    className="text-gray-400 opacity-100 hover:opacity-100 text-7xl absolute z-10 cursor-pointer lg:left-[2%] lg:top-[45%] left-0 top-[35%]"
+                    className="text-gray-400 opacity-100 hover:opacity-100 text-7xl absolute z-10 cursor-pointer lg:left-[2%] top-[45%] left-0"
                     onKeyDown={handleKeyDownPart}
                     tabIndex="0"
                   />
                   <ChevronRightRounded
                     onClick={handleNextPart}
-                    className="text-gray-400 opacity-100 hover:opacity-100 text-7xl absolute z-10 cursor-pointer lg:right-[2%] lg:top-[45%] right-0 top-[35%]"
+                    className="text-gray-400 opacity-100 hover:opacity-100 text-7xl absolute z-10 cursor-pointer lg:right-[2%] top-[45%] right-0"
                     onKeyDown={handleKeyDownPart}
                     tabIndex="0"
                   />
                   <ImCross
                     onClick={handleCloseImageDialog}
-                    className="z-20 text-xl cursor-pointer text-white opacity-60 hover:opacity-100 absolute"
+                    className="z-20 text-lg cursor-pointer text-white opacity-60 hover:opacity-100 absolute"
                     style={{
                       right: '4%',
-                      top: '3%'
+                      top: '4%'
                     }}
                   />
-                  <div className="flex absolute right-[7%] top-[2%]">
-                    {/* ToggleButtonGroup */}
+                  <div className="xl:flex absolute right-[7%] top-[2%] hidden">
+                    {/* TOGGLE BUTTON GROUP FOR LIVE AND REFERENCE IMAGE */}
                     <ToggleButtonGroup
                       color="primary"
                       value={liveImg}
@@ -738,9 +768,7 @@ const StoreLayout = () => {
                     </ToggleButtonGroup>
 
                     <div style={{ marginLeft: '10px' }} />
-
-                    {/* Button */}
-                    <Button className="bg-emerald-500 text-white hover:bg-emerald-600" onClick={handleSaveForRetraining}>
+                    <Button className="bg-emerald-500 text-white hover:bg-emerald-600 " onClick={handleSaveForRetraining}>
                       Save for Retraining
                     </Button>
                     <Toaster />
@@ -755,14 +783,16 @@ const StoreLayout = () => {
                     <img
                       src={liveImg ? selectedImage?.img_url : selectedImage?.onboarded_image_url}
                       alt="Full-screen"
-                      className="self-center lg:max-h-[95svh] max-h-[90svh] mt-10 md:mt-0"
+                      className="self-center lg:max-h-[95svh] max-h-[80svh] mt-10 md:mt-0"
                       onLoad={() => {
                         setImgLoading(false);
                       }}
                     />
                   </div>
+
+                  {/* STORE, BAY, SHELF */}
                   <div
-                    className=" text-xl cursor-pointer text-white absolute"
+                    className=" text-xl cursor-pointer text-white absolute hidden xl:block"
                     style={{
                       left: '4%',
                       top: '3%'
@@ -776,7 +806,7 @@ const StoreLayout = () => {
                     </Typography>
                   </div>
                   <div
-                    className=" text-xl cursor-pointer text-white absolute"
+                    className=" text-xl cursor-pointer text-white absolute xl:block hidden"
                     style={{
                       left: '4%',
                       top: '25%'
@@ -790,7 +820,7 @@ const StoreLayout = () => {
                     </Typography>
                   </div>
                   <div
-                    className=" text-xl cursor-pointer text-white absolute"
+                    className=" text-xl cursor-pointer text-white absolute xl:block hidden"
                     style={{
                       left: '4%',
                       bottom: '3%'
@@ -813,9 +843,156 @@ const StoreLayout = () => {
                       })}`}
                     </Typography>
                   </div>
+                  <IconButton
+                    className="absolute text-white left-[4%] top-[3%] xl:hidden"
+                    size="large"
+                    aria-label="more"
+                    id="long-button"
+                    aria-controls={open ? 'long-menu' : undefined}
+                    aria-expanded={open ? 'true' : undefined}
+                    aria-haspopup="true"
+                    onClick={handleClick}
+                  >
+                    <MenuRounded />
+                  </IconButton>
+                  <Menu
+                    className="absolute"
+                    id="long-menu"
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left'
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right'
+                    }}
+                    // PaperProps={{
+                    //   style: {
+                    //     maxHeight: ITEM_HEIGHT * 4.5,
+                    //     width: '20ch'
+                    //   }
+                    // }}
+                  >
+                    <MenuList dense>
+                      <MenuItem>
+                        {/* TOGGLE BUTTON GROUP FOR LIVE AND REFERENCE IMAGE */}
+                        <ToggleButtonGroup
+                          color="primary"
+                          value={liveImg}
+                          exclusive
+                          onChange={handleToggleImage}
+                          aria-label="Platform"
+                          className="text-white bg-white"
+                          size="small"
+                        >
+                          <ToggleButton
+                            value={true}
+                            style={{
+                              backgroundColor: liveImg ? 'rgb(16, 185, 129)' : '',
+                              color: liveImg ? 'white' : '#10b981',
+                              borderColor: '#10b981',
+                              width: 100
+                            }}
+                          >
+                            Live
+                          </ToggleButton>
+                          <ToggleButton
+                            value={false}
+                            style={{
+                              backgroundColor: !liveImg ? 'rgb(16, 185, 129)' : '',
+                              color: !liveImg ? 'white' : '#10b981',
+                              borderColor: '#10b981',
+                              width: 100
+                            }}
+                          >
+                            Reference
+                          </ToggleButton>
+                        </ToggleButtonGroup>
+                      </MenuItem>
+                      <Divider />
+                      <MenuItem>
+                        <Button className="bg-emerald-500 text-white hover:bg-emerald-600 " onClick={handleSaveForRetraining}>
+                          Save for Retraining
+                        </Button>
+                        <Toaster />
+                      </MenuItem>
+                      <Divider />
+                      <MenuItem>
+                        <ListItemText>
+                          <Typography variant="h5">
+                            {layoutData?.store_id} - {layoutData?.name}
+                          </Typography>
+                          <Typography variant="h5">
+                            {currentBay?.bay_name} / {currentShelf?.shelf_name}
+                          </Typography>
+                        </ListItemText>
+                      </MenuItem>
+                      <Divider />
+                      <MenuItem>
+                        <ListItemText>
+                          <Typography variant="h5">{`Up-Keep score: ${Math.floor(selectedImage?.avg_full) || 0}%`}</Typography>
 
+                          <Typography variant="h5">{`VM score: ${Math.floor(selectedImage?.vm_score) || 0}%`}</Typography>
+                        </ListItemText>
+                      </MenuItem>
+                      <Divider />
+                      <MenuItem>
+                        <ListItemText>
+                          <Typography variant="h5">{`Name: ${selectedImage?.userDetails?.user_name}`}</Typography>
+                          <Typography variant="h5">{`Number: ${selectedImage?.userDetails?.number}`}</Typography>
+                          <Typography variant="h5">{`Date: ${selectedImage?.timestamps?.split('T')[0]}`}</Typography>
+                          <Typography variant="h5">
+                            {`Time: ${new Date(selectedImage?.timestamps).toLocaleTimeString([], {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              second: '2-digit'
+                            })}`}
+                          </Typography>
+                        </ListItemText>
+                      </MenuItem>
+                      <Divider />
+                      <MenuItem>
+                        <div
+                          className="  border-red-500 w-64 h-40 grid text-black gap-2 "
+                          style={{
+                            gridTemplateColumns: `repeat(${selectedImage?.tray_detail?.length}, 1fr)`,
+                            gridTemplateRows: `repeat(${selectedImage?.tray_detail?.[0]?.length}, 1fr)`
+                          }}
+                        >
+                          {selectedImage?.tray_detail?.length > 0 &&
+                            selectedImage?.tray_detail?.map((item, index) => {
+                              return (
+                                <div key={index} className="flex flex-col h-40">
+                                  {item?.map((value, i) => {
+                                    // console.log(value?.rgb);
+                                    return (
+                                      <Box
+                                        className={` border-black border flex justify-center items-center col-span-1 row-span-1 w-full h-full`}
+                                        style={{ backgroundColor: value?.rgb ? `transparent` : 'transparent' }}
+                                        // style={{ backgroundColor: value?.rgb ? `rgb(${value?.rgb})` : 'transparent' }}
+                                        key={i}
+                                      >
+                                        {value?.rgb ? (
+                                          <span className="text-base">{value?.color_family}</span>
+                                        ) : (
+                                          <span className="text-base">Failed to extract</span>
+                                        )}
+                                      </Box>
+                                    );
+                                  })}
+                                </div>
+                              );
+                            })}
+                        </div>
+                      </MenuItem>
+                    </MenuList>
+
+                  </Menu>
                   <div
-                    className="  border-red-500 absolute right-[7%] top-1/2 -translate-y-1/2 w-96 h-96 grid text-white gap-4"
+                    className="  border-red-500 absolute right-[7%] top-1/2 -translate-y-1/2 w-96 h-96 xl:grid text-white gap-4 hidden"
                     style={{
                       gridTemplateColumns: `repeat(${selectedImage?.tray_detail?.length}, 1fr)`,
                       gridTemplateRows: `repeat(${selectedImage?.tray_detail?.[0]?.length}, 1fr)`
