@@ -17,7 +17,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 // ==============================|| NAV ITEM ||============================== //
 
-const NavItem = ({ item, level }) => {
+const NavItem = ({ item, level, drawerToggle }) => {
   const theme = useTheme();
   const customization = useSelector((state) => state.customization);
   const dispatch = useDispatch();
@@ -33,6 +33,10 @@ const NavItem = ({ item, level }) => {
     listItemProps = { component: 'a', href: item.url };
   }
 
+  const handleClickNavItems = () => {
+    dispatch({ type: actionTypes.MENU_OPEN, isOpen: item.id });
+    drawerToggle(false);
+  };
   return (
     <ListItemButton
       disabled={item.disabled}
@@ -44,9 +48,10 @@ const NavItem = ({ item, level }) => {
       }}
       selected={customization.isOpen === item.id}
       component={Link}
-      onClick={() => dispatch({ type: actionTypes.MENU_OPEN, isOpen: item.id })}
+      onClick={handleClickNavItems}
       to={item.url}
-      target={itemTarget}
+      target={item.content === 'Contact Us' ? '_blank' : itemTarget}
+      rel={item.content === 'Contact Us' ? 'noopener noreferrer' : undefined}
       {...listItemProps}
     >
       <ListItemIcon sx={{ minWidth: 25 }}>{itemIcon}</ListItemIcon>
