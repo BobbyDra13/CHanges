@@ -116,7 +116,7 @@ const StoreLayout = () => {
 
   useEffect(() => {
     getLayoutData();
-  });
+  }, []);
 
   const findMidpoint = (coordinates, dimensions) => {
     const { x, y } = coordinates;
@@ -989,7 +989,6 @@ const StoreLayout = () => {
                         </div>
                       </MenuItem>
                     </MenuList>
-
                   </Menu>
                   <div
                     className="  border-red-500 absolute right-[7%] top-1/2 -translate-y-1/2 w-96 h-96 xl:grid text-white gap-4 hidden"
