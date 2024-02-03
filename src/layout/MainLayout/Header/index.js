@@ -130,7 +130,14 @@ const Header = ({ drawerToggle }) => {
           >
             Teams
           </Link>
-
+          <a
+            href="https://neophyte.ai/contact"
+            className="text-lg hover:border-b-2 hover:border-emerald-500 hover:text-emerald-600"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Contact
+          </a>
           {/* {TopNavItems.map((item) => {
             <Link className='' key={item.title} to={item.url}>
               {item.title}
