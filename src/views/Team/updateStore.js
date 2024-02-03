@@ -173,10 +173,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
     }
 
     if (name === 'user_role') {
-      setIsEmailEditable(value === 'Cluster Manager' || value === 'NHK Super User');
-      if (!(value === 'Cluster Manager' || value === 'NHK Super User')) {
-        setEmail('');
-      }
+      setIsEmailEditable(value != 'Agent');
     }
     let fieldError = '';
     switch (name) {
