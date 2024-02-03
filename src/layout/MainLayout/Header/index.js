@@ -136,7 +136,7 @@ const Header = ({ drawerToggle }) => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Contact
+            Contact Us
           </a>
           {/* {TopNavItems.map((item) => {
             <Link className='' key={item.title} to={item.url}>
