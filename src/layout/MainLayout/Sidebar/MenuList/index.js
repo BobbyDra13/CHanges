@@ -9,11 +9,11 @@ import menuItem from 'menu-items';
 
 // ==============================|| MENULIST ||============================== //
 
-const MenuList = () => {
+const MenuList = ({ drawerToggle }) => {
   const navItems = menuItem.items.map((item) => {
     switch (item.type) {
       case 'group':
-        return <NavGroup key={item.id} item={item} />;
+        return <NavGroup key={item.id} item={item} drawerToggle={drawerToggle} />;
       default:
         return (
           <Typography key={item.id} variant="h6" color="error" align="center">

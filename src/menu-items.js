@@ -48,7 +48,7 @@ export default {
           type: 'item',
           icon: icons['SpaceDashboardOutlinedIcon'],
           url: '/main/insights'
-        },
+        }
         // {
         //   id: 'stores',
         //   title: 'Stores',
@@ -161,14 +161,17 @@ export default {
             color: 'primary'
           },
           external: true,
-          target: true
+          target: true,
+          disabled: true
         },
         {
           id: 'contact-us',
           title: 'Contact Us',
           type: 'item',
-          url: '#',
-          icon: icons['ContactMailOutlinedIcon']
+          url: 'https://neophyte.ai/contact',
+          icon: icons['ContactMailOutlinedIcon'],
+          external: true,
+          target: true
           // disabled: true
         }
       ]

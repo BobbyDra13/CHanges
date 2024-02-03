@@ -3,7 +3,7 @@ import React from 'react';
 
 // material-ui
 import { useTheme, styled } from '@mui/material/styles';
-import {  Divider, Drawer, Grid, Box } from '@mui/material';
+import { Divider, Drawer, Grid, Box } from '@mui/material';
 import { Typography } from '@mui/material';
 
 // third party
@@ -64,7 +64,7 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
       </Box>
       <Divider />
       <PerfectScrollbar style={{ height: 'calc(100vh - 65px)', padding: '10px' }}>
-        <MenuList />
+        <MenuList drawerToggle={drawerToggle} />
       </PerfectScrollbar>
     </>
   );

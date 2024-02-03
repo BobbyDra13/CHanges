@@ -75,6 +75,10 @@ body {
   font-family: 'Baloo 2', sans-serif;
 }
 
+iframe#webpack-dev-server-client-overlay {
+  display: none !important;
+}
+
 .slick-slide > div {
   margin: 0 5px;
 }
