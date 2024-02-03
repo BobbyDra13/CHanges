@@ -13,7 +13,11 @@ import {
   useTheme,
   CircularProgress,
   Snackbar,
-  Alert
+  Alert,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  FormLabel
 } from '@mui/material';
 import { allStoresId, checkId, getOneUser, updateUser } from 'api';
 import { Link } from 'react-router-dom';
@@ -27,7 +31,8 @@ const initialValue = {
   user_name: '',
   store_id: '',
   email: '',
-  number: ''
+  number: '',
+  isWhatsApp:false,
 };
 const roles = ['Agent', 'Department Manager', 'Store Manager', 'Cluster Manager', 'NHK Super User'];
 const depts = ['Operations', 'VM', 'Marketing', 'Analysis'];
@@ -36,6 +41,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
   const theme = useTheme();
   const [user, setUser] = useState(initialValue);
   const { user_dept, user_role, user_id, user_name, store_id, number } = user;
+  var {isWhatsApp} = user;
   const [isEmailEditable, setIsEmailEditable] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(true);
@@ -479,6 +485,67 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
+                  label="Phone Number"
+                  onChange={(e) => onValueChange(e)}
+                  name="number"
+                  value={number}
+                  id="my-input"
+                  variant="outlined"
+                  fullWidth
+                  required="true"
+                  sx={{
+                    '& .MuiInputLabel-root': {
+                      color: 'rgba(0, 0, 0, 0.4)',
+                      '&.Mui-focused': {
+                        color: 'black'
+                      }
+                    },
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '10px',
+                      '& fieldset': {
+                        borderColor: 'rgba(0, 0, 0, 0.2)'
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'black'
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: 'black'
+                      }
+                    }
+                  }}
+                  error={!!errors.number}
+                  helperText={errors.number}
+                />
+                <FormLabel id="demo-controlled-radio-buttons-group">Is this number on WhatsApp?</FormLabel>
+                <RadioGroup
+                  name="whatsapp"
+                  onChange={(e) => onValueChange(e)}
+                  row
+                  aria-labelledby="demo-controlled-radio-buttons-group"
+                  value={isWhatsApp}
+                >
+                  <FormControlLabel
+                    value={true}
+                    name="controlled-radio-buttons-group"
+                    control={<Radio />}
+                    label="Yes"
+                    onClick={() => {
+                      isWhatsApp = true;
+                    }}
+                  />
+                  <FormControlLabel
+                    value={false}
+                    name="controlled-radio-buttons-group"
+                    control={<Radio />}
+                    label="No"
+                    onClick={()=>{
+                      isWhatsApp= true;
+                    }}
+                  />
+                </RadioGroup>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
                   label="Email Address"
                   onChange={(e) => {
                     setEmail(e.target.value);
@@ -512,40 +579,6 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
                     }
                   }}
                   error={!!errors.email && isEmailEditable}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Phone Number"
-                  onChange={(e) => onValueChange(e)}
-                  name="number"
-                  value={number}
-                  id="my-input"
-                  variant="outlined"
-                  fullWidth
-                  required="true"
-                  sx={{
-                    '& .MuiInputLabel-root': {
-                      color: 'rgba(0, 0, 0, 0.4)',
-                      '&.Mui-focused': {
-                        color: 'black'
-                      }
-                    },
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: '10px',
-                      '& fieldset': {
-                        borderColor: 'rgba(0, 0, 0, 0.2)'
-                      },
-                      '&:hover fieldset': {
-                        borderColor: 'black'
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: 'black'
-                      }
-                    }
-                  }}
-                  error={!!errors.number}
-                  helperText={errors.number}
                 />
               </Grid>
             </Grid>
