@@ -1,5 +1,20 @@
 import { useEffect, useState } from 'react';
-import { Button, TextField, Grid, MenuItem, Typography, Paper, Box, ListItemText, Divider, CircularProgress } from '@mui/material';
+import {
+  Button,
+  TextField,
+  Grid,
+  MenuItem,
+  Typography,
+  Paper,
+  Box,
+  ListItemText,
+  Divider,
+  CircularProgress,
+  Radio,
+  FormLabel,
+  FormControlLabel,
+  RadioGroup
+} from '@mui/material';
 import { allStoresId, checkId, createUser } from 'api';
 import { useTheme } from '@emotion/react';
 import { Link } from 'react-router-dom';
@@ -26,6 +41,7 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
   const [email, setEmail] = useState('');
   const [storesList, updateStores] = useState([]);
   const [apiResponded, setApiResponded] = useState(true);
+  const [isWhatsApp, setIsWhatsApp] = useState(false);
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -75,6 +91,8 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
     } else {
       if (!validatePhoneNumber(number)) {
         formErrors = { ...formErrors, number: 'Please enter a valid phone number' };
+      } else if (!isWhatsApp) {
+        formErrors = { ...formErrors, number: 'The number should be on whatsapp' };
       }
     }
 
@@ -108,10 +126,7 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
       setUser({ ...user, [name]: value });
     }
     if (name === 'user_role') {
-      setIsEmailEditable(value === 'Cluster Manager' || value === 'NHK Super User');
-      if (!(value === 'Cluster Manager' || value === 'NHK Super User')) {
-        setEmail('');
-      }
+      setIsEmailEditable(value != 'Agent');
     }
 
     let fieldError = '';
@@ -436,6 +451,57 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
+              label="Phone Number"
+              onChange={(e) => onValueChange(e)}
+              name="number"
+              value={number}
+              id="my-input"
+              variant="outlined"
+              fullWidth
+              required="true"
+              sx={{
+                '& .MuiInputLabel-root': {
+                  color: 'rgba(0, 0, 0, 0.4)',
+                  '&.Mui-focused': {
+                    color: 'black'
+                  }
+                },
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '10px',
+                  '& fieldset': {
+                    borderColor: 'rgba(0, 0, 0, 0.2)'
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'black'
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'black'
+                  }
+                }
+              }}
+              error={!!errors.number}
+              helperText={errors.number}
+            />
+            <FormLabel id="demo-controlled-radio-buttons-group">Is this number on WhatsApp?</FormLabel>
+            <RadioGroup onChange={(e)=>onValueChange(e)} row aria-labelledby="demo-controlled-radio-buttons-group" value={isWhatsApp}>
+              <FormControlLabel
+                value={true}
+                name="controlled-radio-buttons-group"
+                control={<Radio />}
+                label="Yes"
+                onClick={() => setIsWhatsApp(true)}
+              />
+              <FormControlLabel
+                value={false}
+                name="controlled-radio-buttons-group"
+                control={<Radio />}
+                label="No"
+                onClick={() => setIsWhatsApp(false)}
+              />
+            </RadioGroup>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
               label="Email Address"
               onChange={(e) => {
                 setEmail(e.target.value);
@@ -469,40 +535,6 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
                 }
               }}
               error={!!errors.email && isEmailEditable}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              label="Phone Number"
-              onChange={(e) => onValueChange(e)}
-              name="number"
-              value={number}
-              id="my-input"
-              variant="outlined"
-              fullWidth
-              required="true"
-              sx={{
-                '& .MuiInputLabel-root': {
-                  color: 'rgba(0, 0, 0, 0.4)',
-                  '&.Mui-focused': {
-                    color: 'black'
-                  }
-                },
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '10px',
-                  '& fieldset': {
-                    borderColor: 'rgba(0, 0, 0, 0.2)'
-                  },
-                  '&:hover fieldset': {
-                    borderColor: 'black'
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: 'black'
-                  }
-                }
-              }}
-              error={!!errors.number}
-              helperText={errors.number}
             />
           </Grid>
         </Grid>
