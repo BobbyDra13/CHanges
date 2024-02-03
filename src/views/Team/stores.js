@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 
-import { Button, Paper, IconButton, Dialog, useTheme, Snackbar, Alert, Box } from '@mui/material';
+import { Button, Paper, IconButton, Dialog, useTheme, Snackbar, Alert, Box, useMediaQuery } from '@mui/material';
 import { Delete as DeleteIcon, Add as AddIcon } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { CiExport } from 'react-icons/ci';
@@ -22,6 +22,7 @@ const AllStores = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [loading, setLoading] = useState(true);
 
+  const isSmallScreen = useMediaQuery(theme.breakpoints.up('sm'));
   const handleSnackbarOpen = () => {
     setSnackbarOpen(true);
   };
@@ -191,6 +192,7 @@ const AllStores = () => {
             color: '#FFFFFF',
             borderRadius: '8px',
             padding: '10px 20px',
+            marginBottom: !isSmallScreen?'1%':'',
             transition: 'background-color 0.3s ease',
             '&:hover': {
               bgcolor: theme.palette.success.dark
@@ -232,7 +234,7 @@ const AllStores = () => {
           </Alert>
         </Snackbar>
       </div>
-      <Paper elevation={4} style={{ padding: '20px', margin: '20px' }} sx={{ borderRadius: '15px' }}>
+      <Paper elevation={4} style={{ padding: '25px', margin: '1%' , marginTop:'1%' }} sx={{ borderRadius: '15px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <FilterationButton handleNavigationClick={handleNavigationClick} />
