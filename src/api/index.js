@@ -204,7 +204,7 @@ export const GetVerifiedUsers = async (phoneNumber) => {
       `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-app/user/auth_user_cred?numbers=${phoneNumber}`,
       {
         headers: {
-          Accept: 'application/json',
+          Accept: 'application/json'
         }
       }
     );
@@ -303,12 +303,15 @@ export const checkId = async (user_id) => {
 
 export const allStoresId = async () => {
   try {
-    const res = await axios.get(`${lambUrl}/store/get_all_store`, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
+    const res = await axios.get(
+      `https://wfsajq7upd.execute-api.ap-south-1.amazonaws.com/prod/neodisha-fashion-webapp/store/get_all_store`,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: await token()
+        }
       }
-    });
+    );
     return res.data;
   } catch (error) {
     console.log('Error occured');
