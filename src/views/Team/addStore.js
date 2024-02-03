@@ -91,8 +91,6 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
     } else {
       if (!validatePhoneNumber(number)) {
         formErrors = { ...formErrors, number: 'Please enter a valid phone number' };
-      } else if (!isWhatsApp) {
-        formErrors = { ...formErrors, number: 'The number should be on whatsapp' };
       }
     }
 
@@ -483,7 +481,7 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
               helperText={errors.number}
             />
             <FormLabel id="demo-controlled-radio-buttons-group">Is this number on WhatsApp?</FormLabel>
-            <RadioGroup onChange={(e)=>onValueChange(e)} row aria-labelledby="demo-controlled-radio-buttons-group" value={isWhatsApp}>
+            <RadioGroup name="whatsapp" onChange={(e) => onValueChange(e)} row aria-labelledby="demo-controlled-radio-buttons-group" value={isWhatsApp}>
               <FormControlLabel
                 value={true}
                 name="controlled-radio-buttons-group"
