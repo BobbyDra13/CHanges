@@ -14,11 +14,10 @@ export default async function getAuthToken() {
   // const [valueToken , setValueToken ] = useState(false)
 
   try {
-
     const someFunction = async () => {
       // 1 - Create a new Promise
-      return new Promise(function (resolve, reject) {
-        console.log(reject);
+      return new Promise(function (resolve) {
+        // console.log(reject);
         onAuthStateChanged(auth, (user) => {
           resolve(user);
         });
@@ -27,9 +26,9 @@ export default async function getAuthToken() {
     const _currentUser = await someFunction();
 
     if (_currentUser) {
-      console.log("_currentUser", _currentUser)
+      // console.log("_currentUser", _currentUser)
       const _idToken = await _currentUser.getIdToken(false);
-      console.log("token  is here ",_idToken)
+      // console.log("token  is here ",_idToken)
 
       return `Bearer ${_idToken.toString()}`;
     } else {
