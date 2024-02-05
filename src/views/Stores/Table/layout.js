@@ -26,7 +26,7 @@ import {
   Divider
 } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { GetStoreLayout, GetImagesFromSignedUrl } from '../../../api/index';
+import {GetImagesFromSignedUrl, GetBayWiseDetails, GetShelfWiseDetails } from '../../../api/index';
 // import NewLoader from '../../../component/Loader/Loader';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoReturnUpBack } from 'react-icons/io5';
@@ -105,15 +105,12 @@ const StoreLayout = () => {
     }
   };
 
-  const date = new Date();
-  const today = date.toISOString().split('T')[0];
+  const dateToday = new Date();
+  const today = dateToday.toISOString().split('T')[0];
   console.log('today', today);
   const getLayoutData = async () => {
-    const input = {
-      Store_IDs: ['6582be9ac5ed94d792a563b8'],
-      start_date: today
-    };
-    const response = await GetStoreLayout(input);
+    const date = today;
+    const response = await GetBayWiseDetails(date);
     console.log(response.data[0]);
     setLayoutData(response.data[0]);
   };
@@ -122,6 +119,13 @@ const StoreLayout = () => {
     getLayoutData();
   }, []);
 
+  const getShelfData = async (bay_id) => {
+    const date = today;
+    const response = await GetShelfWiseDetails(date, bay_id );
+    console.log(response.data[0]);
+    setLayoutData(...layoutData,response.data);
+
+  }
   const findMidpoint = (coordinates, dimensions) => {
     const { x, y } = coordinates;
     const { width, height } = dimensions;
@@ -134,8 +138,10 @@ const StoreLayout = () => {
     getLayoutData();
   };
   const handleOpenBay = (item) => {
+    getShelfData(item);
     setOpenBay(true);
     setCurrentBay(item);
+
   };
   const handlePrevBay = () => {
     let sortedBayArray = layoutData.bayDetails.sort((a, b) => {

@@ -25,7 +25,8 @@ const SamplePage = Loadable(lazy(() => import('../views/SamplePage')));
 
 const MainRoutes = {
   path: '/main',
-  element: <ProtectedRoute element={<MainLayout />} />,
+  // element: <ProtectedRoute element={<MainLayout />} />,
+  element:<MainLayout/>,
   children: [
     {
       path: '/main/insights', // Make this path relative to '/main'
