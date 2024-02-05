@@ -18,6 +18,18 @@ export const GetCaptureProgress = async (data) => {
   }
 };
 
+
+export const dates = async ()=>{
+  try{
+    const res= await axios.get(`${lambUrl}/store/calender`);
+    return res
+  }
+  catch (error) {
+    console.log('Error Calling Event dates API: ', error);
+  }
+};
+
+
 export const GetBrandDonutData = async (data) => {
   try {
     const res = await axios.post(`${lambUrl}/dashboard/doughtnut/brand_wise_fullness`, data, {

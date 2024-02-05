@@ -6,6 +6,7 @@ import Loadable from 'component/Loadable';
 import StoreLayout from 'views/Stores/Table/layout';
 import EditStore from 'views/Team/updateStore';
 import ProtectedRoute from './ProtectedRoute';
+import NotFound from 'views/NotFound/NotFound';
 
 
 const Insight = Loadable(lazy(() => import('../views/Insights')));
@@ -53,7 +54,8 @@ const MainRoutes = {
       ]
     },
     { path: '/main/utils/util-typography', element: <UtilsTypography /> },
-    { path: '/main/sample-page', element: <SamplePage /> }
+    { path: '/main/sample-page', element: <SamplePage /> },
+    { path: '*', element: <NotFound btn= "Go back" flag='1'/> }
   ]
 };
 
