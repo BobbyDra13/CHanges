@@ -39,7 +39,7 @@ import {
   ImageListItemBar,
   ToggleButton,
   ToggleButtonGroup,
-  TextField,
+  TextField
 } from '@mui/material';
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -528,6 +528,7 @@ const Customers = () => {
                                     <Typography variant="subtitle2">Number: {agent.agentsDetails.number}</Typography>
                                   </div>
                                 }
+                                enterTouchDelay={1} // for mobile touch
                               >
                                 <Avatar
                                   className="hover:cursor-pointer"
@@ -680,11 +681,11 @@ const Customers = () => {
                     <TransformWrapper>
                       <div className="image-wrapper rounded-md md:w-full w-4/5">
                         <TransformComponent>
-                        {imageLoading && (
-                      <div className="flex justify-center items-center absolute top-0 left-0 z-10  overflow-x-hidden bg-white w-full h-full">
-                        <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
-                      </div>
-                    )}
+                          {imageLoading && (
+                            <div className="flex justify-center items-center absolute top-0 left-0 z-10  overflow-x-hidden bg-white w-full h-full">
+                              <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
+                            </div>
+                          )}
                           <img
                             className="image rounded-md"
                             src={liveAnomalyImg ? selectedImage : anomalyDetails[0]?.reference_img}
@@ -706,7 +707,7 @@ const Customers = () => {
                                 value={true}
                                 style={{
                                   backgroundColor: liveAnomalyImg ? 'rgb(16, 185, 129)' : '',
-                                  color: liveAnomalyImg ? 'white' : '#10b981',
+                                  color: liveAnomalyImg ? 'white' : '#10b981'
                                 }}
                               >
                                 Live
@@ -715,7 +716,7 @@ const Customers = () => {
                                 value={false}
                                 style={{
                                   backgroundColor: !liveAnomalyImg ? 'rgb(16, 185, 129)' : '',
-                                  color: !liveAnomalyImg ? 'white' : '#10b981',
+                                  color: !liveAnomalyImg ? 'white' : '#10b981'
                                 }}
                               >
                                 Reference

@@ -1,8 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signOut } from "firebase/auth";
+import { signOut } from 'firebase/auth';
 import { auth } from 'firebase.config';
-
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -19,19 +18,18 @@ import MeetingRoomTwoToneIcon from '@mui/icons-material/MeetingRoomTwoTone';
 // ==============================|| PROFILE SECTION ||============================== //
 
 const ProfileSection = () => {
-
   const theme = useTheme();
-  const userData = localStorage.getItem("userData");
+  const userData = localStorage.getItem('userData');
   const users = JSON.parse(userData);
 
   const navigateTo = useNavigate();
-
 
   const handleLogout = () => {
     signOut(auth)
       .then(() => {
         // console.log("Sign-out successful");
-        navigateTo("/");
+        localStorage.removeItem('userData');
+        navigateTo('/');
       })
       .catch((error) => {
         // An error happened.
@@ -86,81 +84,83 @@ const ProfileSection = () => {
         <AccountCircleTwoToneIcon sx={{ fontSize: '1.7rem' }} />
       </Button>
       {users ? (
-      <Popper
-        placement="bottom-end"
-        open={open}
-        anchorEl={anchorRef.current}
-        role={undefined}
-        transition
-        disablePortal
-        modifiers={[
-          {
-            name: 'offset',
-            options: {
-              offset: [0, 10]
+        <Popper
+          placement="bottom-end"
+          open={open}
+          anchorEl={anchorRef.current}
+          role={undefined}
+          transition
+          disablePortal
+          modifiers={[
+            {
+              name: 'offset',
+              options: {
+                offset: [0, 10]
+              }
+            },
+            {
+              name: 'preventOverflow',
+              options: {
+                altAxis: true
+              }
             }
-          },
-          {
-            name: 'preventOverflow',
-            options: {
-              altAxis: true
-            }
-          }
-        ]}
-      >
-        {({ TransitionProps }) => (
-          <Fade {...TransitionProps}>
-            <Paper>
-              <ClickAwayListener onClickAway={handleClose}>
-                <List
-                  sx={{
-                    width: '100%',
-                    maxWidth: 350,
-                    minWidth: 250,
-                    bgcolor: theme.palette.background.paper,
-                    pb: 0,
-                    borderRadius: '10px'
-                  }}
-                >
-                  <ListItemButton disabled selected={selectedIndex === 0} onClick={(event) => handleListItemClick(event, 0)}>
-                    <ListItemIcon>
-                      <SettingsTwoToneIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Settings" />
-                  </ListItemButton>
-                  <ListItemButton disabled selected={selectedIndex === 1} onClick={(event) => handleListItemClick(event, 1)}>
-                    <ListItemIcon>
-                      <PersonTwoToneIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Profile" />
-                  </ListItemButton>
-                  {/* <ListItemButton selected={selectedIndex === 2} onClick={(event) => handleListItemClick(event, 2)}>
+          ]}
+        >
+          {({ TransitionProps }) => (
+            <Fade {...TransitionProps}>
+              <Paper>
+                <ClickAwayListener onClickAway={handleClose}>
+                  <List
+                    sx={{
+                      width: '100%',
+                      maxWidth: 350,
+                      minWidth: 250,
+                      bgcolor: theme.palette.background.paper,
+                      pb: 0,
+                      borderRadius: '10px'
+                    }}
+                  >
+                    <ListItemButton disabled selected={selectedIndex === 0} onClick={(event) => handleListItemClick(event, 0)}>
+                      <ListItemIcon>
+                        <SettingsTwoToneIcon />
+                      </ListItemIcon>
+                      <ListItemText primary="Settings" />
+                    </ListItemButton>
+                    <ListItemButton disabled selected={selectedIndex === 1} onClick={(event) => handleListItemClick(event, 1)}>
+                      <ListItemIcon>
+                        <PersonTwoToneIcon />
+                      </ListItemIcon>
+                      <ListItemText primary="Profile" />
+                    </ListItemButton>
+                    {/* <ListItemButton selected={selectedIndex === 2} onClick={(event) => handleListItemClick(event, 2)}>
                     <ListItemIcon>
                       <DraftsTwoToneIcon />
                     </ListItemIcon>
                     <ListItemText primary="My Messages" />
                   </ListItemButton> */}
-                  {/* <ListItemButton selected={selectedIndex === 3} onClick={(event) => handleListItemClick(event, 3)}>
+                    {/* <ListItemButton selected={selectedIndex === 3} onClick={(event) => handleListItemClick(event, 3)}>
                     <ListItemIcon>
                       <LockOpenTwoTone />
                     </ListItemIcon>
                     <ListItemText primary="Lock Screen" />
                   </ListItemButton> */}
-                  {/* <Link to={'/login'}> */}
+                    {/* <Link to={'/login'}> */}
                     <ListItemButton selected={selectedIndex === 4} onClick={handleLogout}>
                       <ListItemIcon>
                         <MeetingRoomTwoToneIcon />
                       </ListItemIcon>
                       <ListItemText primary="Logout" />
                     </ListItemButton>
-                  {/* </Link> */}
-                </List>
-              </ClickAwayListener>
-            </Paper>
-          </Fade>
-        )}
-      </Popper>
-      ) : (<>No users found</>)}
+                    {/* </Link> */}
+                  </List>
+                </ClickAwayListener>
+              </Paper>
+            </Fade>
+          )}
+        </Popper>
+      ) : (
+        <>No users found</>
+      )}
     </>
   );
 };

@@ -6,7 +6,7 @@ import { Box, Button, FormHelperText, Snackbar } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 // import { useTheme } from '@mui/material';
 import { auth } from 'firebase.config';
-import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
+import { RecaptchaVerifier, onAuthStateChanged, signInWithPhoneNumber } from 'firebase/auth';
 import toast, { Toaster } from 'react-hot-toast';
 
 import { GetVerifiedUsers } from 'api';
@@ -15,6 +15,8 @@ import { GetVerifiedUsers } from 'api';
 
 import * as Yup from 'yup';
 import { Formik } from 'formik';
+
+import useDebounce from 'hooks/useDebounce';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -25,16 +27,17 @@ const FirebaseLogin = () => {
 
   const navigate = useNavigate();
   const [otp, setOtp] = useState('');
-  const [phone, setPhone] = useState('');
+  // const [phone, setPhone] = useState('');
+  const [phoneInput, handlePhoneInputChange] = useDebounce('');
   const [countryCode, setCountryCode] = useState('+91');
   const [buttonLabel, setButtonLabel] = useState('Send OTP');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [otpEntered, setOtpEntered] = useState(false);
+  // const [fullPageLoading, setFullPageLoading] = useState(true);
   const [verifyData, setVerifyData] = useState(false);
   const [accessToken, setAccessToken] = useState('');
   const [showOTPInput, setShowOTPInput] = useState(false);
   const [loading, setLoading] = useState(false);
-
   const onCaptchVerify = () => {
     window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
       size: 'invisible',
@@ -44,57 +47,58 @@ const FirebaseLogin = () => {
   };
 
   let phoneNumber = false;
-  if (phone.length === 10) {
-    phoneNumber = phone;
+  if (phoneInput.length === 10) {
+    phoneNumber = phoneInput;
   }
 
-  const getPhoneNumber = countryCode + phone;
+  const getPhoneNumber = countryCode + phoneInput;
 
-  useEffect(() => {
-    const checkUsers = async () => {
-      try {
-        const response = await GetVerifiedUsers(phoneNumber);
-        setVerifyData(response.data);
-      } catch (error) {
-        console.log('Error Calling userss API: ', error);
-      }
-    };
-    checkUsers();
-  }, [phoneNumber]);
+  // THIS WILL FIRST CHECK THAT THE USER IS AUTHENTICATED OR NOT
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      navigate('/main/insights');
+    }
+    // if (fullPageLoading) setFullPageLoading(false);
+  });
 
-  console.log('verified data', verifyData);
-
-  localStorage.setItem('userData', JSON.stringify(verifyData));
-
+  // THIS WILL CHECK THE USER IS AUTHORIZED OR NOT
+  const checkUsers = async () => {
+    setLoading(true);
+    try {
+      const response = await GetVerifiedUsers(phoneNumber);
+      setVerifyData(response.data);
+      if (response?.data?.number === phoneNumber) onSignup();
+      else toast.error('You are not authorized to access');
+    } catch (error) {
+      console.log('Error Calling userss API: ', error);
+    }
+  };
+  // console.log(verifyData);
   function onSignup() {
-    if (!verifyData || verifyData.number !== phoneNumber) {
-      toast.error('You are not authorized to access');
-    } else {
-      onCaptchVerify();
-      let appVerifier = window.recaptchaVerifier;
-      setLoading(true);
+    onCaptchVerify();
+    let appVerifier = window.recaptchaVerifier;
+    setLoading(true);
 
-      try {
-        signInWithPhoneNumber(auth, getPhoneNumber, appVerifier)
-          .then((confirmationResult) => {
-            window.confirmationResult = confirmationResult;
-            if (confirmationResult) {
-              setSnackbarOpen(true);
-              setButtonLabel('Submit');
-              setShowOTPInput(true);
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-          })
-          .finally(() => {
-            setLoading(false);
-          });
-      } catch (error) {
-        console.log('Error in signInWithPhoneNumber:', error);
-        toast.error('Error sending OTP. Please try again. ');
-        setLoading(false);
-      }
+    try {
+      signInWithPhoneNumber(auth, getPhoneNumber, appVerifier)
+        .then((confirmationResult) => {
+          window.confirmationResult = confirmationResult;
+          if (confirmationResult) {
+            setSnackbarOpen(true);
+            setButtonLabel('Submit');
+            setShowOTPInput(true);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } catch (error) {
+      console.log('Error in signInWithPhoneNumber:', error);
+      toast.error('Error sending OTP. Please try again. ');
+      setLoading(false);
     }
   }
   function onOTPVerify() {
@@ -111,6 +115,8 @@ const FirebaseLogin = () => {
       .confirm(otp)
       .then((userCredential) => {
         const user = userCredential.user;
+        localStorage.setItem('userData', JSON.stringify(verifyData));
+        navigate('/main/insights');
         setAccessToken(user.accessToken);
       })
       .catch((error) => {
@@ -123,9 +129,6 @@ const FirebaseLogin = () => {
   useEffect(() => {
     localStorage.setItem('Token', JSON.stringify(accessToken));
   }, [accessToken]);
-  if (accessToken) {
-    navigate('/main/insights');
-  }
 
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
@@ -137,36 +140,44 @@ const FirebaseLogin = () => {
     setOtpEntered(value.length === 6);
   };
 
-  const handleKeyPress = (event) => {
+  const handleKeyPress = async (event) => {
     if (event.key === 'Enter') {
       event.preventDefault();
       if (buttonLabel === 'Send OTP') {
-        onSignup();
+        checkUsers();
       } else if (buttonLabel === 'Submit') {
         onOTPVerify();
       }
     }
   };
+  // const handlePhoneChange = (event) => {
+  //   setPhone(event.target.value);
+  // };
   return (
     <>
+      {/* {fullPageLoading && (
+        <div className="flex justify-center items-center fixed top-0 left-0 z-10 text-5xl overflow-x-hidden bg-white w-screen h-screen">
+          <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
+        </div>
+      )} */}
       <Formik
         initialValues={{
-          phone: '',
+          phoneInput: '',
           otp: '',
           submit: null
         }}
         validationSchema={Yup.object().shape({
-          phone: Yup.string()
+          phoneInput: Yup.string()
             .matches(/^[0-9]{10}$/, 'Must be a valid 10-digit phone number')
             .required('Phone number is required'),
-          otp: Yup.string().when('phone', {
+          otp: Yup.string().when('phoneInput', {
             is: (val) => !!val,
             then: Yup.string().max(255).required('OTP is required')
           })
         })}
       >
         {({ errors }) => (
-          <form noValidate onKeyDown={handleKeyPress}>
+          <form noValidate onKeyDown={handleKeyPress} autoComplete="on">
             <div id="rubikFont" className="flex flex-row space-x-2">
               <div id="recaptcha-container"></div>
 
@@ -175,20 +186,21 @@ const FirebaseLogin = () => {
                 onChange={(e) => setCountryCode(e.target.value)}
                 className={`px-2 py-2 transition duration-300 border border-gray-300 rounded bg-gray-100 focus:border-transparent focus:outline-none focus:ring-1 focus:ring-emerald-300`}
               >
-                {COUNTRYCODE.map((e) => (
-                  <option key={e} value={e.dial_code}>
+                {COUNTRYCODE.map((e, i) => (
+                  <option key={i} value={e.dial_code}>
                     {e.dial_code}
                   </option>
                 ))}
               </select>
               <input
-                type="tel"
+                type="number"
                 maxLength={10}
                 label="Number"
-                name="phone"
-                onChange={(event) => setPhone(event.target.value)}
+                name="phoneInput"
+                // value={phoneInput}
+                onChange={handlePhoneInputChange}
                 placeholder="Mobile number"
-                autoFocus
+                // autoFocus
                 className="px-4 py-2 w-full transition duration-300 border border-gray-300 rounded bg-gray-100 focus:border-transparent focus:outline-none focus:ring-1 focus:ring-emerald-300"
               />
             </div>
@@ -205,12 +217,14 @@ const FirebaseLogin = () => {
                   renderInput={(props) => (
                     <input
                       {...props}
+                      type="number"
+                      inputMode="numeric"
                       style={{
                         padding: '0.5rem',
                         width: '2rem',
                         height: '2rem'
                       }}
-                      disabled={!phone || buttonLabel !== 'Submit'}
+                      disabled={!phoneInput || buttonLabel !== 'Submit'}
                     />
                   )}
                 />
@@ -228,12 +242,12 @@ const FirebaseLogin = () => {
                 <>
                   <Button
                     // color="primary"
-                    disabled={!phone || phone.length !== 10 || otpEntered || loading}
+                    disabled={!phoneInput || phoneInput.length !== 10 || otpEntered || loading}
                     fullWidth
                     size="large"
                     type="button"
                     variant="outlined"
-                    onClick={onSignup}
+                    onClick={checkUsers}
                   >
                     {loading ? 'Sending OTP...' : 'Send OTP'}
                   </Button>

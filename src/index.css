@@ -75,6 +75,22 @@ body {
   font-family: 'Baloo 2', sans-serif;
 }
 
+iframe#webpack-dev-server-client-overlay {
+  display: none !important;
+}
+
 .slick-slide > div {
   margin: 0 5px;
+}
+
+/* DISABLE ARROWS FROM INPUT TYPE NUMBER  */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }
