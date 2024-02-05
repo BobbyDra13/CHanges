@@ -94,6 +94,7 @@ const Customers = () => {
   });
   const [liveAnomalyImg, setLiveAnomalyImg] = useState(true);
   const [imageLoading, setImageLoading] = useState(false);
+  const [openTooltipIndex, setOpenTooltipIndex] = useState(null);
 
   const theme = useTheme();
   const success = theme.palette.success.main;
@@ -248,6 +249,14 @@ const Customers = () => {
   // console.log('Clicked', clickedBar);
   // console.log('Analysis Id', analysisId);
   console.log('AnomalyDetails', anomalyDetails[0]?.reference_img);
+
+  const handleTooltipOpen = (index) => {
+    setOpenTooltipIndex(index);
+  };
+
+  const handleTooltipClose = () => {
+    setOpenTooltipIndex(null);
+  };
   return (
     <>
       <Breadcrumb title="Stores">
@@ -514,7 +523,7 @@ const Customers = () => {
                             sx={{
                               '& .MuiAvatar-root': { width: 24, height: 24, fontSize: 15 }
                             }}
-                            max={2}
+                            // max={2} for //for showing only 2 user agents
                           >
                             {item.agentsDetails.map((agent, index) => (
                               <Tooltip
@@ -528,7 +537,8 @@ const Customers = () => {
                                     <Typography variant="subtitle2">Number: {agent.agentsDetails.number}</Typography>
                                   </div>
                                 }
-                                enterTouchDelay={1} // for mobile touch
+                                enterTouchDelay={1}
+                                leaveTouchDelay={100000}
                               >
                                 <Avatar
                                   className="hover:cursor-pointer"
@@ -804,6 +814,8 @@ const Customers = () => {
                                 <Typography variant="subtitle2">Number: {details.user_number}</Typography>
                               </div>
                             }
+                            enterTouchDelay={1}
+                            leaveTouchDelay={100000}
                           >
                             <Avatar className="hover:cursor-pointer" sx={{ bgcolor: success }} alt={details.user_name} src="/example.jpg" />
                           </Tooltip>
