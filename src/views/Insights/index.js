@@ -645,17 +645,14 @@ const Insights = () => {
       let allRanges = Array.from({ length: 10 }, (_, i) => `${i * 10}-${(i + 1) * 10}%`);
       console.log('allRangesvmc', allRanges);
 
-      // Manually define ranges
       const manualRanges = ['0-10%', '10-20%', '20-30%', '30-40%', '40-50%', '50-60%', '60-70%', '70-80%', '80-90%', '90-100%'];
 
       let chartDataMap = Object.fromEntries(manualRanges.map((range) => [range, chart[range] || 0]));
       console.log('chartDataMapvmc', chartDataMap);
 
-      // Calculate total remaining bays
       const totalBays = barChartData[0]?.data?.totalBaysCount;
       const remainingBays = totalBays - Object.values(chart).reduce((sum, count) => sum + count, 0);
 
-      // Add remaining bays to "0-10%" range
       chartDataMap['0-10%'] += remainingBays;
 
       let sortedKeys = Object.keys(chartDataMap).sort((a, b) => {
@@ -665,7 +662,26 @@ const Insights = () => {
         return aStart - bStart || aEnd - bEnd;
       });
 
-      // Retrieve values in the sorted order
+      const barchart = {
+        vmc: sortedKeys.map((key) => chartDataMap[key])
+      };
+
+      console.log('barchartvmc', barchart);
+
+      setSeriesData(barchart.vmc);
+    } else if (vmChartData && vmChartData.length === 0) {
+      setSelected(histogramChartRequirements.selectOptions[1].value);
+      const manualRanges = ['0-10%', '10-20%', '20-30%', '30-40%', '40-50%', '50-60%', '60-70%', '70-80%', '80-90%', '90-100%'];
+
+      let chartDataMap = Object.fromEntries(manualRanges.map((range) => [range, 0]));
+
+      let sortedKeys = Object.keys(chartDataMap).sort((a, b) => {
+        let [aStart, aEnd] = a.split('-').map(Number);
+        let [bStart, bEnd] = b.split('-').map(Number);
+
+        return aStart - bStart || aEnd - bEnd;
+      });
+
       const barchart = {
         vmc: sortedKeys.map((key) => chartDataMap[key])
       };
@@ -917,101 +933,143 @@ const Insights = () => {
                             </Grid>
                           </Box>
                         </CardContent>
-                      ) : barChartData[0]?.data?.bayAnalysis['0-10%'] === 9 && selected === histogramChartRequirements.selectOptions[0].value ? (
+                      ) : barChartData[0]?.data?.bayAnalysis['0-10%'] === 9 &&
+                        selected === histogramChartRequirements.selectOptions[0].value ? (
                         <div className="w-full h-full flex justify-center place-items-center">
                           <img style={{ height: '392px' }} src={NoDataImg} alt="No data" />
                         </div>
-                      ) :  vmChartData?.length > 0 &&
-                        selected === histogramChartRequirements.selectOptions[1].value ? (
-                          <CardContent sx={{ padding: 0, paddingBottom: '0 !important' }}>
-                            <Box color="#fff" bgcolor={theme.palette.primary.main} p={3}>
-                              <Grid container justifyContent="space-between" alignItems="center">
-                                <Grid item>
-                                  <Grid container spacing={1}>
-                                    <Stack direction={'row'} spacing={1}>
-                                      <Typography sx={{ paddingLeft: 2 }} variant="h2" color="inherit">
-                                        {barChartData[0]?.data?.totalBaysCount}
-                                      </Typography>
-                                      <Typography paddingBottom={0.6} className="self-end" variant="h5" color="inherit">
-                                        Bays
-                                      </Typography>
-                                    </Stack>
-                                  </Grid>
-                                </Grid>
-                                <Grid item>
-                                  <Grid container alignItems="center">
-                                    <TextField
-                                      id="standard-select-currency"
-                                      size="small"
-                                      select
-                                      value={selected}
-                                      onChange={(e) => setSelected(e.target.value)}
-                                      sx={{
-                                        '& .MuiInputBase-input': {
-                                          paddingBottom: 0.5,
-                                          paddingTop: 0.7,
-                                          fontSize: '1rem',
-                                          fontWeight: 600,
-                                          color: 'white'
-                                        }
-                                      }}
-                                    >
-                                      {histogramChartRequirements.selectOptions.map((option) => (
-                                        <MenuItem key={option.value} value={option.value} disabled={option.disabled}>
-                                          {option.label}
-                                        </MenuItem>
-                                      ))}
-                                    </TextField>
-                                  </Grid>
+                      ) : vmChartData?.length > 0 && selected === histogramChartRequirements.selectOptions[1].value ? (
+                        <CardContent sx={{ padding: 0, paddingBottom: '0 !important' }}>
+                          <Box color="#fff" bgcolor={theme.palette.primary.main} p={3}>
+                            <Grid container justifyContent="space-between" alignItems="center">
+                              <Grid item>
+                                <Grid container spacing={1}>
+                                  <Stack direction={'row'} spacing={1}>
+                                    <Typography sx={{ paddingLeft: 2 }} variant="h2" color="inherit">
+                                      {barChartData[0]?.data?.totalBaysCount}
+                                    </Typography>
+                                    <Typography paddingBottom={0.6} className="self-end" variant="h5" color="inherit">
+                                      Bays
+                                    </Typography>
+                                  </Stack>
                                 </Grid>
                               </Grid>
                               <Grid item>
-                                <Chart
-                                  options={histogramOptions.options}
-                                  series={series}
-                                  type={histogramOptions.options.chart.type}
-                                  height={histogramOptions.options.chart.height}
-                                />
+                                <Grid container alignItems="center">
+                                  <TextField
+                                    id="standard-select-currency"
+                                    size="small"
+                                    select
+                                    value={selected}
+                                    onChange={(e) => setSelected(e.target.value)}
+                                    sx={{
+                                      '& .MuiInputBase-input': {
+                                        paddingBottom: 0.5,
+                                        paddingTop: 0.7,
+                                        fontSize: '1rem',
+                                        fontWeight: 600,
+                                        color: 'white'
+                                      }
+                                    }}
+                                  >
+                                    {histogramChartRequirements.selectOptions.map((option) => (
+                                      <MenuItem key={option.value} value={option.value} disabled={option.disabled}>
+                                        {option.label}
+                                      </MenuItem>
+                                    ))}
+                                  </TextField>
+                                </Grid>
                               </Grid>
-                            </Box>
-                          </CardContent>
-                        ) :
-                       vmChartData?.length === 0 &&
-                        selected === histogramChartRequirements.selectOptions[1].value 
-                      ? (
-                        <>
-                        <Grid container  justifyContent="flex-end" spacing={1} sx={{ marginTop: '10px' }}>
-                          <Grid item  mr={2}>
-                            <TextField
-                              id="standard-select-currency"
-                              size="small"
-                              select
-                              value={selected}
-                              onChange={(e) => setSelected(e.target.value)}
-                              sx={{
-                                '& .MuiInputBase-input': {
-                                  paddingBottom: 0.5,
-                                  paddingTop: 0.7,
-                                  fontSize: '1rem',
-                                  fontWeight: 400,
-                                  color: 'black'
-                                }
-                              }}
-                            >
-                              {histogramChartRequirements.selectOptions.map((option) => (
-                                <MenuItem key={option.value} value={option.value} disabled={option.disabled}>
-                                  {option.label}
-                                </MenuItem>
-                              ))}
-                            </TextField>
-                          </Grid>
-                        </Grid>
-                      
-                        <div className="w-full h-full flex justify-center place-items-center" style={{ marginTop: '20px' }}>
-                          <img style={{ height: '392px' }} src={NoDataImg} alt="No data" />
-                        </div>
-                      </>
-                      
+                            </Grid>
+                            <Grid item>
+                              <Chart
+                                options={histogramOptions.options}
+                                series={series}
+                                type={histogramOptions.options.chart.type}
+                                height={histogramOptions.options.chart.height}
+                              />
+                            </Grid>
+                          </Box>
+                        </CardContent>
+                      ) : vmChartData?.length === 0 && selected === histogramChartRequirements.selectOptions[1].value ? (
+                        <CardContent sx={{ padding: 0, paddingBottom: '0 !important' }}>
+                          <Box color="#fff" bgcolor={theme.palette.primary.main} p={3}>
+                            <Grid container justifyContent="space-between" alignItems="center">
+                              <Grid item>
+                                <Grid container spacing={1}>
+                                  <Stack direction={'row'} spacing={1}>
+                                    <Typography sx={{ paddingLeft: 2 }} variant="h2" color="inherit">
+                                      {barChartData[0]?.data?.totalBaysCount}
+                                    </Typography>
+                                    <Typography paddingBottom={0.6} className="self-end" variant="h5" color="inherit">
+                                      Bays
+                                    </Typography>
+                                  </Stack>
+                                </Grid>
+                              </Grid>
+                              <Grid item>
+                                <span
+                                  style={{
+                                    top: '50%',
+                                    left: '50%',
+                                    color: 'white',
+                                    fontSize: '1.5rem',
+                                    fontWeight: 'bold'
+                                  }}
+                                >
+                                  No Data
+                                </span>
+                              </Grid>
+                              <Grid item>
+                                <Grid container alignItems="center">
+                                  <TextField
+                                    id="standard-select-currency"
+                                    size="small"
+                                    select
+                                    value={selected}
+                                    onChange={(e) => setSelected(e.target.value)}
+                                    sx={{
+                                      '& .MuiInputBase-input': {
+                                        paddingBottom: 0.5,
+                                        paddingTop: 0.7,
+                                        fontSize: '1rem',
+                                        fontWeight: 600,
+                                        color: 'white'
+                                      }
+                                    }}
+                                  >
+                                    {histogramChartRequirements.selectOptions.map((option) => (
+                                      <MenuItem key={option.value} value={option.value} disabled={option.disabled}>
+                                        {option.label}
+                                      </MenuItem>
+                                    ))}
+                                  </TextField>
+                                </Grid>
+                              </Grid>
+                            </Grid>
+                            <Grid item>
+                              {/* <span
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              color: 'white',
+              fontSize: '1.5rem',
+              fontWeight: 'bold'
+            }}
+          >
+            No Data
+          </span> */}
+                              <Chart
+                                options={histogramOptions.options}
+                                series={series}
+                                type={histogramOptions.options.chart.type}
+                                height={histogramOptions.options.chart.height}
+                              />
+                            </Grid>
+                          </Box>
+                        </CardContent>
                       ) : (
                         <div className="w-full h-full flex justify-center place-items-center">
                           <Skeleton variant="rounded" width={'100%'} height={392} />
