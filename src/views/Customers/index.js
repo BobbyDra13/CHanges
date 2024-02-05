@@ -94,7 +94,7 @@ const Customers = () => {
   });
   const [liveAnomalyImg, setLiveAnomalyImg] = useState(true);
   const [imageLoading, setImageLoading] = useState(false);
-  const [openTooltipIndex, setOpenTooltipIndex] = useState(null);
+  // const [openTooltipIndex, setOpenTooltipIndex] = useState(null);
 
   const theme = useTheme();
   const success = theme.palette.success.main;
@@ -250,13 +250,13 @@ const Customers = () => {
   // console.log('Analysis Id', analysisId);
   console.log('AnomalyDetails', anomalyDetails[0]?.reference_img);
 
-  const handleTooltipOpen = (index) => {
-    setOpenTooltipIndex(index);
-  };
+  // const handleTooltipOpen = (index) => {
+  //   setOpenTooltipIndex(index);
+  // };
 
-  const handleTooltipClose = () => {
-    setOpenTooltipIndex(null);
-  };
+  // const handleTooltipClose = () => {
+  //   setOpenTooltipIndex(null);
+  // };
   return (
     <>
       <Breadcrumb title="Stores">
