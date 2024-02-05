@@ -360,3 +360,45 @@ export const GetVMscoreBar = async (data) => {
     console.log('Error calling bar chart api', error);
   }
 };
+
+
+export const GetStoreWiseInfo = async (date, store_id) => {
+  try {
+    const res = await axios.get(`${lambUrl}/store/stores_wise_config?date=${date}&store_id=${store_id}`,{
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res;
+  } catch(error){
+    console.log('Error calling store wise info',error);
+  }
+};
+export const GetBayWiseDetails = async (date) => {
+  try {
+    const res = await axios.get(`${lambUrl}/store/bay_wise_config?date=${date}&store_id=6582be9ac5ed94d792a563b8`, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res;
+  } catch (error) {
+    console.log('Error Calling bay wise details API: ', error);
+  }
+};
+
+export const GetShelfWiseDetails = async (date, bay_id) => {
+  try {
+    const res = await axios.get(`${lambUrl}/store/shelf_wise_config?date=${date}&bay_id=${bay_id}`,{
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res;
+  } catch(error) {
+    console.log('Error calling shelf-wise details',error);
+  }
+}

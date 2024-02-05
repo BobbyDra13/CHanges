@@ -11,8 +11,9 @@ bouncy.register();
 
 // api imports
 import {
-  GetAnomalyDetails,
-  GetStoreLayout
+  // GetAnomalyDetails,
+  GetBayWiseDetails,
+  GetStoreWiseInfo
   // GetImagesFromSignedUrl,
   // GetAnolamayDetails
 } from 'api';
@@ -112,6 +113,8 @@ const Customers = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const ITEM_HEIGHT = 48;
 
+  const dateToday = new Date();
+  const today = dateToday.toISOString().split('T')[0];
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -147,10 +150,23 @@ const Customers = () => {
     // }
   };
 
-  const getAnomalyDetails = async (id) => {
+  // const getAnomalyDetails = async (data) => {
+  //   setLoading(true);
+  //   try {
+  //     const response = await GetAnomalyDetails(id);
+  //     if (response) {
+  //       console.log('AnomalyDetails', response);
+  //       setAnonmalyDetails(response.data);
+  //       setLoading(false);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+  const getAnomalyDetails = async (date) => {
     setLoading(true);
     try {
-      const response = await GetAnomalyDetails(id);
+      const response = await GetBayWiseDetails(date);
       if (response) {
         console.log('AnomalyDetails', response);
         setAnonmalyDetails(response.data);
@@ -160,6 +176,7 @@ const Customers = () => {
       console.log(error);
     }
   };
+
 
   const handleImageClick = (url, id, type, time) => {
     const dateTime = new Date(time);
@@ -179,16 +196,37 @@ const Customers = () => {
     setIsImageDialogOpen(!isImageDialogOpen);
   };
 
-  const date = new Date();
-  const today = date.toISOString().split('T')[0];
+  
   const getStoresData = async () => {
-    const input = {
-      Store_IDs: ['6582be9ac5ed94d792a563b8'],
-      start_date: today
-    };
+    // const input = {
+    //   Store_IDs: ['6582be9ac5ed94d792a563b8'],
+    //   start_date: today
+    // };
+    const store_id = '6582be9ac5ed94d792a563b8';
+    const date = today;
     setStoresData(false);
+    // try {
+    //   const response = await GetStoreLayout(input);
+    //   if (response) {
+    //     console.log('Store Data', response.data);
+    //     setStoresData(response.data);
+    //     const anomaliesByType = new Map();
+    //     response.data[0]?.store_anomalies.forEach((anomaly) => {
+    //       const type = anomaly?.store_anomalies?.anomalies_found[0]?.type;
+    //       anomaliesByType.set(type, anomaliesByType.get(type) || []);
+    //       anomaliesByType.get(type).push(anomaly);
+    //     });
+
+    //     // Set the state values based on the Map
+    //     setColorArray(anomaliesByType.get('color_assortment') || []);
+    //     // setPromoArray(anomaliesByType.get('promo_assortment') || []);
+    //     setFullnessArray(anomaliesByType.get('empty_bin') || []);
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    // }
     try {
-      const response = await GetStoreLayout(input);
+      const response = await GetStoreWiseInfo(date, store_id );
       if (response) {
         console.log('Store Data', response.data);
         setStoresData(response.data);
