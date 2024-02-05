@@ -30,6 +30,7 @@ import { GetStoreLayout, GetImagesFromSignedUrl } from '../../../api/index';
 // import NewLoader from '../../../component/Loader/Loader';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoReturnUpBack } from 'react-icons/io5';
+import DatePickerComp from 'views/Insights/DatePicker';
 
 const theme = createTheme({
   components: {
@@ -64,6 +65,9 @@ const StoreLayout = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
+
+  const [selectedDate, setSelectedDate] = useState('');
+  console.log(selectedDate.toString());
 
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -376,10 +380,17 @@ const StoreLayout = () => {
         </div>
       )}
       <div className={`border-0 border-black  ${openShelves || openBay ? 'min-h-0' : 'min-h-screen'}`}>
+      <Stack direction={'row'} justifyContent={'space-between'}>
         <div className="flex items-center gap-2 w-24 cursor-pointer  border-red-500" onClick={handleBack}>
           <IoReturnUpBack className="text-lg cursor-pointer text-gray-600 opacity-60 hover:opacity-100" style={{}} />
           <span className="cursor-pointer text-lg text-black-600 opacity-60 hover:opacity-100">Back</span>
         </div>
+
+        <Box sx={{ margin: '1rem' }}>
+            {/* <DatePickerevent SetSelectedDate={setSelectedDate} /> */}
+            <DatePickerComp SetSelectedDate={setSelectedDate} />
+          </Box>
+          </Stack>
 
         <div
           className={`w-full h-full relative ${openShelves || openBay ? 'hidden' : ''} border-red-500  flex justify-start items-center  ${
