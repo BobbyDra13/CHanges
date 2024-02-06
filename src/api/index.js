@@ -67,12 +67,13 @@ export const GetAnomaliesKpi = async (data) => {
         Authorization: await token()
       }
     });
-    console.log('anomaliesData', res);
+    console.log("anomaliesData", res);
     return res;
   } catch (error) {
     console.log('Error Calling GetAnomaliesKpi API: ', error);
   }
 };
+
 
 export const GetAnomaliesBarChartData = async (data) => {
   try {
@@ -82,27 +83,12 @@ export const GetAnomaliesBarChartData = async (data) => {
         Authorization: await token()
       }
     });
-    console.log('anomalies chart', res);
     return res;
   } catch (error) {
     console.log('Error Calling GetAnomaliesKpi API: ', error);
   }
 };
 
-// export const GetAnomaliesBarChartData = async (data) => {
-//   try {
-//     const res = await axios.post(`http://localhost:8080/anomalies/anomalies_bar_chart`, data, {
-//       headers: {
-//         Accept: 'application/json'
-//         //   Authorization: await token(),
-//       }
-//     });
-//     console.log("anomalies chart", res);
-//     return res;
-//   } catch (error) {
-//     console.log('Error Calling GetAnomaliesKpi API: ', error);
-//   }
-// };
 
 // API FOR THE LAYOUT OF THE STORE
 export const GetStoreLayout = async (data) => {
@@ -249,7 +235,7 @@ export const GetVMComplianceForOneWeek = async (data) => {
         Authorization: await token()
       }
     });
-    console.log('result', res);
+    console.log("result", res);
     return res;
   } catch (error) {
     console.log('Error calling vm compliance for a week api', error);
@@ -360,3 +346,59 @@ export const GetVMscoreBar = async (data) => {
     console.log('Error calling bar chart api', error);
   }
 };
+
+
+export const GetStoreWiseInfo = async (date, store_id) => {
+  try {
+    const res = await axios.get(`${lambUrl}/store/stores_wise_config?date=${date}&store_id=${store_id}`,{
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res;
+  } catch(error){
+    console.log('Error calling store wise info',error);
+  }
+};
+export const GetBayWiseDetails = async (date) => {
+  try {
+    const res = await axios.get(`${lambUrl}/store/bay_wise_config?date=${date}&store_id=6582be9ac5ed94d792a563b8`, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res;
+  } catch (error) {
+    console.log('Error Calling bay wise details API: ', error);
+  }
+};
+
+export const GetShelfWiseDetails = async (date, bay_id) => {
+  try {
+    const res = await axios.get(`${lambUrl}/store/shelf_wise_config?date=${date}&bay_id=${bay_id}`,{
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res;
+  } catch(error) {
+    console.log('Error calling shelf-wise details',error);
+  }
+};
+
+export const GetPartsWiseDetails = async (date, shelf_id) => {
+  try {
+    const res = await axios.get(`${lambUrl}/store/parts_wise_config?date=${date}&shelf_id=${shelf_id}`,{
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res;
+  } catch(error) {
+    console.log('Error calling parts-wise details',error);
+  }
+}
