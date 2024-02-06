@@ -140,14 +140,17 @@ const StoreLayout = () => {
     getLayoutData();
   };
   const handleOpenBay = async (item) => {
-    setOpenBay(true);
+    setLoading(true);
     try {
       const shelfData = await getShelfData(item.bayID);
       console.log(shelfData);
       setCurrentBay(shelfData[0]);
     } catch (error) {
       console.log('Problem in getting the Shelf Data', error);
+    } finally {
+      setLoading(false);
     }
+    setOpenBay(true);
   };
   const handlePrevBay = async () => {
     let sortedBayArray = layoutData.bayDetails.sort((a, b) => {
@@ -203,15 +206,20 @@ const StoreLayout = () => {
   };
   const handleOpenShelves = async (item) => {
     // console.log('partdetails', item.partsDetails);
-    handleCloseBay();
-    setOpenShelves(true);
+    while (imgLoading) {
+      setLoading(true);
+    }
     try {
       const partsData = await getPartsData(item.shelf_id);
       setCurrentShelf(partsData[0]);
       handleGetUpdatedPartDetails(partsData[0]);
     } catch (error) {
       console.log('why why why', error);
-    } finally{setLoading(false)}
+    } finally {
+      setLoading(false);
+    }
+    handleCloseBay();
+    setOpenShelves(true);
   };
   // console.log('updated parts', updatedPartDetails);
   const handleBack = () => {
@@ -451,11 +459,12 @@ const StoreLayout = () => {
             <span className="cursor-pointer text-lg text-black-600 opacity-60 hover:opacity-100">Back</span>
           </div>
 
-         {!openBay && !openShelves && <Box sx={{ margin: '1rem' }}>
-            {/* <DatePickerevent SetSelectedDate={setSelectedDate} /> */}
-            <DatePickerComp SetSelectedDate={setSelectedDate} />
-          </Box>
-}
+           
+            <Box sx={{ margin: '1rem', visibility:(openBay || openShelves)?'hidden':''}}>
+              {/* <DatePickerevent SetSelectedDate={setSelectedDate} /> */}
+              <DatePickerComp SetSelectedDate={setSelectedDate} />
+            </Box>
+          
         </Stack>
 
         <div
@@ -707,6 +716,11 @@ const StoreLayout = () => {
             onKeyDown={handleKeyDownShelves}
             tabIndex="0"
           />
+          {imgLoading && (
+            <div className="flex justify-center items-center absolute top-0 left-0 z-0  overflow-x-hidden bg-white w-full h-full">
+              <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
+            </div>
+          )}
           <div className="w-full h-full flex lg:justify-center text-3xl font-semibold  py-6 overflow-auto">
             {/* MULTIPLE PARTS WITH IMAGE OF WITH OUT IMAGE */}
             <ImageList
