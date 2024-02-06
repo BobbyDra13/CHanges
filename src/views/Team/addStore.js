@@ -13,7 +13,9 @@ import {
   Radio,
   FormLabel,
   FormControlLabel,
-  RadioGroup
+  RadioGroup,
+  FormControl,
+  FormHelperText
 } from '@mui/material';
 import { allStoresId, checkId, createUser } from 'api';
 import { useTheme } from '@emotion/react';
@@ -27,7 +29,7 @@ const initialValue = {
   store_id: '',
   email: '',
   stores: '',
-  number: ''
+  number: '',
 };
 
 const roles = ['Agent', 'Department Manager', 'Store Manager', 'Cluster Manager', 'NHK Super User'];
@@ -36,12 +38,12 @@ const depts = ['Operations', 'VM', 'Marketing', 'Analysis'];
 const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMessage }) => {
   const theme = useTheme();
   const [user, setUser] = useState(initialValue);
-  const { user_dept, user_role, user_id, user_name, store_id, number } = user;
+  const { user_dept, user_role, user_id, user_name, store_id, number} = user;
   const [isEmailEditable, setIsEmailEditable] = useState(false);
   const [email, setEmail] = useState('');
   const [storesList, updateStores] = useState([]);
   const [apiResponded, setApiResponded] = useState(true);
-  const [isWhatsApp, setIsWhatsApp] = useState(false);
+  const [isWhatsApp, setIsWhatsApp] = useState(null);
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -92,6 +94,9 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
       if (!validatePhoneNumber(number)) {
         formErrors = { ...formErrors, number: 'Please enter a valid phone number' };
       }
+    }
+    if(isWhatsApp==null){
+      formErrors = {...formErrors,email:'This is required'}
     }
 
     setErrors(formErrors);
@@ -157,6 +162,10 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
 
       case 'number':
         fieldError = !value ? 'Phone Number is required' : !validatePhoneNumber(value) ? 'Please enter a valid phone number' : '';
+        break;
+      
+      case 'isWhatsapp':
+        fieldError = (value==null) ? 'This is required' : '';
         break;
       default:
         break;
@@ -480,8 +489,9 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
               error={!!errors.number}
               helperText={errors.number}
             />
+            <FormControl error={!!errors.isWhatsApp}>
             <FormLabel id="demo-controlled-radio-buttons-group">Is this number on WhatsApp?</FormLabel>
-            <RadioGroup name="whatsapp" onChange={(e) => onValueChange(e)} row aria-labelledby="demo-controlled-radio-buttons-group" value={isWhatsApp}>
+            <RadioGroup name="whatsapp" onChange={(e) => onValueChange(e)} row aria-labelledby="demo-controlled-radio-buttons-group" value={isWhatsApp} required='true'>
               <FormControlLabel
                 value={true}
                 name="controlled-radio-buttons-group"
@@ -497,6 +507,8 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
                 onClick={() => setIsWhatsApp(false)}
               />
             </RadioGroup>
+            <FormHelperText>{errors.isWhatsApp}</FormHelperText>
+            </FormControl>
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField

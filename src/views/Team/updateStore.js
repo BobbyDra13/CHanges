@@ -32,7 +32,7 @@ const initialValue = {
   store_id: '',
   email: '',
   number: '',
-  isWhatsApp:false,
+  isWhatsApp:'',
 };
 const roles = ['Agent', 'Department Manager', 'Store Manager', 'Cluster Manager', 'NHK Super User'];
 const depts = ['Operations', 'VM', 'Marketing', 'Analysis'];
@@ -123,6 +123,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
         const response = await getOneUser(rowId);
         setUser(response.data);
         setEmail(response.data.email);
+        isWhatsApp= response.data.isWhatsApp;
         setLoading(false);
         setCurrentUserId(response.data.user_id);
       } catch (error) {
