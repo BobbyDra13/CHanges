@@ -178,7 +178,6 @@ const Customers = () => {
     }
   };
 
-
   const handleImageClick = (url, id, type, time) => {
     const dateTime = new Date(time);
     const day = dateTime.toLocaleDateString(undefined, { day: '2-digit' });
@@ -197,7 +196,6 @@ const Customers = () => {
     setIsImageDialogOpen(!isImageDialogOpen);
   };
 
-  
   const getStoresData = async () => {
     // const input = {
     //   Store_IDs: ['6582be9ac5ed94d792a563b8'],
@@ -227,7 +225,7 @@ const Customers = () => {
     //   console.log(error);
     // }
     try {
-      const response = await GetStoreWiseInfo(date, store_id );
+      const response = await GetStoreWiseInfo(date, store_id);
       if (response) {
         // console.log('Store Data', response.data);
         setStoresData(response.data);
@@ -421,7 +419,6 @@ const Customers = () => {
                               />
                               <button className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center">
                                 <Typography sx={{ color: 'white' }} variant="subtitle2">
-                                  {item.capture_count ? Math.min(Math.floor((item.capture_count / totalParts) * 100), 100) : 0} %
                                   {item.capture_count ? Math.min(Math.floor((item.capture_count / totalParts) * 100), 100) : 0} %
                                 </Typography>
                               </button>

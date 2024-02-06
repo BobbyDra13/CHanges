@@ -26,7 +26,7 @@ import {
   Divider
 } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import {GetImagesFromSignedUrl, GetBayWiseDetails, GetShelfWiseDetails, GetPartsWiseDetails } from '../../../api/index';
+import { GetImagesFromSignedUrl, GetBayWiseDetails, GetShelfWiseDetails, GetPartsWiseDetails } from '../../../api/index';
 // import NewLoader from '../../../component/Loader/Loader';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoReturnUpBack } from 'react-icons/io5';
@@ -120,14 +120,14 @@ const StoreLayout = () => {
   }, [selectedDate]);
 
   const getShelfData = async (bay_id) => {
-    const response = await GetShelfWiseDetails(selectedDate, bay_id );
+    const response = await GetShelfWiseDetails(selectedDate, bay_id);
     return response.data;
-  }
+  };
 
   const getPartsData = async (shelf_id) => {
-    const response = await GetPartsWiseDetails(selectedDate,shelf_id);
+    const response = await GetPartsWiseDetails(selectedDate, shelf_id);
     return response.data;
-  }
+  };
   const findMidpoint = (coordinates, dimensions) => {
     const { x, y } = coordinates;
     const { width, height } = dimensions;
@@ -149,36 +149,36 @@ const StoreLayout = () => {
       console.log('Problem in getting the Shelf Data', error);
     }
   };
-  const handlePrevBay = async() => {
+  const handlePrevBay = async () => {
     let sortedBayArray = layoutData.bayDetails.sort((a, b) => {
       return a.bay_name.localeCompare(b.bay_name);
     });
-    
-    const newIndex = parseInt(currentBay?.bay_name?.split(' ')[1]) === 1
-      ? layoutData.bayDetails.length - 1
-      : parseInt(currentBay.bay_name.split(' ')[1]) - 2;
-      console.log(sortedBayArray[0].bayID);
+
+    const newIndex =
+      parseInt(currentBay?.bay_name?.split(' ')[1]) === 1
+        ? layoutData.bayDetails.length - 1
+        : parseInt(currentBay.bay_name.split(' ')[1]) - 2;
+    console.log(sortedBayArray[0].bayID);
 
     try {
       const shelfData = await getShelfData(sortedBayArray[newIndex].bayID);
       setCurrentBay(shelfData[0]);
     } catch (error) {
-      console.log('Problem in the previous phase',error)
+      console.log('Problem in the previous phase', error);
     }
   };
   const handleNextBay = async () => {
     let sortedBayArray = layoutData.bayDetails.sort((a, b) => {
       return a.bay_name.localeCompare(b.bay_name);
     });
-   const newIndex =  parseInt(currentBay?.bay_name?.split(' ')[1]) === layoutData.bayDetails.length
-      ? 0
-      : parseInt(currentBay?.bay_name?.split(' ')[1]);
-      try {
-        const shelfData = await getShelfData(sortedBayArray[newIndex].bayID);
-        setCurrentBay(shelfData[0]);
-      } catch (error) {
-        console.log('Problem in the previous phase',error)
-      }
+    const newIndex =
+      parseInt(currentBay?.bay_name?.split(' ')[1]) === layoutData.bayDetails.length ? 0 : parseInt(currentBay?.bay_name?.split(' ')[1]);
+    try {
+      const shelfData = await getShelfData(sortedBayArray[newIndex].bayID);
+      setCurrentBay(shelfData[0]);
+    } catch (error) {
+      console.log('Problem in the previous phase', error);
+    }
   };
   const handleCloseShelves = () => {
     setOpenShelves(false);
@@ -203,14 +203,13 @@ const StoreLayout = () => {
   };
   const handleOpenShelves = async (item) => {
     // console.log('partdetails', item.partsDetails);
-    try{
+    try {
       const partsData = await getPartsData(item.shelf_id);
       setCurrentShelf(partsData[0]);
       handleGetUpdatedPartDetails(partsData[0]);
-
-    } catch(error){
-      console.log('why why why',error);
-    } 
+    } catch (error) {
+      console.log('why why why', error);
+    }
     handleCloseBay();
     setOpenShelves(true);
   };
@@ -239,7 +238,7 @@ const StoreLayout = () => {
       handleNextShelves();
     }
   };
-  const handlePrevShelves = async() => {
+  const handlePrevShelves = async () => {
     // SORTING THE SHELVES IN THE BASIS OF THEIR NAME
     let sortedShelvesArray = currentBay.shelves.sort((a, b) => {
       return a.shelf_name.localeCompare(b.shelf_name);
@@ -249,11 +248,11 @@ const StoreLayout = () => {
     const hasBottomShelf = currentBay?.shelves?.some((shelf) => shelf.location === 'bottom');
     // CHECKING FOR TOP SHELF
     const hasTopShelf = currentBay?.shelves?.some((shelf) => shelf.location === 'top');
-    var nInd = 1; 
+    var nInd = 1;
 
     // IF TOP SHELF IS NOT PRESENT THEN CONDITION FOR SELECTING CURRENTSHELF
     if (!hasTopShelf) {
-      console.log('This is sorted shleves array hrere',sortedShelvesArray[0]);
+      console.log('This is sorted shleves array hrere', sortedShelvesArray[0]);
 
       if (parseInt(currentShelf?.shelf_name?.split(' ')[2]) === 0) {
         nInd = currentBay?.shelves?.length - 1;
@@ -262,14 +261,13 @@ const StoreLayout = () => {
       } else {
         nInd = parseInt(currentShelf?.shelf_name?.split(' ')[2]) - 1;
       }
-      try{
+      try {
         const partData = await getPartsData(sortedShelvesArray[nInd].shelf_id);
         setCurrentShelf(partData[0]);
         handleGetUpdatedPartDetails(partData[0]);
-      }catch(error){
+      } catch (error) {
         console.log(error);
       }
-
     }
     // IF BOTTOM SHELF IS PRESENT THEN CONDITION FOR SELECTING CURRENTSHELF
     else if (hasBottomShelf) {
@@ -279,11 +277,11 @@ const StoreLayout = () => {
         nInd = parseInt(currentShelf?.shelf_name?.split(' ')[2]) - 1;
       }
 
-      try{
+      try {
         const partData = await getPartsData(sortedShelvesArray[nInd].shelf_id);
         setCurrentShelf(partData[0]);
         handleGetUpdatedPartDetails(partData[0]);
-      }catch(error){
+      } catch (error) {
         console.log(error);
       }
     }
@@ -295,15 +293,14 @@ const StoreLayout = () => {
       } else {
         nInd = parseInt(currentShelf?.shelf_name?.split(' ')[2]) - 2;
       }
-      try{
+      try {
         const partData = await getPartsData(sortedShelvesArray[nInd].shelf_id);
         setCurrentShelf(partData[0]);
         handleGetUpdatedPartDetails(partData[0]);
-      }catch(error){
-        console.log('Idk why some error',error);
+      } catch (error) {
+        console.log('Idk why some error', error);
       }
     }
-    
   };
 
   const handleNextShelves = async () => {
@@ -319,17 +316,15 @@ const StoreLayout = () => {
     //IF TOP SHELF IS NOT PRESENT THEN CONDITION FOR SELECTING CURRENTSHELF
     if (!hasTopShelf) {
       if (parseInt(currentShelf?.shelf_name?.split(' ')[2]) === currentBay.shelves.length) {
-        pInd= 0;
-       
+        pInd = 0;
       } else {
-        pInd= parseInt(currentShelf?.shelf_name?.split(' ')[2]) + 1;
+        pInd = parseInt(currentShelf?.shelf_name?.split(' ')[2]) + 1;
       }
-      try{
+      try {
         const partData = await getPartsData(sortedShelvesArray[pInd].shelf_id);
         setCurrentShelf(partData[0]);
         handleGetUpdatedPartDetails(partData[0]);
-      }
-      catch(error){
+      } catch (error) {
         console.log(error);
       }
     }
@@ -337,17 +332,15 @@ const StoreLayout = () => {
     else if (hasBottomShelf) {
       if (parseInt(currentShelf?.shelf_name?.split(' ')[2]) === currentBay.shelves.length - 1) {
         pInd = 0;
-       
       } else {
         pInd = parseInt(currentShelf?.shelf_name?.split(' ')[2]) + 1;
       }
 
-      try{
+      try {
         const partData = await getPartsData(sortedShelvesArray[pInd].shelf_id);
         setCurrentShelf(partData[0]);
         handleGetUpdatedPartDetails(partData[0]);
-      }
-      catch(error){
+      } catch (error) {
         console.log(error);
       }
     }
@@ -355,16 +348,15 @@ const StoreLayout = () => {
     // IF BOTTOM SHELF IS NOT PRESENT THEN CONDITION FOR SELECTING CURRENTSHELF
     else {
       if (parseInt(currentShelf?.shelf_name?.split(' ')[2]) === currentBay.shelves.length) {
-        pInd= 0;
+        pInd = 0;
       } else {
         pInd = parseInt(currentShelf?.shelf_name?.split(' ')[2]);
       }
-      try{
+      try {
         const partData = await getPartsData(sortedShelvesArray[pInd].shelf_id);
         setCurrentShelf(partData[0]);
         handleGetUpdatedPartDetails(partData[0]);
-      }
-      catch(error){
+      } catch (error) {
         console.log(error);
       }
     }
@@ -453,17 +445,17 @@ const StoreLayout = () => {
         </div>
       )}
       <div className={`border-0 border-black  ${openShelves || openBay ? 'min-h-0' : 'min-h-screen'}`}>
-      <Stack direction={'row'} justifyContent={'space-between'}>
-        <div className="flex items-center gap-2 w-24 cursor-pointer  border-red-500" onClick={handleBack}>
-          <IoReturnUpBack className="text-lg cursor-pointer text-gray-600 opacity-60 hover:opacity-100" style={{}} />
-          <span className="cursor-pointer text-lg text-black-600 opacity-60 hover:opacity-100">Back</span>
-        </div>
+        <Stack direction={'row'} justifyContent={'space-between'}>
+          <div className="flex items-center gap-2 w-24 cursor-pointer  border-red-500" onClick={handleBack}>
+            <IoReturnUpBack className="text-lg cursor-pointer text-gray-600 opacity-60 hover:opacity-100" style={{}} />
+            <span className="cursor-pointer text-lg text-black-600 opacity-60 hover:opacity-100">Back</span>
+          </div>
 
-        <Box sx={{ margin: '1rem' }}>
+          <Box sx={{ margin: '1rem' }}>
             {/* <DatePickerevent SetSelectedDate={setSelectedDate} /> */}
             <DatePickerComp SetSelectedDate={setSelectedDate} />
           </Box>
-          </Stack>
+        </Stack>
 
         <div
           className={`w-full h-full relative ${openShelves || openBay ? 'hidden' : ''} border-red-500  flex justify-start items-center  ${
@@ -739,14 +731,6 @@ const StoreLayout = () => {
                           <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
                         </div>
                       )}
-                      <img
-                        src={item.img_url}
-                        alt={`Shelf ${index}`}
-                        className="w-full h-full object-cover cursor-pointer "
-                        onLoad={() => {
-                          setImgLoading(false);
-                        }}
-                      />
                       <img
                         src={item.img_url}
                         alt={`Shelf ${index}`}
@@ -1124,9 +1108,7 @@ const StoreLayout = () => {
         </div>
       )}
     </div>
-
-  )
+  );
 };
 
 export default StoreLayout;
-
