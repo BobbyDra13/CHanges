@@ -203,15 +203,15 @@ const StoreLayout = () => {
   };
   const handleOpenShelves = async (item) => {
     // console.log('partdetails', item.partsDetails);
+    handleCloseBay();
+    setOpenShelves(true);
     try {
       const partsData = await getPartsData(item.shelf_id);
       setCurrentShelf(partsData[0]);
       handleGetUpdatedPartDetails(partsData[0]);
     } catch (error) {
       console.log('why why why', error);
-    }
-    handleCloseBay();
-    setOpenShelves(true);
+    } finally{setLoading(false)}
   };
   // console.log('updated parts', updatedPartDetails);
   const handleBack = () => {
@@ -451,10 +451,11 @@ const StoreLayout = () => {
             <span className="cursor-pointer text-lg text-black-600 opacity-60 hover:opacity-100">Back</span>
           </div>
 
-          <Box sx={{ margin: '1rem' }}>
+         {!openBay && !openShelves && <Box sx={{ margin: '1rem' }}>
             {/* <DatePickerevent SetSelectedDate={setSelectedDate} /> */}
             <DatePickerComp SetSelectedDate={setSelectedDate} />
           </Box>
+}
         </Stack>
 
         <div
@@ -564,6 +565,7 @@ const StoreLayout = () => {
                       }}
                       onClick={() => {
                         if (item?.shelf_fullness != 0) {
+                          setLoading(true);
                           handleOpenShelves(item);
                         }
                       }}

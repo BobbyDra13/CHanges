@@ -43,7 +43,7 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
   const [email, setEmail] = useState('');
   const [storesList, updateStores] = useState([]);
   const [apiResponded, setApiResponded] = useState(true);
-  const [isWhatsApp, setIsWhatsApp] = useState(null);
+  const [whatsapp, setWhatsapp] = useState(null);
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -95,8 +95,8 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
         formErrors = { ...formErrors, number: 'Please enter a valid phone number' };
       }
     }
-    if (isWhatsApp == null) {
-      formErrors = { ...formErrors, email: 'This is required' };
+    if(whatsapp==null){
+      formErrors = {...formErrors,email:'This is required'}
     }
 
     setErrors(formErrors);
@@ -160,18 +160,18 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
           fieldError = isEmailEditable && !validateEmail(value) ? 'Please enter a valid email address' : '';
           break;
 
-        case 'number':
-          fieldError = !value ? 'Phone Number is required' : !validatePhoneNumber(value) ? 'Please enter a valid phone number' : '';
-          break;
-
-        case 'isWhatsapp':
-          fieldError = value == null ? 'This is required' : '';
-          break;
-        default:
-          break;
-      }
-      setErrors({ ...errors, [name]: fieldError });
-    };
+      case 'number':
+        fieldError = !value ? 'Phone Number is required' : !validatePhoneNumber(value) ? 'Please enter a valid phone number' : '';
+        break;
+      
+      case 'whatsapp':
+        fieldError = (value==null) ? 'This is required' : '';
+        break;
+      default:
+        break;
+    }
+    setErrors({ ...errors, [name]: fieldError });
+  };
 
     const addUserDetails = async () => {
       try {
@@ -198,415 +198,408 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
           Add User
         </Typography>
 
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="h6" gutterBottom>
-            User Information
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-          <Grid container spacing={3}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="User Department"
-                onChange={(e) => onValueChange(e)}
-                name="user_dept"
-                value={user_dept}
-                id="my-input"
-                variant="outlined"
-                fullWidth
-                select
-                required="true"
-                sx={{
-                  '& .MuiInputLabel-root': {
-                    color: 'rgba(0, 0, 0, 0.4)',
-                    '&.Mui-focused': {
-                      color: 'black'
-                    }
-                  },
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '10px',
-                    '& fieldset': {
-                      borderColor: 'rgba(0, 0, 0, 0.2)'
-                    },
-                    '&:hover fieldset': {
-                      borderColor: 'black'
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: 'black'
-                    }
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h6" gutterBottom>
+          User Information
+        </Typography>
+        <Divider sx={{ mb: 2 }} />
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="User Department"
+              onChange={(e) => onValueChange(e)}
+              name="user_dept"
+              value={user_dept}
+              id="my-input"
+              variant="outlined"
+              fullWidth
+              select
+              required="true"
+              sx={{
+                '& .MuiInputLabel-root': {
+                  color: 'rgba(0, 0, 0, 0.4)',
+                  '&.Mui-focused': {
+                    color: 'black'
                   }
-                }}
-                error={!!errors.user_dept}
-                helperText={errors.user_dept}
-              >
-                {depts.map((name) => (
-                  <MenuItem
-                    key={name}
-                    value={name}
-                    sx={{
-                      padding: '6px 8px',
-                      lineHeight: '1.57143',
-                      fontSize: '0.875rem',
-                      fontWeight: '400',
-                      borderRadius: '6px',
-                      display: 'flex',
-                      marginBottom: '4px',
-                      height: '40px',
-                      '&:focus, &:hover': {
-                        bgcolor: '#f4f6f8'
-                      }
-                    }}
-                  >
-                    <ListItemText primary={<Typography variant="body2">{name}</Typography>} />
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="User Role"
-                onChange={(e) => onValueChange(e)}
-                name="user_role"
-                value={user_role}
-                id="my-input"
-                variant="outlined"
-                fullWidth
-                select
-                required="true"
-                sx={{
-                  '& .MuiInputLabel-root': {
-                    color: 'rgba(0, 0, 0, 0.4)',
-                    '&.Mui-focused': {
-                      color: 'black'
-                    }
+                },
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '10px',
+                  '& fieldset': {
+                    borderColor: 'rgba(0, 0, 0, 0.2)'
                   },
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '10px',
-                    '& fieldset': {
-                      borderColor: 'rgba(0, 0, 0, 0.2)'
-                    },
-                    '&:hover fieldset': {
-                      borderColor: 'black'
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: 'black'
-                    }
-                  }
-                }}
-                error={!!errors.user_role}
-                helperText={errors.user_role}
-              >
-                {roles.map((name) => (
-                  <MenuItem
-                    key={name}
-                    value={name}
-                    sx={{
-                      padding: '6px 8px',
-                      lineHeight: '1.57143',
-                      fontSize: '0.875rem',
-                      fontWeight: '400',
-                      borderRadius: '6px',
-                      display: 'flex',
-                      marginBottom: '4px',
-                      height: '40px',
-                      '&:focus, &:hover': {
-                        bgcolor: '#f4f6f8'
-                      }
-                    }}
-                  >
-                    <ListItemText primary={<Typography variant="body2">{name}</Typography>} />
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="User ID"
-                onChange={(e) => {
-                  onValueChange(e);
-                }}
-                name="user_id"
-                value={user_id}
-                id="my-input"
-                variant="outlined"
-                fullWidth
-                required="true"
-                sx={{
-                  '& .MuiInputLabel-root': {
-                    color: 'rgba(0, 0, 0, 0.4)',
-                    '&.Mui-focused': {
-                      color: 'black'
-                    }
+                  '&:hover fieldset': {
+                    borderColor: 'black'
                   },
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '10px',
-                    '& fieldset': {
-                      borderColor: 'rgba(0, 0, 0, 0.2)'
-                    },
-                    '&:hover fieldset': {
-                      borderColor: 'black'
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: 'black'
-                    }
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'black'
                   }
-                }}
-                error={!!errors.user_id}
-                helperText={errors.user_id}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="User Name"
-                onChange={(e) => onValueChange(e)}
-                name="user_name"
-                value={user_name}
-                id="my-input"
-                variant="outlined"
-                fullWidth
-                required="true"
-                sx={{
-                  '& .MuiInputLabel-root': {
-                    color: 'rgba(0, 0, 0, 0.4)',
-                    '&.Mui-focused': {
-                      color: 'black'
+                }
+              }}
+              error={!!errors.user_dept}
+              helperText={errors.user_dept}
+            >
+              {depts.map((name) => (
+                <MenuItem
+                  key={name}
+                  value={name}
+                  sx={{
+                    padding: '6px 8px',
+                    lineHeight: '1.57143',
+                    fontSize: '0.875rem',
+                    fontWeight: '400',
+                    borderRadius: '6px',
+                    display: 'flex',
+                    marginBottom: '4px',
+                    height: '40px',
+                    '&:focus, &:hover': {
+                      bgcolor: '#f4f6f8'
                     }
-                  },
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '10px',
-                    '& fieldset': {
-                      borderColor: 'rgba(0, 0, 0, 0.2)'
-                    },
-                    '&:hover fieldset': {
-                      borderColor: 'black'
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: 'black'
-                    }
-                  }
-                }}
-                error={!!errors.user_name}
-                helperText={errors.user_name}
-              />
-            </Grid>
-          </Grid>
-        </Box>
-        <Box>
-          <Typography variant="h6" gutterBottom>
-            Additional Information
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <TextField
-                label="Store"
-                onChange={(e) => {
-                  onValueChange(e);
-                  // console.log(e.target.value);
-                }}
-                name="store_id"
-                value={user.store_id}
-                id="my-input"
-                variant="outlined"
-                fullWidth
-                select
-                required
-                sx={{
-                  '& .MuiInputLabel-root': {
-                    color: 'rgba(0, 0, 0, 0.4)',
-                    '&.Mui-focused': {
-                      color: 'black'
-                    }
-                  },
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '10px',
-                    '& fieldset': {
-                      borderColor: 'rgba(0, 0, 0, 0.2)'
-                    },
-                    '&:hover fieldset': {
-                      borderColor: 'black'
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: 'black'
-                    }
-                  }
-                }}
-                error={!!errors.store_id}
-                helperText={errors.store_id}
-              >
-                {storesList.map((store) => (
-                  <MenuItem
-                    key={store.store_id}
-                    value={store.store_id}
-                    sx={{
-                      padding: '6px 8px',
-                      lineHeight: '1.57143',
-                      fontSize: '0.875rem',
-                      fontWeight: '400',
-                      borderRadius: '6px',
-                      display: 'flex',
-                      marginBottom: '4px',
-                      height: '40px',
-                      '&:focus, &:hover': {
-                        bgcolor: '#f4f6f8'
-                      }
-                    }}
-                  >
-                    <ListItemText primary={<Typography variant="body2">{store.store_id}</Typography>} />
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Phone Number"
-                onChange={(e) => onValueChange(e)}
-                name="number"
-                value={number}
-                id="my-input"
-                variant="outlined"
-                fullWidth
-                required="true"
-                sx={{
-                  '& .MuiInputLabel-root': {
-                    color: 'rgba(0, 0, 0, 0.4)',
-                    '&.Mui-focused': {
-                      color: 'black'
-                    }
-                  },
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '10px',
-                    '& fieldset': {
-                      borderColor: 'rgba(0, 0, 0, 0.2)'
-                    },
-                    '&:hover fieldset': {
-                      borderColor: 'black'
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: 'black'
-                    }
-                  }
-                }}
-                error={!!errors.number}
-                helperText={errors.number}
-              />
-              <FormControl error={!!errors.isWhatsApp}>
-                <FormLabel id="demo-controlled-radio-buttons-group">Is this number on WhatsApp?</FormLabel>
-                <RadioGroup
-                  name="whatsapp"
-                  onChange={(e) => onValueChange(e)}
-                  row
-                  aria-labelledby="demo-controlled-radio-buttons-group"
-                  value={isWhatsApp}
-                  required="true"
+                  }}
                 >
-                  <FormControlLabel
-                    value={true}
-                    name="controlled-radio-buttons-group"
-                    control={<Radio />}
-                    label="Yes"
-                    onClick={() => setIsWhatsApp(true)}
-                  />
-                  <FormControlLabel
-                    value={false}
-                    name="controlled-radio-buttons-group"
-                    control={<Radio />}
-                    label="No"
-                    onClick={() => setIsWhatsApp(false)}
-                  />
-                </RadioGroup>
-                <FormHelperText>{errors.isWhatsApp}</FormHelperText>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Email Address"
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  onValueChange(e);
-                }}
-                name="email"
-                value={email}
-                id="my-input"
-                variant="outlined"
-                required={isEmailEditable}
-                helperText={isEmailEditable && !email ? 'Email is required' : ''}
-                fullWidth
-                sx={{
-                  '& .MuiInputLabel-root': {
-                    color: 'rgba(0, 0, 0, 0.4)',
-                    '&.Mui-focused': {
-                      color: 'black'
-                    }
-                  },
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '10px',
-                    '& fieldset': {
-                      borderColor: 'rgba(0, 0, 0, 0.2)'
-                    },
-                    '&:hover fieldset': {
-                      borderColor: 'black'
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: 'black'
-                    }
-                  }
-                }}
-                error={!!errors.email && isEmailEditable}
-              />
-            </Grid>
+                  <ListItemText primary={<Typography variant="body2">{name}</Typography>} />
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
-        </Box>
-        <Box display="flex" justifyContent="flex-end" mt={3}>
-          {!apiResponded ? (
-            <CircularProgress />
-          ) : (
-            <>
-              <Button
-                component={Link}
-                variant="contained"
-                onClick={() => addUserDetails()}
-                sx={{
-                  bgcolor: theme.palette.success.main,
-                  color: '#FFFFFF',
-                  borderRadius: '8px ',
-                  padding: '6px 24px ',
-                  transition: 'background-color 0.3s ease',
-                  '&:hover': {
-                    backgroundColor: theme.palette.success.dark
-                  },
-                  '&:active': {
-                    backgroundColor: theme.palette.success.light
-                  },
-                  '&:focus': {
-                    outline: 'none'
-                  },
-                  mr: 1
-                }}
-              >
-                Create User
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={handleAddUserDialogClose}
-                sx={{
-                  borderColor: theme.palette.error.main,
-                  bgcolor: theme.palette.error.light,
-                  color: theme.palette.error.main,
-                  borderRadius: '8px !important',
-                  padding: '6px 24px !important',
-                  '&:hover': {
-                    backgroundColor: theme.palette.error.light,
-                    color: theme.palette.text.secondary
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="User Role"
+              onChange={(e) => onValueChange(e)}
+              name="user_role"
+              value={user_role}
+              id="my-input"
+              variant="outlined"
+              fullWidth
+              select
+              required="true"
+              sx={{
+                '& .MuiInputLabel-root': {
+                  color: 'rgba(0, 0, 0, 0.4)',
+                  '&.Mui-focused': {
+                    color: 'black'
                   }
-                }}
-              >
-                Cancel
-              </Button>
-            </>
-          )}
-        </Box>
-      </Paper>
-    );
+                },
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '10px',
+                  '& fieldset': {
+                    borderColor: 'rgba(0, 0, 0, 0.2)'
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'black'
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'black'
+                  }
+                }
+              }}
+              error={!!errors.user_role}
+              helperText={errors.user_role}
+            >
+              {roles.map((name) => (
+                <MenuItem
+                  key={name}
+                  value={name}
+                  sx={{
+                    padding: '6px 8px',
+                    lineHeight: '1.57143',
+                    fontSize: '0.875rem',
+                    fontWeight: '400',
+                    borderRadius: '6px',
+                    display: 'flex',
+                    marginBottom: '4px',
+                    height: '40px',
+                    '&:focus, &:hover': {
+                      bgcolor: '#f4f6f8'
+                    }
+                  }}
+                >
+                  <ListItemText primary={<Typography variant="body2">{name}</Typography>} />
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="User ID"
+              onChange={(e) => {
+                onValueChange(e);
+              }}
+              name="user_id"
+              value={user_id}
+              id="my-input"
+              variant="outlined"
+              fullWidth
+              required="true"
+              sx={{
+                '& .MuiInputLabel-root': {
+                  color: 'rgba(0, 0, 0, 0.4)',
+                  '&.Mui-focused': {
+                    color: 'black'
+                  }
+                },
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '10px',
+                  '& fieldset': {
+                    borderColor: 'rgba(0, 0, 0, 0.2)'
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'black'
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'black'
+                  }
+                }
+              }}
+              error={!!errors.user_id}
+              helperText={errors.user_id}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="User Name"
+              onChange={(e) => onValueChange(e)}
+              name="user_name"
+              value={user_name}
+              id="my-input"
+              variant="outlined"
+              fullWidth
+              required="true"
+              sx={{
+                '& .MuiInputLabel-root': {
+                  color: 'rgba(0, 0, 0, 0.4)',
+                  '&.Mui-focused': {
+                    color: 'black'
+                  }
+                },
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '10px',
+                  '& fieldset': {
+                    borderColor: 'rgba(0, 0, 0, 0.2)'
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'black'
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'black'
+                  }
+                }
+              }}
+              error={!!errors.user_name}
+              helperText={errors.user_name}
+            />
+          </Grid>
+        </Grid>
+      </Box>
+      <Box>
+        <Typography variant="h6" gutterBottom>
+          Additional Information
+        </Typography>
+        <Divider sx={{ mb: 2 }} />
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <TextField
+              label="Store"
+              onChange={(e) => {
+                onValueChange(e);
+                // console.log(e.target.value);
+              }}
+              name="store_id"
+              value={user.store_id}
+              id="my-input"
+              variant="outlined"
+              fullWidth
+              select
+              required
+              sx={{
+                '& .MuiInputLabel-root': {
+                  color: 'rgba(0, 0, 0, 0.4)',
+                  '&.Mui-focused': {
+                    color: 'black'
+                  }
+                },
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '10px',
+                  '& fieldset': {
+                    borderColor: 'rgba(0, 0, 0, 0.2)'
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'black'
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'black'
+                  }
+                }
+              }}
+              error={!!errors.store_id}
+              helperText={errors.store_id}
+            >
+              {storesList.map((store) => (
+                <MenuItem
+                  key={store.store_id}
+                  value={store.store_id}
+                  sx={{
+                    padding: '6px 8px',
+                    lineHeight: '1.57143',
+                    fontSize: '0.875rem',
+                    fontWeight: '400',
+                    borderRadius: '6px',
+                    display: 'flex',
+                    marginBottom: '4px',
+                    height: '40px',
+                    '&:focus, &:hover': {
+                      bgcolor: '#f4f6f8'
+                    }
+                  }}
+                >
+                  <ListItemText primary={<Typography variant="body2">{store.store_id}</Typography>} />
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Phone Number"
+              onChange={(e) => onValueChange(e)}
+              name="number"
+              value={number}
+              id="my-input"
+              variant="outlined"
+              fullWidth
+              required="true"
+              sx={{
+                '& .MuiInputLabel-root': {
+                  color: 'rgba(0, 0, 0, 0.4)',
+                  '&.Mui-focused': {
+                    color: 'black'
+                  }
+                },
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '10px',
+                  '& fieldset': {
+                    borderColor: 'rgba(0, 0, 0, 0.2)'
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'black'
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'black'
+                  }
+                }
+              }}
+              error={!!errors.number}
+              helperText={errors.number}
+            />
+            <FormControl error={!!errors.whatsapp}>
+            <FormLabel id="demo-controlled-radio-buttons-group">Is this number on WhatsApp?</FormLabel>
+            <RadioGroup name="whatsapp" onChange={(e) => onValueChange(e)} row aria-labelledby="demo-controlled-radio-buttons-group" value={whatsapp} required='true'>
+              <FormControlLabel
+                value={true}
+                name="controlled-radio-buttons-group"
+                control={<Radio />}
+                label="Yes"
+                onClick={() => setWhatsapp(true)}
+              />
+              <FormControlLabel
+                value={false}
+                name="controlled-radio-buttons-group"
+                control={<Radio />}
+                label="No"
+                onClick={() => setWhatsapp(false)}
+              />
+            </RadioGroup>
+            <FormHelperText>{errors.whatsapp}</FormHelperText>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Email Address"
+              onChange={(e) => {
+                setEmail(e.target.value);
+                onValueChange(e);
+              }}
+              name="email"
+              value={email}
+              id="my-input"
+              variant="outlined"
+              required={isEmailEditable}
+              helperText={isEmailEditable && !email ? 'Email is required' : ''}
+              fullWidth
+              sx={{
+                '& .MuiInputLabel-root': {
+                  color: 'rgba(0, 0, 0, 0.4)',
+                  '&.Mui-focused': {
+                    color: 'black'
+                  }
+                },
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '10px',
+                  '& fieldset': {
+                    borderColor: 'rgba(0, 0, 0, 0.2)'
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'black'
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'black'
+                  }
+                }
+              }}
+              error={!!errors.email && isEmailEditable}
+            />
+          </Grid>
+        </Grid>
+      </Box>
+      <Box display="flex" justifyContent="flex-end" mt={3}>
+        {!apiResponded ? (
+          <CircularProgress />
+        ) : (
+          <>
+            <Button
+              component={Link}
+              variant="contained"
+              onClick={() => addUserDetails()}
+              sx={{
+                bgcolor: theme.palette.success.main,
+                color: '#FFFFFF',
+                borderRadius: '8px ',
+                padding: '6px 24px ',
+                transition: 'background-color 0.3s ease',
+                '&:hover': {
+                  backgroundColor: theme.palette.success.dark
+                },
+                '&:active': {
+                  backgroundColor: theme.palette.success.light
+                },
+                '&:focus': {
+                  outline: 'none'
+                },
+                mr: 1
+              }}
+            >
+              Create User
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={handleAddUserDialogClose}
+              sx={{
+                borderColor: theme.palette.error.main,
+                bgcolor: theme.palette.error.light,
+                color: theme.palette.error.main,
+                borderRadius: '8px !important',
+                padding: '6px 24px !important',
+                '&:hover': {
+                  backgroundColor: theme.palette.error.light,
+                  color: theme.palette.text.secondary
+                }
+              }}
+            >
+              Cancel
+            </Button>
+          </>
+        )}
+      </Box>
+    </Paper>
+  );
 };
 
 export default AddStore;

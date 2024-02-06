@@ -32,7 +32,7 @@ const initialValue = {
   store_id: '',
   email: '',
   number: '',
-  isWhatsApp:'',
+  whatsapp:'',
 };
 const roles = ['Agent', 'Department Manager', 'Store Manager', 'Cluster Manager', 'NHK Super User'];
 const depts = ['Operations', 'VM', 'Marketing', 'Analysis'];
@@ -41,7 +41,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
   const theme = useTheme();
   const [user, setUser] = useState(initialValue);
   const { user_dept, user_role, user_id, user_name, store_id, number } = user;
-  var {isWhatsApp} = user;
+  var {whatsapp} = user;
   const [isEmailEditable, setIsEmailEditable] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(true);
@@ -130,7 +130,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
         const response = await getOneUser(rowId);
         setUser(response.data);
         setEmail(response.data.email);
-        // isWhatsApp= response.data.isWhatsApp;
+        whatsapp= response.data.whatsapp;
         setLoading(false);
         setCurrentUserId(response.data.user_id);
       } catch (error) {
@@ -530,7 +530,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
                   onChange={(e) => onValueChange(e)}
                   row
                   aria-labelledby="demo-controlled-radio-buttons-group"
-                  value={isWhatsApp}
+                  value={whatsapp}
                 >
                   <FormControlLabel
                     value={true}
@@ -538,7 +538,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
                     control={<Radio />}
                     label="Yes"
                     onClick={() => {
-                      isWhatsApp = true;
+                      whatsapp = true;
                     }}
                   />
                   <FormControlLabel
@@ -547,7 +547,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
                     control={<Radio />}
                     label="No"
                     onClick={()=>{
-                      isWhatsApp= true;
+                      whatsapp= true;
                     }}
                   />
                 </RadioGroup>
