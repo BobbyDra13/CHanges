@@ -401,4 +401,18 @@ export const GetShelfWiseDetails = async (date, bay_id) => {
   } catch(error) {
     console.log('Error calling shelf-wise details',error);
   }
+};
+
+export const GetPartsWiseDetails = async (date, shelf_id) => {
+  try {
+    const res = await axios.get(`${lambUrl}/store/parts_wise_config?date=${date}&shelf_id=${shelf_id}`,{
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res;
+  } catch(error) {
+    console.log('Error calling parts-wise details',error);
+  }
 }

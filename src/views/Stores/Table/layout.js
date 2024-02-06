@@ -26,7 +26,7 @@ import {
   Divider
 } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import {GetImagesFromSignedUrl, GetBayWiseDetails, GetShelfWiseDetails } from '../../../api/index';
+import {GetImagesFromSignedUrl, GetBayWiseDetails, GetShelfWiseDetails, GetPartsWiseDetails } from '../../../api/index';
 // import NewLoader from '../../../component/Loader/Loader';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoReturnUpBack } from 'react-icons/io5';
@@ -105,26 +105,24 @@ const StoreLayout = () => {
     }
   };
 
-  const dateToday = new Date();
-  const today = dateToday.toISOString().split('T')[0];
-  console.log('today', today);
   const getLayoutData = async () => {
-    const date = today;
-    const response = await GetBayWiseDetails(date);
+    const response = await GetBayWiseDetails(selectedDate);
     console.log(response.data[0]);
     setLayoutData(response.data[0]);
   };
 
   useEffect(() => {
     getLayoutData();
-  }, []);
+  }, [selectedDate]);
 
   const getShelfData = async (bay_id) => {
-    const date = today;
-    const response = await GetShelfWiseDetails(date, bay_id );
-    console.log(response.data[0]);
-    setLayoutData(...layoutData,response.data);
+    const response = await GetShelfWiseDetails(selectedDate, bay_id );
+    return response.data;
+  }
 
+  const getPartsData = async (shelf_id) => {
+    const response = await GetPartsWiseDetails(selectedDate,shelf_id);
+    return response.data;
   }
   const findMidpoint = (coordinates, dimensions) => {
     const { x, y } = coordinates;
@@ -137,28 +135,46 @@ const StoreLayout = () => {
     setLoading(true);
     getLayoutData();
   };
-  const handleOpenBay = (item) => {
-    getShelfData(item);
+  const handleOpenBay = async (item) => {
     setOpenBay(true);
-    setCurrentBay(item);
+    try {
+      const shelfData = await getShelfData(item.bayID);
+      console.log(shelfData);
+      setCurrentBay(shelfData[0]);
+    } catch (error) {
+      console.log('Problem in getting the Shelf Data', error);
+    }
+  };
+  const handlePrevBay = async() => {
+    let sortedBayArray = layoutData.bayDetails.sort((a, b) => {
+      return a.bay_name.localeCompare(b.bay_name);
+    });
+    
+    const newIndex = parseInt(currentBay?.bay_name?.split(' ')[1]) === 1
+      ? layoutData.bayDetails.length - 1
+      : parseInt(currentBay.bay_name.split(' ')[1]) - 2;
+      console.log(sortedBayArray[0].bayID);
 
+    try {
+      const shelfData = await getShelfData(sortedBayArray[newIndex].bayID);
+      setCurrentBay(shelfData[0]);
+    } catch (error) {
+      console.log('Problem in the previous phase',error)
+    }
   };
-  const handlePrevBay = () => {
+  const handleNextBay = async () => {
     let sortedBayArray = layoutData.bayDetails.sort((a, b) => {
       return a.bay_name.localeCompare(b.bay_name);
     });
-    // console.log(sortedBayArray[parseInt(currentBay?.bay_name?.split(' ')[1]) - 1]);
-    parseInt(currentBay?.bay_name?.split(' ')[1]) === 1
-      ? setCurrentBay(sortedBayArray[layoutData.bayDetails.length - 1])
-      : setCurrentBay(sortedBayArray[parseInt(currentBay?.bay_name?.split(' ')[1]) - 2]);
-  };
-  const handleNextBay = () => {
-    let sortedBayArray = layoutData.bayDetails.sort((a, b) => {
-      return a.bay_name.localeCompare(b.bay_name);
-    });
-    parseInt(currentBay?.bay_name?.split(' ')[1]) === layoutData.bayDetails.length
-      ? setCurrentBay(sortedBayArray[0])
-      : setCurrentBay(sortedBayArray[parseInt(currentBay?.bay_name?.split(' ')[1])]);
+   const newIndex =  parseInt(currentBay?.bay_name?.split(' ')[1]) === layoutData.bayDetails.length
+      ? 0
+      : parseInt(currentBay?.bay_name?.split(' ')[1]);
+      try {
+        const shelfData = await getShelfData(sortedBayArray[newIndex].bayID);
+        setCurrentBay(shelfData[0]);
+      } catch (error) {
+        console.log('Problem in the previous phase',error)
+      }
   };
   const handleCloseShelves = () => {
     setOpenShelves(false);
@@ -181,11 +197,17 @@ const StoreLayout = () => {
     setUpdatedPartDetails(mergedPartsDetails);
     setLoading(false);
   };
-  const handleOpenShelves = (item) => {
+  const handleOpenShelves = async (item) => {
     // console.log('partdetails', item.partsDetails);
-    handleGetUpdatedPartDetails(item);
+    try{
+      const partsData = await getPartsData(item.shelf_id);
+      setCurrentShelf(partsData[0]);
+      handleGetUpdatedPartDetails(partsData[0]);
+
+    } catch(error){
+      console.log('why why why',error);
+    } 
     handleCloseBay();
-    setCurrentShelf(item);
     setOpenShelves(true);
   };
   // console.log('updated parts', updatedPartDetails);
@@ -213,7 +235,7 @@ const StoreLayout = () => {
       handleNextShelves();
     }
   };
-  const handlePrevShelves = () => {
+  const handlePrevShelves = async() => {
     // SORTING THE SHELVES IN THE BASIS OF THEIR NAME
     let sortedShelvesArray = currentBay.shelves.sort((a, b) => {
       return a.shelf_name.localeCompare(b.shelf_name);
@@ -223,44 +245,64 @@ const StoreLayout = () => {
     const hasBottomShelf = currentBay?.shelves?.some((shelf) => shelf.location === 'bottom');
     // CHECKING FOR TOP SHELF
     const hasTopShelf = currentBay?.shelves?.some((shelf) => shelf.location === 'top');
+    var nInd = 1; 
 
     // IF TOP SHELF IS NOT PRESENT THEN CONDITION FOR SELECTING CURRENTSHELF
     if (!hasTopShelf) {
+      console.log('This is sorted shleves array hrere',sortedShelvesArray[0]);
+
       if (parseInt(currentShelf?.shelf_name?.split(' ')[2]) === 0) {
-        setCurrentShelf(sortedShelvesArray[currentBay?.shelves?.length - 1]);
-        handleGetUpdatedPartDetails(sortedShelvesArray[currentBay?.shelves?.length - 1]);
+        nInd = currentBay?.shelves?.length - 1;
       } else if (parseInt(currentShelf?.shelf_name?.split(' ')[2]) === 3) {
-        setCurrentShelf(sortedShelvesArray[1]);
-        handleGetUpdatedPartDetails(sortedShelvesArray[1]);
+        nInd = 1;
       } else {
-        setCurrentShelf(sortedShelvesArray[parseInt(currentShelf?.shelf_name?.split(' ')[2]) - 1]);
-        handleGetUpdatedPartDetails(sortedShelvesArray[parseInt(currentShelf?.shelf_name?.split(' ')[2]) - 1]);
+        nInd = parseInt(currentShelf?.shelf_name?.split(' ')[2]) - 1;
       }
+      try{
+        const partData = await getPartsData(sortedShelvesArray[nInd].shelf_id);
+        setCurrentShelf(partData[0]);
+        handleGetUpdatedPartDetails(partData[0]);
+      }catch(error){
+        console.log(error);
+      }
+
     }
     // IF BOTTOM SHELF IS PRESENT THEN CONDITION FOR SELECTING CURRENTSHELF
     else if (hasBottomShelf) {
       if (parseInt(currentShelf?.shelf_name?.split(' ')[2]) === 0) {
-        setCurrentShelf(sortedShelvesArray[currentBay?.shelves?.length - 1]);
-        handleGetUpdatedPartDetails(sortedShelvesArray[currentBay?.shelves?.length - 1]);
+        nInd = currentBay?.shelves?.length - 1;
       } else {
-        setCurrentShelf(sortedShelvesArray[parseInt(currentShelf?.shelf_name?.split(' ')[2]) - 1]);
-        handleGetUpdatedPartDetails(sortedShelvesArray[parseInt(currentShelf?.shelf_name?.split(' ')[2]) - 1]);
+        nInd = parseInt(currentShelf?.shelf_name?.split(' ')[2]) - 1;
+      }
+
+      try{
+        const partData = await getPartsData(sortedShelvesArray[nInd].shelf_id);
+        setCurrentShelf(partData[0]);
+        handleGetUpdatedPartDetails(partData[0]);
+      }catch(error){
+        console.log(error);
       }
     }
 
     // IF BOTTOM SHELF IS NOT PRESENT THEN CONDITION FOR SELECTING CURRENTSHELF
     else {
       if (parseInt(currentShelf?.shelf_name?.split(' ')[2]) === 1) {
-        setCurrentShelf(sortedShelvesArray[currentBay?.shelves?.length - 1]);
-        handleGetUpdatedPartDetails(sortedShelvesArray[currentBay?.shelves?.length - 1]);
+        nInd = currentBay?.shelves?.length - 1;
       } else {
-        setCurrentShelf(sortedShelvesArray[parseInt(currentShelf?.shelf_name?.split(' ')[2]) - 2]);
-        handleGetUpdatedPartDetails(sortedShelvesArray[parseInt(currentShelf?.shelf_name?.split(' ')[2]) - 2]);
+        nInd = parseInt(currentShelf?.shelf_name?.split(' ')[2]) - 2;
+      }
+      try{
+        const partData = await getPartsData(sortedShelvesArray[nInd].shelf_id);
+        setCurrentShelf(partData[0]);
+        handleGetUpdatedPartDetails(partData[0]);
+      }catch(error){
+        console.log('Idk why some error',error);
       }
     }
+    
   };
 
-  const handleNextShelves = () => {
+  const handleNextShelves = async () => {
     // SORTING THE SHELVES IN THE BASIS OF THEIR NAME
     let sortedShelvesArray = currentBay.shelves.sort((a, b) => {
       return a.shelf_name.localeCompare(b.shelf_name);
@@ -269,36 +311,57 @@ const StoreLayout = () => {
     // CHECKING FOR BOTTOM SHELF
     const hasBottomShelf = currentBay?.shelves?.some((shelf) => shelf.location === 'bottom');
     const hasTopShelf = currentBay?.shelves?.some((shelf) => shelf.location === 'top');
-
+    var pInd = 1;
     //IF TOP SHELF IS NOT PRESENT THEN CONDITION FOR SELECTING CURRENTSHELF
     if (!hasTopShelf) {
       if (parseInt(currentShelf?.shelf_name?.split(' ')[2]) === currentBay.shelves.length) {
-        setCurrentShelf(sortedShelvesArray[0]);
-        handleGetUpdatedPartDetails(sortedShelvesArray[0]);
+        pInd= 0;
+       
       } else {
-        setCurrentShelf(sortedShelvesArray[parseInt(currentShelf?.shelf_name?.split(' ')[2]) + 1]);
-        handleGetUpdatedPartDetails(sortedShelvesArray[parseInt(currentShelf?.shelf_name?.split(' ')[2]) + 1]);
+        pInd= parseInt(currentShelf?.shelf_name?.split(' ')[2]) + 1;
+      }
+      try{
+        const partData = await getPartsData(sortedShelvesArray[pInd].shelf_id);
+        setCurrentShelf(partData[0]);
+        handleGetUpdatedPartDetails(partData[0]);
+      }
+      catch(error){
+        console.log(error);
       }
     }
     // IF BOTTOM SHELF IS PRESENT THEN CONDITION FOR SELECTING CURRENTSHELF
     else if (hasBottomShelf) {
       if (parseInt(currentShelf?.shelf_name?.split(' ')[2]) === currentBay.shelves.length - 1) {
-        setCurrentShelf(sortedShelvesArray[0]);
-        handleGetUpdatedPartDetails(sortedShelvesArray[0]);
+        pInd = 0;
+       
       } else {
-        setCurrentShelf(sortedShelvesArray[parseInt(currentShelf?.shelf_name?.split(' ')[2]) + 1]);
-        handleGetUpdatedPartDetails(sortedShelvesArray[parseInt(currentShelf?.shelf_name?.split(' ')[2]) + 1]);
+        pInd = parseInt(currentShelf?.shelf_name?.split(' ')[2]) + 1;
+      }
+
+      try{
+        const partData = await getPartsData(sortedShelvesArray[pInd].shelf_id);
+        setCurrentShelf(partData[0]);
+        handleGetUpdatedPartDetails(partData[0]);
+      }
+      catch(error){
+        console.log(error);
       }
     }
 
     // IF BOTTOM SHELF IS NOT PRESENT THEN CONDITION FOR SELECTING CURRENTSHELF
     else {
       if (parseInt(currentShelf?.shelf_name?.split(' ')[2]) === currentBay.shelves.length) {
-        setCurrentShelf(sortedShelvesArray[0]);
-        handleGetUpdatedPartDetails(sortedShelvesArray[0]);
+        pInd= 0;
       } else {
-        setCurrentShelf(sortedShelvesArray[parseInt(currentShelf?.shelf_name?.split(' ')[2])]);
-        handleGetUpdatedPartDetails(sortedShelvesArray[parseInt(currentShelf?.shelf_name?.split(' ')[2])]);
+        pInd = parseInt(currentShelf?.shelf_name?.split(' ')[2]);
+      }
+      try{
+        const partData = await getPartsData(sortedShelvesArray[pInd].shelf_id);
+        setCurrentShelf(partData[0]);
+        handleGetUpdatedPartDetails(partData[0]);
+      }
+      catch(error){
+        console.log(error);
       }
     }
   };
