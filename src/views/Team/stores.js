@@ -66,7 +66,7 @@ const AllStores = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+    setSearchQuery(event.target.value)
   };
 
   const prepareExportData = () => {

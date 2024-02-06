@@ -67,12 +67,13 @@ export const GetAnomaliesKpi = async (data) => {
         Authorization: await token()
       }
     });
-    console.log('anomaliesData', res);
+    console.log("anomaliesData", res);
     return res;
   } catch (error) {
     console.log('Error Calling GetAnomaliesKpi API: ', error);
   }
 };
+
 
 export const GetAnomaliesBarChartData = async (data) => {
   try {
@@ -82,27 +83,12 @@ export const GetAnomaliesBarChartData = async (data) => {
         Authorization: await token()
       }
     });
-    console.log('anomalies chart', res);
     return res;
   } catch (error) {
     console.log('Error Calling GetAnomaliesKpi API: ', error);
   }
 };
 
-// export const GetAnomaliesBarChartData = async (data) => {
-//   try {
-//     const res = await axios.post(`http://localhost:8080/anomalies/anomalies_bar_chart`, data, {
-//       headers: {
-//         Accept: 'application/json'
-//         //   Authorization: await token(),
-//       }
-//     });
-//     console.log("anomalies chart", res);
-//     return res;
-//   } catch (error) {
-//     console.log('Error Calling GetAnomaliesKpi API: ', error);
-//   }
-// };
 
 // API FOR THE LAYOUT OF THE STORE
 export const GetStoreLayout = async (data) => {
@@ -249,7 +235,7 @@ export const GetVMComplianceForOneWeek = async (data) => {
         Authorization: await token()
       }
     });
-    console.log('result', res);
+    console.log("result", res);
     return res;
   } catch (error) {
     console.log('Error calling vm compliance for a week api', error);

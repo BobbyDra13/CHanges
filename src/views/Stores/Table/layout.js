@@ -103,6 +103,10 @@ const StoreLayout = () => {
       setSelectedImage(item);
       setIsImageDialogOpen(true);
     }
+    if (item?.img_url) {
+      setSelectedImage(item);
+      setIsImageDialogOpen(true);
+    }
   };
 
   const getLayoutData = async () => {
@@ -743,6 +747,14 @@ const StoreLayout = () => {
                           setImgLoading(false);
                         }}
                       />
+                      <img
+                        src={item.img_url}
+                        alt={`Shelf ${index}`}
+                        className="w-full h-full object-cover cursor-pointer "
+                        onLoad={() => {
+                          setImgLoading(false);
+                        }}
+                      />
                     </div>
                   ) : (
                     <img
@@ -1112,8 +1124,9 @@ const StoreLayout = () => {
         </div>
       )}
     </div>
-    // </div>
-  );
+
+  )
 };
 
 export default StoreLayout;
+

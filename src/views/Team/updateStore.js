@@ -111,11 +111,18 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
       if (!validatePhoneNumber(number)) {
         formErrors = { ...formErrors, number: 'Please enter a valid phone number' };
       }
+    if (!number) {
+      formErrors = { ...formErrors, number: 'Phone Number is required' };
+    } else {
+      if (!validatePhoneNumber(number)) {
+        formErrors = { ...formErrors, number: 'Please enter a valid phone number' };
+      }
     }
+  }
 
     setErrors(formErrors);
     return Object.keys(formErrors).length === 0;
-  };
+};
 
   useEffect(() => {
     const loadUserDetails = async () => {
@@ -123,7 +130,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
         const response = await getOneUser(rowId);
         setUser(response.data);
         setEmail(response.data.email);
-        isWhatsApp= response.data.isWhatsApp;
+        // isWhatsApp= response.data.isWhatsApp;
         setLoading(false);
         setCurrentUserId(response.data.user_id);
       } catch (error) {

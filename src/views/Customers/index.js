@@ -58,6 +58,7 @@ import Breadcrumb from 'component/Breadcrumb';
 import { gridSpacing } from 'config.js';
 import settings from '../../configs/react-slick-config';
 // import { ZoomCardItem } from 'component/ZoomCardItem';
+// import { ZoomCardItem } from 'component/ZoomCardItem';
 // import dummyStoresData from 'data/stores-data';
 // import Map from './map';
 
@@ -228,7 +229,7 @@ const Customers = () => {
     try {
       const response = await GetStoreWiseInfo(date, store_id );
       if (response) {
-        console.log('Store Data', response.data);
+        // console.log('Store Data', response.data);
         setStoresData(response.data);
         const anomaliesByType = new Map();
         response.data[0]?.store_anomalies.forEach((anomaly) => {
@@ -280,8 +281,11 @@ const Customers = () => {
   // console.log('Stores Data', storesData && storesData.map((item) => item.store_id));
   console.log('Stores Data', storesData);
   console.log('Anomaly Type', anomalyType);
+  console.log('Stores Data', storesData);
+  console.log('Anomaly Type', anomalyType);
   // console.log('Color Data', colorArray);
   // console.log('Promo Data', promoArray);
+  // console.log('Fullness Data', fullnessArray);
   // console.log('Fullness Data', fullnessArray);
   // console.log('Anomaly Data', anomalyImgs);
   // console.log('Clicked', clickedBar);
@@ -417,6 +421,7 @@ const Customers = () => {
                               />
                               <button className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center">
                                 <Typography sx={{ color: 'white' }} variant="subtitle2">
+                                  {item.capture_count ? Math.min(Math.floor((item.capture_count / totalParts) * 100), 100) : 0} %
                                   {item.capture_count ? Math.min(Math.floor((item.capture_count / totalParts) * 100), 100) : 0} %
                                 </Typography>
                               </button>
