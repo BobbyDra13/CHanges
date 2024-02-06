@@ -11,8 +11,7 @@ bouncy.register();
 
 // api imports
 import {
-  // GetAnomalyDetails,
-  GetBayWiseDetails,
+  GetAnomalyDetails,
   GetStoreWiseInfo
   // GetImagesFromSignedUrl,
   // GetAnolamayDetails
@@ -151,23 +150,10 @@ const Customers = () => {
     // }
   };
 
-  // const getAnomalyDetails = async (data) => {
-  //   setLoading(true);
-  //   try {
-  //     const response = await GetAnomalyDetails(id);
-  //     if (response) {
-  //       console.log('AnomalyDetails', response);
-  //       setAnonmalyDetails(response.data);
-  //       setLoading(false);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-  const getAnomalyDetails = async (date) => {
+  const getAnomalyDetails = async (id) => {
     setLoading(true);
     try {
-      const response = await GetBayWiseDetails(date);
+      const response = await GetAnomalyDetails(id);
       if (response) {
         console.log('AnomalyDetails', response);
         setAnonmalyDetails(response.data);
@@ -308,9 +294,9 @@ const Customers = () => {
         </Typography>
       </Breadcrumb>
       <Grid container spacing={gridSpacing}>
-      <Typography variant="h6"  component="h2"sx={{paddingLeft:"25px" , paddingTop:"12px"}}>
-      *Showing data for last 30 days.
-      </Typography>
+        <Typography variant="h6" component="h2" sx={{ paddingLeft: '25px', paddingTop: '12px' }}>
+          *Showing data for last 30 days.
+        </Typography>
         {storesData && storesData.length > 0 ? (
           storesData.map((item, index) => (
             <Grid key={index} xs={12} item>
