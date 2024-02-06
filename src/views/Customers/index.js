@@ -308,6 +308,9 @@ const Customers = () => {
         </Typography>
       </Breadcrumb>
       <Grid container spacing={gridSpacing}>
+      <Typography variant="h6"  component="h2"sx={{paddingLeft:"25px" , paddingTop:"12px"}}>
+      *Showing data for last 30 days.
+      </Typography>
         {storesData && storesData.length > 0 ? (
           storesData.map((item, index) => (
             <Grid key={index} xs={12} item>
