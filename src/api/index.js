@@ -18,17 +18,14 @@ export const GetCaptureProgress = async (data) => {
   }
 };
 
-
-export const dates = async ()=>{
-  try{
-    const res= await axios.get(`${lambUrl}/store/calender`);
-    return res
-  }
-  catch (error) {
+export const dates = async () => {
+  try {
+    const res = await axios.get(`${lambUrl}/store/calender`);
+    return res;
+  } catch (error) {
     console.log('Error Calling Event dates API: ', error);
   }
 };
-
 
 export const GetBrandDonutData = async (data) => {
   try {
@@ -67,28 +64,30 @@ export const GetAnomaliesKpi = async (data) => {
         Authorization: await token()
       }
     });
-    console.log("anomaliesData", res);
+    console.log('anomaliesData', res);
     return res;
   } catch (error) {
     console.log('Error Calling GetAnomaliesKpi API: ', error);
   }
 };
-
 
 export const GetAnomaliesBarChartData = async (data) => {
   try {
-    const res = await axios.post(`${lambUrl}/dashboard/anomalies_barchart`, data, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
+    const res = await axios.post(
+      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/anomalies_barchart`,
+      data,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: await token()
+        }
       }
-    });
+    );
     return res;
   } catch (error) {
     console.log('Error Calling GetAnomaliesKpi API: ', error);
   }
 };
-
 
 // API FOR THE LAYOUT OF THE STORE
 export const GetStoreLayout = async (data) => {
@@ -123,7 +122,7 @@ export const GetImagesFromSignedUrl = async (data) => {
 
 export const getUsers = async () => {
   try {
-    const res = await axios.get(`${lambUrl}/team/getalluser`, {
+    const res = await axios.get(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/getalluser`, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -153,12 +152,15 @@ export const getOneUser = async (id) => {
 
 export const deleteUser = async (id) => {
   try {
-    const res = await axios.get(`${lambUrl}/team/delete_user?userID=${id}`, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
+    const res = await axios.get(
+      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/delete_user?userID=${id}`,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: await token()
+        }
       }
-    });
+    );
     // console.log("api image response", res);
     return res;
   } catch (error) {
@@ -183,12 +185,16 @@ export const updateUser = async (id, user) => {
 
 export const createUser = async (user) => {
   try {
-    const res = await axios.post(`${lambUrl}/team/create`, user, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
+    const res = await axios.post(
+      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/create`,
+      user,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: await token()
+        }
       }
-    });
+    );
     // console.log("api image response", res);
     return res;
   } catch (error) {
@@ -235,7 +241,7 @@ export const GetVMComplianceForOneWeek = async (data) => {
         Authorization: await token()
       }
     });
-    console.log("result", res);
+    console.log('result', res);
     return res;
   } catch (error) {
     console.log('Error calling vm compliance for a week api', error);
@@ -319,12 +325,16 @@ export const allStoresId = async () => {
 
 export const GetBarChartData = async (data) => {
   try {
-    const res = await axios.post(`${lambUrl}/dashboard/bay_wise_fullness`, data, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
+    const res = await axios.post(
+      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/bay_wise_fullness`,
+      data,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: await token()
+        }
       }
-    });
+    );
     console.log('bar chart data', res);
     return res;
   } catch (error) {
@@ -334,12 +344,16 @@ export const GetBarChartData = async (data) => {
 
 export const GetVMscoreBar = async (data) => {
   try {
-    const res = await axios.post(`${lambUrl}/dashboard/vmc-barchart`, data, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
+    const res = await axios.post(
+      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/vmc-barchart`,
+      data,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: await token()
+        }
       }
-    });
+    );
     console.log('vmc data', res);
     return res;
   } catch (error) {
@@ -347,18 +361,17 @@ export const GetVMscoreBar = async (data) => {
   }
 };
 
-
 export const GetStoreWiseInfo = async (date, store_id) => {
   try {
-    const res = await axios.get(`${lambUrl}/store/stores_wise_config?date=${date}&store_id=${store_id}`,{
+    const res = await axios.get(`${lambUrl}/store/stores_wise_config?date=${date}&store_id=${store_id}`, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
       }
     });
     return res;
-  } catch(error){
-    console.log('Error calling store wise info',error);
+  } catch (error) {
+    console.log('Error calling store wise info', error);
   }
 };
 export const GetBayWiseDetails = async (date) => {
@@ -377,28 +390,28 @@ export const GetBayWiseDetails = async (date) => {
 
 export const GetShelfWiseDetails = async (date, bay_id) => {
   try {
-    const res = await axios.get(`${lambUrl}/store/shelf_wise_config?date=${date}&bay_id=${bay_id}`,{
+    const res = await axios.get(`${lambUrl}/store/shelf_wise_config?date=${date}&bay_id=${bay_id}`, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
       }
     });
     return res;
-  } catch(error) {
-    console.log('Error calling shelf-wise details',error);
+  } catch (error) {
+    console.log('Error calling shelf-wise details', error);
   }
 };
 
 export const GetPartsWiseDetails = async (date, shelf_id) => {
   try {
-    const res = await axios.get(`${lambUrl}/store/parts_wise_config?date=${date}&shelf_id=${shelf_id}`,{
+    const res = await axios.get(`${lambUrl}/store/parts_wise_config?date=${date}&shelf_id=${shelf_id}`, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
       }
     });
     return res;
-  } catch(error) {
-    console.log('Error calling parts-wise details',error);
+  } catch (error) {
+    console.log('Error calling parts-wise details', error);
   }
-}
+};
