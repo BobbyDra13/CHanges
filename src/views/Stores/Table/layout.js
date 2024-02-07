@@ -717,8 +717,8 @@ const StoreLayout = () => {
             tabIndex="0"
           />
           {imgLoading && (
-            <div className="flex justify-center items-center absolute top-0 left-0 z-0  overflow-x-hidden bg-white w-full h-full">
-              <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
+            <div className="flex justify-center items-center absolute top-0 left-0 z-40  overflow-x-hidden bg-white w-full h-full">
+              <l-bouncy size="45" speed="2" color="black"></l-bouncy>
             </div>
           )}
           <div className="w-full h-full flex lg:justify-center text-3xl font-semibold  py-6 overflow-auto">
