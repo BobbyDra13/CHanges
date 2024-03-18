@@ -18,22 +18,22 @@ const Login = () => {
   const theme = useTheme();
 
   return (
-    <div style={{ height: '100%', minHeight: '100vh', overflow:'auto' }}>
-    <Grid
-      container
-      justifyContent="center"
-      alignItems="center"
-      sx={{
-        // backgroundImage: `url(${Background})`,
-        // background: 'rgb(2, 0, 36)',
-        // backgroundImage: 'linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(0, 172, 105, 1) 29%, rgba(0, 212, 255, 1) 100%)',
-        height: '100%',
-        minHeight: '100vh',
-        backgroundSize: 'cover', // Set the background size to cover,
-        backgroundPosition: 'center' // Center the background image
-      }}
-    >
-      {/* <Grid item xs={11} sm={7} md={6} lg={4}> */}
+    <div style={{ height: '100%', minHeight: '100vh', overflow: 'auto' }}>
+      <Grid
+        container
+        justifyContent="center"
+        alignItems="center"
+        sx={{
+          // backgroundImage: `url(${Background})`,
+          // background: 'rgb(2, 0, 36)',
+          // backgroundImage: 'linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(0, 172, 105, 1) 29%, rgba(0, 212, 255, 1) 100%)',
+          height: '100%',
+          minHeight: '100vh',
+          backgroundSize: 'cover', // Set the background size to cover,
+          backgroundPosition: 'center' // Center the background image
+        }}
+      >
+        {/* <Grid item xs={11} sm={7} md={6} lg={4}> */}
         <Card
           // className='shadow-xl drop-shadow-md'
           sx={{
@@ -87,8 +87,10 @@ const Login = () => {
           </CardContent>
         </Card>
       </Grid>
-    {/* </Grid> */}
-    <Typography sx={{position: "absolute", left: 3, bottom: 2}} color="black" variant='subtitle'>Version: 0.004</Typography>
+      {/* </Grid> */}
+      <Typography sx={{ position: 'absolute', left: 3, bottom: 2 }} color="black" variant="subtitle">
+        Version: 0.004
+      </Typography>
     </div>
   );
 };

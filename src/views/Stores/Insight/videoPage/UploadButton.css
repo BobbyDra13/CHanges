@@ -1,0 +1,114 @@
+.upload-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.add-button,
+.browse-button,
+.add-more-files {
+  padding: 10px 20px;
+  margin: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #4caf50;
+  color: white;
+}
+
+.progress-text {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: black; /* Or any color that makes the text visible on the progress bar */
+}
+
+.modal,
+.progress-modal {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  width: 80%;
+  max-width: 500px;
+  outline: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content,
+.progress-modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.drop-area {
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px 0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.upload-icon {
+  margin-bottom: 20px;
+}
+
+.drag-text,
+.video-text,
+.upload-complete {
+  margin: 10px;
+}
+
+.progress-bar-container {
+  flex-grow: 1;
+  background-color: #f3f3f3;
+  border-radius: 5px;
+  margin: 20px 0;
+  position: relative;
+  width: calc(100% - 40px);
+}
+
+.progress_bar {
+  height: 20px;
+  background-color: #4caf50;
+  border-radius: 5px;
+  transition: width 0.4s ease;
+  width: 0%;
+}
+
+.reset-upload-container {
+  display: flex;
+  justify-content: flex-end;
+  width: 40px;
+  padding-left: 10px;
+}
+
+/* Assuming existing CSS is correct, just ensuring the cross icon is visible */
+.reset-upload {
+  cursor: pointer;
+  color: red;
+}
+
+.custom-datepicker {
+  /* border: 1px solid #ccc; Add border styling */
+  cursor: pointer; /* Set cursor style to pointer */
+  font-weight: bold;
+  margin-bottom: 3rem;
+}

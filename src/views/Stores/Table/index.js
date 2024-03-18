@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 // import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 
-
 // material-ui
 import { Grid, Typography } from '@mui/material';
 // import Progress_bar from './progressBar';
@@ -53,38 +52,36 @@ const StoreContent = () => {
   const today = date.toISOString().split('T')[0];
   const location = useLocation();
 
-
   const fetchData = async () => {
     try {
       const input = {
         Store_IDs: ['6582be9ac5ed94d792a563b8'],
         start_date: today
       };
-      
+
       const response = await GetStoreLayout(input);
-  
+
       // Log the raw response to get more insights
       console.log('Raw Response:', response);
-  
+
       // Check if response and response.data are defined
       if (response && response.data) {
         console.log('Data:', response.data);
         setStoresData(response.data);
       } else {
-        console.error("Response or response.data is undefined.");
+        console.error('Response or response.data is undefined.');
       }
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error('Error fetching data:', error);
     }
   };
-  
+
   useEffect(() => {
-    if (location.pathname === "/stores") {
+    if (location.pathname === '/stores') {
       fetchData();
     }
   }, [location]);
-  
-  
+
   console.log('StoresData', storesData);
   // const shelfCount = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   // console.log("brand", shelf);
@@ -167,12 +164,11 @@ const StoreContent = () => {
   //   }
   // });
 
-const options = [
-  { label: 'View', icon: <VisibilityIcon />, onClick: () => navigate('/main/stores/layout') },
-  { label: 'Edit', icon: <EditIcon />, disabled: true },
-  { label: 'Delete', icon: <DeleteIcon />, color: 'red', disabled: true }
-];
-
+  const options = [
+    { label: 'View', icon: <VisibilityIcon />, onClick: () => navigate('/main/stores/layout') },
+    { label: 'Edit', icon: <EditIcon />, disabled: true },
+    { label: 'Delete', icon: <DeleteIcon />, color: 'red', disabled: true }
+  ];
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const ITEM_HEIGHT = 48;
@@ -188,8 +184,8 @@ const options = [
     //   // Handle the "Edit" logic directly
     //   handleEditClick(event, storeData.id);
     // } else {
-      // Show the menu for other options
-      setAnchorEl(event.currentTarget);
+    // Show the menu for other options
+    setAnchorEl(event.currentTarget);
     // }
   };
   const handleClose = () => {
@@ -329,22 +325,22 @@ const options = [
               <tr key={store.id} className="text-center">
                 <td className="p-0.5 w-5 cursor-pointer">
                   <div className="bg-gray-100 p-0.5 rounded h-[100px] flex items-center justify-center hover:bg-gray-200 hover:text-black transition">
-                    {store.store_id}  {store.name}
+                    {store.store_id} {store.name}
                   </div>
                 </td>
                 <td className="p-0.5 cursor-pointer">
                   <div className="bg-gray-100 p-0.5 rounded h-[100px] flex items-center justify-center hover:bg-gray-200 hover:text-black transition">
-                  {store.upKeep ?? 0}%
+                    {store.upKeep ?? 0}%
                   </div>
                 </td>
                 <td className="p-0.5 cursor-pointer">
                   <div className="bg-gray-100 p-0.5 rounded h-[100px] flex items-center justify-center hover:bg-gray-200 hover:text-black transition">
-                  {store.vm ?? 0}%
+                    {store.vm ?? 0}%
                   </div>
                 </td>
                 <td className="p-0.5 cursor-pointer">
                   <div className="bg-gray-100 p-0.5 rounded h-[100px] flex items-center justify-center hover:bg-gray-200 hover:text-black transition">
-                  {store.promo ?? 0}%
+                    {store.promo ?? 0}%
                   </div>
                 </td>
                 <td className="p-0.5 w-20 cursor-pointer">
@@ -435,19 +431,19 @@ const options = [
                     >
                       {options.map((option) => (
                         <MenuItem
-                        key={option.label}
-                        selected={option.label === 'View'}
-                        disabled={option.disabled}  // Apply the disabled attribute conditionally
-                        onClick={() => {
-                          if (option.disabled != true) {
-                            option.onClick();
-                            handleClose();
-                          }
-                        }}
-                      >
-                        {option.icon && <span style={{ marginRight: '8px', color: option.color }}>{option.icon}</span>}
-                        <span style={{ color: option.color }}>{option.label}</span>
-                      </MenuItem>
+                          key={option.label}
+                          selected={option.label === 'View'}
+                          disabled={option.disabled} // Apply the disabled attribute conditionally
+                          onClick={() => {
+                            if (option.disabled != true) {
+                              option.onClick();
+                              handleClose();
+                            }
+                          }}
+                        >
+                          {option.icon && <span style={{ marginRight: '8px', color: option.color }}>{option.icon}</span>}
+                          <span style={{ color: option.color }}>{option.label}</span>
+                        </MenuItem>
                       ))}
                     </Menu>
                   </div>

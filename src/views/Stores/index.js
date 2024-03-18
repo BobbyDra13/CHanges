@@ -14,21 +14,17 @@ const Stores = () => {
     const fetchData = async () => {
       try {
         const response = await GetAllStores();
-        setStoresData(response.data.data); 
+        setStoresData(response.data.data);
       } catch (error) {
         console.error('Error fetching stores data:', error);
       }
     };
 
     fetchData();
-  }, []); 
-  console.log("StoresData", storesData);
+  }, []);
+  console.log('StoresData', storesData);
 
-  return (
-    <>
-     
-    </>
-  );
+  return <></>;
 };
 
 export default Stores;

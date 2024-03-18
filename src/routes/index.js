@@ -8,7 +8,5 @@ import NotFound from 'views/NotFound/NotFound';
 // ==============================|| ROUTING RENDER ||============================== //
 
 export default function ThemeRoutes() {
-  return useRoutes([MainRoutes, AuthenticationRoutes,
-    { path: '*', element: <NotFound btn="login" flag='0'/> }
-  ]);
+  return useRoutes([MainRoutes, AuthenticationRoutes, { path: '*', element: <NotFound btn="login" flag="0" /> }]);
 }

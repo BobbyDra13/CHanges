@@ -62,7 +62,7 @@ export const imageData = [
   },
   {
     url: Img
-  },
+  }
 ];
 // export const imageData = [
 //   {

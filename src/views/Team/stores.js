@@ -66,7 +66,7 @@ const AllStores = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value)
+    setSearchQuery(event.target.value);
   };
 
   const prepareExportData = () => {
@@ -192,7 +192,7 @@ const AllStores = () => {
             color: '#FFFFFF',
             borderRadius: '8px',
             padding: '10px 20px',
-            marginBottom: !isSmallScreen?'1%':'',
+            marginBottom: !isSmallScreen ? '1%' : '',
             transition: 'background-color 0.3s ease',
             '&:hover': {
               bgcolor: theme.palette.success.dark
@@ -234,7 +234,7 @@ const AllStores = () => {
           </Alert>
         </Snackbar>
       </div>
-      <Paper elevation={4} style={{ padding: '25px', margin: '1%' , marginTop:'1%' }} sx={{ borderRadius: '15px' }}>
+      <Paper elevation={4} style={{ padding: '25px', margin: '1%', marginTop: '1%' }} sx={{ borderRadius: '15px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <FilterationButton handleNavigationClick={handleNavigationClick} />

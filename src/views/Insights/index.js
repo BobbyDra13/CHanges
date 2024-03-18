@@ -611,7 +611,7 @@ const Insights = () => {
   }, [selectedDate]);
   console.log('bar', barChartData);
   console.log('vmc bar', vmChartData);
-  console.log("chartConfig", vmc);
+  console.log('chartConfig', vmc);
   useEffect(() => {
     if (barChartData && barChartData.length > 0 && selected === histogramChartRequirements.selectOptions[0].value) {
       setSelected(histogramChartRequirements.selectOptions[0].value);
@@ -670,28 +670,27 @@ const Insights = () => {
       console.log('barchartvmc', barchart);
 
       setSeriesData(barchart.vmc);
-    }
-    else if (vmChartData && vmChartData.length === 0) { 
+    } else if (vmChartData && vmChartData.length === 0) {
       setSelected(histogramChartRequirements.selectOptions[1].value);
       const manualRanges = ['0-10%', '10-20%', '20-30%', '30-40%', '40-50%', '50-60%', '60-70%', '70-80%', '80-90%', '90-100%'];
-        const totalBays = barChartData[0]?.data?.totalBaysCount;
+      const totalBays = barChartData[0]?.data?.totalBaysCount;
 
-      let chartDataMap = Object.fromEntries(manualRanges.map((range) => [range,  0]));
+      let chartDataMap = Object.fromEntries(manualRanges.map((range) => [range, 0]));
       chartDataMap['90-100%'] += totalBays;
 
       let sortedKeys = Object.keys(chartDataMap).sort((a, b) => {
         let [aStart, aEnd] = a.split('-').map(Number);
         let [bStart, bEnd] = b.split('-').map(Number);
-  
+
         return aStart - bStart || aEnd - bEnd;
       });
-  
+
       const barchart = {
         vmc: sortedKeys.map((key) => chartDataMap[key])
       };
-  
+
       console.log('barchartvmc', barchart);
-  
+
       setSeriesData(barchart.vmc);
     }
   }, [barChartData, vmChartData, histogramChartRequirements.selectOptions, selected]);
@@ -937,8 +936,10 @@ const Insights = () => {
                             </Grid>
                           </Box>
                         </CardContent>
-                      ) : barChartData[0]?.data?.bayAnalysis['0-10%'] === 9 && vmChartData?.length === 0 && vmc.currentDay.totalAnomalies === 0 && vmc.currentDay.totalCaptureCount === 0 
-                         ? (
+                      ) : barChartData[0]?.data?.bayAnalysis['0-10%'] === 9 &&
+                        vmChartData?.length === 0 &&
+                        vmc.currentDay.totalAnomalies === 0 &&
+                        vmc.currentDay.totalCaptureCount === 0 ? (
                         <div className="w-full h-full flex justify-center place-items-center">
                           <img style={{ height: '392px' }} src={NoDataImg} alt="No data" />
                         </div>
@@ -995,7 +996,10 @@ const Insights = () => {
                             </Grid>
                           </Box>
                         </CardContent>
-                      ) : vmChartData?.length === 0 && vmc.currentDay.totalAnomalies === 0 && vmc.currentDay.totalCaptureCount !== 0 && selected === histogramChartRequirements.selectOptions[1].value ? (
+                      ) : vmChartData?.length === 0 &&
+                        vmc.currentDay.totalAnomalies === 0 &&
+                        vmc.currentDay.totalCaptureCount !== 0 &&
+                        selected === histogramChartRequirements.selectOptions[1].value ? (
                         <CardContent sx={{ padding: 0, paddingBottom: '0 !important' }}>
                           <Box color="#fff" bgcolor={theme.palette.primary.main} p={3}>
                             <Grid container justifyContent="space-between" alignItems="center">

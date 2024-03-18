@@ -6,12 +6,12 @@ import { getAuth } from 'firebase/auth';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCL_UcXh6mqUVrQst5ZhUm8dUv5yDCChZc",
-  authDomain: "disha-fashion.firebaseapp.com",
-  projectId: "disha-fashion",
-  storageBucket: "disha-fashion.appspot.com",
-  messagingSenderId: "694264058453",
-  appId: "1:694264058453:web:59ba9eccdfb6d0cf2efadc"
+  apiKey: 'AIzaSyCL_UcXh6mqUVrQst5ZhUm8dUv5yDCChZc',
+  authDomain: 'disha-fashion.firebaseapp.com',
+  projectId: 'disha-fashion',
+  storageBucket: 'disha-fashion.appspot.com',
+  messagingSenderId: '694264058453',
+  appId: '1:694264058453:web:59ba9eccdfb6d0cf2efadc'
 };
 
 // Initialize Firebase
