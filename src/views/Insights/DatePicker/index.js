@@ -12,7 +12,7 @@ import { dates } from 'api';
 
 function ServerDay(props) {
   const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
-// console.log(props);
+  // console.log(props);
   const isSelected = !props.outsideCurrentMonth && highlightedDays.indexOf(props.day.getDate()) >= 0;
 
   return (
@@ -32,32 +32,29 @@ function ServerDay(props) {
 
 function DatePickerComp({ SetSelectedDate }) {
   const [calender, setCalender] = useState(new Date());
-  const[events, setEvents]= useState([]);
+  const [events, setEvents] = useState([]);
   const [highlightedDays, setHighlightedDays] = useState([]);
 
- useEffect(()=>{
-    async function getEventsdata(){
+  useEffect(() => {
+    async function getEventsdata() {
       // setIsLoading(true);
-     try{
-        const Edata= await dates()
-       
-        const daysOnly = Edata.data.map(item => {
+      try {
+        const Edata = await dates();
+
+        const daysOnly = Edata.data.map((item) => {
           const eventdate = new Date(item._id);
           return eventdate;
         });
         setEvents(daysOnly);
         // setIsLoading(false)
-
-     }catch(error){
-       console.log(error);
-     }
-     
+      } catch (error) {
+        console.log(error);
+      }
     }
     getEventsdata();
-    
-   },[])
+  }, []);
 
-   useEffect(()=>{
+  useEffect(() => {
     setHighlightedDays([]);
     const daysToHighlight = events.map((event) => {
       const today = new Date();
@@ -67,10 +64,9 @@ function DatePickerComp({ SetSelectedDate }) {
       return;
     });
     setHighlightedDays(daysToHighlight);
+  }, [events]);
 
-   },[events])
-
-   const handleMonthChange = (date) => {
+  const handleMonthChange = (date) => {
     // console.log(date.getMonth());
     const daysToHighlight = events.map((event) => {
       // console.log(event.getMonth());

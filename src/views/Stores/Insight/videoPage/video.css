@@ -1,0 +1,119 @@
+.video-component {
+  width: 100%;
+  /* max-width: 640px;  */
+  background-color: #fff;
+  /* margin: auto; */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgb(206, 203, 203);
+}
+
+.video-component video {
+  width: auto;
+  /* height: 60vh; */
+  /* border: 2px solid black; */
+  margin: 5px auto;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  background-color: #f7f7f7;
+  padding: 10px;
+  border-top: 1px solid white;
+}
+
+.top-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* border: 2px solid red; */
+  position: relative;
+  margin: 10px;
+}
+
+.bottom-controls {
+  width: 90%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* margin-top: 10px; */
+}
+
+.play-pause-btn,
+.fullscreen-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 30px;
+  /* padding: 10px; */
+  height: 30px;
+  font-size: 16px;
+}
+
+.childDiv {
+  /* margin-left: 30px; */
+  display: flex;
+  /* width: calc(100% - 30px); Calculate child width relative to parent */
+  height: 5px;
+  position: absolute;
+  /* border: 2px solid red; */
+  width: 100%;
+}
+
+.progress-bar {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  margin: 0;
+  height: 5px;
+  /* background: #ddd; */
+  border-radius: 5px;
+  border: none;
+}
+.progress-bar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #007bff;
+  cursor: pointer;
+  border: 1px solid black;
+}
+
+/* ... (styles for range thumb for Mozilla and other browsers) ... */
+
+.search-bar {
+  flex-grow: 1;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 8px 16px;
+  margin-right: 156px;
+  margin-left: 156px; /* Space between search bar and fullscreen button */
+}
+
+.search-bar:focus {
+  outline: none;
+  border-color: black;
+}
+
+/* button:hover {
+    background-color: black;
+    color: white;
+  }
+  
+  button:focus {
+    outline: none;
+  }
+   */
+.fullscreen-btn {
+  padding: 10px;
+  margin-left: 10px; /* Space it from the search bar */
+}
+
+.fullscreen-btn:hover {
+  background-color: #e6e6e6;
+}

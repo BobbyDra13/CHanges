@@ -55,7 +55,7 @@ const Register = () => {
                   <Grid item>
                     <RouterLink to="/">
                       {/* <img alt="Auth method" src={Logo} /> */}
-                      <Typography sx={{paddingTop: 1}} color="textPrimary" gutterBottom variant="h3">
+                      <Typography sx={{ paddingTop: 1 }} color="textPrimary" gutterBottom variant="h3">
                         Disha
                       </Typography>
                     </RouterLink>

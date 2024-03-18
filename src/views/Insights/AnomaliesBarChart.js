@@ -117,7 +117,7 @@ const AnomaliesBarChart = ({ date }) => {
     async function fetchBarChartData() {
       const body = {
         // start_date: date.toString(),
-        start_date: "2024-01-12",
+        start_date: '2024-01-12',
         Store_IDs: ['6582be9ac5ed94d792a563b8']
       };
       setChartData(false);
@@ -154,7 +154,7 @@ const AnomaliesBarChart = ({ date }) => {
       }
     }
     fetchBarChartData();
-    console.log("chart data", chartData);
+    console.log('chart data', chartData);
   }, [date]);
 
   // console.log('Dates', extractedDates);

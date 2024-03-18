@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { React, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Slider from 'react-slick';
@@ -83,6 +84,7 @@ const Customers = () => {
   const [storesData, setStoresData] = useState(false);
   const [colorArray, setColorArray] = useState([]);
   // const [promoArray, setPromoArray] = useState([]);
+  const [anomalies_count, setAnomalies_count] = useState(false);
   const [fullnessArray, setFullnessArray] = useState([]);
   const [anomalyDetails, setAnonmalyDetails] = useState([]);
   const [timestamps, setTimestamps] = useState({ date: '', time: '' });
@@ -151,11 +153,12 @@ const Customers = () => {
   };
 
   const getAnomalyDetails = async (id) => {
+    console.log('id:', id);
     setLoading(true);
     try {
       const response = await GetAnomalyDetails(id);
       if (response) {
-        console.log('AnomalyDetails', response);
+        console.log('AnomalyDetails api', response);
         setAnonmalyDetails(response.data);
         setLoading(false);
       }
@@ -210,20 +213,27 @@ const Customers = () => {
     // } catch (error) {
     //   console.log(error);
     // }
+
     try {
       const response = await GetStoreWiseInfo(date, store_id);
       if (response) {
-        // console.log('Store Data', response.data);
-        setStoresData(response.data);
+        console.log('Store Data', response.data);
+        setStoresData(response.data.storeDetails);
+
+        const anomalies_details = response.data.anomalies_details;
+        setAnomalies_count(anomalies_details.length);
         const anomaliesByType = new Map();
-        response.data[0]?.store_anomalies.forEach((anomaly) => {
-          const type = anomaly?.store_anomalies?.anomalies_found[0]?.type;
+        response.data?.anomalies_details.forEach((anomaly) => {
+          const type = anomaly[0]?.anomalies_found[0]?.type;
           anomaliesByType.set(type, anomaliesByType.get(type) || []);
-          anomaliesByType.get(type).push(anomaly);
+          anomaliesByType.get(type).push(anomaly[0]);
         });
+
+        // console.log('anomaliesByType ',anomaliesByType )
 
         // Set the state values based on the Map
         setColorArray(anomaliesByType.get('color_assortment') || []);
+        setColorArray((prevArray) => [...prevArray, ...(anomaliesByType.get('category_assortment') || [])]);
         // setPromoArray(anomaliesByType.get('promo_assortment') || []);
         setFullnessArray(anomaliesByType.get('empty_bin') || []);
       }
@@ -231,6 +241,8 @@ const Customers = () => {
       console.log(error);
     }
   };
+
+  console.log('anomalyesCOunt', anomalies_count);
 
   // const getSignedImg = async (input) => {
   //   try {
@@ -283,6 +295,10 @@ const Customers = () => {
   // const handleTooltipClose = () => {
   //   setOpenTooltipIndex(null);
   // };
+
+  // const navigate = useNavigate()
+
+  console.log('fullness araya', fullnessArray);
   return (
     <>
       <Breadcrumb title="Stores">
@@ -295,7 +311,7 @@ const Customers = () => {
       </Breadcrumb>
       <Grid container spacing={gridSpacing}>
         <Typography variant="h6" component="h2" sx={{ paddingLeft: '25px', paddingTop: '12px' }}>
-          *Showing data for last 30 days.
+          *Showing last Captured data.
         </Typography>
         {storesData && storesData.length > 0 ? (
           storesData.map((item, index) => (
@@ -334,7 +350,11 @@ const Customers = () => {
                                   ></div>
                                 </Tooltip>
                               </div>
-                              <Typography className="drop-shadow-md self-center" variant="h5">
+                              <Typography
+                                className="drop-shadow-md self-center cursor-pointer"
+                                variant="h5"
+                                onClick={() => navigate('/main/stores/storeinsight/overview')}
+                              >
                                 {item.store_id} - {item.name}
                               </Typography>
                             </Stack>
@@ -470,13 +490,13 @@ const Customers = () => {
                                   backgroundColor: '#e5e7eb',
                                   '& .MuiLinearProgress-bar': {
                                     backgroundColor:
-                                      Math.floor((item.store_anomalies.length / totalParts) * 100) >= 80 && !clickedBar.isVm
+                                      Math.floor((anomalies_count / totalParts) * 100) >= 80 && !clickedBar.isVm
                                         ? success
-                                        : Math.floor((item.store_anomalies.length / totalParts) * 100) >= 80 && clickedBar.isVm
+                                        : Math.floor((anomalies_count / totalParts) * 100) >= 80 && clickedBar.isVm
                                         ? successDark
-                                        : Math.floor((item.store_anomalies.length / totalParts) * 100) < 50 && !clickedBar.isVm
+                                        : Math.floor((anomalies_count / totalParts) * 100) < 50 && !clickedBar.isVm
                                         ? error
-                                        : Math.floor((item.store_anomalies.length / totalParts) * 100) < 50 && clickedBar.isVm
+                                        : Math.floor((anomalies_count / totalParts) * 100) < 50 && clickedBar.isVm
                                         ? errorDark
                                         : !clickedBar.isVm
                                         ? warning
@@ -484,7 +504,11 @@ const Customers = () => {
                                   }
                                 }}
                                 variant="determinate"
-                                value={Math.floor((item.store_anomalies.length / totalParts) * 100)}
+                                value={
+                                  Math.floor((anomalies_count / totalParts) * 100) > 100
+                                    ? 100
+                                    : Math.floor((anomalies_count / totalParts) * 100)
+                                }
                                 // color="secondary"
                               />
                               <button
@@ -492,7 +516,10 @@ const Customers = () => {
                                 className="absolute hover:cursor-pointer w-full h-full flex justify-center place-items-center"
                               >
                                 <Typography sx={{ color: 'white' }} variant="subtitle1">
-                                  {Math.floor((item.store_anomalies.length / totalParts) * 100)} %
+                                  {Math.floor((anomalies_count / totalParts) * 100) > 100
+                                    ? 100
+                                    : Math.floor((anomalies_count / totalParts) * 100)}{' '}
+                                  %
                                 </Typography>
                               </button>
                             </Box>
@@ -539,7 +566,7 @@ const Customers = () => {
                         <Typography className="drop-shadow-md" align="center" variant="h2">
                           0/
                           {!clickedBar.isUpKeep && !clickedBar.isVm && !clickedBar.isPop
-                            ? item.store_anomalies.length
+                            ? anomalies_count
                             : clickedBar.isUpKeep
                             ? fullnessArray.length
                             : colorArray.length}
@@ -615,10 +642,10 @@ const Customers = () => {
                             <div
                               onClick={() =>
                                 handleImageClick(
-                                  anomaly.img_url,
-                                  anomaly.store_anomalies.analysis_id,
-                                  anomaly.store_anomalies.anomalies_found[0].type,
-                                  anomaly.store_anomalies.timestamps
+                                  anomaly.image_url,
+                                  anomaly.analysis_id,
+                                  anomaly.anomalies_found[0].type,
+                                  anomaly.timestamps
                                 )
                               }
                               key={index}
@@ -627,7 +654,7 @@ const Customers = () => {
                               <img
                                 style={{ width: '100%', objectFit: 'cover' }}
                                 className="rounded-md shadow-md h-full hover:cursor-pointer"
-                                src={anomaly.img_url}
+                                src={anomaly.image_url}
                                 alt="no Img"
                                 loading="lazy"
                               />
@@ -640,10 +667,10 @@ const Customers = () => {
                             <div
                               onClick={() =>
                                 handleImageClick(
-                                  anomaly.img_url,
-                                  anomaly.store_anomalies.analysis_id,
-                                  anomaly.store_anomalies.anomalies_found[0].type,
-                                  anomaly.store_anomalies.timestamps
+                                  anomaly.image_url,
+                                  anomaly.analysis_id,
+                                  anomaly.anomalies_found[0].type,
+                                  anomaly.timestamps
                                 )
                               }
                               key={index}
@@ -652,7 +679,7 @@ const Customers = () => {
                               <img
                                 style={{ width: '100%', objectFit: 'cover' }}
                                 className="rounded-md shadow-md h-full hover:cursor-pointer"
-                                src={anomaly.img_url}
+                                src={anomaly.image_url}
                                 alt="no Img"
                                 loading="lazy"
                               />

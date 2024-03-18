@@ -247,7 +247,8 @@ const StoresTable = ({
                       ) : (
                         <>
                           <DialogTitle id="alert-dialog-title" style={{ paddingBottom: '10px', color: '#333', fontSize: '24px' }}>
-                            Confirm Deletion </DialogTitle>
+                            Confirm Deletion{' '}
+                          </DialogTitle>
                           <DialogContent style={{ color: '#555', fontSize: '18px' }}>
                             <DialogContentText id="alert-dialog-description">Are you sure you want to delete this user?</DialogContentText>
                           </DialogContent>

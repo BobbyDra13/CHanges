@@ -4,7 +4,7 @@ export const chartsConfig = {
       show: false
     }
   },
-  
+
   title: {
     show: ''
   },

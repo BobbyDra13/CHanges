@@ -63,7 +63,7 @@ const NotificationSection = () => {
       <Button
         sx={{
           minWidth: { sm: 50, xs: 35 },
-          color: "white"
+          color: 'white'
         }}
         ref={anchorRef}
         aria-controls={open ? 'menu-list-grow' : undefined}
