@@ -369,6 +369,7 @@ export const GetStoreWiseInfo = async (date, store_id) => {
         Authorization: await token()
       }
     });
+    console.log(res);
     return res;
   } catch (error) {
     console.log('Error calling store wise info', error);
@@ -413,5 +414,67 @@ export const GetPartsWiseDetails = async (date, shelf_id) => {
     return res;
   } catch (error) {
     console.log('Error calling parts-wise details', error);
+  }
+};
+
+
+export const GetFullnessPop = async (data) => {
+  try {
+    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/linechart`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    console.log(res);
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetCaptureProgress API: ', error);
+  }
+};
+
+export const GetStoreData = async (data) => {
+  try {
+    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/stores/get-config-stores`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    console.log(res);
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetCaptureProgress API: ', error);
+  }
+};
+
+
+export const GetAnomalies = async (data) => {
+  try {
+    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/anomalies-graph`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    console.log(res);
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetCaptureProgress API: ', error);
+  }
+};
+
+export const GetCapProg = async (data) => {
+  try {
+    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/capture-progress`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    console.log(res);
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetCaptureProgress API: ', error);
   }
 };

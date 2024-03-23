@@ -2,6 +2,7 @@ import { Box, CircularProgress } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import { footfallGraph } from 'api/sentinelAPI';
+import { GetFullnessPop } from 'api';
 // import Bubbledxaxis from './Bubbledx-axis';
 // import {footfallGraph} from "api/sentinelAPI";
 // const footfalldata=footfallGraph();
@@ -15,16 +16,20 @@ const Areachart = ({ date }) => {
     async function getData() {
       // console.log(date);
       const body = {
-        start_date: date,
-        storeId: '65c5e26a0b5be5dc7af327dc'
+        // start_date: date,
+        // storeId: '65c5e26a0b5be5dc7af327dc'
+        date: '2024-03-06',
+        store_id: '65c74d4112465588b7a4984c'
       };
       try {
         setLoading(true);
-        const data = await footfallGraph(body);
+        const data = await GetFullnessPop(body);
         // console.log(data);
         if (data) {
-          const catagorydata = data.map((d) => d.interval);
-          const custdata = data.map((d) => d.customerCount);
+          const catagorydata = data.data.map((d) => d._id);
+          console.log(catagorydata);
+          const custdata = data.data.map((d) => (d.data != 'Data not found' ? d.data.FullnessPopPercent : 0));
+          console.log(custdata);
           setCategory(catagorydata);
           setCustCount(custdata);
           setLoading(false);

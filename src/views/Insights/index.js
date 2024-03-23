@@ -12,7 +12,8 @@ import {
   GetFullnessForOneWeek,
   GetAnomaliesForOneWeek,
   GetBarChartData,
-  GetVMscoreBar
+  GetVMscoreBar,
+  GetCapProg
 } from 'api';
 
 // Apex chart import
@@ -21,7 +22,7 @@ import chartsConfig from 'configs/charts-configs';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
-import { Grid, Card, CardContent, Typography, LinearProgress, Box, Stack, TextField, MenuItem, Skeleton } from '@mui/material';
+import { Grid, Card, CardContent, Typography, LinearProgress, Box, Stack, TextField, MenuItem, Skeleton, Paper } from '@mui/material';
 
 //project import
 import statisticsChartsData from 'data/statistics-charts-data';
@@ -201,6 +202,8 @@ const Insights = () => {
     }
   });
 
+  const [openZone, setOpenZone] = useState(false);
+
   // const [brandNames, setBrandNames] = useState([]);
 
   // console.log('DATE SELECTED', selectedDate);
@@ -292,6 +295,12 @@ const Insights = () => {
           Store_IDs: ['6582be9ac5ed94d792a563b8'],
           period: 7
         };
+
+        const capBody = {
+          date: selectedDate.toString(),
+          store_id: '65c74d4112465588b7a4984c'
+        };
+
         setAvgCapProgress(false);
         setCapProgress(false);
         setFullness(false);
@@ -439,6 +448,11 @@ const Insights = () => {
             GetVMComplianceForOneWeek(body),
             GetAnomaliesForOneWeek(body)
           ]);
+
+          const CapData = await GetCapProg(capBody);
+
+          console.log(CapData.data);
+
           if (fullnessLineChart) {
             const fullnessData = fullnessLineChart.data;
             const fullnessPercentage = fullnessData.map((item) => item.fullness);
@@ -556,12 +570,15 @@ const Insights = () => {
               const totalCapturePercentage = capProgressData.data.reduce((acc, item) => acc + item.capture_percentage, 0);
               const average = totalCapturePercentage / capProgressData.data.length;
 
-              setAvgCapProgress(Math.floor(average));
+              // setAvgCapProgress(Math.floor(average));
+              setAvgCapProgress(CapData.data.averageCaptureProgress);
             } else {
               setAvgCapProgress('');
               // setCapProgress('');
             }
-            setCapProgress(capProgressData.data);
+            // setCapProgress(capProgressData.data);
+            console.log(capProgressData.data);
+            setCapProgress(CapData.data);
           }
           if (brandDonutData) {
             // console.log('Brand Data', brandDonutData);
@@ -1199,40 +1216,72 @@ const Insights = () => {
                 className="overflow-y-auto flex flex-col gap-1 scrollbar"
               >
                 <Grid container spacing={gridSpacing}>
-                  {capProgress.length > 0 ? (
-                    capProgress.map((item) => (
-                      <Grid key={item._id} item xs={12}>
-                        <Grid container justifyContent={'space-between'} alignItems="center" spacing={1}>
-                          <Grid item sm zeroMinWidth>
-                            <Typography variant="body2">{item.store_id}</Typography>
-                          </Grid>
-                          <Grid item>
-                            <Typography variant="body2" align="right">
-                              {Math.floor(item.capture_percentage)}%
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={12}>
-                            <LinearProgress
-                              sx={{
-                                borderRadius: 3,
-                                height: 5,
-                                [theme.breakpoints.up('xl')]: {
-                                  height: 5 // Height for screens equal to or larger than 'lg' breakpoint
-                                }
-                              }}
-                              variant="determinate"
-                              aria-label="direct"
-                              value={Math.floor(item.capture_percentage)}
-                              color="primary"
-                            />
-                          </Grid>
-                          {/* <Grid item sm zeroMinWidth>
+                  {capProgress ? (
+                    // capProgress.map((item) => (
+                    <Grid item xs={12}>
+                      <Grid container justifyContent={'space-between'} alignItems="center" spacing={1}>
+                        <Grid item sm zeroMinWidth>
+                          {/* <Typography variant="body2">{item.store_id}</Typography> */}
+                        </Grid>
+                        <Grid item>
+                          <Typography variant="body2" align="right">
+                            {/* {Math.floor(item.capture_percentage)}% */}
+                            {capProgress.collectiveCaptureProgress}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                          <LinearProgress
+                            className="cursor-pointer"
+                            sx={{
+                              borderRadius: 3,
+                              height: 5,
+                              [theme.breakpoints.up('xl')]: {
+                                height: 5 // Height for screens equal to or larger than 'lg' breakpoint
+                              }
+                            }}
+                            variant="determinate"
+                            aria-label="direct"
+                            // value={Math.floor(item.capture_percentage)}
+                            value={capProgress.collectiveCaptureProgress}
+                            color="primary"
+                            onClick={() => setOpenZone(!openZone)}
+                            // onScroll={()=>setOpenZone(false)}
+                          />
+                          {openZone && (
+                            <Paper className="mt-10 p-5" elevation={10}>
+                              <Typography variant="h4">Zone wise Capture Progress</Typography>
+                              {capProgress.captureProgressZoneData.length > 0 &&
+                                capProgress.captureProgressZoneData.map((item, index) => (
+                                  <>
+                                    <Typography key={index} className="m-2" variant="body1" color="initial">
+                                      {item.zone_id}
+                                    </Typography>
+                                    <LinearProgress
+                                      sx={{
+                                        borderRadius: 3,
+                                        height: 5,
+                                        [theme.breakpoints.up('xl')]: {
+                                          height: 5 // Height for screens equal to or larger than 'lg' breakpoint
+                                        }
+                                      }}
+                                      variant="determinate"
+                                      aria-label="direct"
+                                      value={item.captureProgress}
+                                      color="primary"
+                                      // onClick={()=>(setOpenZone(!openZone))}
+                                    />
+                                  </>
+                                ))}
+                            </Paper>
+                          )}
+                        </Grid>
+                        {/* <Grid item sm zeroMinWidth>
                           <Typography variant="body2">1:00 PM</Typography>
                         </Grid> */}
-                        </Grid>
                       </Grid>
-                    ))
-                  ) : capProgress.length === 0 ? (
+                    </Grid>
+                  ) : // ))
+                  capProgress.length === 0 ? (
                     <div className="w-full h-full flex justify-center place-items-center">
                       <img style={{ width: '100%' }} src={NoDataPng} alt="No data" />
                     </div>

@@ -1,7 +1,7 @@
 import { React, useEffect, useState } from 'react';
 
 // APIs
-import { GetAnomaliesBarChartData } from 'api';
+import { GetAnomalies, GetAnomaliesBarChartData } from 'api';
 
 // material-ui
 // import { useTheme } from '@mui/material/styles';
@@ -117,19 +117,23 @@ const AnomaliesBarChart = ({ date }) => {
     async function fetchBarChartData() {
       const body = {
         // start_date: date.toString(),
-        start_date: '2024-01-12',
-        Store_IDs: ['6582be9ac5ed94d792a563b8']
+        // start_date: '2024-01-12',
+        // Store_IDs: ['6582be9ac5ed94d792a563b8']
+        date: '2024-03-06',
+        store_id: '65c74d4112465588b7a4984c'
       };
       setChartData(false);
 
       try {
-        const data = await GetAnomaliesBarChartData(body);
+        // const data = await GetAnomaliesBarChartData(body);
+        const data = await GetAnomalies(body);
         if (data) {
           console.log('BarDATA', data.data);
           if (data.data.length > 0) {
-            const extractedDates = data.data.map((item) => item.date);
-            const extractedResolved = data.data.map((item) => item.resolveCounts.resolved ?? 0);
-            const extractedUnresolved = data.data.map((item) => item.resolveCounts.unresolved ?? 0);
+            const extractedDates = data.data.map((item) => item.Date);
+            // const extractedResolved = data.data.map((item) => item.resolveCounts.resolved ?? 0);
+            const extractedResolved = data.data.map((item) => item.anomalies_found);
+            // const extractedUnresolved = data.data.map((item) => item.resolveCounts.unresolved ?? 0);
             setOptions({
               ...columnChartOptions,
               xaxis: {
@@ -137,12 +141,12 @@ const AnomaliesBarChart = ({ date }) => {
               }
             });
             setSeries([
+              // {
+              //   name: 'Anomalies remaining',
+              //   data: extractedUnresolved
+              // },
               {
-                name: 'Anomalies remaining',
-                data: extractedUnresolved
-              },
-              {
-                name: 'Anomalies resolved',
+                name: 'Anomalies Found',
                 data: extractedResolved
               }
             ]);
