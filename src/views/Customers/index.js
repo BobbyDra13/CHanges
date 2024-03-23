@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { React, useState, useEffect } from 'react';
+import { React, useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -8,11 +8,13 @@ import { useNavigate } from 'react-router-dom';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import './zoom-card-item.css';
 import { bouncy } from 'ldrs';
+import MapComponent from './map';
 bouncy.register();
 
 // api imports
 import {
   GetAnomalyDetails,
+  GetStoreData,
   GetStoreWiseInfo
   // GetImagesFromSignedUrl,
   // GetAnolamayDetails
@@ -37,9 +39,9 @@ import {
   DialogContent,
   Skeleton,
   Divider,
-  ImageListItemBar,
-  ToggleButton,
-  ToggleButtonGroup,
+  // ImageListItemBar,
+  // ToggleButton,
+  // ToggleButtonGroup,
   TextField
 } from '@mui/material';
 
@@ -63,8 +65,9 @@ import settings from '../../configs/react-slick-config';
 // import Map from './map';
 
 // assets
-import OrionImg from '../../assets/images/MapImages/orion.png';
+// import OrionImg from '../../assets/images/MapImages/orion.png';
 import CheckMarkImg from '../../assets/images/checkmark.png';
+import BarChartIcon from '@mui/icons-material/BarChart';
 // import MapImg from '../../assets/images/mapImg.png';
 // import OrionImg from '../../assets/images/MapImages/orion.png';
 
@@ -95,9 +98,13 @@ const Customers = () => {
     isVm: false,
     isPop: false
   });
-  const [liveAnomalyImg, setLiveAnomalyImg] = useState(true);
+  
+  // const [liveAnomalyImg, setLiveAnomalyImg] = useState(true);
   const [imageLoading, setImageLoading] = useState(false);
   // const [openTooltipIndex, setOpenTooltipIndex] = useState(null);
+  const [updatedData, setUpdateddata] = useState(false);
+  const [cData, setCdata] = useState(false);
+  const [lcData, setLCdata] = useState(false);
 
   const theme = useTheme();
   const success = theme.palette.success.main;
@@ -108,7 +115,16 @@ const Customers = () => {
   const errorDark = theme.palette.error.dark;
   const navigate = useNavigate();
   const options = [
-    { label: 'View', icon: <VisibilityIcon />, onClick: () => navigate('/main/stores/layout') },
+    {
+      label: 'View',
+      icon: <VisibilityIcon />,
+      onClick: () => navigate('/main/stores/layout')
+    },
+    {
+      label: 'Analysis',
+      icon: <BarChartIcon />,
+      onClick: () => navigate('/main/stores/storeinsight/overview')
+    },
     { label: 'Edit', icon: <EditIcon />, disabled: true },
     { label: 'Delete', icon: <DeleteIcon />, color: 'red', disabled: true }
   ];
@@ -125,10 +141,10 @@ const Customers = () => {
     setAnchorEl(null);
   };
 
-  const handleToggleImage = () => {
-    setImageLoading(true);
-    setLiveAnomalyImg(!liveAnomalyImg);
-  };
+  // const handleToggleImage = () => {
+  //   setImageLoading(true);
+  //   setLiveAnomalyImg(!liveAnomalyImg);
+  // };
 
   const upKeepClicked = () => {
     if (!clickedBar.isUpKeep) {
@@ -167,7 +183,12 @@ const Customers = () => {
     }
   };
 
-  const handleImageClick = (url, id, type, time) => {
+  const handleImageClick = (url, anomaly, time) => {
+    if (antn) {
+      setPos({ lft: false, tp: false, wdth: false, ht: false });
+      setAntn(!antn);
+    }
+    //(url, id, type, time)
     const dateTime = new Date(time);
     const day = dateTime.toLocaleDateString(undefined, { day: '2-digit' });
     const month = dateTime.toLocaleDateString(undefined, { month: '2-digit' });
@@ -176,10 +197,12 @@ const Customers = () => {
     const formattedDate = `${day}/${month}/${year}`;
     const formattedTime = dateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
     console.log('time', time);
+    setLCdata(!lcData);
     if (!isImageDialogOpen) {
       setSelectedImage(url);
-      getAnomalyDetails(id);
-      setAnomalyType(type);
+      setCdata(anomaly);
+      // getAnomalyDetails(id);
+      // setAnomalyType(type);
       setTimestamps({ date: formattedDate, time: formattedTime });
     }
     setIsImageDialogOpen(!isImageDialogOpen);
@@ -214,11 +237,25 @@ const Customers = () => {
     //   console.log(error);
     // }
 
+    const dt = {
+      date: '2024-03-21'
+    };
+
     try {
       const response = await GetStoreWiseInfo(date, store_id);
+      const response2 = await GetStoreData(dt);
+      if (response2) {
+        setUpdateddata(response2.data);
+        // console.log(updatedData[0].store_name);
+      }
       if (response) {
-        console.log('Store Data', response.data);
+        console.log('Store Data', response.data.storeDetails);
+        console.log('Store Data', response2.data);
+
         setStoresData(response.data.storeDetails);
+        setUpdateddata(response2.data);
+        console.log(updatedData);
+        // console.log(updatedData[0].allAnomalies);
 
         const anomalies_details = response.data.anomalies_details;
         setAnomalies_count(anomalies_details.length);
@@ -243,6 +280,42 @@ const Customers = () => {
   };
 
   console.log('anomalyesCOunt', anomalies_count);
+  const imageRef = useRef(null);
+  const [antn, setAntn] = useState(false);
+  const [pos, setPos] = useState({ lft: false, tp: false, wdth: false, ht: false });
+  const [natural, setNaturel] = useState({ wdth: false, hght: false });
+
+  const calculate = (xmin, ymin, xmax, ymax) => {
+    const lft = (xmin / natural.wdth) * 100;
+    const top = (ymin / natural.hght) * 100;
+    const width = ((xmax - xmin) / natural.wdth) * 100;
+    const height = ((ymax - ymin) / natural.hght) * 100;
+    setPos({ lft: lft, tp: top, wdth: width, hght: height });
+    setAntn(true);
+  };
+  const highlightStyle = {
+    position: 'absolute',
+    left: `${pos.lft}%`,
+    top: `${pos.tp}%`,
+    width: `${pos.wdth}%`,
+    height: `${pos.hght}%`,
+    border: '1px solid red', // Change border color as desired
+    boxSizing: 'border-box',
+    pointerEvents: 'none', // So clicks can still interact with the image
+    backgroundColor: 'rgba(255, 0, 0, 0.6)',
+    borderRadius: '5px'
+  };
+  console.log('position= ', pos);
+  const findDimensions = (event) => {
+    setImageLoading(false);
+    const { naturalWidth, naturalHeight } = event.target;
+    // const imgDiv = imageRef.current;
+    // const { width, height } = imgDiv.getBoundingClientRect();
+
+    setNaturel({ wdth: naturalWidth, hght: naturalHeight });
+
+    // setScaleFactor(width / naturalWidth);
+  };
 
   // const getSignedImg = async (input) => {
   //   try {
@@ -279,6 +352,8 @@ const Customers = () => {
   console.log('Anomaly Type', anomalyType);
   console.log('Stores Data', storesData);
   console.log('Anomaly Type', anomalyType);
+  console.log('Anomaly Type', cData.length);
+  // console.log('Anomaly Type', updatedData[0]?.allAnomalies[0]);
   // console.log('Color Data', colorArray);
   // console.log('Promo Data', promoArray);
   // console.log('Fullness Data', fullnessArray);
@@ -321,17 +396,23 @@ const Customers = () => {
                   <Grid item lg={5} md={6} sm={9} xs={12}>
                     <Grid container spacing={0}>
                       <Grid sx={{ paddingRight: 1 }} item>
-                        <Tooltip
+                        {/* <Tooltip
                           title={'Plot no: 311, Orion Mall, near ST Bus Depot, Forest Colony, Panvel, Navi Mumbai, Maharashtra 410206'}
-                        >
-                          <img
+                        > */}
+                        {/* <img
                             style={{ display: 'block', objectFit: 'cover' }}
                             className="rounded-md border border-gray-300 max-[600px]:w-24 w-36 h-[153px] drop-shadow-md hover:cursor-pointer"
                             src={OrionImg}
                             alt="noImg"
                             onClick={() => navigate('/main/stores/layout')}
-                          />
-                        </Tooltip>
+                          /> */}
+                        <MapComponent
+                          lat={updatedData[0].location.latitude}
+                          lng={updatedData[0].location.longitude}
+                          address={updatedData[0].address}
+                          name={updatedData[0].store_name}
+                        />
+                        {/* </Tooltip> */}
                         {/* <div className="rounded-md border border-gray-300 w-20 h-[105px] drop-shadow-md">
                       <Map location={location} zoomLevel={3} />
                     </div> */}
@@ -355,7 +436,7 @@ const Customers = () => {
                                 variant="h5"
                                 onClick={() => navigate('/main/stores/storeinsight/overview')}
                               >
-                                {item.store_id} - {item.name}
+                                {updatedData[0]?.store_id} - {updatedData[0]?.store_name}
                               </Typography>
                             </Stack>
                             <IconButton
@@ -423,12 +504,14 @@ const Customers = () => {
                                   }
                                 }}
                                 variant="determinate"
-                                value={item.capture_count ? Math.min(Math.floor((item.capture_count / totalParts) * 100), 100) : 0}
+                                // value={item.capture_count ? Math.min(Math.floor((item.capture_count / totalParts) * 100), 100) : 0}
+                                value={updatedData[0].capture_percentage ? parseFloat(updatedData[0].capture_percentage) : 0}
                                 // color="secondary"
                               />
                               <button className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center">
                                 <Typography sx={{ color: 'white' }} variant="subtitle2">
-                                  {item.capture_count ? Math.min(Math.floor((item.capture_count / totalParts) * 100), 100) : 0} %
+                                  {/* {item.capture_count ? Math.min(Math.floor((item.capture_count / totalParts) * 100), 100) : 0} % */}
+                                  {updatedData[0].capture_percentage ? updatedData[0].capture_percentage : '0%'}
                                 </Typography>
                               </button>
                             </Box>
@@ -464,15 +547,17 @@ const Customers = () => {
                                 }}
                                 variant="determinate"
                                 // value={78}
-                                value={Math.floor(item.store_fullness) || 0}
+                                // value={Math.floor(item.store_fullness) || 0}
+                                value={0}
                                 // color="secondary"
                               />
                               <button
                                 onClick={upKeepClicked}
-                                className="absolute hover:cursor-pointer w-full h-full flex justify-center place-items-center"
+                                className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center"
                               >
                                 <Typography sx={{ color: 'white' }} variant="subtitle1">
-                                  {Math.floor(item.store_fullness) || 0} %
+                                  {/* {Math.floor(item.store_fullness) || 0} % */}
+                                  NA
                                 </Typography>
                               </button>
                             </Box>
@@ -504,22 +589,24 @@ const Customers = () => {
                                   }
                                 }}
                                 variant="determinate"
-                                value={
-                                  Math.floor((anomalies_count / totalParts) * 100) > 100
-                                    ? 100
-                                    : Math.floor((anomalies_count / totalParts) * 100)
-                                }
+                                // value={
+                                //   Math.floor((anomalies_count / totalParts) * 100) > 100
+                                //     ? 100
+                                //     : Math.floor((anomalies_count / totalParts) * 100)
+                                // }
+                                value={0}
                                 // color="secondary"
                               />
                               <button
                                 onClick={vMClicked}
-                                className="absolute hover:cursor-pointer w-full h-full flex justify-center place-items-center"
+                                className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center"
                               >
                                 <Typography sx={{ color: 'white' }} variant="subtitle1">
-                                  {Math.floor((anomalies_count / totalParts) * 100) > 100
+                                  {/* {Math.floor((anomalies_count / totalParts) * 100) > 100
                                     ? 100
                                     : Math.floor((anomalies_count / totalParts) * 100)}{' '}
-                                  %
+                                  % */}
+                                  NA
                                 </Typography>
                               </button>
                             </Box>
@@ -543,15 +630,16 @@ const Customers = () => {
                                   // }
                                 }}
                                 variant="determinate"
-                                value={0}
+                                // value={0}
+                                value={updatedData[0].pop_percentage ? parseFloat(updatedData[0].pop_percentage) : 0}
                                 // color="secondary"
                               />
                               <button
                                 onClick={popClicked}
-                                className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center"
+                                className="absolute hover:cursor-pointer w-full h-full flex justify-center place-items-center"
                               >
                                 <Typography sx={{ color: 'white' }} variant="subtitle2">
-                                  NA
+                                  {updatedData[0].pop_percentage ? updatedData[0].pop_percentage : '0%'}
                                 </Typography>
                               </button>
                             </Box>
@@ -613,14 +701,19 @@ const Customers = () => {
                     <div className="w-full px-4 flex flex-col justify-center h-full">
                       {!clickedBar.isUpKeep && !clickedBar.isVm && !clickedBar.isPop ? (
                         <Slider {...settings}>
-                          {item.store_anomalies.map((anomaly, index) => (
+                          {/* {item.store_anomalies.map((anomaly, index) => (  */}
+                          {updatedData[0].allAnomalies.map((anomaly, index) => (
                             <div
                               onClick={() =>
                                 handleImageClick(
-                                  anomaly.img_url,
-                                  anomaly.store_anomalies.analysis_id,
-                                  anomaly.store_anomalies.anomalies_found[0].type,
-                                  anomaly.store_anomalies.timestamps
+                                  anomaly.raw_img_url,
+                                  // anomaly.img_url,
+                                  // anomaly.store_anomalies.analysis_id,
+                                  // anomaly.zone_id,
+                                  // anomaly.store_anomalies.anomalies_found[0].type,
+                                  anomaly,
+                                  // anomaly.store_anomalies.timestamps
+                                  '2024-01-01'
                                 )
                               }
                               key={index}
@@ -629,7 +722,8 @@ const Customers = () => {
                               <img
                                 style={{ width: '100%', objectFit: 'cover' }}
                                 className="rounded-md shadow-md h-full hover:cursor-pointer"
-                                src={anomaly.img_url}
+                                // src={anomaly.img_url}
+                                src={anomaly.raw_img_url}
                                 alt="no Img"
                                 loading="lazy"
                               />
@@ -640,14 +734,14 @@ const Customers = () => {
                         <Slider {...settings}>
                           {fullnessArray.map((anomaly, index) => (
                             <div
-                              onClick={() =>
-                                handleImageClick(
-                                  anomaly.image_url,
-                                  anomaly.analysis_id,
-                                  anomaly.anomalies_found[0].type,
-                                  anomaly.timestamps
-                                )
-                              }
+                              // onClick={() =>
+                              //   handleImageClick(
+                              //     anomaly.image_url,
+                              //     anomaly.analysis_id,
+                              //     anomaly.anomalies_found[0].type,
+                              //     anomaly.timestamps
+                              //   )
+                              // }
                               key={index}
                               className="rounded-md border shadow-md h-[147px]"
                             >
@@ -665,14 +759,14 @@ const Customers = () => {
                         <Slider {...settings}>
                           {colorArray.map((anomaly, index) => (
                             <div
-                              onClick={() =>
-                                handleImageClick(
-                                  anomaly.image_url,
-                                  anomaly.analysis_id,
-                                  anomaly.anomalies_found[0].type,
-                                  anomaly.timestamps
-                                )
-                              }
+                              // onClick={() =>
+                              //   handleImageClick(
+                              //     anomaly.image_url,
+                              //     anomaly.analysis_id,
+                              //     anomaly.anomalies_found[0].type,
+                              //     anomaly.timestamps
+                              //   )
+                              // }
                               key={index}
                               className="rounded-md border shadow-md h-[147px]"
                             >
@@ -740,9 +834,11 @@ const Customers = () => {
       ) : (
         <Dialog maxWidth={600} open={isImageDialogOpen} onClose={handleImageClick}>
           <DialogContent>
-            {anomalyDetails.length > 0 &&
-              anomalyDetails.map((details, index) => (
-                <div key={index} className="zoom-container">
+            {/* {anomalyDetails.length > 0 && */}
+            {
+              lcData > 0 && (
+                // updatedData[0].allAnomalies.map((details, index) => (
+                <div className="zoom-container">
                   <div className="image-container flex justify-center items-center lg:mb-0 mb-10 relative">
                     <TransformWrapper>
                       <div className="image-wrapper rounded-md md:w-full w-4/5">
@@ -752,15 +848,22 @@ const Customers = () => {
                               <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
                             </div>
                           )}
-                          <img
-                            className="image rounded-md"
-                            src={liveAnomalyImg ? selectedImage : anomalyDetails[0]?.reference_img}
-                            alt="No img found"
-                            onLoad={() => {
-                              setImageLoading(false);
-                            }}
-                          />
-                          <div className="toggle-button-container absolute top-1 right-2">
+                          <div style={{ position: 'relative' }}>
+                            <img
+                              className="image rounded-md"
+                              // src={liveAnomalyImg ? selectedImage : anomalyDetails[0]?.reference_img}
+                              src={cData.raw_img_url}
+                              alt="No img found"
+                              onLoad={findDimensions}
+                              ref={imageRef}
+
+                              //   () => {
+                              //   setImageLoading(false);
+                              // }}
+                            />
+                            {antn && <div style={highlightStyle}></div>}
+                          </div>
+                          {/* <div className="toggle-button-container absolute top-1 right-2">
                             <ToggleButtonGroup
                               color="primary"
                               value={liveAnomalyImg}
@@ -788,8 +891,8 @@ const Customers = () => {
                                 Reference
                               </ToggleButton>
                             </ToggleButtonGroup>
-                          </div>
-                          <ImageListItemBar title={`Date: ${timestamps?.date}`} subtitle={`Time: ${timestamps?.time}`} />
+                          </div> */}
+                          {/* <ImageListItemBar title={`Date: ${timestamps?.date}`} subtitle={`Time: ${timestamps?.time}`} /> */}
                         </TransformComponent>
                       </div>
                     </TransformWrapper>
@@ -799,7 +902,8 @@ const Customers = () => {
                     <div className="flex-grow flex flex-col space-y-1.5 overflow-y-auto scrollbar">
                       <div className="w-full flex justify-between place-items-center">
                         <Typography variant="h3" className="">
-                          {details.store_id} - {details.store_name}
+                          {/* {details.store_id} - {details.store_name} */}
+                          {updatedData[0]?.store_id} - {updatedData[0]?.store_name}
                         </Typography>
                         <button onClick={handleImageClick} className="md:static absolute top-5 right-5 ">
                           <IoIosClose className="md:text-4xl text-2xl" />
@@ -807,16 +911,16 @@ const Customers = () => {
                       </div>
                       <Divider />
                       <Typography paddingBottom={1.5} width={'100%'} variant="h5">
-                        / {details.bay_id} / {details.shelf_id}
+                        {/* / {details.bay_id} / {details.shelf_id} */}/ {cData.zone_id} / {cData.shelf_id}
                       </Typography>
                       <Typography width={'100%'} variant="h3">
-                        Brands
+                        Groups
                       </Typography>
                       <Divider />
                       <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
                         <div className="bg-[#002F01] rounded-full">
                           <Typography color={'white'} paddingY={1} paddingX={2} variant="h5">
-                            {details.brand_name}
+                            {cData.group_id}
                           </Typography>
                         </div>
                       </div>
@@ -837,16 +941,42 @@ const Customers = () => {
                             </Typography>
                           </Box>
                         ) : (
-                          <Box
-                            paddingX={0.2}
-                            paddingY={0.04}
-                            className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center"
-                          >
-                            <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
-                            <Typography paddingRight={2} variant="h6">
-                              Empty
-                            </Typography>
-                          </Box>
+                          cData.anomalies[0][0].map((itm, index) => (
+                            <Tooltip
+                              title={
+                                <div>
+                                  <Typography variant="body1">
+                                    Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
+                                  </Typography>
+                                  <Typography variant="body1">
+                                    Description: {itm.article_description ? itm.article_description : 'No Data Found'}
+                                  </Typography>
+                                  <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
+                                </div>
+                              }
+                            >
+                              <Box
+                                key={index}
+                                paddingX={0.2}
+                                paddingY={0.04}
+                                className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                onMouseOver={() => {
+                                  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
+                                }}
+                                onMouseOut={() => {
+                                  if (antn) {
+                                    setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                    setAntn(!antn);
+                                  }
+                                }}
+                              >
+                                <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
+                                <Typography paddingRight={2} variant="h6">
+                                  {itm.anomaly_type}
+                                </Typography>
+                              </Box>
+                            </Tooltip>
+                          ))
                         )}
                       </div>
                       <Typography width={'100%'} variant="h3">
@@ -860,7 +990,7 @@ const Customers = () => {
                           }}
                           max={2}
                         >
-                          <Tooltip
+                          {/* <Tooltip
                             title={
                               <div className="w-[200px] p-2 flex flex-col space-y-2">
                                 <Typography sx={{ width: '100%', color: 'white' }} variant="h6">
@@ -874,7 +1004,7 @@ const Customers = () => {
                             leaveTouchDelay={100000}
                           >
                             <Avatar className="hover:cursor-pointer" sx={{ bgcolor: success }} alt={details.user_name} src="/example.jpg" />
-                          </Tooltip>
+                          </Tooltip> */}
                         </AvatarGroup>
                       </div>
                       <Typography sx={{ paddingBottom: 1 }} width={'100%'} variant="h3">
@@ -909,7 +1039,9 @@ const Customers = () => {
                     </div>
                   </div>
                 </div>
-              ))}
+              )
+              // ))}
+            }
           </DialogContent>
         </Dialog>
       )}
