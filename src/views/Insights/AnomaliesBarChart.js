@@ -119,7 +119,6 @@ const AnomaliesBarChart = ({ selectedDate }) => {
         date: selectedDate.toString(),
         store_id: '65c74d4112465588b7a4984c'
       };
-      setChartData(false);
 
       try {
         const data = await GetAnomalies(body);
@@ -154,7 +153,7 @@ const AnomaliesBarChart = ({ selectedDate }) => {
     }
     fetchBarChartData();
     console.log('chart data', chartData);
-  }, [selectedDate]);
+  }, [selectedDate, chartData]);
 
   return (
     <>

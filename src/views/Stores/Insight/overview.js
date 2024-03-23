@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Stack, Typography, Card, Skeleton, LinearProgress } from '@mui/material';
+import { Grid, Stack, Typography, Card, Skeleton, LinearProgress, Modal, Box } from '@mui/material';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { avgDwelTime } from '../../../api/sentinelAPI';
 import { footfallCard } from '../../../api/sentinelAPI';
@@ -16,10 +16,13 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Diversity3Icon from '@mui/icons-material/Diversity3';
 import LineChartToggle from './lineChartToggle';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+import { IoMdSettings } from 'react-icons/io';
+import CsvModal from './CsvUpload';
 
 function Overview() {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMediumScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const [storeDwelTime, setStoreDwelTime] = useState(false);
   const [averageDwellTime, setAverageDwellTime] = useState(false);
@@ -30,7 +33,31 @@ function Overview() {
   const [empCount, setEmpCount] = useState('');
   const [costcnt, setCostcnt] = useState('');
   const [ratio, setRatio] = useState('');
-  console.log(ratio);
+  const [openPopScoreModal, setOpenPopScoreModal] = useState(false);
+
+  const handleClickPopScoreModal = () => {
+    setOpenPopScoreModal((prev) => !prev);
+    console.log(openPopScoreModal);
+  };
+
+  const handleClose = () => {
+    setOpenPopScoreModal(false);
+  };
+
+  const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: isSmallScreen ? 300 : isMediumScreen ? 500 : 800,
+    height: 500,
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    p: 4,
+    borderRadius: '15px'
+  };
+
+  // console.log(ratio);
 
   // const calDate = (d) => {
   //   setSelectedDate(d.toString());
@@ -177,6 +204,19 @@ function Overview() {
                           <Skeleton variant="rectangular" width={150} height={15} className=" mb-2 rounded-sm" />
                         )}
                       </div>
+                      <>
+                        <IoMdSettings className="text-5xl cursor-pointer" onClick={handleClickPopScoreModal} />
+                        <Modal
+                          open={openPopScoreModal}
+                          onClose={handleClose}
+                          aria-labelledby="modal-modal-title"
+                          aria-describedby="modal-modal-description"
+                        >
+                          <Box sx={modalStyle}>
+                            <CsvModal />
+                          </Box>
+                        </Modal>
+                      </>
                     </div>
                     {footfalldata ? (
                       <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
@@ -241,7 +281,7 @@ function Overview() {
               <Card className="border border-gray-300" sx={{ height: '276px' }}>
                 {dweltimeData.length > 0 || dweltimeData.length === 0 ? (
                   <div className="flex flex-col w-full gap-1 p-3">
-                    <div className="flex  gap-2">
+                    <div className="flex items-center justify-evenly gap-2 w-full">
                       {storeDwelTime ? (
                         <UpdateIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" />
                       ) : (
@@ -259,6 +299,7 @@ function Overview() {
                           <Skeleton variant="rectangular" width={150} height={15} className=" mb-5 rounded-sm" />
                         )}
                       </div>
+                      <IoMdSettings className="text-3xl cursor-pointer" />
                     </div>
                     {storeDwelTime ? (
                       <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] scrollbar rounded-lg p-2.5">
