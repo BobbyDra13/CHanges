@@ -13,7 +13,9 @@ import {
   GetAnomaliesForOneWeek,
   GetBarChartData,
   GetVMscoreBar,
-  GetCapProg
+  GetCapProg,
+  GetPopPercentage,
+  GetPopWeekLineData
 } from 'api';
 
 // Apex chart import
@@ -90,6 +92,7 @@ const Insights = () => {
   const [brandFullness, setBrandFullness] = useState([]);
   const [barChartData, setBarChartData] = useState(false);
   const [vmChartData, setVmChartData] = useState(false);
+  const [popPercentage, setPopPercentage] = useState('0');
   const [chartConfig, setChartConfig] = useState({
     type: 'line',
     height: 100,
@@ -204,10 +207,6 @@ const Insights = () => {
 
   const [openZone, setOpenZone] = useState(false);
 
-  // const [brandNames, setBrandNames] = useState([]);
-
-  // console.log('DATE SELECTED', selectedDate);
-
   const progressChart = {
     options: {
       chart: {
@@ -295,8 +294,11 @@ const Insights = () => {
           Store_IDs: ['6582be9ac5ed94d792a563b8'],
           period: 7
         };
-
         const capBody = {
+          date: selectedDate.toString(),
+          store_id: '65c74d4112465588b7a4984c'
+        };
+        const popKpiCardBody = {
           date: selectedDate.toString(),
           store_id: '65c74d4112465588b7a4984c'
         };
@@ -310,6 +312,7 @@ const Insights = () => {
         setBrandDonut(false);
         setBarChartData(false);
         setVmChartData(false);
+        setPopPercentage('0');
         setFullChartConfig({
           type: 'line',
           height: 100,
@@ -450,22 +453,30 @@ const Insights = () => {
           ]);
 
           const CapData = await GetCapProg(capBody);
+          const popPercentageData = await GetPopPercentage(popKpiCardBody);
+          const popLineData = await GetPopWeekLineData(popKpiCardBody);
 
-          console.log(CapData.data);
+          console.log('popPercentageData', popPercentageData.data);
+          console.log('popLineData', popLineData);
 
-          if (fullnessLineChart) {
-            const fullnessData = fullnessLineChart.data;
-            const fullnessPercentage = fullnessData.map((item) => item.fullness);
-            const dates = fullnessData.map((item) => item.date);
-
-            const fullness = fullnessPercentage.map((percentage) => `${percentage.toFixed(2)}%`);
+          if (popLineData) {
+            const popScoreFullnessLine = popLineData.data;
+            const popScoreFullness = popScoreFullnessLine.map((item) => {
+              if (item.data && item.data.FullnessPopPercent) {
+                const percentage = parseFloat(item.data.FullnessPopPercent.replace('%', ''));
+                return `${percentage.toFixed(2)}%`;
+              } else {
+                return '0%';
+              }
+            });
+            const dates = popScoreFullnessLine.map((item) => item._id);
 
             const updatedFullnessChartConfig = {
               ...fullnessChartConfig,
               series: [
                 {
                   name: 'Fullness %',
-                  data: fullness
+                  data: popScoreFullness
                 }
               ],
 
@@ -592,6 +603,13 @@ const Insights = () => {
               // setBrandNames(extractedBrandNames);
             }
             setBrandDonut(brandDonutData.data);
+          }
+          if (popPercentageData) {
+            if (popPercentageData.data.msg) {
+              setPopPercentage('0%');
+            } else {
+              setPopPercentage(popPercentageData.data.fullnessPopPercent);
+            }
           }
 
           if (fullnessKpiData) {
@@ -839,8 +857,8 @@ const Insights = () => {
             <KpiCard
               isLoaded={fullness}
               chart={fullnessChartConfig}
-              title="Up-Keep Score"
-              count={`${fullness && fullness.currentDay ? Math.floor(fullness.currentDay.fullness) : 0}%`}
+              title="PoP Score"
+              count={`${parseFloat(popPercentage) === 0 ? '0' : parseFloat(popPercentage).toFixed(1)}%`}
               percentage={`${fullness && fullness.difference ? Math.abs(Math.floor(fullness.difference)) : 0}`}
               chipColor={fullness && fullness.difference < 0 ? 'error' : 'success'}
               isLoss={fullness && fullness.difference < 0}
@@ -1164,7 +1182,7 @@ const Insights = () => {
                 <Grid item xs={12}>
                   <Card>
                     <CardContent>
-                      <AnomaliesBarChart date={selectedDate} />
+                      <AnomaliesBarChart selectedDate={selectedDate} />
                     </CardContent>
                   </Card>
                 </Grid>
