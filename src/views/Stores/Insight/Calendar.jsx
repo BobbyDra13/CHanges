@@ -33,7 +33,7 @@ function ServerDay(props) {
 }
 
 function DatePickerStore({ SetSelectedDate }) {
-  const initialDate = new Date(2024, 0, 1); // February 11, 2024
+  const initialDate = new Date();
   const [calender, setCalender] = useState(initialDate);
   const [openTimeDropdown, setOpenTimeDropdown] = useState(false);
   const [selectedTime, setSelectedTime] = useState('6:00 to 6:15 PM');
@@ -89,6 +89,7 @@ function DatePickerStore({ SetSelectedDate }) {
     // console.log([date.getFullYear(), padTo2Digits(date.getMonth() + 1), padTo2Digits(date.getDate())].join('-')+ "T" + time +":00.000Z");
     // console.log(time);
     return [date.getFullYear(), padTo2Digits(date.getMonth() + 1), padTo2Digits(date.getDate())].join('-') + 'T' + time + ':00.000Z';
+    // return [date.getFullYear(), padTo2Digits(date.getMonth() + 1), padTo2Digits(date.getDate())].join('-');
   }
 
   const timeIntervals = [
@@ -209,7 +210,7 @@ function DatePickerStore({ SetSelectedDate }) {
             value={calender}
             onChange={handlechange}
             onMonthChange={handleMonthChange}
-            shouldDisableDate={shouldDisableDate}
+            // shouldDisableDate={shouldDisableDate}
           />
         </LocalizationProvider>
         <div className="flex justify-center  w-full">

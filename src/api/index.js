@@ -504,3 +504,17 @@ export const GetPopWeekLineData = async (data) => {
     console.log('Error Calling GetPopWeekLineData API: ', error);
   }
 };
+
+export const GetRadarChartData = async (data) => {
+  try {
+    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/doughnut-chart', data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetRadarChartData API: ', error);
+  }
+};
