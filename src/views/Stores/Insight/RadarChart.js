@@ -11,7 +11,7 @@ const RadarChart = ({ date }) => {
         total_anomalies_in_pop_detected: 26,
         correct_pop_detected: 45,
         total_expected_articles_in_group: 310,
-        FullnessPopPercentOfGroup: '14.5161%'
+        FullnessPopPercentOfGroup: '29.5161%'
       }
     },
     {
@@ -21,7 +21,7 @@ const RadarChart = ({ date }) => {
         total_anomalies_in_pop_detected: 26,
         correct_pop_detected: 45,
         total_expected_articles_in_group: 310,
-        FullnessPopPercentOfGroup: '14.5161%'
+        FullnessPopPercentOfGroup: '40.5161%'
       }
     },
     {
@@ -31,7 +31,7 @@ const RadarChart = ({ date }) => {
         total_anomalies_in_pop_detected: 26,
         correct_pop_detected: 45,
         total_expected_articles_in_group: 310,
-        FullnessPopPercentOfGroup: '14.5161%'
+        FullnessPopPercentOfGroup: '90.5161%'
       }
     },
     {
@@ -64,7 +64,10 @@ const RadarChart = ({ date }) => {
 
   const options = {
     chart: {
-      type: 'radar'
+      type: 'radar',
+      toolbar: {
+        show: false
+      }
     },
     series: [
       {
@@ -77,7 +80,7 @@ const RadarChart = ({ date }) => {
 
   return (
     <div className="h-full overflow-y-auto overflow-x-hidden scrollbar">
-      <Chart options={options} series={options.series} type="radar" height={200} />
+      <Chart options={options} series={options.series} type="radar" height={180} />
     </div>
   );
 };

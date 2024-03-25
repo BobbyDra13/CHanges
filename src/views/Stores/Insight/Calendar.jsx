@@ -159,12 +159,12 @@ function DatePickerStore({ SetSelectedDate }) {
     }
   ];
 
-  const shouldDisableDate = (day) => {
-    // Enable January 1, January 2, and February 11, disable all other dates
-    const month = day.getMonth();
-    const date = day.getDate();
-    return !(month === 0 && (date === 1 || date === 2));
-  };
+  // const shouldDisableDate = (day) => {
+  //   // Enable January 1, January 2, and February 11, disable all other dates
+  //   const month = day.getMonth();
+  //   const date = day.getDate();
+  //   return !(month === 0 && (date === 1 || date === 2));
+  // };
 
   const onClickTime = (i) => {
     // console.log(`Selected Date: ${calender}, Selected Time: ${i}`);
