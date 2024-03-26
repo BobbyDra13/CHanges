@@ -13,7 +13,6 @@ bouncy.register();
 
 // api imports
 import {
-  GetAnomalyDetails,
   GetStoreData,
   GetStoreWiseInfo
   // GetImagesFromSignedUrl,
@@ -83,22 +82,25 @@ const totalParts = 142;
 
 const Customers = () => {
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
   const [storesData, setStoresData] = useState(false);
   const [colorArray, setColorArray] = useState([]);
   // const [promoArray, setPromoArray] = useState([]);
   const [anomalies_count, setAnomalies_count] = useState(false);
   const [fullnessArray, setFullnessArray] = useState([]);
+  // eslint-disable-next-line
   const [anomalyDetails, setAnonmalyDetails] = useState([]);
+  // eslint-disable-next-line
   const [timestamps, setTimestamps] = useState({ date: '', time: '' });
+  // eslint-disable-next-line
   const [anomalyType, setAnomalyType] = useState('');
+  // eslint-disable-next-line
   const [loading, setLoading] = useState(false);
   const [clickedBar, setClickedBar] = useState({
     isUpKeep: false,
     isVm: false,
     isPop: false
   });
-  
+
   // const [liveAnomalyImg, setLiveAnomalyImg] = useState(true);
   const [imageLoading, setImageLoading] = useState(false);
   // const [openTooltipIndex, setOpenTooltipIndex] = useState(null);
@@ -168,20 +170,20 @@ const Customers = () => {
     // }
   };
 
-  const getAnomalyDetails = async (id) => {
-    console.log('id:', id);
-    setLoading(true);
-    try {
-      const response = await GetAnomalyDetails(id);
-      if (response) {
-        console.log('AnomalyDetails api', response);
-        setAnonmalyDetails(response.data);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const getAnomalyDetails = async (id) => {
+  //   console.log('id:', id);
+  //   setLoading(true);
+  //   try {
+  //     const response = await GetAnomalyDetails(id);
+  //     if (response) {
+  //       console.log('AnomalyDetails api', response);
+  //       setAnonmalyDetails(response.data);
+  //       setLoading(false);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const handleImageClick = (url, anomaly, time) => {
     if (antn) {
@@ -199,7 +201,7 @@ const Customers = () => {
     console.log('time', time);
     setLCdata(!lcData);
     if (!isImageDialogOpen) {
-      setSelectedImage(url);
+      // setSelectedImage(url);
       setCdata(anomaly);
       // getAnomalyDetails(id);
       // setAnomalyType(type);

@@ -588,14 +588,20 @@ const Insights = () => {
               // setCapProgress('');
             }
             // setCapProgress(capProgressData.data);
-            console.log(capProgressData.data);
+            // console.log(capProgressData.data);
             setCapProgress(CapData.data);
           }
           if (brandDonutData) {
             // console.log('Brand Data', brandDonutData);
-            if (brandDonutData.data.length > 0) {
-              const extractedFullness = brandDonutData.data.map((item) => Math.floor(item.fullness));
-              const extractedBrandNames = brandDonutData.data.map((item) => item.brand_name);
+            // if (brandDonutData.data.length > 0) {
+            if (DonutData.data.length > 0) {
+              // const extractedFullness = brandDonutData.data.map((item) => Math.floor(item.fullness));
+              const extractedFullness = DonutData.data.map((item) =>
+                Math.floor(item.data ? parseFloat(item.data.FullnessPopPercentOfGroup) : 0)
+              );
+              // const extractedBrandNames = brandDonutData.data.map((item) => item.brand_name);
+              const extractedBrandNames = DonutData.data.map((item) => item.group_id);
+              console.log(extractedFullness, extractedBrandNames);
 
               setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
 

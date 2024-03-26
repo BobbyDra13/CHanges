@@ -1,7 +1,7 @@
 import { Box, CircularProgress } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
-import { footfallGraph } from 'api/sentinelAPI';
+// import { footfallGraph } from 'api/sentinelAPI';
 import { GetFullnessPop } from 'api';
 // import Bubbledxaxis from './Bubbledx-axis';
 // import {footfallGraph} from "api/sentinelAPI";

@@ -49,7 +49,7 @@ export const GetFullnessKpi = async (data) => {
         Authorization: await token()
       }
     });
-    console.log('fullness res', res);
+    //console.log('fullness res', res);
     return res;
   } catch (error) {
     console.log('Error Calling GetFullnessKpi API: ', error);
@@ -64,7 +64,7 @@ export const GetAnomaliesKpi = async (data) => {
         Authorization: await token()
       }
     });
-    console.log('anomaliesData', res);
+    //console.log('anomaliesData', res);
     return res;
   } catch (error) {
     console.log('Error Calling GetAnomaliesKpi API: ', error);
@@ -98,7 +98,7 @@ export const GetStoreLayout = async (data) => {
         Authorization: await token()
       }
     });
-    console.log('api response', res);
+    //console.log('api response', res);
     return res;
   } catch (error) {
     console.log('Error Calling all Store API: ', error);
@@ -113,7 +113,7 @@ export const GetImagesFromSignedUrl = async (data) => {
         Authorization: await token()
       }
     });
-    // console.log("api image response", res);
+    // //console.log("api image response", res);
     return res;
   } catch (error) {
     console.log('Error Calling all Store API: ', error);
@@ -128,7 +128,7 @@ export const getUsers = async () => {
         Authorization: await token()
       }
     });
-    // console.log("api image response", res);
+    // //console.log("api image response", res);
     return res;
   } catch (error) {
     console.log('Error while calling team API :', error);
@@ -143,7 +143,7 @@ export const getOneUser = async (id) => {
         Authorization: await token()
       }
     });
-    // console.log("api image response", res);
+    // //console.log("api image response", res);
     return res;
   } catch (error) {
     console.log('Error while calling team api :', error);
@@ -161,7 +161,7 @@ export const deleteUser = async (id) => {
         }
       }
     );
-    // console.log("api image response", res);
+    // //console.log("api image response", res);
     return res;
   } catch (error) {
     console.log('Error while calling team api :', error);
@@ -176,7 +176,7 @@ export const updateUser = async (id, user) => {
         Authorization: await token()
       }
     });
-    // console.log("api image response", res);
+    // //console.log("api image response", res);
     return res;
   } catch (error) {
     console.log('Error while calling team api :', error);
@@ -195,7 +195,7 @@ export const createUser = async (user) => {
         }
       }
     );
-    // console.log("api image response", res);
+    // //console.log("api image response", res);
     return res;
   } catch (error) {
     console.log('Error while calling team api :', error);
@@ -212,7 +212,7 @@ export const GetVerifiedUsers = async (phoneNumber) => {
         }
       }
     );
-    // console.log(res.data);
+    // //console.log(res.data);
     return res;
   } catch (error) {
     console.log('Error Calling users API: ', error);
@@ -241,7 +241,7 @@ export const GetVMComplianceForOneWeek = async (data) => {
         Authorization: await token()
       }
     });
-    console.log('result', res);
+    //console.log('result', res);
     return res;
   } catch (error) {
     console.log('Error calling vm compliance for a week api', error);
@@ -335,7 +335,7 @@ export const GetBarChartData = async (data) => {
         }
       }
     );
-    console.log('bar chart data', res);
+    //console.log('bar chart data', res);
     return res;
   } catch (error) {
     console.log('Error calling bar chart api', error);
@@ -354,7 +354,7 @@ export const GetVMscoreBar = async (data) => {
         }
       }
     );
-    console.log('vmc data', res);
+    //console.log('vmc data', res);
     return res;
   } catch (error) {
     console.log('Error calling bar chart api', error);
@@ -369,7 +369,7 @@ export const GetStoreWiseInfo = async (date, store_id) => {
         Authorization: await token()
       }
     });
-    console.log(res);
+    //console.log(res);
     return res;
   } catch (error) {
     console.log('Error calling store wise info', error);
@@ -425,7 +425,7 @@ export const GetFullnessPop = async (data) => {
         Authorization: await token()
       }
     });
-    console.log(res);
+    //console.log(res);
     return res;
   } catch (error) {
     console.log('Error Calling GetCaptureProgress API: ', error);
@@ -440,7 +440,7 @@ export const GetStoreData = async (data) => {
         Authorization: await token()
       }
     });
-    console.log(res);
+    //console.log(res);
     return res;
   } catch (error) {
     console.log('Error Calling GetCaptureProgress API: ', error);
@@ -455,7 +455,7 @@ export const GetAnomalies = async (data) => {
         Authorization: await token()
       }
     });
-    console.log(res);
+    //console.log(res);
     return res;
   } catch (error) {
     console.log('Error Calling GetCaptureProgress API: ', error);
@@ -465,6 +465,67 @@ export const GetAnomalies = async (data) => {
 export const GetCapProg = async (data) => {
   try {
     const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/capture-progress`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    //console.log(res);
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetCaptureProgress API: ', error);
+  }
+};
+
+export const GetDonutData = async (data) => {
+  try {
+    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/doughnut-chart`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    //console.log(res);
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetCaptureProgress API: ', error);
+  }
+};
+
+export const GetZonedetails = async (data) => {
+  try {
+    const response = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/get-zones`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    // console.log("ZoneNameAPI",response);
+    const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.name }));
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetCaptureProgress API: ', error);
+  }
+};
+
+export const GetShelvesData = async (data) => {
+  try {
+    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/get-shelves`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    //console.log(res);
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetCaptureProgress API: ', error);
+  }
+};
+
+export const GetShelfData = async (data) => {
+  try {
+    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/get-one-shelf`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
