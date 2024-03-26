@@ -13,7 +13,8 @@ import {
   GetAnomaliesForOneWeek,
   GetBarChartData,
   GetVMscoreBar,
-  GetCapProg
+  GetCapProg,
+  GetDonutData
 } from 'api';
 
 // Apex chart import
@@ -300,7 +301,6 @@ const Insights = () => {
           date: selectedDate.toString(),
           store_id: '65c74d4112465588b7a4984c'
         };
-
         setAvgCapProgress(false);
         setCapProgress(false);
         setFullness(false);
@@ -450,8 +450,9 @@ const Insights = () => {
           ]);
 
           const CapData = await GetCapProg(capBody);
+          const DonutData = await GetDonutData(capBody);
 
-          console.log(CapData.data);
+          console.log(DonutData.data[0]);
 
           if (fullnessLineChart) {
             const fullnessData = fullnessLineChart.data;
@@ -577,21 +578,27 @@ const Insights = () => {
               // setCapProgress('');
             }
             // setCapProgress(capProgressData.data);
-            console.log(capProgressData.data);
+            // console.log(capProgressData.data);
             setCapProgress(CapData.data);
           }
           if (brandDonutData) {
             // console.log('Brand Data', brandDonutData);
-            if (brandDonutData.data.length > 0) {
-              const extractedFullness = brandDonutData.data.map((item) => Math.floor(item.fullness));
-              const extractedBrandNames = brandDonutData.data.map((item) => item.brand_name);
+            // if (brandDonutData.data.length > 0) {
+            if (DonutData.data.length > 0) {
+              // const extractedFullness = brandDonutData.data.map((item) => Math.floor(item.fullness));
+              const extractedFullness = DonutData.data.map((item) =>
+                Math.floor(item.data ? parseFloat(item.data.FullnessPopPercentOfGroup) : 0)
+              );
+              // const extractedBrandNames = brandDonutData.data.map((item) => item.brand_name);
+              const extractedBrandNames = DonutData.data.map((item) => item.group_id);
+              console.log(extractedFullness, extractedBrandNames);
 
               setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
 
               setBrandFullness(extractedFullness);
               // setBrandNames(extractedBrandNames);
             }
-            setBrandDonut(brandDonutData.data);
+            setBrandDonut(DonutData.data);
           }
 
           if (fullnessKpiData) {

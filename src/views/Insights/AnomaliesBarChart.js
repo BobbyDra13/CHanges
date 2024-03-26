@@ -1,7 +1,8 @@
 import { React, useEffect, useState } from 'react';
 
 // APIs
-import { GetAnomalies, GetAnomaliesBarChartData } from 'api';
+import { GetAnomalies } from 'api';
+// , GetAnomaliesBarChartData
 
 // material-ui
 // import { useTheme } from '@mui/material/styles';
@@ -108,32 +109,26 @@ const columnChartOptions = {
 
 // ==============================|| ANOMALIES BAR CHART ||============================== //
 
-const AnomaliesBarChart = ({ date }) => {
+const AnomaliesBarChart = ({ selectedDate }) => {
   const [series, setSeries] = useState([]);
   const [options, setOptions] = useState({});
-  const [chartData, setChartData] = useState(false);
+  const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
     async function fetchBarChartData() {
       const body = {
-        // start_date: date.toString(),
-        // start_date: '2024-01-12',
-        // Store_IDs: ['6582be9ac5ed94d792a563b8']
-        date: '2024-03-06',
+        date: selectedDate.toString(),
         store_id: '65c74d4112465588b7a4984c'
       };
-      setChartData(false);
 
       try {
-        // const data = await GetAnomaliesBarChartData(body);
         const data = await GetAnomalies(body);
         if (data) {
-          console.log('BarDATA', data.data);
-          if (data.data.length > 0) {
-            const extractedDates = data.data.map((item) => item.Date);
-            // const extractedResolved = data.data.map((item) => item.resolveCounts.resolved ?? 0);
-            const extractedResolved = data.data.map((item) => item.anomalies_found);
-            // const extractedUnresolved = data.data.map((item) => item.resolveCounts.unresolved ?? 0);
+          console.log('BarDATA', data.data.response);
+          if (data.data.response.length > 0) {
+            const extractedDates = data.data.response.map((item) => item.Date);
+            const extractedResolved = data.data.response.map((item) => item.anomalies_resolved);
+            const extractedFound = data.data.response.map((item) => item.anomalies_found);
             setOptions({
               ...columnChartOptions,
               xaxis: {
@@ -141,17 +136,17 @@ const AnomaliesBarChart = ({ date }) => {
               }
             });
             setSeries([
-              // {
-              //   name: 'Anomalies remaining',
-              //   data: extractedUnresolved
-              // },
+              {
+                name: 'Anomalies Resolved',
+                data: extractedResolved
+              },
               {
                 name: 'Anomalies Found',
-                data: extractedResolved
+                data: extractedFound
               }
             ]);
           }
-          setChartData(data.data);
+          setChartData(data.data.response);
         }
       } catch (error) {
         console.log(error);
@@ -159,13 +154,8 @@ const AnomaliesBarChart = ({ date }) => {
     }
     fetchBarChartData();
     console.log('chart data', chartData);
-  }, [date]);
+  }, [selectedDate, chartData]);
 
-  // console.log('Dates', extractedDates);
-  // console.log('Resolved', extractedResolved);
-  // console.log('Unresolved', extractedUnresolved);
-  // console.log('Options', options);
-  // console.log('Series', series);
   return (
     <>
       {chartData.length > 0 ? (

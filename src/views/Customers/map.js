@@ -17,7 +17,7 @@ let DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
-function MapComponent({lat, lng, address, name}) {
+function MapComponent({ lat, lng, address, name }) {
   // console.log(lat, lng);
   const position = [lat, lng]; // latitude and longitude
   const [open, setOpen] = React.useState(false);
@@ -43,7 +43,7 @@ function MapComponent({lat, lng, address, name}) {
         ></Marker>
       </MapContainer>
       {open && (
-        <Tooltip title={name + ", " + address} open>
+        <Tooltip title={name + ', ' + address} open>
           <div />
         </Tooltip>
       )}
