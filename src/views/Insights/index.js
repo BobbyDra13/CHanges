@@ -9,7 +9,7 @@ import {
   GetAnomaliesBarChartData,
   GetVMCompliance,
   GetVMComplianceForOneWeek,
-  GetFullnessForOneWeek,
+  // GetFullnessForOneWeek,
   GetAnomaliesForOneWeek,
   GetBarChartData,
   GetVMscoreBar,
@@ -36,10 +36,12 @@ import KpiCard from './KpiCard';
 import KpiPop from './KpiCard/kpiPop';
 import { gridSpacing } from 'config.js';
 import AnomaliesBarChart from './AnomaliesBarChart';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 // assets
 import NoDataPng from '../../assets/images/No_data.png';
 import NoDataImg from '../../assets/images/No_data-amico.svg';
+import chartData from './chart/anomalies-chart';
 
 const histogramData = {
   asuk: [5, 10, 20, 25, 30, 35, 25, 15, 3, 2],
@@ -435,7 +437,7 @@ const Insights = () => {
             anomaliesBarChartData,
             barChart,
             vmcChart,
-            fullnessLineChart,
+            // fullnessLineChart,
             vmcLineChart,
             anomaliesLineChart
           ] = await Promise.all([
@@ -447,7 +449,7 @@ const Insights = () => {
             GetAnomaliesBarChartData(commonBody),
             GetBarChartData(commonBody),
             GetVMscoreBar(commonBody),
-            GetFullnessForOneWeek(body),
+            // GetFullnessForOneWeek(body),
             GetVMComplianceForOneWeek(body),
             GetAnomaliesForOneWeek(body)
           ]);
@@ -578,8 +580,8 @@ const Insights = () => {
           }
           if (capProgressData) {
             if (capProgressData.data.length > 0) {
-              const totalCapturePercentage = capProgressData.data.reduce((acc, item) => acc + item.capture_percentage, 0);
-              const average = totalCapturePercentage / capProgressData.data.length;
+              // const totalCapturePercentage = capProgressData.data.reduce((acc, item) => acc + item.capture_percentage, 0);
+              // const average = totalCapturePercentage / capProgressData.data.length;
 
               // setAvgCapProgress(Math.floor(average));
               setAvgCapProgress(CapData.data.averageCaptureProgress);
@@ -593,15 +595,9 @@ const Insights = () => {
           }
           if (brandDonutData) {
             // console.log('Brand Data', brandDonutData);
-            // if (brandDonutData.data.length > 0) {
-            if (DonutData.data.length > 0) {
-              // const extractedFullness = brandDonutData.data.map((item) => Math.floor(item.fullness));
-              const extractedFullness = DonutData.data.map((item) =>
-                Math.floor(item.data ? parseFloat(item.data.FullnessPopPercentOfGroup) : 0)
-              );
-              // const extractedBrandNames = brandDonutData.data.map((item) => item.brand_name);
-              const extractedBrandNames = DonutData.data.map((item) => item.group_id);
-              console.log(extractedFullness, extractedBrandNames);
+            if (brandDonutData.data.length > 0) {
+              const extractedFullness = brandDonutData.data.map((item) => Math.floor(item.fullness));
+              const extractedBrandNames = brandDonutData.data.map((item) => item.brand_name);
 
               setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
 
@@ -649,7 +645,7 @@ const Insights = () => {
       fetchDashboardData();
     }
     /* eslint-enable no-inner-declarations */
-  }, [selectedDate]);
+  }, [selectedDate, chartData]);
   console.log('bar', barChartData);
   console.log('vmc bar', vmChartData);
   console.log('chartConfig', vmc);
@@ -872,18 +868,16 @@ const Insights = () => {
             />
           </Grid>
           <Grid item lg={3} sm={6} xs={12}>
-            <KpiCard
-              isLoaded={vmc}
-              chart={chartConfig}
+            <KpiPop
+              isLoaded={fullness}
+              chart={statisticsChartsData[3].chart}
               title="VM Score"
-              count={`${vmc && vmc.currentDay ? Math.floor(vmc.currentDay.withoutAnomalyPercentage) : 0}%`}
-              percentage={`${
-                vmc && vmc.differencePercentage ? Math.abs(Math.floor(vmc.differencePercentage.withoutAnomalyPercentageDifference)) : 0
-              }`}
-              chipColor={
-                vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0 ? 'error' : 'success'
-              }
-              isLoss={vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0}
+              count="NA"
+              percentage="NA"
+              // chipColor={
+              //   vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0 ? 'error' : 'success'
+              // }
+              // isLoss={vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0}
               color={theme.palette.success.main}
             />
           </Grid>
@@ -891,7 +885,7 @@ const Insights = () => {
             <KpiPop
               isLoaded={fullness}
               chart={statisticsChartsData[3].chart}
-              title="PoP Score"
+              title="UpKeep Score"
               count="NA"
               percentage="NA"
               // isLoss
@@ -1254,23 +1248,33 @@ const Insights = () => {
                           </Typography>
                         </Grid>
                         <Grid item xs={12}>
-                          <LinearProgress
-                            className="cursor-pointer"
-                            sx={{
-                              borderRadius: 3,
-                              height: 5,
-                              [theme.breakpoints.up('xl')]: {
-                                height: 5 // Height for screens equal to or larger than 'lg' breakpoint
-                              }
-                            }}
-                            variant="determinate"
-                            aria-label="direct"
-                            // value={Math.floor(item.capture_percentage)}
-                            value={capProgress.collectiveCaptureProgress}
-                            color="primary"
-                            onClick={() => setOpenZone(!openZone)}
-                            // onScroll={()=>setOpenZone(false)}
-                          />
+                          <div className="flex items-center justify-between">
+                            <div style={{ width: '88%' }}>
+                              <LinearProgress
+                                className="cursor-pointer"
+                                sx={{
+                                  borderRadius: 3,
+                                  height: 5,
+
+                                  [theme.breakpoints.up('xl')]: {
+                                    height: 5 // Height for screens equal to or larger than 'lg' breakpoint
+                                  }
+                                }}
+                                variant="determinate"
+                                aria-label="direct"
+                                // value={Math.floor(item.capture_percentage)}
+                                value={capProgress.collectiveCaptureProgress}
+                                color="primary"
+
+                                // onScroll={()=>setOpenZone(false)}
+                              />
+                            </div>
+                            {openZone ? (
+                              <FaEyeSlash className="cursor-pointer" onClick={() => setOpenZone(!openZone)} />
+                            ) : (
+                              <FaEye className="cursor-pointer" onClick={() => setOpenZone(!openZone)} />
+                            )}
+                          </div>
                           {openZone && (
                             <Paper className="mt-10 p-5" elevation={10}>
                               <Typography variant="h4">Zone wise Capture Progress</Typography>

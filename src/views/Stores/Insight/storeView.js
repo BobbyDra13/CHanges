@@ -22,7 +22,7 @@ const theme = createTheme({
     }
   }
 });
-const StoreView = ({ activeButton, setActiveButton }) => {
+const StoreView = ({ activeButton, setActiveButton, date: propDate }) => {
   const [loading, setLoading] = useState(true);
   const [bayToOpen, setBayToOpen] = useState({});
 
@@ -146,7 +146,8 @@ const StoreView = ({ activeButton, setActiveButton }) => {
         </>
       ) : (
         <ShelfView
-        // bayToOpen={bayToOpen} layoutData={layoutData}
+          date={propDate}
+          // bayToOpen={bayToOpen} layoutData={layoutData}
         />
       )}
     </>
