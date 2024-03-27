@@ -39,6 +39,7 @@ import AnomaliesBarChart from './AnomaliesBarChart';
 // assets
 import NoDataPng from '../../assets/images/No_data.png';
 import NoDataImg from '../../assets/images/No_data-amico.svg';
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const histogramData = {
   asuk: [5, 10, 20, 25, 30, 35, 25, 15, 3, 2],
@@ -1237,11 +1238,14 @@ const Insights = () => {
                           </Typography>
                         </Grid>
                         <Grid item xs={12}>
+                          <div className='flex items-center justify-between' >
+                            <div style={{width:'88%'}}>
                           <LinearProgress
                             className="cursor-pointer"
                             sx={{
                               borderRadius: 3,
                               height: 5,
+                              
                               [theme.breakpoints.up('xl')]: {
                                 height: 5 // Height for screens equal to or larger than 'lg' breakpoint
                               }
@@ -1251,9 +1255,12 @@ const Insights = () => {
                             // value={Math.floor(item.capture_percentage)}
                             value={capProgress.collectiveCaptureProgress}
                             color="primary"
-                            onClick={() => setOpenZone(!openZone)}
+                            
                             // onScroll={()=>setOpenZone(false)}
                           />
+                          </div>
+                       {openZone?   <FaEyeSlash    className='cursor-pointer' onClick={() => setOpenZone(!openZone)} /> : <FaEye className='cursor-pointer' onClick={() => setOpenZone(!openZone)} /> }
+                          </div>
                           {openZone && (
                             <Paper className="mt-10 p-5" elevation={10}>
                               <Typography variant="h4">Zone wise Capture Progress</Typography>
