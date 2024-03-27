@@ -239,7 +239,7 @@ const LineChartToggle = ({ date }) => {
           </div>
         ) : (
           <Grid>
-            <StoreView activeButton={activeButton} setActiveButton={setActiveButton} />
+            <StoreView activeButton={activeButton} setActiveButton={setActiveButton} date={date} />
           </Grid>
         )}
       </Paper>

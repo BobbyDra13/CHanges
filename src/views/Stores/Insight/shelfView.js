@@ -18,7 +18,7 @@ bouncy.register();
 
 // };
 
-export default function ShelfView() {
+export default function ShelfView({ date }) {
   const [active, setActive] = useState('camera1');
   const [data, setData] = useState(false);
   const [shelves, setShelves] = useState(false);
@@ -32,7 +32,7 @@ export default function ShelfView() {
     setloading(true);
     const body = {
       zone_id: id,
-      date: '2024-03-21',
+      date: date.toString(),
       store_id: '65c74d4112465588b7a4984c'
     };
     const shelvesData = await GetShelvesData(body);
@@ -65,7 +65,7 @@ export default function ShelfView() {
   async function GetShelfWiseDetails(id) {
     console.log('shelf id is ', id);
     const body = {
-      date: '2024-03-21',
+      date: date.toString(),
       store_id: '65c74d4112465588b7a4984c',
       shelf_id: id
     };
@@ -87,7 +87,8 @@ export default function ShelfView() {
       zoneDetails(Zonedata[0].id);
     }
     GetZone();
-  }, []);
+    // eslint-disable-next-line
+  }, [date]);
 
   const [antn, setAntn] = useState(false);
   const [pos, setPos] = useState({ lft: false, tp: false, wdth: false, ht: false });
@@ -305,6 +306,7 @@ export default function ShelfView() {
                         {cData.anomalies.length > 0 &&
                           cData.anomalies[0][0].map((itm, index) => (
                             <Tooltip
+                              key={index}
                               title={
                                 <div>
                                   <Typography variant="body1">

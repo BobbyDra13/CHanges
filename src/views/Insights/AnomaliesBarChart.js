@@ -114,10 +114,13 @@ const AnomaliesBarChart = ({ selectedDate }) => {
   const [options, setOptions] = useState({});
   const [chartData, setChartData] = useState([]);
 
+  const todayDate = new Date().toString();
+
   useEffect(() => {
     async function fetchBarChartData() {
+      const finalDate = selectedDate ? selectedDate : todayDate;
       const body = {
-        date: selectedDate.toString(),
+        date: finalDate,
         store_id: '65c74d4112465588b7a4984c'
       };
 
@@ -153,8 +156,7 @@ const AnomaliesBarChart = ({ selectedDate }) => {
       }
     }
     fetchBarChartData();
-    console.log('chart data', chartData);
-  }, [selectedDate, chartData]);
+  }, [selectedDate]);
 
   return (
     <>
