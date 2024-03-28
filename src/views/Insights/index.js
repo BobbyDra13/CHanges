@@ -137,7 +137,7 @@ const Insights = () => {
     height: 100,
     series: [
       {
-        name: 'Fullness %',
+        name: 'PoP Score %',
         data: [67, 14, 52, 93, 30, 81, 45]
       }
     ],
@@ -320,7 +320,7 @@ const Insights = () => {
           height: 100,
           series: [
             {
-              name: 'Fullness %',
+              name: 'PoP Score %',
               data: [67, 14, 52, 93, 30, 81, 45]
             }
           ],
@@ -477,7 +477,7 @@ const Insights = () => {
               ...fullnessChartConfig,
               series: [
                 {
-                  name: 'Fullness %',
+                  name: 'PoP Score %',
                   data: popScoreFullness
                 }
               ],
