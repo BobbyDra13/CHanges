@@ -3,13 +3,14 @@ import { React, useState, useEffect } from 'react';
 // API imports
 import {
   GetCaptureProgress,
-  GetBrandDonutData,
+  // GetBrandDonutData,
   GetFullnessKpi,
   GetAnomaliesKpi,
   GetAnomaliesBarChartData,
   GetVMCompliance,
   GetVMComplianceForOneWeek,
   // GetFullnessForOneWeek,
+  GetRadarChartData,
   GetAnomaliesForOneWeek,
   GetBarChartData,
   GetVMscoreBar,
@@ -287,10 +288,10 @@ const Insights = () => {
           start_date: selectedDate.toString(),
           Store_IDs: ['6582be9ac5ed94d792a563b8']
         };
-        const brandDonutBody = {
-          start_date: selectedDate.toString(),
-          Store_IDs: ['6582be9ac5ed94d792a563b8']
-        };
+        // const brandDonutBody = {
+        //   start_date: selectedDate.toString(),
+        //   Store_IDs: ['6582be9ac5ed94d792a563b8']
+        // };
         const body = {
           start_date: selectedDate.toString(),
           Store_IDs: ['6582be9ac5ed94d792a563b8'],
@@ -301,6 +302,10 @@ const Insights = () => {
           store_id: '65c74d4112465588b7a4984c'
         };
         const popKpiCardBody = {
+          date: selectedDate.toString(),
+          store_id: '65c74d4112465588b7a4984c'
+        };
+        const donutBody = {
           date: selectedDate.toString(),
           store_id: '65c74d4112465588b7a4984c'
         };
@@ -442,7 +447,8 @@ const Insights = () => {
             anomaliesLineChart
           ] = await Promise.all([
             GetCaptureProgress(commonBody),
-            GetBrandDonutData(brandDonutBody),
+            // GetBrandDonutData(brandDonutBody),
+            GetRadarChartData(donutBody),
             GetFullnessKpi(commonBody),
             GetVMCompliance(commonBody),
             GetAnomaliesKpi(commonBody),
@@ -596,8 +602,11 @@ const Insights = () => {
           if (brandDonutData) {
             // console.log('Brand Data', brandDonutData);
             if (brandDonutData.data.length > 0) {
-              const extractedFullness = brandDonutData.data.map((item) => Math.floor(item.fullness));
-              const extractedBrandNames = brandDonutData.data.map((item) => item.brand_name);
+              // const extractedFullness = brandDonutData.data.map((item) => Math.floor(item.fullness));
+              const extractedFullness = brandDonutData.data.map((item) =>
+                item.data ? parseFloat(item.data.FullnessPopPercentOfGroup) : 0
+              );
+              const extractedBrandNames = brandDonutData.data.map((item) => item.group_id);
 
               setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
 
@@ -1105,7 +1114,8 @@ const Insights = () => {
                           <Grid item>
                             <Grid container spacing={1}>
                               <Typography paddingTop={1} className="self-end" variant="h5" color="inherit">
-                                Brand Fullness
+                                {/* Brand Fullness */}
+                                Group POP Score
                               </Typography>
                             </Grid>
                           </Grid>

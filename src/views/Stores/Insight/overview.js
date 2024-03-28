@@ -9,8 +9,8 @@ import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import DatePickerStore from './Calendar';
 import UpdateIcon from '@mui/icons-material/Update';
 import Uniquejourney from './KPICards/Uniquejourney';
-import DonutChart from './TrendsViewCharts/DonutChart';
-import DonutChartTwo from './TrendsViewCharts/DonutChartTwo';
+// import DonutChart from './TrendsViewCharts/DonutChart';
+// import DonutChartTwo from './TrendsViewCharts/DonutChartTwo';
 import GroupIcon from '@mui/icons-material/Group';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Diversity3Icon from '@mui/icons-material/Diversity3';
@@ -33,7 +33,7 @@ function Overview() {
   const [date, setSelectedDate] = useState('');
   const [empCount, setEmpCount] = useState('');
   const [costcnt, setCostcnt] = useState('');
-  const [ratio, setRatio] = useState('');
+  // const [ratio, setRatio] = useState('');
   const [openPopScoreModal, setOpenPopScoreModal] = useState(false);
 
   const handleClickPopScoreModal = () => {
@@ -143,12 +143,12 @@ function Overview() {
         try {
           const {
             'Customer count': customerCount,
-            'Employee count': employeeCount,
-            'Employee to customer ratio': ratio
+            'Employee count': employeeCount
+            // 'Employee to customer ratio': ratio
           } = await getRatio(body);
           setEmpCount(employeeCount);
           setCostcnt(customerCount);
-          setRatio(ratio);
+          // setRatio(ratio);
           // const u = await data.length
           // setUniquejourneys(u);
           // setJourneyData([...data]);

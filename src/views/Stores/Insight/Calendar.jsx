@@ -3,9 +3,9 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 // import { useMediaQuery, useTheme } from '@mui/material';
-import { Badge, Button } from '@mui/material';
-import { IoIosArrowDown } from 'react-icons/io';
-import { IoIosArrowUp } from 'react-icons/io';
+import { Badge } from '@mui/material';
+// import { IoIosArrowDown } from 'react-icons/io';
+// import { IoIosArrowUp } from 'react-icons/io';
 import { PickersDay } from '@mui/x-date-pickers';
 
 // import { previousDay } from 'date-fns';
@@ -213,7 +213,7 @@ function DatePickerStore({ SetSelectedDate }) {
             // shouldDisableDate={shouldDisableDate}
           />
         </LocalizationProvider>
-        <div className="flex justify-center  w-full">
+        {/* <div className="flex justify-center  w-full">
           <Button
             className="w-full bg-white text-black font-thin border-[#C4C4C4] "
             variant="outlined"
@@ -226,7 +226,7 @@ function DatePickerStore({ SetSelectedDate }) {
               {openTimeDropdown ? <IoIosArrowUp /> : <IoIosArrowDown />}
             </p>
           </Button>
-        </div>
+        </div> */}
       </div>
       {openTimeDropdown && (
         <div className="p-3 z-50 w-[255px] h-[200px] overflow-y-scroll scrollbar absolute right-10 bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)]">

@@ -18,7 +18,7 @@ const Areachart = ({ date }) => {
       const body = {
         // start_date: date,
         // storeId: '65c5e26a0b5be5dc7af327dc'
-        date: '2024-03-06',
+        date: date,
         store_id: '65c74d4112465588b7a4984c'
       };
       try {
