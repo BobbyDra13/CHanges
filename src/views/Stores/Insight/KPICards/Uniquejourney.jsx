@@ -2,6 +2,7 @@ import { Box, Grid, Paper, Stack, Typography, Tooltip, Skeleton } from '@mui/mat
 import React, { useEffect, useState } from 'react';
 import RouteIcon from '@mui/icons-material/Route';
 // import NoDataImg from '../../../../assets/images/No_data-amico.svg';
+import { IoMdSettings } from 'react-icons/io';
 import { uniqueJourney } from '../../../../api/sentinelAPI';
 
 export default function Uniquejourney({ date }) {
@@ -37,7 +38,7 @@ export default function Uniquejourney({ date }) {
       {journeyData.length > 0 ? (
         <Box className="flex flex-col w-full gap-1 p-3">
           {/* <Paper elevation={0} sx={{width:"100%", height:"100%"}}> */}
-          <Stack direction={'row'} className="flex  gap-2">
+          <Stack direction={'row'} className="flex justify-center  gap-2">
             {uniquejourneys ? (
               <RouteIcon
                 className="bg-[#444444] text-white rounded-full p-2 text-6xl"
@@ -46,7 +47,7 @@ export default function Uniquejourney({ date }) {
             ) : (
               <Skeleton variant="circular" width={45} height={45} />
             )}
-            <Stack direction={'column'} alignItems="flex-start">
+            <Stack direction={'column'} className="w-full">
               {/* <Typography variant="h2">117 </Typography>
           <Typography variant="body2">Unique journey</Typography> */}
               {uniquejourneys ? (
@@ -55,11 +56,12 @@ export default function Uniquejourney({ date }) {
                 <Skeleton variant="rectangular" className="mb-3 rounded-sm" width={50} height={15} />
               )}
               {uniquejourneys ? (
-                <p className="text-lg font-semibold">Unique journey</p>
+                <p className="text-lg font-semibold">OSA</p>
               ) : (
                 <Skeleton variant="rectangular" width={150} height={15} className=" mb-5 rounded-sm" />
               )}
             </Stack>
+            <IoMdSettings className="text-6xl p-[3px] cursor-not-allowed" />
           </Stack>
           {/* <Box> */}
           {uniquejourneys ? (
@@ -152,8 +154,9 @@ export default function Uniquejourney({ date }) {
 
             <div className="w-full">
               <p className="text-3xl text-gray-500 ">NA</p>
-              <p className="text-lg font-semibold">Unique journey</p>
+              <p className="text-lg font-semibold">OSA</p>
             </div>
+            <IoMdSettings className="text-6xl cursor-not-allowed p-[3px]" />
           </div>
           <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
             <p className="text-base font-semibold text-gray-500">Currently No data available</p>

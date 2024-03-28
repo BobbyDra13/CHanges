@@ -945,6 +945,7 @@ const Customers = () => {
                         ) : (
                           cData.anomalies[0][0].map((itm, index) => (
                             <Tooltip
+                              key={index}
                               title={
                                 <div>
                                   <Typography variant="body1">

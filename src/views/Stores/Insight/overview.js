@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Stack, Typography, Card, Skeleton, LinearProgress } from '@mui/material';
+import { Grid, Stack, Typography, Card, Skeleton, LinearProgress, Modal, Box } from '@mui/material';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { avgDwelTime } from '../../../api/sentinelAPI';
 import { footfallCard } from '../../../api/sentinelAPI';
@@ -9,17 +9,21 @@ import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import DatePickerStore from './Calendar';
 import UpdateIcon from '@mui/icons-material/Update';
 import Uniquejourney from './KPICards/Uniquejourney';
-import DonutChart from './TrendsViewCharts/DonutChart';
-import DonutChartTwo from './TrendsViewCharts/DonutChartTwo';
+// import DonutChart from './TrendsViewCharts/DonutChart';
+// import DonutChartTwo from './TrendsViewCharts/DonutChartTwo';
 import GroupIcon from '@mui/icons-material/Group';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Diversity3Icon from '@mui/icons-material/Diversity3';
 import LineChartToggle from './lineChartToggle';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+import { IoMdSettings } from 'react-icons/io';
+import CsvModal from './CsvUpload';
+import RadarChart from './RadarChart';
 
 function Overview() {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMediumScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const [storeDwelTime, setStoreDwelTime] = useState(false);
   const [averageDwellTime, setAverageDwellTime] = useState(false);
@@ -29,8 +33,32 @@ function Overview() {
   const [date, setSelectedDate] = useState('');
   const [empCount, setEmpCount] = useState('');
   const [costcnt, setCostcnt] = useState('');
-  const [ratio, setRatio] = useState('');
-  console.log(ratio);
+  // const [ratio, setRatio] = useState('');
+  const [openPopScoreModal, setOpenPopScoreModal] = useState(false);
+
+  const handleClickPopScoreModal = () => {
+    setOpenPopScoreModal((prev) => !prev);
+    console.log(openPopScoreModal);
+  };
+
+  const handleClose = () => {
+    setOpenPopScoreModal(false);
+  };
+
+  const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: isSmallScreen ? 300 : isMediumScreen ? 500 : 800,
+    height: 500,
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    p: 4,
+    borderRadius: '15px'
+  };
+
+  // console.log(ratio);
 
   // const calDate = (d) => {
   //   setSelectedDate(d.toString());
@@ -115,12 +143,12 @@ function Overview() {
         try {
           const {
             'Customer count': customerCount,
-            'Employee count': employeeCount,
-            'Employee to customer ratio': ratio
+            'Employee count': employeeCount
+            // 'Employee to customer ratio': ratio
           } = await getRatio(body);
           setEmpCount(employeeCount);
           setCostcnt(customerCount);
-          setRatio(ratio);
+          // setRatio(ratio);
           // const u = await data.length
           // setUniquejourneys(u);
           // setJourneyData([...data]);
@@ -172,11 +200,24 @@ function Overview() {
                         )}
 
                         {footfalldata ? (
-                          <p className="text-lg font-semibold">Store Footfall</p>
+                          <p className="text-lg font-semibold">PoP</p>
                         ) : (
                           <Skeleton variant="rectangular" width={150} height={15} className=" mb-2 rounded-sm" />
                         )}
                       </div>
+                      <>
+                        <IoMdSettings className="text-5xl cursor-pointer" onClick={handleClickPopScoreModal} />
+                        <Modal
+                          open={openPopScoreModal}
+                          onClose={handleClose}
+                          aria-labelledby="modal-modal-title"
+                          aria-describedby="modal-modal-description"
+                        >
+                          <Box sx={modalStyle}>
+                            <CsvModal />
+                          </Box>
+                        </Modal>
+                      </>
                     </div>
                     {footfalldata ? (
                       <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
@@ -225,8 +266,21 @@ function Overview() {
 
                       <div className="w-full">
                         <p className="text-3xl text-gray-500 ">NA</p>
-                        <p className="text-lg font-semibold">Store Footfall</p>
+                        <p className="text-lg font-semibold">PoP</p>
                       </div>
+                      <>
+                        <IoMdSettings className="text-5xl cursor-pointer" onClick={handleClickPopScoreModal} />
+                        <Modal
+                          open={openPopScoreModal}
+                          onClose={handleClose}
+                          aria-labelledby="modal-modal-title"
+                          aria-describedby="modal-modal-description"
+                        >
+                          <Box sx={modalStyle}>
+                            <CsvModal />
+                          </Box>
+                        </Modal>
+                      </>
                     </div>
                     <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
                       <p className="text-base font-semibold text-gray-500">Currently No data available</p>
@@ -241,24 +295,25 @@ function Overview() {
               <Card className="border border-gray-300" sx={{ height: '276px' }}>
                 {dweltimeData.length > 0 || dweltimeData.length === 0 ? (
                   <div className="flex flex-col w-full gap-1 p-3">
-                    <div className="flex  gap-2">
+                    <div className="flex items-center justify-center gap-2 w-full">
                       {storeDwelTime ? (
                         <UpdateIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" />
                       ) : (
                         <Skeleton variant="circular" width={45} height={45} />
                       )}
-                      <div>
+                      <div className="w-full">
                         {storeDwelTime ? (
                           <p className="text-3xl">{averageDwellTime.toFixed(2)} min</p>
                         ) : (
                           <Skeleton variant="rectangular" className="mb-3 rounded-sm" width={50} height={15} />
                         )}
                         {storeDwelTime ? (
-                          <p className="text-lg font-semibold">Avg Dwell Time</p>
+                          <p className="text-lg font-semibold">PoG</p>
                         ) : (
                           <Skeleton variant="rectangular" width={150} height={15} className=" mb-5 rounded-sm" />
                         )}
                       </div>
+                      <IoMdSettings className="text-5xl cursor-not-allowed" />
                     </div>
                     {storeDwelTime ? (
                       <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] scrollbar rounded-lg p-2.5">
@@ -308,8 +363,9 @@ function Overview() {
 
                       <div className="w-full">
                         <p className="text-3xl text-gray-500 ">NA</p>
-                        <p className="text-lg font-semibold">Avg Dwell Time</p>
+                        <p className="text-lg font-semibold">PoG</p>
                       </div>
+                      <IoMdSettings className="text-5xl cursor-not-allowed" />
                     </div>
                     <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
                       <p className="text-base font-semibold text-gray-500">Currently No data available</p>
@@ -326,11 +382,11 @@ function Overview() {
               </Card>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
-              <div style={{ height: '276px' }}>
+              <div style={{ height: '275px' }} className="flex flex-col">
                 <Card
-                  className="border border-gray-300"
+                  className="border border-gray-300 h-[85px]"
                   sx={{
-                    padding: '7.5px'
+                    padding: '4px'
                   }}
                 >
                   <div className="flex gap-2">
@@ -344,45 +400,20 @@ function Overview() {
                   </div>
                 </Card>
                 <Card
-                  className="border border-gray-300"
+                  className="border border-gray-300 h-2/3"
                   sx={{
                     padding: '5px',
                     marginTop: '5px'
                   }}
                 >
-                  <div className="flex gap-2">
-                    <div className=" w-24 ">
-                      <DonutChart />
-                    </div>
-                    <div className="flex flex-col">
-                      <p className="text-4xl text-[#444444]">20-25</p>
-                      <p className="text-lg text-[#444444]">avg age</p>
-                    </div>
-                  </div>
-                </Card>
-                <Card
-                  className="border border-gray-300"
-                  sx={{
-                    padding: '5px',
-                    marginTop: '5px'
-                  }}
-                >
-                  <div className="flex gap-2">
-                    <div className=" w-24">
-                      <DonutChartTwo />
-                    </div>
-                    <div className="flex flex-col">
-                      <p className="text-4xl text-[#444444]">63%</p>
-                      <p className="text-lg text-[#444444]">male</p>
-                    </div>
-                  </div>
+                  <RadarChart date={date} />
                 </Card>
               </div>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <div className=" " style={{ height: '275px' }}>
                 <Card
-                  className="border border-gray-300"
+                  className="border border-gray-300 h-1/3"
                   style={{
                     padding: '10px',
                     textAlign: 'center',
@@ -399,7 +430,7 @@ function Overview() {
                   </div>
                 </Card>
                 <Card
-                  className="border border-gray-300 mt-[5px]"
+                  className="border border-gray-300 mt-[5px] h-1/3"
                   style={{
                     padding: '10px',
                     textAlign: 'center',

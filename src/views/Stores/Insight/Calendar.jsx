@@ -3,9 +3,9 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 // import { useMediaQuery, useTheme } from '@mui/material';
-import { Badge, Button } from '@mui/material';
-import { IoIosArrowDown } from 'react-icons/io';
-import { IoIosArrowUp } from 'react-icons/io';
+import { Badge } from '@mui/material';
+// import { IoIosArrowDown } from 'react-icons/io';
+// import { IoIosArrowUp } from 'react-icons/io';
 import { PickersDay } from '@mui/x-date-pickers';
 
 // import { previousDay } from 'date-fns';
@@ -33,7 +33,7 @@ function ServerDay(props) {
 }
 
 function DatePickerStore({ SetSelectedDate }) {
-  const initialDate = new Date(2024, 0, 1); // February 11, 2024
+  const initialDate = new Date();
   const [calender, setCalender] = useState(initialDate);
   const [openTimeDropdown, setOpenTimeDropdown] = useState(false);
   const [selectedTime, setSelectedTime] = useState('6:00 to 6:15 PM');
@@ -89,6 +89,7 @@ function DatePickerStore({ SetSelectedDate }) {
     // console.log([date.getFullYear(), padTo2Digits(date.getMonth() + 1), padTo2Digits(date.getDate())].join('-')+ "T" + time +":00.000Z");
     // console.log(time);
     return [date.getFullYear(), padTo2Digits(date.getMonth() + 1), padTo2Digits(date.getDate())].join('-') + 'T' + time + ':00.000Z';
+    // return [date.getFullYear(), padTo2Digits(date.getMonth() + 1), padTo2Digits(date.getDate())].join('-');
   }
 
   const timeIntervals = [
@@ -158,12 +159,12 @@ function DatePickerStore({ SetSelectedDate }) {
     }
   ];
 
-  const shouldDisableDate = (day) => {
-    // Enable January 1, January 2, and February 11, disable all other dates
-    const month = day.getMonth();
-    const date = day.getDate();
-    return !(month === 0 && (date === 1 || date === 2));
-  };
+  // const shouldDisableDate = (day) => {
+  //   // Enable January 1, January 2, and February 11, disable all other dates
+  //   const month = day.getMonth();
+  //   const date = day.getDate();
+  //   return !(month === 0 && (date === 1 || date === 2));
+  // };
 
   const onClickTime = (i) => {
     // console.log(`Selected Date: ${calender}, Selected Time: ${i}`);
@@ -209,10 +210,10 @@ function DatePickerStore({ SetSelectedDate }) {
             value={calender}
             onChange={handlechange}
             onMonthChange={handleMonthChange}
-            shouldDisableDate={shouldDisableDate}
+            // shouldDisableDate={shouldDisableDate}
           />
         </LocalizationProvider>
-        <div className="flex justify-center  w-full">
+        {/* <div className="flex justify-center  w-full">
           <Button
             className="w-full bg-white text-black font-thin border-[#C4C4C4] "
             variant="outlined"
@@ -225,7 +226,7 @@ function DatePickerStore({ SetSelectedDate }) {
               {openTimeDropdown ? <IoIosArrowUp /> : <IoIosArrowDown />}
             </p>
           </Button>
-        </div>
+        </div> */}
       </div>
       {openTimeDropdown && (
         <div className="p-3 z-50 w-[255px] h-[200px] overflow-y-scroll scrollbar absolute right-10 bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)]">

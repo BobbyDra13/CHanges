@@ -18,7 +18,7 @@ const Areachart = ({ date }) => {
       const body = {
         // start_date: date,
         // storeId: '65c5e26a0b5be5dc7af327dc'
-        date: '2024-03-06',
+        date: date,
         store_id: '65c74d4112465588b7a4984c'
       };
       try {
@@ -47,7 +47,7 @@ const Areachart = ({ date }) => {
   const state = {
     series: [
       {
-        name: 'Customers',
+        name: 'Pop Score',
         data: custCount
         // [4, 7, 4, 20, 18, 80, 100,40, 60,30, 20, 33, 15,9, 4 ]
       }
@@ -79,7 +79,7 @@ const Areachart = ({ date }) => {
         show: true, // Ensure legend is visible
         position: 'top', // Set position to 'top'
         horizontalAlign: 'center',
-        customLegendItems: ['Customers'],
+        customLegendItems: ['Pop Score'],
         showForSingleSeries: true
         // ... other legend options
       },

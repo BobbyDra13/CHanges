@@ -9,12 +9,14 @@ import {
   GetAnomaliesBarChartData,
   GetVMCompliance,
   GetVMComplianceForOneWeek,
-  GetFullnessForOneWeek,
+  // GetFullnessForOneWeek,
+  GetRadarChartData,
   GetAnomaliesForOneWeek,
   GetBarChartData,
   GetVMscoreBar,
   GetCapProg,
-  GetDonutData
+  GetPopPercentage,
+  GetPopWeekLineData
 } from 'api';
 
 // Apex chart import
@@ -35,11 +37,12 @@ import KpiCard from './KpiCard';
 import KpiPop from './KpiCard/kpiPop';
 import { gridSpacing } from 'config.js';
 import AnomaliesBarChart from './AnomaliesBarChart';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 // assets
 import NoDataPng from '../../assets/images/No_data.png';
 import NoDataImg from '../../assets/images/No_data-amico.svg';
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import chartData from './chart/anomalies-chart';
 
 const histogramData = {
   asuk: [5, 10, 20, 25, 30, 35, 25, 15, 3, 2],
@@ -92,6 +95,7 @@ const Insights = () => {
   const [brandFullness, setBrandFullness] = useState([]);
   const [barChartData, setBarChartData] = useState(false);
   const [vmChartData, setVmChartData] = useState(false);
+  const [popPercentage, setPopPercentage] = useState('0');
   const [chartConfig, setChartConfig] = useState({
     type: 'line',
     height: 100,
@@ -206,10 +210,6 @@ const Insights = () => {
 
   const [openZone, setOpenZone] = useState(false);
 
-  // const [brandNames, setBrandNames] = useState([]);
-
-  // console.log('DATE SELECTED', selectedDate);
-
   const progressChart = {
     options: {
       chart: {
@@ -297,11 +297,19 @@ const Insights = () => {
           Store_IDs: ['6582be9ac5ed94d792a563b8'],
           period: 7
         };
-
         const capBody = {
           date: selectedDate.toString(),
           store_id: '65c74d4112465588b7a4984c'
         };
+        const popKpiCardBody = {
+          date: selectedDate.toString(),
+          store_id: '65c74d4112465588b7a4984c'
+        };
+        const donutBody = {
+          date: selectedDate.toString(),
+           store_id: "65c74d4112465588b7a4984c"
+        }
+
         setAvgCapProgress(false);
         setCapProgress(false);
         setFullness(false);
@@ -311,6 +319,7 @@ const Insights = () => {
         setBrandDonut(false);
         setBarChartData(false);
         setVmChartData(false);
+        setPopPercentage('0');
         setFullChartConfig({
           type: 'line',
           height: 100,
@@ -433,41 +442,49 @@ const Insights = () => {
             anomaliesBarChartData,
             barChart,
             vmcChart,
-            fullnessLineChart,
+            // fullnessLineChart,
             vmcLineChart,
             anomaliesLineChart
           ] = await Promise.all([
             GetCaptureProgress(commonBody),
-            GetBrandDonutData(brandDonutBody),
+            // GetBrandDonutData(brandDonutBody),
+            GetRadarChartData(donutBody),
             GetFullnessKpi(commonBody),
             GetVMCompliance(commonBody),
             GetAnomaliesKpi(commonBody),
             GetAnomaliesBarChartData(commonBody),
             GetBarChartData(commonBody),
             GetVMscoreBar(commonBody),
-            GetFullnessForOneWeek(body),
+            // GetFullnessForOneWeek(body),
             GetVMComplianceForOneWeek(body),
             GetAnomaliesForOneWeek(body)
           ]);
 
           const CapData = await GetCapProg(capBody);
-          const DonutData = await GetDonutData(capBody);
+          const popPercentageData = await GetPopPercentage(popKpiCardBody);
+          const popLineData = await GetPopWeekLineData(popKpiCardBody);
 
-          console.log(DonutData.data[0]);
+          console.log('popPercentageData', popPercentageData.data);
+          console.log('popLineData', popLineData);
 
-          if (fullnessLineChart) {
-            const fullnessData = fullnessLineChart.data;
-            const fullnessPercentage = fullnessData.map((item) => item.fullness);
-            const dates = fullnessData.map((item) => item.date);
-
-            const fullness = fullnessPercentage.map((percentage) => `${percentage.toFixed(2)}%`);
+          if (popLineData) {
+            const popScoreFullnessLine = popLineData.data;
+            const popScoreFullness = popScoreFullnessLine.map((item) => {
+              if (item.data && item.data.FullnessPopPercent) {
+                const percentage = parseFloat(item.data.FullnessPopPercent.replace('%', ''));
+                return `${percentage.toFixed(2)}%`;
+              } else {
+                return '0%';
+              }
+            });
+            const dates = popScoreFullnessLine.map((item) => item._id);
 
             const updatedFullnessChartConfig = {
               ...fullnessChartConfig,
               series: [
                 {
                   name: 'Fullness %',
-                  data: fullness
+                  data: popScoreFullness
                 }
               ],
 
@@ -569,8 +586,8 @@ const Insights = () => {
           }
           if (capProgressData) {
             if (capProgressData.data.length > 0) {
-              const totalCapturePercentage = capProgressData.data.reduce((acc, item) => acc + item.capture_percentage, 0);
-              const average = totalCapturePercentage / capProgressData.data.length;
+              // const totalCapturePercentage = capProgressData.data.reduce((acc, item) => acc + item.capture_percentage, 0);
+              // const average = totalCapturePercentage / capProgressData.data.length;
 
               // setAvgCapProgress(Math.floor(average));
               setAvgCapProgress(CapData.data.averageCaptureProgress);
@@ -584,22 +601,24 @@ const Insights = () => {
           }
           if (brandDonutData) {
             // console.log('Brand Data', brandDonutData);
-            // if (brandDonutData.data.length > 0) {
-            if (DonutData.data.length > 0) {
+            if (brandDonutData.data.length > 0) {
               // const extractedFullness = brandDonutData.data.map((item) => Math.floor(item.fullness));
-              const extractedFullness = DonutData.data.map((item) =>
-                Math.floor(item.data ? parseFloat(item.data.FullnessPopPercentOfGroup) : 0)
-              );
-              // const extractedBrandNames = brandDonutData.data.map((item) => item.brand_name);
-              const extractedBrandNames = DonutData.data.map((item) => item.group_id);
-              console.log(extractedFullness, extractedBrandNames);
+              const extractedFullness = brandDonutData.data.map((item) => item.data? parseFloat(item.data.FullnessPopPercentOfGroup):0  )
+              const extractedBrandNames = brandDonutData.data.map((item) => item.group_id);
 
               setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
 
               setBrandFullness(extractedFullness);
               // setBrandNames(extractedBrandNames);
             }
-            setBrandDonut(DonutData.data);
+            setBrandDonut(brandDonutData.data);
+          }
+          if (popPercentageData) {
+            if (popPercentageData.data.msg) {
+              setPopPercentage('0%');
+            } else {
+              setPopPercentage(popPercentageData.data.fullnessPopPercent);
+            }
           }
 
           if (fullnessKpiData) {
@@ -633,7 +652,7 @@ const Insights = () => {
       fetchDashboardData();
     }
     /* eslint-enable no-inner-declarations */
-  }, [selectedDate]);
+  }, [selectedDate, chartData]);
   console.log('bar', barChartData);
   console.log('vmc bar', vmChartData);
   console.log('chartConfig', vmc);
@@ -847,8 +866,8 @@ const Insights = () => {
             <KpiCard
               isLoaded={fullness}
               chart={fullnessChartConfig}
-              title="Up-Keep Score"
-              count={`${fullness && fullness.currentDay ? Math.floor(fullness.currentDay.fullness) : 0}%`}
+              title="PoP Score"
+              count={`${parseFloat(popPercentage) === 0 ? '0' : parseFloat(popPercentage).toFixed(1)}%`}
               percentage={`${fullness && fullness.difference ? Math.abs(Math.floor(fullness.difference)) : 0}`}
               chipColor={fullness && fullness.difference < 0 ? 'error' : 'success'}
               isLoss={fullness && fullness.difference < 0}
@@ -856,18 +875,16 @@ const Insights = () => {
             />
           </Grid>
           <Grid item lg={3} sm={6} xs={12}>
-            <KpiCard
-              isLoaded={vmc}
-              chart={chartConfig}
+            <KpiPop
+              isLoaded={fullness}
+              chart={statisticsChartsData[3].chart}
               title="VM Score"
-              count={`${vmc && vmc.currentDay ? Math.floor(vmc.currentDay.withoutAnomalyPercentage) : 0}%`}
-              percentage={`${
-                vmc && vmc.differencePercentage ? Math.abs(Math.floor(vmc.differencePercentage.withoutAnomalyPercentageDifference)) : 0
-              }`}
-              chipColor={
-                vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0 ? 'error' : 'success'
-              }
-              isLoss={vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0}
+              count="NA"
+              percentage="NA"
+              // chipColor={
+              //   vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0 ? 'error' : 'success'
+              // }
+              // isLoss={vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0}
               color={theme.palette.success.main}
             />
           </Grid>
@@ -875,7 +892,7 @@ const Insights = () => {
             <KpiPop
               isLoaded={fullness}
               chart={statisticsChartsData[3].chart}
-              title="PoP Score"
+              title="UpKeep Score"
               count="NA"
               percentage="NA"
               // isLoss
@@ -1095,7 +1112,8 @@ const Insights = () => {
                           <Grid item>
                             <Grid container spacing={1}>
                               <Typography paddingTop={1} className="self-end" variant="h5" color="inherit">
-                                Brand Fullness
+                                {/* Brand Fullness */}
+                                Group POP Score
                               </Typography>
                             </Grid>
                           </Grid>
@@ -1172,7 +1190,7 @@ const Insights = () => {
                 <Grid item xs={12}>
                   <Card>
                     <CardContent>
-                      <AnomaliesBarChart date={selectedDate} />
+                      <AnomaliesBarChart selectedDate={selectedDate} />
                     </CardContent>
                   </Card>
                 </Grid>
@@ -1238,28 +1256,32 @@ const Insights = () => {
                           </Typography>
                         </Grid>
                         <Grid item xs={12}>
-                          <div className='flex items-center justify-between' >
-                            <div style={{width:'88%'}}>
-                          <LinearProgress
-                            className="cursor-pointer"
-                            sx={{
-                              borderRadius: 3,
-                              height: 5,
-                              
-                              [theme.breakpoints.up('xl')]: {
-                                height: 5 // Height for screens equal to or larger than 'lg' breakpoint
-                              }
-                            }}
-                            variant="determinate"
-                            aria-label="direct"
-                            // value={Math.floor(item.capture_percentage)}
-                            value={capProgress.collectiveCaptureProgress}
-                            color="primary"
-                            
-                            // onScroll={()=>setOpenZone(false)}
-                          />
-                          </div>
-                       {openZone?   <FaEyeSlash    className='cursor-pointer' onClick={() => setOpenZone(!openZone)} /> : <FaEye className='cursor-pointer' onClick={() => setOpenZone(!openZone)} /> }
+                          <div className="flex items-center justify-between">
+                            <div style={{ width: '88%' }}>
+                              <LinearProgress
+                                className="cursor-pointer"
+                                sx={{
+                                  borderRadius: 3,
+                                  height: 5,
+
+                                  [theme.breakpoints.up('xl')]: {
+                                    height: 5 // Height for screens equal to or larger than 'lg' breakpoint
+                                  }
+                                }}
+                                variant="determinate"
+                                aria-label="direct"
+                                // value={Math.floor(item.capture_percentage)}
+                                value={capProgress.collectiveCaptureProgress}
+                                color="primary"
+
+                                // onScroll={()=>setOpenZone(false)}
+                              />
+                            </div>
+                            {openZone ? (
+                              <FaEyeSlash className="cursor-pointer" onClick={() => setOpenZone(!openZone)} />
+                            ) : (
+                              <FaEye className="cursor-pointer" onClick={() => setOpenZone(!openZone)} />
+                            )}
                           </div>
                           {openZone && (
                             <Paper className="mt-10 p-5" elevation={10}>
