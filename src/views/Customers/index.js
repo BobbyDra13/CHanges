@@ -118,14 +118,15 @@ const Customers = () => {
   const navigate = useNavigate();
   const options = [
     {
-      label: 'View',
-      icon: <VisibilityIcon />,
-      onClick: () => navigate('/main/stores/layout')
-    },
-    {
       label: 'Analysis',
       icon: <BarChartIcon />,
       onClick: () => navigate('/main/stores/storeinsight/overview')
+    },
+    {
+      label: 'View',
+      icon: <VisibilityIcon />,
+      onClick: () => navigate('/main/stores/layout'),
+      disabled: true
     },
     { label: 'Edit', icon: <EditIcon />, disabled: true },
     { label: 'Delete', icon: <DeleteIcon />, color: 'red', disabled: true }
@@ -249,6 +250,7 @@ const Customers = () => {
       if (response2) {
         setUpdateddata(response2.data);
         // console.log(updatedData[0].store_name);
+        console.log('dop', response2.data);
       }
       if (response) {
         console.log('Store Data', response.data.storeDetails);
@@ -664,7 +666,7 @@ const Customers = () => {
                         <Typography className="drop-shadow-md" align="center" variant="h6">
                           Anomalies solved
                         </Typography>
-                        <div className="w-full mt-2 flex justify-center">
+                        {/* <div className="w-full mt-2 flex justify-center">
                           <AvatarGroup
                             sx={{
                               '& .MuiAvatar-root': { width: 24, height: 24, fontSize: 15 }
@@ -695,7 +697,7 @@ const Customers = () => {
                               </Tooltip>
                             ))}
                           </AvatarGroup>
-                        </div>
+                        </div> */}
                       </Stack>
                     </div>
                   </Grid>
@@ -982,10 +984,10 @@ const Customers = () => {
                           ))
                         )}
                       </div>
-                      <Typography width={'100%'} variant="h3">
+                      {/* <Typography width={'100%'} variant="h3">
                         Team
                       </Typography>
-                      <Divider />
+                      <Divider /> */}
                       <div style={{ paddingBottom: 13 }} className="w-full flex justify-start">
                         <AvatarGroup
                           sx={{

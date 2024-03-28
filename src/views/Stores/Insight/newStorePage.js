@@ -14,8 +14,8 @@ import { useMediaQuery, useTheme } from '@mui/material';
 import { HiBarsArrowDown } from 'react-icons/hi2';
 import { IoClose } from 'react-icons/io5';
 import { motion, AnimatePresence } from 'framer-motion';
-import OrionImg from '../../../assets/images/MapImages/seawoods.png';
 import { Outlet, useNavigate, useLocation } from 'react-router';
+import MapComponentAnalysis from './map';
 
 function NewStorePage() {
   const [open, setOpen] = useState(false);
@@ -108,17 +108,7 @@ function NewStorePage() {
                       <h1 className={`text-gray-200 origin-right font-medium -mt-1 text-lg  3xl:text-xl`}>RD1234 Seawoods Nexus Mall</h1>
                     )}
                   </div>
-                  {open && (
-                    <div className="flex justify-center items-center">
-                      <img
-                        style={{ display: 'block', objectFit: 'cover' }}
-                        className="rounded-md border border-gray-300 w-full h-[180px] drop-shadow-md hover:cursor-pointer "
-                        src={OrionImg}
-                        alt="noImg"
-                        // onClick={() => navigate('/main/stores/layout')}
-                      />
-                    </div>
-                  )}
+                  {open && <MapComponentAnalysis />}
                 </Tooltip>
 
                 <div
