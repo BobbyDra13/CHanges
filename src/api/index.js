@@ -579,3 +579,17 @@ export const GetRadarChartData = async (data) => {
     console.log('Error Calling GetRadarChartData API: ', error);
   }
 };
+
+export const GetDates = async (data) => {
+  try {
+    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/calender', data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetDates API: ', error);
+  }
+};
