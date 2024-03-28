@@ -10,6 +10,7 @@ import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { IoIosClose } from 'react-icons/io';
 import '../../Customers/zoom-card-item.css';
 import { RiErrorWarningLine } from 'react-icons/ri';
+import noData from '../../../assets/images/No_data-amico.svg';
 bouncy.register();
 
 // const imgURLs = {
@@ -19,7 +20,7 @@ bouncy.register();
 // };
 
 export default function ShelfView({ date }) {
-  const [active, setActive] = useState('camera1');
+  const [active, setActive] = useState(false);
   const [data, setData] = useState(false);
   const [shelves, setShelves] = useState(false);
   const [loading, setloading] = useState(true);
@@ -59,11 +60,13 @@ export default function ShelfView({ date }) {
     setImageLoading(false);
     // setLoadDialog(!loadDialog)
     setLoadDialog(!loadDialog);
+    setloading(false);
     console.log('current Data :', cData);
   }
 
   async function GetShelfWiseDetails(id) {
     console.log('shelf id is ', id);
+    setloading(true);
     const body = {
       date: date.toString(),
       store_id: '65c74d4112465588b7a4984c',
@@ -131,7 +134,7 @@ export default function ShelfView({ date }) {
       {data ? (
         <div style={{ margin: '20px', overflowY: 'scroll' }} className="scrollbar">
           <Grid container spacing={4}>
-            <Grid item md={2} sm={2} style={{ height: '500px', marginBottom: '50px', overflowY: 'scroll' }} className="scrollbar">
+            <Grid item md={2.5} sm={2} style={{ height: '500px', marginBottom: '50px', overflowY: 'scroll' }} className="scrollbar">
               {data &&
                 data.map((d, ind) => (
                   <Paper
@@ -173,9 +176,9 @@ export default function ShelfView({ date }) {
 
             <Grid
               item
-              md={10}
+              md={9.5}
               sm={10}
-              style={{ height: '500px', marginBottom: '50px', overflowY: 'scroll' }}
+              style={{ height: '460px', marginBottom: '50px', overflowY: 'scroll', marginTop:'35px' }}
               className="scrollbar inline-block "
             >
               {/* {!url ? <div>please select one camera</div> : <img src={url} alt="img" style={{ height: '400px', width: '100%' }} />} */}
@@ -187,33 +190,44 @@ export default function ShelfView({ date }) {
                 ) : (
                   shelves &&
                   shelves.map((item, index) => (
-                    <Grid item md={6} sm={12} key={index}>
-                      <div className="flex w-full h-full">
-                        <div style={{ width: '60%', height: '100%' }}>
+                    <Grid item md={12} sm={12} key={index}>
+                      {item.img_url ? (
+                        <div className="flex w-full h-full justify-around">
+                          <div style={{ width: '70%', height: '100%' }}>
+                            <img
+                              src={item.img_url}
+                              alt="img"
+                              style={{ height: '80%', width: '100%', borderRadius: '7px', cursor: 'pointer' }}
+                              onClick={() => GetShelfWiseDetails(item.shelf_id)}
+                            />
+                          </div>
+                          <div style={{ width: '25%', padding: '7px' }}>
+                            {/* <div className='text-black text-sm font-bold'>Name : {item.shelf_name}</div> */}
+
+                            <div>
+                              <span className="text-black text-sm font-bold">Shelf Id: {item.id} </span>
+                              {/* <span className='text-black text-lg font-bold'>55 </span>  */}
+                            </div>
+                            <div>
+                              <span className="text-black text-sm font-bold">POP Score : {item.fullnessPopPercent} </span>
+                              {/* <span className='text-black text-lg font-bold'>60% </span>  */}
+                            </div>
+                            <div>
+                              <span className="text-black text-sm font-bold">Anomaly : {item.total_anomalies_detected} </span>
+                              {/* <span className='text-black text-lg font-bold'>60% </span>  */}
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex w-full h-full">
                           <img
-                            src={item.img_url}
+                            src={noData}
                             alt="img"
-                            style={{ height: '80%', width: '100%', borderRadius: '7px', cursor: 'pointer' }}
-                            onClick={() => GetShelfWiseDetails(item.shelf_id)}
+                            style={{ height: '50%', width: '100%', borderRadius: '7px', cursor: 'pointer' }}
+                            // onClick={() => GetShelfWiseDetails(item.shelf_id)}
                           />
                         </div>
-                        <div style={{ width: '40%', padding: '7px' }}>
-                          {/* <div className='text-black text-sm font-bold'>Name : {item.shelf_name}</div> */}
-
-                          <div>
-                            <span className="text-black text-sm font-bold">Shelf Id: {item.id} </span>
-                            {/* <span className='text-black text-lg font-bold'>55 </span>  */}
-                          </div>
-                          <div>
-                            <span className="text-black text-sm font-bold">POP Score : {item.fullnessPopPercent} </span>
-                            {/* <span className='text-black text-lg font-bold'>60% </span>  */}
-                          </div>
-                          <div>
-                            <span className="text-black text-sm font-bold">Anomaly : {item.total_anomalies_detected} </span>
-                            {/* <span className='text-black text-lg font-bold'>60% </span>  */}
-                          </div>
-                        </div>
-                      </div>
+                      )}
                     </Grid>
                   ))
                 )}
@@ -274,6 +288,7 @@ export default function ShelfView({ date }) {
                       <div className="w-full flex justify-between place-items-center">
                         <Typography variant="h3" className="">
                           {/* {details.store_id} - {details.store_name} */}
+                          {cData.store_id} - {cData.store_name}
                         </Typography>
                         <button onClick={handleImageClick} className="md:static absolute top-5 right-5 ">
                           <IoIosClose className="md:text-4xl text-2xl" />
@@ -289,7 +304,9 @@ export default function ShelfView({ date }) {
                       <Divider />
                       <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
                         <div className="bg-[#002F01] rounded-full">
-                          <Typography color={'white'} paddingY={1} paddingX={2} variant="h5"></Typography>
+                          <Typography color={'white'} paddingY={1} paddingX={2} variant="h5">
+                            {cData.group_id}
+                          </Typography>
                         </div>
                       </div>
                       <Typography width={'100%'} variant="h3">

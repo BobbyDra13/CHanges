@@ -501,7 +501,7 @@ export const GetZonedetails = async (data) => {
       }
     });
     // console.log("ZoneNameAPI",response);
-    const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.name }));
+    const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.id }));
     return res;
   } catch (error) {
     console.log('Error Calling GetCaptureProgress API: ', error);
