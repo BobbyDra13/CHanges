@@ -3,7 +3,7 @@ import { React, useState, useEffect } from 'react';
 // API imports
 import {
   GetCaptureProgress,
-  GetBrandDonutData,
+  // GetBrandDonutData,
   GetFullnessKpi,
   GetAnomaliesKpi,
   GetAnomaliesBarChartData,
@@ -288,10 +288,10 @@ const Insights = () => {
           start_date: selectedDate.toString(),
           Store_IDs: ['6582be9ac5ed94d792a563b8']
         };
-        const brandDonutBody = {
-          start_date: selectedDate.toString(),
-          Store_IDs: ['6582be9ac5ed94d792a563b8']
-        };
+        // const brandDonutBody = {
+        //   start_date: selectedDate.toString(),
+        //   Store_IDs: ['6582be9ac5ed94d792a563b8']
+        // };
         const body = {
           start_date: selectedDate.toString(),
           Store_IDs: ['6582be9ac5ed94d792a563b8'],
@@ -307,8 +307,8 @@ const Insights = () => {
         };
         const donutBody = {
           date: selectedDate.toString(),
-           store_id: "65c74d4112465588b7a4984c"
-        }
+          store_id: '65c74d4112465588b7a4984c'
+        };
 
         setAvgCapProgress(false);
         setCapProgress(false);
@@ -603,7 +603,9 @@ const Insights = () => {
             // console.log('Brand Data', brandDonutData);
             if (brandDonutData.data.length > 0) {
               // const extractedFullness = brandDonutData.data.map((item) => Math.floor(item.fullness));
-              const extractedFullness = brandDonutData.data.map((item) => item.data? parseFloat(item.data.FullnessPopPercentOfGroup):0  )
+              const extractedFullness = brandDonutData.data.map((item) =>
+                item.data ? parseFloat(item.data.FullnessPopPercentOfGroup) : 0
+              );
               const extractedBrandNames = brandDonutData.data.map((item) => item.group_id);
 
               setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });

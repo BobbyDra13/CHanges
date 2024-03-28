@@ -134,7 +134,7 @@ export default function ShelfView({ date }) {
       {data ? (
         <div style={{ margin: '20px', overflowY: 'scroll' }} className="scrollbar">
           <Grid container spacing={4}>
-            <Grid item md={2} sm={2} style={{ height: '500px', marginBottom: '50px', overflowY: 'scroll' }} className="scrollbar">
+            <Grid item md={2.5} sm={2} style={{ height: '500px', marginBottom: '50px', overflowY: 'scroll' }} className="scrollbar">
               {data &&
                 data.map((d, ind) => (
                   <Paper
@@ -176,9 +176,9 @@ export default function ShelfView({ date }) {
 
             <Grid
               item
-              md={10}
+              md={9.5}
               sm={10}
-              style={{ height: '500px', marginBottom: '50px', overflowY: 'scroll' }}
+              style={{ height: '460px', marginBottom: '50px', overflowY: 'scroll', marginTop:'35px' }}
               className="scrollbar inline-block "
             >
               {/* {!url ? <div>please select one camera</div> : <img src={url} alt="img" style={{ height: '400px', width: '100%' }} />} */}
@@ -190,10 +190,10 @@ export default function ShelfView({ date }) {
                 ) : (
                   shelves &&
                   shelves.map((item, index) => (
-                    <Grid item md={6} sm={12} key={index}>
+                    <Grid item md={12} sm={12} key={index}>
                       {item.img_url ? (
-                        <div className="flex w-full h-full">
-                          <div style={{ width: '60%', height: '100%' }}>
+                        <div className="flex w-full h-full justify-around">
+                          <div style={{ width: '70%', height: '100%' }}>
                             <img
                               src={item.img_url}
                               alt="img"
@@ -201,7 +201,7 @@ export default function ShelfView({ date }) {
                               onClick={() => GetShelfWiseDetails(item.shelf_id)}
                             />
                           </div>
-                          <div style={{ width: '40%', padding: '7px' }}>
+                          <div style={{ width: '25%', padding: '7px' }}>
                             {/* <div className='text-black text-sm font-bold'>Name : {item.shelf_name}</div> */}
 
                             <div>
@@ -223,7 +223,7 @@ export default function ShelfView({ date }) {
                           <img
                             src={noData}
                             alt="img"
-                            style={{ height: '80%', width: '100%', borderRadius: '7px', cursor: 'pointer' }}
+                            style={{ height: '50%', width: '100%', borderRadius: '7px', cursor: 'pointer' }}
                             // onClick={() => GetShelfWiseDetails(item.shelf_id)}
                           />
                         </div>
