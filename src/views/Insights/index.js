@@ -90,6 +90,7 @@ const Insights = () => {
   const [vmc, setVmc] = useState(false);
   const [anomalies, setAnomalies] = useState(false);
   const [anomaliesBarChart, setAnomaliesBarChart] = useState(false);
+  //eslint-disable-next-line
   const [brandDonut, setBrandDonut] = useState(false);
   const [brandChartOptions, setBrandChartOptions] = useState(BrandChartData.options);
   const [brandFullness, setBrandFullness] = useState([]);
@@ -611,8 +612,10 @@ const Insights = () => {
               setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
 
               setBrandFullness(extractedFullness);
+              console.log('Brand Fullness', extractedFullness);
               // setBrandNames(extractedBrandNames);
             }
+
             setBrandDonut(brandDonutData.data);
           }
           if (popPercentageData) {
@@ -653,7 +656,7 @@ const Insights = () => {
       }
       fetchDashboardData();
     }
-    /* eslint-enable no-inner-declarations */
+    //eslint-disable-next-line
   }, [selectedDate, chartData]);
   console.log('bar', barChartData);
   console.log('vmc bar', vmChartData);
@@ -739,6 +742,7 @@ const Insights = () => {
 
       setSeriesData(barchart.vmc);
     }
+    //eslint-disable-next-line
   }, [barChartData, vmChartData, histogramChartRequirements.selectOptions, selected]);
 
   let series = [
@@ -1147,30 +1151,32 @@ const Insights = () => {
                           </Grid>
                         </Grid>
 
-                        {brandDonut.length > 0 ? (
-                          <Grid item>
-                            <BrandDonutChart
-                              chartOptions={brandChartOptions}
-                              chartSeries={brandFullness}
-                              chartHeight={BrandChartData.height}
-                              chartType={BrandChartData.type}
-                            />
-                          </Grid>
-                        ) : brandDonut.length === 0 ? (
-                          // <BrandDonutChart
-                          //   chartOptions={brandChartOptions}
-                          //   chartSeries={[0]}
-                          //   chartHeight={BrandChartData.height}
-                          //   chartType={BrandChartData.type}
-                          // />
-                          <div className="w-full h-full flex justify-center place-items-center">
-                            <img style={{ height: '310px' }} src={NoDataImg} alt="No data" />
-                          </div>
-                        ) : (
-                          <div className="w-full h-full flex justify-center place-items-center">
-                            <Skeleton variant="circular" width={300} height={310} />
-                          </div>
-                        )}
+                        {
+                          brandFullness[0] !== 0 || brandFullness[1] !== 0 ? (
+                            <Grid item>
+                              <BrandDonutChart
+                                chartOptions={brandChartOptions}
+                                chartSeries={brandFullness}
+                                chartHeight={BrandChartData.height}
+                                chartType={BrandChartData.type}
+                              />
+                            </Grid>
+                          ) : (
+                            // <BrandDonutChart
+                            //   chartOptions={brandChartOptions}
+                            //   chartSeries={[0]}
+                            //   chartHeight={BrandChartData.height}
+                            //   chartType={BrandChartData.type}
+                            // />
+                            <div className="w-full h-full flex justify-center place-items-center">
+                              <img style={{ height: '310px' }} src={NoDataImg} alt="No data" />
+                            </div>
+                          )
+                          //   : (
+                          // <div className="w-full h-full flex justify-center place-items-center">
+                          //   <Skeleton variant="circular" width={300} height={310} />
+                          // </div>
+                        }
 
                         {/* <Grid item>
                           <BrandDonutChart
