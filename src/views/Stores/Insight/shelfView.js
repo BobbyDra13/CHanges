@@ -314,7 +314,7 @@ export default function ShelfView({ date }) {
                       </Typography>
                       <Divider />
                       <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
-                        {cData.anomalies.length == 0 && (
+                        {cData.anomalies.length === 0 && (
                           <Typography width={'100%'} variant="body1">
                             No Anomaly
                           </Typography>

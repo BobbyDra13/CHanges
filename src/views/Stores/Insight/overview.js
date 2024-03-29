@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Grid, Stack, Typography, Card, Skeleton, LinearProgress, Modal, Box } from '@mui/material';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { avgDwelTime } from '../../../api/sentinelAPI';
-import { footfallCard } from '../../../api/sentinelAPI';
+// import { footfallCard } from '../../../api/sentinelAPI';
 import { getRatio } from 'api/sentinelAPI';
 // import NoDataImg from '../../../assets/images/No_data-amico.svg';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
@@ -19,6 +19,7 @@ import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import { IoMdSettings } from 'react-icons/io';
 import CsvModal from './CsvUpload';
 import RadarChart from './RadarChart';
+import { GetpopKPI } from 'api';
 
 function Overview() {
   const theme = useTheme();
@@ -82,6 +83,10 @@ function Overview() {
         start_date: date,
         storeId: '65c5e26a0b5be5dc7af327dc'
       };
+      const popBody= {
+        date: date,
+        store_id: "65c74d4112465588b7a4984c"
+    }
       // eslint-disable-next-line
       async function getDataDwell() {
         // console.log(date);
@@ -116,18 +121,21 @@ function Overview() {
       // eslint-disable-next-line
       async function getFootfalldata() {
         try {
-          const data = await footfallCard(commonBody);
-          console.log(data);
-          if (data.length == 0) {
+          // const data = await footfallCard(commonBody);
+          const data = await GetpopKPI(popBody);
+          console.log(data.data.msg);
+          if (data.data?.msg == 'Data is not available for this date') {
             // console.log('hello')
             setFootfalldata(false);
             setftfall(false);
-          } else if (data.length > 0) {
-            const { totalCustomerStore } = data[0];
-            const { zones } = data[0];
-            setftfall(zones);
+          } else if (data.data.length > 0) {
+            // const { totalCustomerStore } = data[0];
+            // const { zones } = data[0];
+            const group= data.data[1].Group_wise_pop;
+            console.log(group)
+            setftfall(data.data[0]);
             // console.log(zones);
-            setFootfalldata(totalCustomerStore);
+            setFootfalldata(group);
           }
 
           return data;
@@ -167,8 +175,8 @@ function Overview() {
     // eslint-disable-next-line
   }, [date]);
 
-  ftfall && ftfall.sort((a, b) => b.totalCustomerZone - a.totalCustomerZone);
-  dweltimeData && dweltimeData.sort((a, b) => b.avgDwellTime - a.avgDwellTime);
+  // ftfall && ftfall.sort((a, b) => b.totalCustomerZone - a.totalCustomerZone);
+  // dweltimeData && dweltimeData.sort((a, b) => b.avgDwellTime - a.avgDwellTime);
 
   return (
     <div className="  w-full ">
@@ -185,7 +193,7 @@ function Overview() {
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <Card className="border border-gray-300" sx={{ height: '276px' }}>
-                {ftfall.length > 0 ? (
+                {ftfall  ? (
                   <div className="flex  w-full  flex-col gap-1 p-3">
                     <div className="flex items-center justify-center gap-2 w-full">
                       {footfalldata ? (
@@ -195,7 +203,7 @@ function Overview() {
                       )}
                       <div className="w-full">
                         {footfalldata ? (
-                          <p className="text-3xl">{footfalldata}</p>
+                          <p className="text-3xl">{Math.round( parseFloat( ftfall.fullnessPopPercent))} %</p>
                         ) : (
                           <Skeleton variant="rectangular" className="mb-3 rounded-sm" width={50} height={20} />
                         )}
@@ -220,25 +228,26 @@ function Overview() {
                         </Modal>
                       </>
                     </div>
-                    {footfalldata ? (
+                    {footfalldata.length > 0 ? (
                       <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
-                        {ftfall.map((item, index) => {
-                          const percentage = (item.totalCustomerZone / ftfall[0].totalCustomerZone) * 100;
+                        {footfalldata.map((item, index) => {
+                          // const percentage = (item.totalCustomerZone / ftfall[0].totalCustomerZone) * 100;
+                          const percentage = item.data.FullnessPopPercentOfGroup != undefined ? Math.round( parseFloat(item.data.FullnessPopPercentOfGroup)) : 0;
                           const barcolor = percentage >= 80 ? '#00ac69' : percentage >= 50 ? '#f4a100' : '#ff413a';
                           // console.log(percentage);
                           return (
                             <div className="mt-2" key={index}>
                               <div className="flex gap-1 items-center">
-                                <div
+                                {/* <div
                                   className=" rounded-full h-4 w-4"
                                   style={{
                                     backgroundColor: `${item.zoneColourHex}`
                                   }}
                                 >
                                   {' '}
-                                </div>
+                                </div> */}
                                 <div>
-                                  {item.zoneName} : {item.totalCustomerZone}
+                                  {item.group_id} : {percentage} %
                                 </div>
                               </div>
                               <LinearProgress
@@ -246,7 +255,7 @@ function Overview() {
                                 value={percentage}
                                 sx={{
                                   marginTop: '5px',
-                                  backgroundColor: 'rgb(241 245 249)', // Set color for unfilled part
+                                  backgroundColor: 'white', // Set color for unfilled part
                                   '& .MuiLinearProgress-bar': {
                                     backgroundColor: `${barcolor}` // Set color for filled part
                                   }

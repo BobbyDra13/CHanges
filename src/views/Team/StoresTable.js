@@ -79,10 +79,10 @@ const StoresTable = ({
   const [deletionInProgress, setDeletionInProgress] = useState(false);
   const [deletionSuccess, setDeletionSuccess] = useState(null);
 
-  const handleConfirmDialogOpen = (userId) => {
-    setDeleteUserId(userId);
-    setConfirmDialogOpen(true);
-  };
+  // const handleConfirmDialogOpen = (userId) => {
+  //   setDeleteUserId(userId);
+  //   setConfirmDialogOpen(true);
+  // };
 
   const handleConfirmDialogClose = () => {
     setDeleteUserId(null);
@@ -119,10 +119,10 @@ const StoresTable = ({
   const [editRowId, setEditRowId] = useState(null);
 
   const [showEditUserDialog, setShowEditUserDialog] = useState(false);
-  const handleEditUserDialogOpen = (rowId) => {
-    setEditRowId(rowId);
-    setShowEditUserDialog(true);
-  };
+  // const handleEditUserDialogOpen = (rowId) => {
+  //   setEditRowId(rowId);
+  //   setShowEditUserDialog(true);
+  // };
 
   const handleEditUserDialogClose = () => {
     setEditRowId(null);
@@ -186,18 +186,22 @@ const StoresTable = ({
                 <TableCell align="left">
                   <ButtonGroup variant="text" aria-label="user actions" sx={{ display: 'flex', gap: '8px' }}>
                     <IconButton
-                      onClick={() => handleEditUserDialogOpen(row.id)}
-                      color="primary"
+                      className="cursor-not-allowed"
+                      // onClick={() => handleEditUserDialogOpen(row.id)}
+                      // color="primary"
+                      color="#6ee7b7"
                       component={Link}
                       // to={`/team/edit/${row.id}`}
                       aria-label="edit"
                       sx={{
-                        color: theme.palette.success.main,
+                        // color: theme.palette.success.main,
+                        color: '#6ee7b7',
                         fontSize: '14px',
                         lineHeight: '17px',
                         textTransform: 'none',
                         '&:hover': {
-                          color: theme.palette.success.light
+                          // color: theme.palette.success.light
+                          color: '#6ee7b7'
                         },
                         '&:focus': {
                           outline: 'none'
@@ -212,16 +216,19 @@ const StoresTable = ({
                     </Dialog>
 
                     <IconButton
+                      className="cursor-not-allowed"
                       color="secondary"
                       aria-label="delete"
-                      onClick={() => handleConfirmDialogOpen(row.id)}
+                      // onClick={() => handleConfirmDialogOpen(row.id)}
                       sx={{
-                        color: theme.palette.error.main,
+                        // color: theme.palette.error.main,
+                        color: '#fca5a5',
                         fontSize: '14px',
                         lineHeight: '17px',
                         textTransform: 'none',
                         '&:hover': {
-                          color: theme.palette.error.light
+                          // color: theme.palette.error.light
+                          color: '#fca5a5'
                         }
                       }}
                     >
