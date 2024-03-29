@@ -321,7 +321,7 @@ export default function ShelfView({ date }) {
                         )}
 
                         {cData.anomalies.length > 0 &&
-                          cData.anomalies[0][0]?.map((itm, index) => (
+                          cData.anomalies.map((itm, index) => (
                             <Tooltip
                               key={index}
                               title={
