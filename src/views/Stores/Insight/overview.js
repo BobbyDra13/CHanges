@@ -83,10 +83,10 @@ function Overview() {
         start_date: date,
         storeId: '65c5e26a0b5be5dc7af327dc'
       };
-      const popBody= {
+      const popBody = {
         date: date,
-        store_id: "65c74d4112465588b7a4984c"
-    }
+        store_id: '65c74d4112465588b7a4984c'
+      };
       // eslint-disable-next-line
       async function getDataDwell() {
         // console.log(date);
@@ -131,8 +131,8 @@ function Overview() {
           } else if (data.data.length > 0) {
             // const { totalCustomerStore } = data[0];
             // const { zones } = data[0];
-            const group= data.data[1].Group_wise_pop;
-            console.log(group)
+            const group = data.data[1].Group_wise_pop;
+            console.log(group);
             setftfall(data.data[0]);
             // console.log(zones);
             setFootfalldata(group);
@@ -193,7 +193,7 @@ function Overview() {
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <Card className="border border-gray-300" sx={{ height: '276px' }}>
-                {ftfall  ? (
+                {ftfall ? (
                   <div className="flex  w-full  flex-col gap-1 p-3">
                     <div className="flex items-center justify-center gap-2 w-full">
                       {footfalldata ? (
@@ -203,7 +203,7 @@ function Overview() {
                       )}
                       <div className="w-full">
                         {footfalldata ? (
-                          <p className="text-3xl">{Math.round( parseFloat( ftfall.fullnessPopPercent))} %</p>
+                          <p className="text-3xl">{Math.round(parseFloat(ftfall.fullnessPopPercent))} %</p>
                         ) : (
                           <Skeleton variant="rectangular" className="mb-3 rounded-sm" width={50} height={20} />
                         )}
@@ -232,7 +232,10 @@ function Overview() {
                       <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
                         {footfalldata.map((item, index) => {
                           // const percentage = (item.totalCustomerZone / ftfall[0].totalCustomerZone) * 100;
-                          const percentage = item.data.FullnessPopPercentOfGroup != undefined ? Math.round( parseFloat(item.data.FullnessPopPercentOfGroup)) : 0;
+                          const percentage =
+                            item.data.FullnessPopPercentOfGroup != undefined
+                              ? Math.round(parseFloat(item.data.FullnessPopPercentOfGroup))
+                              : 0;
                           const barcolor = percentage >= 80 ? '#00ac69' : percentage >= 50 ? '#f4a100' : '#ff413a';
                           // console.log(percentage);
                           return (
