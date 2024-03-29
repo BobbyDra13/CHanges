@@ -178,7 +178,7 @@ export default function ShelfView({ date }) {
               item
               md={9.5}
               sm={10}
-              style={{ height: '460px', marginBottom: '50px', overflowY: 'scroll', marginTop:'35px' }}
+              style={{ height: '460px', marginBottom: '50px', overflowY: 'scroll', marginTop: '35px' }}
               className="scrollbar inline-block "
             >
               {/* {!url ? <div>please select one camera</div> : <img src={url} alt="img" style={{ height: '400px', width: '100%' }} />} */}
@@ -321,7 +321,7 @@ export default function ShelfView({ date }) {
                         )}
 
                         {cData.anomalies.length > 0 &&
-                          cData.anomalies[0][0].map((itm, index) => (
+                          cData.anomalies[0][0]?.map((itm, index) => (
                             <Tooltip
                               key={index}
                               title={
@@ -378,18 +378,20 @@ export default function ShelfView({ date }) {
                       />
                     </div>
                     <div className="w-full bg-white mt-5 flex flex-row-reverse gap-3">
-                      <button className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 hover:cursor-not-allowed border-2 border-gray-400">
-                        <Typography>Ignore</Typography>
+                      <button className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 hover:cursor-not-allowed border-2 border-gray-300">
+                        <Typography className="text-gray-400">Ignore</Typography>
                       </button>
                       <button
                         className="lg:rounded-full rounded-xl md:w-[125px]  hover:cursor-not-allowed text-lg lg:text-2xl p-2.5"
-                        style={{ backgroundColor: 'green' }}
+                        // style={{ backgroundColor: success }}
+                        style={{ backgroundColor: '#6ee7b7' }}
                       >
                         <Typography color={'white'}>Solved</Typography>
                       </button>
                       <button
                         className="lg:rounded-full rounded-xl md:w-[125px] hover:cursor-not-allowed text-lg lg:text-2xl p-2.5"
-                        style={{ backgroundColor: 'red' }}
+                        // style={{ backgroundColor: error }}
+                        style={{ backgroundColor: '#fca5a5' }}
                       >
                         <Typography color={'white'}>Alert Store</Typography>
                       </button>
