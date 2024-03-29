@@ -135,6 +135,7 @@ function Overview() {
           console.log(error);
         }
       }
+      // eslint-disable-next-line
       async function getRatioData() {
         const body = {
           start_date: date,
