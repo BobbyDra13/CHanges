@@ -1026,18 +1026,20 @@ const Customers = () => {
                       />
                     </div>
                     <div className="w-full bg-white mt-5 flex flex-row-reverse gap-3">
-                      <button className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 hover:cursor-not-allowed border-2 border-gray-400">
-                        <Typography>Ignore</Typography>
+                      <button className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 hover:cursor-not-allowed border-2 border-gray-300">
+                        <Typography className="text-gray-400">Ignore</Typography>
                       </button>
                       <button
                         className="lg:rounded-full rounded-xl md:w-[125px]  hover:cursor-not-allowed text-lg lg:text-2xl p-2.5"
-                        style={{ backgroundColor: success }}
+                        // style={{ backgroundColor: success }}
+                        style={{ backgroundColor: '#6ee7b7' }}
                       >
                         <Typography color={'white'}>Solved</Typography>
                       </button>
                       <button
                         className="lg:rounded-full rounded-xl md:w-[125px] hover:cursor-not-allowed text-lg lg:text-2xl p-2.5"
-                        style={{ backgroundColor: error }}
+                        // style={{ backgroundColor: error }}
+                        style={{ backgroundColor: '#fca5a5' }}
                       >
                         <Typography color={'white'}>Alert Store</Typography>
                       </button>
