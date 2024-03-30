@@ -598,7 +598,7 @@ const Insights = () => {
               ...anomaliesChartConfig,
               series: [
                 {
-                  name: 'anomalies',
+                  name: 'Anomalies',
                   data: anomaliesDetectedLine
                 }
               ],
