@@ -657,11 +657,12 @@ const Customers = () => {
                       <Stack direction={'column'}>
                         <Typography className="drop-shadow-md" align="center" variant="h2">
                           0/
-                          {!clickedBar.isUpKeep && !clickedBar.isVm && !clickedBar.isPop
+                          {/* {!clickedBar.isUpKeep && !clickedBar.isVm && !clickedBar.isPop
                             ? anomalies_count
                             : clickedBar.isUpKeep
                             ? fullnessArray.length
-                            : colorArray.length}
+                            : colorArray.length} */}
+                          {updatedData[0].anomalies_detected}
                         </Typography>
                         <Typography className="drop-shadow-md" align="center" variant="h6">
                           Anomalies solved

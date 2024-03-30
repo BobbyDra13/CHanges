@@ -46,6 +46,7 @@ import NoDataImg from '../../assets/images/No_data-amico.svg';
 //eslint-disable-next-line
 import chartData from './chart/anomalies-chart';
 
+//eslint-disable-next-line
 const histogramData = {
   asuk: [5, 10, 20, 25, 30, 35, 25, 15, 3, 2],
   vmc: [10, 20, 30, 25, 15, 10, 15, 20, 17, 8],
@@ -99,6 +100,9 @@ const Insights = () => {
   const [barChartData, setBarChartData] = useState(false);
   const [vmChartData, setVmChartData] = useState(false);
   const [popPercentage, setPopPercentage] = useState('0');
+  const [anomaliesPercentage, setAnomaliesPercentage] = useState('0');
+  const [popChipData, setPopChipData] = useState('');
+  const [anomaliesChipData, setAnomaliesChipData] = useState('');
   const [chartConfig, setChartConfig] = useState({
     type: 'line',
     height: 100,
@@ -323,6 +327,7 @@ const Insights = () => {
         setBarChartData(false);
         setVmChartData(false);
         setPopPercentage('0');
+        setAnomaliesPercentage('0');
         setFullChartConfig({
           type: 'line',
           height: 100,
@@ -447,6 +452,7 @@ const Insights = () => {
             vmcChart,
             // fullnessLineChart,
             vmcLineChart,
+            //eslint-disable-next-line
             anomaliesLineChart
           ] = await Promise.all([
             GetCaptureProgress(commonBody),
@@ -468,8 +474,8 @@ const Insights = () => {
           const popLineData = await GetPopWeekLineData(popKpiCardBody);
           const histogramData = await GetPopHistogramData(popKpiCardBody);
 
-          console.log('popPercentageData', popPercentageData.data);
-          console.log('popLineData', popLineData);
+          // console.log('popPercentageData', popPercentageData.data);
+          // console.log('popLineData', popLineData);
 
           if (popLineData) {
             const popScoreFullnessLine = popLineData.data;
@@ -481,6 +487,12 @@ const Insights = () => {
                 return '0%';
               }
             });
+            console.log('popScoreFullness', popScoreFullness);
+            const lastElement = parseFloat(popScoreFullness[popScoreFullness.length - 1].replace('%', '')) || 0;
+            const secondLastElement = parseFloat(popScoreFullness[popScoreFullness.length - 2].replace('%', '')) || 0;
+            const difference = `${(lastElement - secondLastElement).toFixed(1)}`;
+            setPopChipData(difference);
+
             const dates = popScoreFullnessLine.map((item) => item._id);
 
             const updatedFullnessChartConfig = {
@@ -563,18 +575,31 @@ const Insights = () => {
 
             setChartConfig(updatedChartConfig);
           }
-          if (anomaliesLineChart) {
-            const apiData = anomaliesLineChart.data;
+          if (popLineData) {
+            const popScoreFullnessLine = popLineData.data;
 
-            const anomalies = apiData.map((item) => item.totalAnomalies);
-            const dates = apiData.map((item) => item.date);
+            const anomaliesDetectedLine = popScoreFullnessLine.map((item) => {
+              if (item.data && item.data.total_anomalies_in_pop_detected) {
+                const percentage = item.data.total_anomalies_in_pop_detected;
+                return percentage;
+              } else {
+                return 0;
+              }
+            });
+            console.log('anomaliesDetectedLine', anomaliesDetectedLine);
+            const lastElement = anomaliesDetectedLine[anomaliesDetectedLine.length - 1] || 0;
+            const secondLastElement = anomaliesDetectedLine[anomaliesDetectedLine.length - 2] || 0;
+            const difference = `${(((lastElement - secondLastElement) / secondLastElement) * 100).toFixed(1)}`;
+            setAnomaliesChipData(difference);
+
+            const dates = popScoreFullnessLine.map((item) => item._id);
 
             const updatedChartConfig = {
               ...anomaliesChartConfig,
               series: [
                 {
-                  name: 'Anomalies',
-                  data: anomalies
+                  name: 'anomalies',
+                  data: anomaliesDetectedLine
                 }
               ],
               options: {
@@ -628,6 +653,13 @@ const Insights = () => {
               setPopPercentage(popPercentageData.data.fullnessPopPercent);
             }
           }
+          if (popPercentageData) {
+            if (popPercentageData.data.msg) {
+              setAnomaliesPercentage('0%');
+            } else {
+              setAnomaliesPercentage(popPercentageData.data.total_anomalies_in_pop_detected);
+            }
+          }
 
           if (fullnessKpiData) {
             setFullness(fullnessKpiData.data);
@@ -661,6 +693,11 @@ const Insights = () => {
     }
     //eslint-disable-next-line
     console.log('selectedDate', selectedDate);
+    //eslint-disable-next-line
+    return () => {
+      setBrandFullness([]);
+      setSeriesData([]);
+    };
     //eslint-disable-next-line
   }, [selectedDate]);
   console.log('bar', barChartData);
@@ -891,9 +928,9 @@ const Insights = () => {
               chart={fullnessChartConfig}
               title="PoP Score"
               count={`${parseFloat(popPercentage) === 0 ? '0' : parseFloat(popPercentage).toFixed(1)}%`}
-              percentage={`${fullness && fullness.difference ? Math.abs(Math.floor(fullness.difference)) : 0}`}
-              chipColor={fullness && fullness.difference < 0 ? 'error' : 'success'}
-              isLoss={fullness && fullness.difference < 0}
+              percentage={Math.abs(popChipData)}
+              chipColor={+popChipData < 0 ? 'error' : 'success'}
+              isLoss={+popChipData < 0}
               color={theme.palette.success.main}
             />
           </Grid>
@@ -928,11 +965,10 @@ const Insights = () => {
               isLoaded={anomalies}
               chart={anomaliesChartConfig}
               title="Anomalies Found"
-              count={`${anomalies && anomalies.currentDay ? Math.floor(anomalies.currentDay.totalAnomalies) : 0}`}
-              // count="0%"
-              percentage={`${anomalies && anomalies.percentageChange ? Math.abs(Math.floor(anomalies.percentageChange)) : 0}`}
-              chipColor={anomalies && anomalies.percentageChange && anomalies.percentageChange < 0 ? 'success' : 'error'}
-              isLoss={anomalies && anomalies.percentageChange && anomalies.percentageChange < 0}
+              count={`${anomaliesPercentage}`}
+              percentage={Math.abs(anomaliesChipData)}
+              chipColor={anomaliesChipData < 0 ? 'error' : 'success'}
+              isLoss={anomaliesChipData < 0}
               color={theme.palette.error.main}
             />
           </Grid>
@@ -946,181 +982,184 @@ const Insights = () => {
                 <Grid container spacing={gridSpacing}>
                   <Grid item xs={12}>
                     <Card>
-                      {histogramData ? (
-                        <CardContent sx={{ padding: 0, paddingBottom: '0 !important' }}>
-                          <Box color="#fff" bgcolor={theme.palette.primary.main} p={3}>
-                            <Grid container justifyContent="space-between" alignItems="center">
-                              <Grid item>
-                                <Grid container spacing={1}>
-                                  <Stack direction={'row'} spacing={1}>
-                                    <Typography sx={{ paddingLeft: 2, visibility: 'hidden' }} variant="h2" color="inherit">
-                                      {barChartData?.totalGroups}
-                                    </Typography>
-                                    <Typography paddingBottom={0.6} className="self-end" variant="h5" color="inherit">
-                                      Histogram Chart
-                                    </Typography>
-                                  </Stack>
+                      {
+                        // histogramData
+                        seriesData.length > 0 ? (
+                          <CardContent sx={{ padding: 0, paddingBottom: '0 !important' }}>
+                            <Box color="#fff" bgcolor={theme.palette.primary.main} p={3}>
+                              <Grid container justifyContent="space-between" alignItems="center">
+                                <Grid item>
+                                  <Grid container spacing={1}>
+                                    <Stack direction={'row'} spacing={1}>
+                                      <Typography sx={{ paddingLeft: 2, visibility: 'hidden' }} variant="h2" color="inherit">
+                                        {barChartData?.totalGroups}
+                                      </Typography>
+                                      <Typography paddingBottom={0.6} className="self-end" variant="h5" color="inherit">
+                                        Histogram Chart
+                                      </Typography>
+                                    </Stack>
+                                  </Grid>
+                                </Grid>
+                                <Grid item>
+                                  <Grid container sx={{ visibility: 'hidden' }} alignItems="center">
+                                    <TextField
+                                      id="standard-select-currency"
+                                      size="small"
+                                      select
+                                      value={selected}
+                                      onChange={(e) => setSelected(e.target.value)}
+                                      sx={{
+                                        '& .MuiInputBase-input': {
+                                          paddingBottom: 0.5,
+                                          paddingTop: 0.7,
+                                          fontSize: '1rem',
+                                          fontWeight: 600,
+                                          color: 'white'
+                                        }
+                                      }}
+                                    >
+                                      {histogramChartRequirements.selectOptions.map((option) => (
+                                        <MenuItem key={option.value} value={option.value} disabled={option.disabled}>
+                                          {option.label}
+                                        </MenuItem>
+                                      ))}
+                                    </TextField>
+                                  </Grid>
                                 </Grid>
                               </Grid>
                               <Grid item>
-                                <Grid container sx={{ visibility: 'hidden' }} alignItems="center">
-                                  <TextField
-                                    id="standard-select-currency"
-                                    size="small"
-                                    select
-                                    value={selected}
-                                    onChange={(e) => setSelected(e.target.value)}
-                                    sx={{
-                                      '& .MuiInputBase-input': {
-                                        paddingBottom: 0.5,
-                                        paddingTop: 0.7,
-                                        fontSize: '1rem',
-                                        fontWeight: 600,
-                                        color: 'white'
-                                      }
-                                    }}
-                                  >
-                                    {histogramChartRequirements.selectOptions.map((option) => (
-                                      <MenuItem key={option.value} value={option.value} disabled={option.disabled}>
-                                        {option.label}
-                                      </MenuItem>
-                                    ))}
-                                  </TextField>
-                                </Grid>
+                                <Chart
+                                  options={histogramOptions.options}
+                                  series={series}
+                                  type={histogramOptions.options.chart.type}
+                                  height={histogramOptions.options.chart.height}
+                                />
                               </Grid>
-                            </Grid>
-                            <Grid item>
-                              <Chart
-                                options={histogramOptions.options}
-                                series={series}
-                                type={histogramOptions.options.chart.type}
-                                height={histogramOptions.options.chart.height}
-                              />
-                            </Grid>
-                          </Box>
-                        </CardContent>
-                      ) : (
-                        //  : barChartData[0]?.data?.bayAnalysis['0-10%'] === 9 &&
-                        //   vmChartData?.length === 0 &&
-                        //   vmc.currentDay.totalAnomalies === 0 &&
-                        //   vmc.currentDay.totalCaptureCount === 0 ? (
-                        //   <div className="w-full h-full flex justify-center place-items-center">
-                        //     <img style={{ height: '392px' }} src={NoDataImg} alt="No data" />
-                        //   </div>
-                        // ) : vmChartData?.length > 0 && selected === histogramChartRequirements.selectOptions[1].value ? (
-                        //   <CardContent sx={{ padding: 0, paddingBottom: '0 !important' }}>
-                        //     <Box color="#fff" bgcolor={theme.palette.primary.main} p={3}>
-                        //       <Grid container justifyContent="space-between" alignItems="center">
-                        //         <Grid item>
-                        //           <Grid container spacing={1}>
-                        //             <Stack direction={'row'} spacing={1}>
-                        //               <Typography sx={{ paddingLeft: 2 }} variant="h2" color="inherit">
-                        //                 {barChartData[0]?.data?.totalBaysCount}
-                        //               </Typography>
-                        //               <Typography paddingBottom={0.6} className="self-end" variant="h5" color="inherit">
-                        //                 Bays
-                        //               </Typography>
-                        //             </Stack>
-                        //           </Grid>
-                        //         </Grid>
-                        //         <Grid item>
-                        //           <Grid container alignItems="center">
-                        //             <TextField
-                        //               id="standard-select-currency"
-                        //               size="small"
-                        //               select
-                        //               value={selected}
-                        //               onChange={(e) => setSelected(e.target.value)}
-                        //               sx={{
-                        //                 '& .MuiInputBase-input': {
-                        //                   paddingBottom: 0.5,
-                        //                   paddingTop: 0.7,
-                        //                   fontSize: '1rem',
-                        //                   fontWeight: 600,
-                        //                   color: 'white'
-                        //                 }
-                        //               }}
-                        //             >
-                        //               {histogramChartRequirements.selectOptions.map((option) => (
-                        //                 <MenuItem key={option.value} value={option.value} disabled={option.disabled}>
-                        //                   {option.label}
-                        //                 </MenuItem>
-                        //               ))}
-                        //             </TextField>
-                        //           </Grid>
-                        //         </Grid>
-                        //       </Grid>
-                        //       <Grid item>
-                        //         <Chart
-                        //           options={histogramOptions.options}
-                        //           series={series}
-                        //           type={histogramOptions.options.chart.type}
-                        //           height={histogramOptions.options.chart.height}
-                        //         />
-                        //       </Grid>
-                        //     </Box>
-                        //   </CardContent>
-                        // ) : vmChartData?.length === 0 &&
-                        //   vmc.currentDay.totalAnomalies === 0 &&
-                        //   vmc.currentDay.totalCaptureCount !== 0 &&
-                        //   selected === histogramChartRequirements.selectOptions[1].value ? (
-                        //   <CardContent sx={{ padding: 0, paddingBottom: '0 !important' }}>
-                        //     <Box color="#fff" bgcolor={theme.palette.primary.main} p={3}>
-                        //       <Grid container justifyContent="space-between" alignItems="center">
-                        //         <Grid item>
-                        //           <Grid container spacing={1}>
-                        //             <Stack direction={'row'} spacing={1}>
-                        //               <Typography sx={{ paddingLeft: 2 }} variant="h2" color="inherit">
-                        //                 {barChartData[0]?.data?.totalBaysCount}
-                        //               </Typography>
-                        //               <Typography paddingBottom={0.6} className="self-end" variant="h5" color="inherit">
-                        //                 Bays
-                        //               </Typography>
-                        //             </Stack>
-                        //           </Grid>
-                        //         </Grid>
-                        //         <Grid item>
-                        //           <Grid container alignItems="center">
-                        //             <TextField
-                        //               id="standard-select-currency"
-                        //               size="small"
-                        //               select
-                        //               value={selected}
-                        //               onChange={(e) => setSelected(e.target.value)}
-                        //               sx={{
-                        //                 '& .MuiInputBase-input': {
-                        //                   paddingBottom: 0.5,
-                        //                   paddingTop: 0.7,
-                        //                   fontSize: '1rem',
-                        //                   fontWeight: 600,
-                        //                   color: 'white'
-                        //                 }
-                        //               }}
-                        //             >
-                        //               {histogramChartRequirements.selectOptions.map((option) => (
-                        //                 <MenuItem key={option.value} value={option.value} disabled={option.disabled}>
-                        //                   {option.label}
-                        //                 </MenuItem>
-                        //               ))}
-                        //             </TextField>
-                        //           </Grid>
-                        //         </Grid>
-                        //       </Grid>
-                        //       <Grid item>
-                        //         <Chart
-                        //           options={histogramOptions.options}
-                        //           series={series}
-                        //           type={histogramOptions.options.chart.type}
-                        //           height={histogramOptions.options.chart.height}
-                        //         />
-                        //       </Grid>
-                        //     </Box>
-                        //   </CardContent>
-                        // )
-                        <div className="w-full h-full flex justify-center place-items-center">
-                          <Skeleton variant="rounded" width={'100%'} height={392} />
-                        </div>
-                      )}
+                            </Box>
+                          </CardContent>
+                        ) : (
+                          //  : barChartData[0]?.data?.bayAnalysis['0-10%'] === 9 &&
+                          //   vmChartData?.length === 0 &&
+                          //   vmc.currentDay.totalAnomalies === 0 &&
+                          //   vmc.currentDay.totalCaptureCount === 0 ? (
+                          //   <div className="w-full h-full flex justify-center place-items-center">
+                          //     <img style={{ height: '392px' }} src={NoDataImg} alt="No data" />
+                          //   </div>
+                          // ) : vmChartData?.length > 0 && selected === histogramChartRequirements.selectOptions[1].value ? (
+                          //   <CardContent sx={{ padding: 0, paddingBottom: '0 !important' }}>
+                          //     <Box color="#fff" bgcolor={theme.palette.primary.main} p={3}>
+                          //       <Grid container justifyContent="space-between" alignItems="center">
+                          //         <Grid item>
+                          //           <Grid container spacing={1}>
+                          //             <Stack direction={'row'} spacing={1}>
+                          //               <Typography sx={{ paddingLeft: 2 }} variant="h2" color="inherit">
+                          //                 {barChartData[0]?.data?.totalBaysCount}
+                          //               </Typography>
+                          //               <Typography paddingBottom={0.6} className="self-end" variant="h5" color="inherit">
+                          //                 Bays
+                          //               </Typography>
+                          //             </Stack>
+                          //           </Grid>
+                          //         </Grid>
+                          //         <Grid item>
+                          //           <Grid container alignItems="center">
+                          //             <TextField
+                          //               id="standard-select-currency"
+                          //               size="small"
+                          //               select
+                          //               value={selected}
+                          //               onChange={(e) => setSelected(e.target.value)}
+                          //               sx={{
+                          //                 '& .MuiInputBase-input': {
+                          //                   paddingBottom: 0.5,
+                          //                   paddingTop: 0.7,
+                          //                   fontSize: '1rem',
+                          //                   fontWeight: 600,
+                          //                   color: 'white'
+                          //                 }
+                          //               }}
+                          //             >
+                          //               {histogramChartRequirements.selectOptions.map((option) => (
+                          //                 <MenuItem key={option.value} value={option.value} disabled={option.disabled}>
+                          //                   {option.label}
+                          //                 </MenuItem>
+                          //               ))}
+                          //             </TextField>
+                          //           </Grid>
+                          //         </Grid>
+                          //       </Grid>
+                          //       <Grid item>
+                          //         <Chart
+                          //           options={histogramOptions.options}
+                          //           series={series}
+                          //           type={histogramOptions.options.chart.type}
+                          //           height={histogramOptions.options.chart.height}
+                          //         />
+                          //       </Grid>
+                          //     </Box>
+                          //   </CardContent>
+                          // ) : vmChartData?.length === 0 &&
+                          //   vmc.currentDay.totalAnomalies === 0 &&
+                          //   vmc.currentDay.totalCaptureCount !== 0 &&
+                          //   selected === histogramChartRequirements.selectOptions[1].value ? (
+                          //   <CardContent sx={{ padding: 0, paddingBottom: '0 !important' }}>
+                          //     <Box color="#fff" bgcolor={theme.palette.primary.main} p={3}>
+                          //       <Grid container justifyContent="space-between" alignItems="center">
+                          //         <Grid item>
+                          //           <Grid container spacing={1}>
+                          //             <Stack direction={'row'} spacing={1}>
+                          //               <Typography sx={{ paddingLeft: 2 }} variant="h2" color="inherit">
+                          //                 {barChartData[0]?.data?.totalBaysCount}
+                          //               </Typography>
+                          //               <Typography paddingBottom={0.6} className="self-end" variant="h5" color="inherit">
+                          //                 Bays
+                          //               </Typography>
+                          //             </Stack>
+                          //           </Grid>
+                          //         </Grid>
+                          //         <Grid item>
+                          //           <Grid container alignItems="center">
+                          //             <TextField
+                          //               id="standard-select-currency"
+                          //               size="small"
+                          //               select
+                          //               value={selected}
+                          //               onChange={(e) => setSelected(e.target.value)}
+                          //               sx={{
+                          //                 '& .MuiInputBase-input': {
+                          //                   paddingBottom: 0.5,
+                          //                   paddingTop: 0.7,
+                          //                   fontSize: '1rem',
+                          //                   fontWeight: 600,
+                          //                   color: 'white'
+                          //                 }
+                          //               }}
+                          //             >
+                          //               {histogramChartRequirements.selectOptions.map((option) => (
+                          //                 <MenuItem key={option.value} value={option.value} disabled={option.disabled}>
+                          //                   {option.label}
+                          //                 </MenuItem>
+                          //               ))}
+                          //             </TextField>
+                          //           </Grid>
+                          //         </Grid>
+                          //       </Grid>
+                          //       <Grid item>
+                          //         <Chart
+                          //           options={histogramOptions.options}
+                          //           series={series}
+                          //           type={histogramOptions.options.chart.type}
+                          //           height={histogramOptions.options.chart.height}
+                          //         />
+                          //       </Grid>
+                          //     </Box>
+                          //   </CardContent>
+                          // )
+                          <div className="w-full h-full flex justify-center place-items-center">
+                            <Skeleton variant="rounded" width={'100%'} height={392} />
+                          </div>
+                        )
+                      }
                     </Card>
                   </Grid>
                 </Grid>
@@ -1167,32 +1206,31 @@ const Insights = () => {
                           </Grid>
                         </Grid>
 
-                        {
-                          brandFullness[0] !== 0 || brandFullness[1] !== 0 ? (
-                            <Grid item>
-                              <BrandDonutChart
-                                chartOptions={brandChartOptions}
-                                chartSeries={brandFullness}
-                                chartHeight={BrandChartData.height}
-                                chartType={BrandChartData.type}
-                              />
-                            </Grid>
-                          ) : (
-                            // <BrandDonutChart
-                            //   chartOptions={brandChartOptions}
-                            //   chartSeries={[0]}
-                            //   chartHeight={BrandChartData.height}
-                            //   chartType={BrandChartData.type}
-                            // />
-                            <div className="w-full h-full flex justify-center place-items-center">
-                              <img style={{ height: '310px' }} src={NoDataImg} alt="No data" />
-                            </div>
-                          )
-                          //   : (
-                          // <div className="w-full h-full flex justify-center place-items-center">
-                          //   <Skeleton variant="circular" width={300} height={310} />
-                          // </div>
-                        }
+                        {brandFullness[0] === 0 && brandFullness[1] === 0 ? (
+                          <div className="w-full h-full flex justify-center place-items-center">
+                            <img style={{ height: '310px' }} src={NoDataImg} alt="No data" />
+                          </div>
+                        ) : brandFullness.length > 0 ? (
+                          <Grid item>
+                            <BrandDonutChart
+                              chartOptions={brandChartOptions}
+                              chartSeries={brandFullness}
+                              chartHeight={BrandChartData.height}
+                              chartType={BrandChartData.type}
+                            />
+                          </Grid>
+                        ) : (
+                          // <BrandDonutChart
+                          //   chartOptions={brandChartOptions}
+                          //   chartSeries={[0]}
+                          //   chartHeight={BrandChartData.height}
+                          //   chartType={BrandChartData.type}
+                          // />
+
+                          <div className="w-full h-full flex justify-center place-items-center">
+                            <Skeleton variant="circular" width={300} height={310} />
+                          </div>
+                        )}
 
                         {/* <Grid item>
                           <BrandDonutChart
