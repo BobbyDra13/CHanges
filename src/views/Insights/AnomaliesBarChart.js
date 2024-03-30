@@ -24,7 +24,7 @@ const columnChartOptions = {
       show: false
     }
   },
-  colors: ['#ff413a', '#00ac69'],
+  colors: ['#00ac69', '#ff413a'],
   plotOptions: {
     bar: {
       columnWidth: '30%',
@@ -112,7 +112,7 @@ const columnChartOptions = {
 const AnomaliesBarChart = ({ selectedDate }) => {
   const [series, setSeries] = useState([]);
   const [options, setOptions] = useState({});
-  const [chartData, setChartData] = useState([]);
+  const [chartData, setChartData] = useState(null);
 
   const todayDate = new Date().toString();
 
@@ -156,15 +156,19 @@ const AnomaliesBarChart = ({ selectedDate }) => {
       }
     }
     fetchBarChartData();
+    return () => {
+      setChartData(null);
+    };
+    //eslint-disable-next-line
   }, [selectedDate]);
 
   return (
     <>
-      {chartData.length > 0 ? (
+      {chartData && chartData.length > 0 ? (
         <div id="chart">
           <ReactApexChart options={options} series={series} type={options.chart.type} height={options.chart.height} />
         </div>
-      ) : chartData.length === 0 ? (
+      ) : chartData && chartData.length === 0 ? (
         <div className="w-full h-full flex justify-center place-items-center">
           <img style={{ height: '344px' }} src={NoDataImg} alt="No data" />
         </div>
