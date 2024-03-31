@@ -650,15 +650,15 @@ const Insights = () => {
             setBrandDonut(brandDonutData.data);
           }
           if (popPercentageData) {
-            if (popPercentageData.data.msg) {
+            if (popPercentageData.data === null) {
               setPopPercentage('0%');
             } else {
               setPopPercentage(popPercentageData.data.fullnessPopPercent);
             }
           }
           if (popPercentageData) {
-            if (popPercentageData.data.msg) {
-              setAnomaliesPercentage('0%');
+            if (popPercentageData.data === null) {
+              setAnomaliesPercentage('0');
             } else {
               setAnomaliesPercentage(popPercentageData.data.total_anomalies_in_pop_detected);
             }
