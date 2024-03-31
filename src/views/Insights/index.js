@@ -96,7 +96,7 @@ const Insights = () => {
   //eslint-disable-next-line
   const [brandDonut, setBrandDonut] = useState(false);
   const [brandChartOptions, setBrandChartOptions] = useState(BrandChartData.options);
-  const [brandFullness, setBrandFullness] = useState([]);
+  const [brandFullness, setBrandFullness] = useState(false);
   const [barChartData, setBarChartData] = useState(false);
   const [vmChartData, setVmChartData] = useState(false);
   const [popPercentage, setPopPercentage] = useState('0');
@@ -633,15 +633,18 @@ const Insights = () => {
             if (brandDonutData.data.length > 0) {
               // const extractedFullness = brandDonutData.data.map((item) => Math.floor(item.fullness));
               const extractedFullness = brandDonutData.data.map((item) =>
-                item.data ? parseFloat(item.data.FullnessPopPercentOfGroup) : 0
+                item.data ? parseFloat(item.data.FullnessPopPercent) : 0
               );
               const extractedBrandNames = brandDonutData.data.map((item) => item.group_id);
 
               setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
 
               setBrandFullness(extractedFullness);
+              console.log('brandfullness',extractedFullness.length)
               console.log('Brand Fullness', extractedFullness);
               // setBrandNames(extractedBrandNames);
+            }else{
+              setBrandFullness([]);
             }
 
             setBrandDonut(brandDonutData.data);
@@ -695,7 +698,7 @@ const Insights = () => {
     console.log('selectedDate', selectedDate);
     //eslint-disable-next-line
     return () => {
-      setBrandFullness([]);
+      setBrandFullness(false);
       setSeriesData([]);
     };
     //eslint-disable-next-line
@@ -1206,7 +1209,7 @@ const Insights = () => {
                           </Grid>
                         </Grid>
 
-                        {brandFullness[0] === 0 && brandFullness[1] === 0 ? (
+                        {brandFullness.length ===  0? (
                           <div className="w-full h-full flex justify-center place-items-center">
                             <img style={{ height: '310px' }} src={NoDataImg} alt="No data" />
                           </div>

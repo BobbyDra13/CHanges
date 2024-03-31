@@ -28,7 +28,7 @@ const Areachart = ({ date }) => {
         if (data) {
           const catagorydata = data.data.map((d) => d._id);
           console.log(catagorydata);
-          const custdata = data.data.map((d) => (d.data != 'Data not found for this date' ? d.data.FullnessPopPercent : 0));
+          const custdata = data.data.map((d) => (d.data != 'Data not found' ? parseFloat(d.data.FullnessPopPercent) : 0));
           console.log(custdata);
           setCategory(catagorydata);
           setCustCount(custdata);
