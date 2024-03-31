@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
-import { GetpopKPI, GetRadarChartData } from 'api';
+import { GetpopKPI } from 'api';
 
 const RadarChart = ({ date }) => {
   const [radarData, setRadarData] = useState([]);

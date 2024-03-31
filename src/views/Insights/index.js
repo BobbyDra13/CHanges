@@ -632,18 +632,16 @@ const Insights = () => {
             // console.log('Brand Data', brandDonutData);
             if (brandDonutData.data.length > 0) {
               // const extractedFullness = brandDonutData.data.map((item) => Math.floor(item.fullness));
-              const extractedFullness = brandDonutData.data.map((item) =>
-                item.data ? parseFloat(item.data.FullnessPopPercent) : 0
-              );
+              const extractedFullness = brandDonutData.data.map((item) => (item.data ? parseFloat(item.data.FullnessPopPercent) : 0));
               const extractedBrandNames = brandDonutData.data.map((item) => item.group_id);
 
               setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
 
               setBrandFullness(extractedFullness);
-              console.log('brandfullness',extractedFullness.length)
+              console.log('brandfullness', extractedFullness.length);
               console.log('Brand Fullness', extractedFullness);
               // setBrandNames(extractedBrandNames);
-            }else{
+            } else {
               setBrandFullness([]);
             }
 
@@ -1209,7 +1207,7 @@ const Insights = () => {
                           </Grid>
                         </Grid>
 
-                        {brandFullness.length ===  0? (
+                        {brandFullness.length === 0 ? (
                           <div className="w-full h-full flex justify-center place-items-center">
                             <img style={{ height: '310px' }} src={NoDataImg} alt="No data" />
                           </div>
