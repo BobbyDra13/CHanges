@@ -619,14 +619,14 @@ const Insights = () => {
               // const average = totalCapturePercentage / capProgressData.data.length;
 
               // setAvgCapProgress(Math.floor(average));
-              setAvgCapProgress(CapData.data.averageCaptureProgress);
+              setAvgCapProgress(CapData.data.storeCapturePercentage);
             } else {
               setAvgCapProgress('');
               // setCapProgress('');
             }
             // setCapProgress(capProgressData.data);
             // console.log(capProgressData.data);
-            setCapProgress(CapData.data);
+            setCapProgress(CapData.data.captureProgressZoneData);
           }
           if (brandDonutData) {
             // console.log('Brand Data', brandDonutData);
@@ -998,7 +998,7 @@ const Insights = () => {
                                         {barChartData?.totalGroups}
                                       </Typography>
                                       <Typography paddingBottom={0.6} className="self-end" variant="h5" color="inherit">
-                                        Histogram Chart
+                                        Goodness Histogram
                                       </Typography>
                                     </Stack>
                                   </Grid>
@@ -1268,7 +1268,7 @@ const Insights = () => {
                 <Grid item xs={6} sm={4} md={3} lg={7} xl={6}>
                   <Chart
                     options={progressChart.options}
-                    series={avgCapProgress ? [avgCapProgress] : [0]}
+                    series={avgCapProgress ? [parseFloat(avgCapProgress)] : [0]}
                     type={progressChart.options.chart.type}
                     height={progressChart.options.chart.height}
                   />
@@ -1277,7 +1277,7 @@ const Insights = () => {
                   <div className="flex flex-col gap-1">
                     <Typography variant="h1" sx={{ color: accentColMain, paddingTop: 8 }}>
                       {avgCapProgress ? (
-                        `${avgCapProgress}%`
+                        `${avgCapProgress}`
                       ) : avgCapProgress === 0 ? ( //edited as zero from ''
                         '0%'
                       ) : (
@@ -1307,7 +1307,7 @@ const Insights = () => {
                 className="overflow-y-auto flex flex-col gap-1 scrollbar"
               >
                 <Grid container spacing={gridSpacing}>
-                  {capProgress ? (
+                  {avgCapProgress ? (
                     // capProgress.map((item) => (
                     <Grid item xs={12}>
                       <Grid container justifyContent={'space-between'} alignItems="center" spacing={1}>
@@ -1317,7 +1317,7 @@ const Insights = () => {
                         <Grid item>
                           <Typography variant="body2" align="right">
                             {/* {Math.floor(item.capture_percentage)}% */}
-                            {capProgress.collectiveCaptureProgress}
+                            {avgCapProgress}
                           </Typography>
                         </Grid>
                         <Grid item xs={12}>
@@ -1336,7 +1336,7 @@ const Insights = () => {
                                 variant="determinate"
                                 aria-label="direct"
                                 // value={Math.floor(item.capture_percentage)}
-                                value={capProgress.collectiveCaptureProgress}
+                                value={parseFloat(avgCapProgress)}
                                 color="primary"
 
                                 // onScroll={()=>setOpenZone(false)}
@@ -1351,11 +1351,11 @@ const Insights = () => {
                           {openZone && (
                             <Paper className="mt-10 p-5" elevation={10}>
                               <Typography variant="h4">Zone wise Capture Progress</Typography>
-                              {capProgress.captureProgressZoneData.length > 0 &&
-                                capProgress.captureProgressZoneData.map((item, index) => (
+                              {capProgress.length > 0 &&
+                                capProgress.map((item, index) => (
                                   <>
                                     <Typography key={index} className="m-2" variant="body1" color="initial">
-                                      {item.zone_id}
+                                      {item.zone_id} - {item.captureProgress}
                                     </Typography>
                                     <LinearProgress
                                       sx={{
@@ -1367,7 +1367,7 @@ const Insights = () => {
                                       }}
                                       variant="determinate"
                                       aria-label="direct"
-                                      value={item.captureProgress}
+                                      value={parseFloat(item.captureProgress)}
                                       color="primary"
                                       // onClick={()=>(setOpenZone(!openZone))}
                                     />
