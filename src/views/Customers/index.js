@@ -241,7 +241,7 @@ const Customers = () => {
     // }
 
     const dt = {
-      date: '2024-03-28'
+      date: new Date()
     };
 
     try {

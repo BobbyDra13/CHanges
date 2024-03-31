@@ -11,7 +11,7 @@ import UpdateIcon from '@mui/icons-material/Update';
 import Uniquejourney from './KPICards/Uniquejourney';
 // import DonutChart from './TrendsViewCharts/DonutChart';
 // import DonutChartTwo from './TrendsViewCharts/DonutChartTwo';
-import GroupIcon from '@mui/icons-material/Group';
+// import GroupIcon from '@mui/icons-material/Group';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Diversity3Icon from '@mui/icons-material/Diversity3';
 import LineChartToggle from './lineChartToggle';
@@ -19,7 +19,7 @@ import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import { IoMdSettings } from 'react-icons/io';
 import CsvModal from './CsvUpload';
 import RadarChart from './RadarChart';
-import { GetpopKPI } from 'api';
+import { GetPopPercentage, GetpopKPI } from 'api';
 
 function Overview() {
   const theme = useTheme();
@@ -67,6 +67,7 @@ function Overview() {
   // };
 
   const [isMounted, setIsMounted] = useState(true);
+  const [totalPOP, setTotalPop] = useState(false);
   useEffect(() => {
     // Set the component to be mounted when the effect is run
     setIsMounted(true);
@@ -117,23 +118,32 @@ function Overview() {
           console.log(error);
         }
       }
-      console.log(commonBody);
+      // console.log(commonBody);
       // eslint-disable-next-line
       async function getFootfalldata() {
         try {
           // const data = await footfallCard(commonBody);
           const data = await GetpopKPI(popBody);
-          console.log(data.data.msg);
-          if (data.data?.msg == 'Data is not available for this date') {
+          const data2 = await GetPopPercentage(popBody);
+          // console.log(data2.data);
+          data2.data != null ? setTotalPop(parseFloat(data2.data.fullnessPopPercent).toFixed(1)) : setTotalPop(false);
+
+          // console.log(data.data);
+          if (data.data.length === 0) {
             // console.log('hello')
             setFootfalldata(false);
             setftfall(false);
           } else if (data.data.length > 0) {
             // const { totalCustomerStore } = data[0];
             // const { zones } = data[0];
-            const group = data.data[1].Group_wise_pop;
-            console.log(group);
-            setftfall(data.data[0]);
+            const group = data.data;
+            group.forEach((item) => {
+              let percentageString = item.data.FullnessPopPercent.replace('%', '');
+              item.data.FullnessPopPercent = parseFloat(percentageString);
+            });
+            group.sort((a, b) => a.data.FullnessPopPercent - b.data.FullnessPopPercent);
+            // console.log(group);
+            setftfall(true);
             // console.log(zones);
             setFootfalldata(group);
           }
@@ -172,6 +182,10 @@ function Overview() {
       getDataDwell();
       getRatioData();
     }
+    return () => {
+      setFootfalldata(false);
+      // setftfall(false)
+    };
     // eslint-disable-next-line
   }, [date]);
 
@@ -196,19 +210,19 @@ function Overview() {
                 {ftfall ? (
                   <div className="flex  w-full  flex-col gap-1 p-3">
                     <div className="flex items-center justify-center gap-2 w-full">
-                      {footfalldata ? (
+                      {footfalldata.length > 0 ? (
                         <DirectionsWalkIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" />
                       ) : (
                         <Skeleton variant="circular" width={60} height={45} />
                       )}
                       <div className="w-full">
-                        {footfalldata ? (
-                          <p className="text-3xl">{Math.round(parseFloat(ftfall.fullnessPopPercent))} %</p>
+                        {footfalldata.length > 0 ? (
+                          <p className="text-3xl">{totalPOP} %</p>
                         ) : (
                           <Skeleton variant="rectangular" className="mb-3 rounded-sm" width={50} height={20} />
                         )}
 
-                        {footfalldata ? (
+                        {footfalldata.length > 0 ? (
                           <p className="text-lg font-semibold">PoP</p>
                         ) : (
                           <Skeleton variant="rectangular" width={150} height={15} className=" mb-2 rounded-sm" />
@@ -233,9 +247,7 @@ function Overview() {
                         {footfalldata.map((item, index) => {
                           // const percentage = (item.totalCustomerZone / ftfall[0].totalCustomerZone) * 100;
                           const percentage =
-                            item.data.FullnessPopPercentOfGroup != undefined
-                              ? Math.round(parseFloat(item.data.FullnessPopPercentOfGroup))
-                              : 0;
+                            item.data.FullnessPopPercent != undefined ? Math.round(parseFloat(item.data.FullnessPopPercent)) : 0;
                           const barcolor = percentage >= 80 ? '#00ac69' : percentage >= 50 ? '#f4a100' : '#ff413a';
                           // console.log(percentage);
                           return (
@@ -250,7 +262,7 @@ function Overview() {
                                   {' '}
                                 </div> */}
                                 <div>
-                                  {item.group_id} : {percentage} %
+                                  {item.zone_id} : {percentage} %
                                 </div>
                               </div>
                               <LinearProgress
@@ -396,7 +408,7 @@ function Overview() {
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <div style={{ height: '275px' }} className="flex flex-col">
-                <Card
+                {/* <Card
                   className="border border-gray-300 h-[85px]"
                   sx={{
                     padding: '4px'
@@ -411,9 +423,9 @@ function Overview() {
                       <p className="text-lg text-[#444444]">Groups</p>
                     </div>
                   </div>
-                </Card>
+                </Card> */}
                 <Card
-                  className="border border-gray-300 h-2/3"
+                  className="border border-gray-300 h-full"
                   sx={{
                     padding: '5px',
                     marginTop: '5px'

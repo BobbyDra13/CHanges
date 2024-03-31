@@ -419,7 +419,7 @@ export const GetPartsWiseDetails = async (date, shelf_id) => {
 
 export const GetFullnessPop = async (data) => {
   try {
-    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/linechart`, data, {
+    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/linechart-2`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -554,7 +554,7 @@ export const GetPopPercentage = async (data) => {
 
 export const GetPopWeekLineData = async (data) => {
   try {
-    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/linechart', data, {
+    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/linechart-2', data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -568,7 +568,7 @@ export const GetPopWeekLineData = async (data) => {
 
 export const GetRadarChartData = async (data) => {
   try {
-    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/doughnut-chart', data, {
+    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/doughnut-chart-2', data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -610,7 +610,7 @@ export const GetPopHistogramData = async (data) => {
 
 export const GetpopKPI = async (data) => {
   try {
-    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/pop-card', data, {
+    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/zone-wise-pop-score', data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()

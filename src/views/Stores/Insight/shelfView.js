@@ -209,11 +209,11 @@ export default function ShelfView({ date }) {
                               {/* <span className='text-black text-lg font-bold'>55 </span>  */}
                             </div>
                             <div>
-                              <span className="text-black text-sm font-bold">POP Score : {item.fullnessPopPercent} </span>
+                              <span className="text-black text-sm font-bold">PoP Score : {item.fullnessPopPercent}% </span>
                               {/* <span className='text-black text-lg font-bold'>60% </span>  */}
                             </div>
                             <div>
-                              <span className="text-black text-sm font-bold">Anomaly : {item.total_anomalies_detected} </span>
+                              {/* <span className="text-black text-sm font-bold">Anomaly : {item.total_anomalies_detected} </span> */}
                               {/* <span className='text-black text-lg font-bold'>60% </span>  */}
                             </div>
                           </div>
