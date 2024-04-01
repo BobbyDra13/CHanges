@@ -10,11 +10,13 @@ import './zoom-card-item.css';
 import { bouncy } from 'ldrs';
 import MapComponent from './map';
 bouncy.register();
-
+// import whatsappApiService from '../../api/whatsAppService';
+// import MuiAlert from '@mui/material/Alert';
 // api imports
 import {
   GetStoreData,
-  GetStoreWiseInfo
+  GetStoreWiseInfo,
+  SendAlert
   // GetImagesFromSignedUrl,
   // GetAnolamayDetails
 } from 'api';
@@ -41,7 +43,9 @@ import {
   // ImageListItemBar,
   // ToggleButton,
   // ToggleButtonGroup,
-  TextField
+  TextField,
+  Snackbar,
+  Alert
 } from '@mui/material';
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -67,6 +71,7 @@ import settings from '../../configs/react-slick-config';
 // import OrionImg from '../../assets/images/MapImages/orion.png';
 import CheckMarkImg from '../../assets/images/checkmark.png';
 import BarChartIcon from '@mui/icons-material/BarChart';
+import { CgSpinner } from 'react-icons/cg';
 // import MapImg from '../../assets/images/mapImg.png';
 // import OrionImg from '../../assets/images/MapImages/orion.png';
 
@@ -107,7 +112,21 @@ const Customers = () => {
   const [updatedData, setUpdateddata] = useState(false);
   const [cData, setCdata] = useState(false);
   const [lcData, setLCdata] = useState(false);
-
+  const [alertData, setAlertData] = useState({
+    zone_id: false,
+    shelf_id: false,
+    group_id: false,
+    user_name: false,
+    user_id: false,
+    user_number: false,
+    user_email: false,
+    user_role: false,
+    anomaly_type: false,
+    message: false
+  });
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [msg, setMsg] = useState('');
+  const [loadsend, setLoadsend] = useState(false);
   const theme = useTheme();
   const success = theme.palette.success.main;
   const successDark = theme.palette.success.dark;
@@ -376,8 +395,107 @@ const Customers = () => {
   // };
 
   // const navigate = useNavigate()
+  useEffect(() => {
+    async function sendAlertMsg() {
+      if (alertData.zone_id) {
+        console.log(alertData);
+        console.log('Number:', alertData.user_number);
+        const API_KEY =
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NWY2MmE5Yzk4Nzk3MGFlZWM1ZTg0MCIsIm5hbWUiOiJOZW9QaHl0ZSIsImFwcE5hbWUiOiJBaVNlbnN5IiwiY2xpZW50SWQiOiI2NTVmNjJhOGM5ODc5NzBhZWVjNWU4M2IiLCJhY3RpdmVQbGFuIjoiQkFTSUNfTU9OVEhMWSIsImlhdCI6MTcwMDc0OTk5M30.8-SugzKOaRlF3BFhgTn944znZnsydeoUPudFEIZdNWs'; // Replace with your actual API key
+        const API_URL = 'https://backend.aisensy.com/campaign/t1/api/v2';
+        const formatDataForAPI = (data) => {
+          return {
+            apiKey: API_KEY,
+            campaignName: 'disha_smart_alert_message_API_Campaign',
+            destination: '91' + '8085503475',
+            userName: 'Mayur Pawar',
+            templateParams: ['$AgentName', '$BayId', '$ShelfId', '$AnomaliesTypes', '$BayId', '$ShelfId', '$CustomMessage'],
+            tags: ['AgentName', 'BayId', 'ShelfId', 'AnomaliesTypes', 'BayId', 'ShelfId', 'CustomMessage'],
+            attributes: {
+              AgentName: 'Mayur',
+              BayId: data.zone_id,
+              ShelfId: data.shelf_id,
+              AnomaliesTypes: data.anomaly_type,
+              BayId: data.zone_id,
+              ShelfId: 'Shelf- 4',
+              CustomMessage: 'Please the Anomalie'
+            }
+          };
+        };
 
+        const formattedData = formatDataForAPI(alertData);
+        const status = await SendAlert(formattedData, API_KEY, API_URL);
+        console.log('status', status);
+
+        // const status = await SendAlert(alertData);
+        // console.log(status);
+        // if (status.status === 200) {
+        setLoadsend(false);
+        setSnackbarOpen(true);
+        //  console.log('hello');
+        // }
+      }
+    }
+    sendAlertMsg();
+    // return () => {
+    //   setAlertData({
+    //     zone_id: false,
+    //     shelf_id: false,
+    //     group_id: false,
+    //     user_name: false,
+    //     user_id: false,
+    //     user_number: false,
+    //     user_email: false,
+    //     user_role: false,
+    //     anomaly_type: false,
+    //     message: false
+    //   });
+    // };
+  }, [alertData]);
+
+  const handelAlertClick = () => {
+    setLoadsend(true);
+    const array = cData.anomalies[0][0].map((item) => item.anomaly_type);
+    const uniqueSet = new Set(array);
+    const uniqueArray = Array.from(uniqueSet);
+
+    let result;
+    if (uniqueArray.length === 1) {
+      result = array[0].split('_')[0].charAt(0).toUpperCase() + array[0].split('_')[0].slice(1);
+    } else {
+      result = array
+        .map((item) => item.split('_')[0].charAt(0).toUpperCase() + item.split('_')[0].slice(1))
+        .reverse()
+        .join(' and ');
+    }
+
+    const string = cData.shelf_id;
+    console.log(string);
+    const substring = string.substring(string.indexOf('S') + 1);
+    const shelf = 'Shelf ' + substring;
+    console.log(shelf);
+
+    setAlertData({
+      zone_id: cData.zone_id,
+      shelf_id: shelf,
+      group_id: cData.group_id,
+      user_name: cData.user_name,
+      user_id: cData.user_id,
+      user_number: cData.user_number,
+      user_email: cData.user_email,
+      user_role: cData.user_role,
+      anomaly_type: result,
+      message: msg
+    });
+  };
+  console.log(alertData);
   console.log('fullness araya', fullnessArray);
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+    // setButtonLabel('Submit');
+  };
+
   return (
     <>
       <Breadcrumb title="Stores">
@@ -1024,6 +1142,7 @@ const Customers = () => {
                         placeholder="Give your Comments"
                         multiline
                         rows={4}
+                        onChange={(e) => setMsg(e.target.value)}
                       />
                     </div>
                     <div className="w-full bg-white mt-5 flex flex-row-reverse gap-3">
@@ -1038,11 +1157,13 @@ const Customers = () => {
                         <Typography color={'white'}>Solved</Typography>
                       </button>
                       <button
-                        className="lg:rounded-full rounded-xl md:w-[125px] hover:cursor-not-allowed text-lg lg:text-2xl p-2.5"
-                        // style={{ backgroundColor: error }}
-                        style={{ backgroundColor: '#fca5a5' }}
+                        className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 flex align-middle justify-center"
+                        style={{ backgroundColor: error }}
+                        onClick={() => handelAlertClick()}
+                        // style={{ backgroundColor: '#fca5a5' }}
                       >
-                        <Typography color={'white'}>Alert Store</Typography>
+                        {loadsend && <CgSpinner className="animate-spin" />}
+                        <Typography color={'white'}>{loadsend ? ' Alerting...' : 'Alert Store'} </Typography>
                       </button>
                     </div>
                   </div>
@@ -1053,6 +1174,17 @@ const Customers = () => {
           </DialogContent>
         </Dialog>
       )}
+      <Snackbar
+        open={snackbarOpen}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        key={'bottom' + 'right'}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} className="text-white" severity="success" sx={{ width: '100%', bgcolor: 'yellowgreen' }}>
+          Alert store message sent successfully !
+        </Alert>
+      </Snackbar>
     </>
   );
 };
