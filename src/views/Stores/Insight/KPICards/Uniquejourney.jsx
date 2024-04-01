@@ -1,9 +1,10 @@
 import { Box, Grid, Paper, Stack, Typography, Tooltip, Skeleton } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import RouteIcon from '@mui/icons-material/Route';
+// import RouteIcon from '@mui/icons-material/Route';
 // import NoDataImg from '../../../../assets/images/No_data-amico.svg';
 import { IoMdSettings } from 'react-icons/io';
 import { uniqueJourney } from '../../../../api/sentinelAPI';
+import osa from '../../../../assets/images/osa.jpeg';
 
 export default function Uniquejourney({ date }) {
   const [uniquejourneys, setUniquejourneys] = useState('');
@@ -39,14 +40,7 @@ export default function Uniquejourney({ date }) {
         <Box className="flex flex-col w-full gap-1 p-3">
           {/* <Paper elevation={0} sx={{width:"100%", height:"100%"}}> */}
           <Stack direction={'row'} className="flex justify-center  gap-2">
-            {uniquejourneys ? (
-              <RouteIcon
-                className="bg-[#444444] text-white rounded-full p-2 text-6xl"
-                style={{ margin: '2px 10px', transform: 'rotate(45deg)' }}
-              />
-            ) : (
-              <Skeleton variant="circular" width={45} height={45} />
-            )}
+            {uniquejourneys ? <img src={osa} alt="pop" className="h-14 w-14" /> : <Skeleton variant="circular" width={45} height={45} />}
             <Stack direction={'column'} className="w-full">
               {/* <Typography variant="h2">117 </Typography>
           <Typography variant="body2">Unique journey</Typography> */}
@@ -147,10 +141,7 @@ export default function Uniquejourney({ date }) {
       ) : (
         <div className="flex  w-full  flex-col gap-1 p-3">
           <div className="flex items-center justify-center gap-2 w-full">
-            <RouteIcon
-              className="bg-[#444444] text-white rounded-full p-2 text-6xl"
-              style={{ margin: '2px 10px', transform: 'rotate(45deg)' }}
-            />
+            <img src={osa} alt="pop" className="h-14 w-14" />
 
             <div className="w-full">
               <p className="text-3xl text-gray-500 ">NA</p>

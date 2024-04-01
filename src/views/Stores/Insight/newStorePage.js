@@ -92,7 +92,7 @@ function NewStorePage() {
               onClick={() => setOpen(!open)}
             />
             <aside
-              className={`bg-cyan-950 h-[calc(100vh-64px)] overflow-x-hidden overflow-y-auto scrollbar  p-5 pt-7 fixed duration-300 ${
+              className={`bg-[#111921] h-[calc(100vh-64px)] overflow-x-hidden overflow-y-auto scrollbar  p-5 pt-7 fixed duration-300 ${
                 open ? 'w-72 flex flex-col justify-between' : 'w-24'
               }`}
             >
