@@ -416,7 +416,9 @@ const Customers = () => {
               BayId: data.zone_id,
               ShelfId: data.shelf_id,
               AnomaliesTypes: data.anomaly_type,
+              //eslint-disable-next-line
               BayId: data.zone_id,
+              //eslint-disable-next-line
               ShelfId: 'Shelf- 4',
               CustomMessage: 'Please the Anomalie'
             }
