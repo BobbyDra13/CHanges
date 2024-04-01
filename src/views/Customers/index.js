@@ -1066,9 +1066,10 @@ const Customers = () => {
                             </Typography>
                           </Box>
                         ) : (
-                          cData.anomalies[0][0].map((itm, index) => (
+                          cData.anomalies[0].map((item, index) => (
+                            item.map((itm, ind)=>(
                             <Tooltip
-                              key={index}
+                              key={index+ind}
                               title={
                                 <div>
                                   <Typography variant="body1">
@@ -1102,7 +1103,9 @@ const Customers = () => {
                                 </Typography>
                               </Box>
                             </Tooltip>
-                          ))
+                          )))
+                          
+                          )
                         )}
                       </div>
                       {/* <Typography width={'100%'} variant="h3">
