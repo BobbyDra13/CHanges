@@ -11,13 +11,14 @@ import {
   GetVMComplianceForOneWeek,
   // GetFullnessForOneWeek,
   GetRadarChartData,
-  GetAnomaliesForOneWeek,
+  // GetAnomaliesForOneWeek,
   GetBarChartData,
   GetVMscoreBar,
   GetCapProg,
   GetPopPercentage,
   GetPopWeekLineData,
-  GetPopHistogramData
+  GetPopHistogramData,
+  GetAnomalies
 } from 'api';
 
 // Apex chart import
@@ -451,9 +452,9 @@ const Insights = () => {
             barChart,
             vmcChart,
             // fullnessLineChart,
-            vmcLineChart,
+            vmcLineChart
             //eslint-disable-next-line
-            anomaliesLineChart
+            // anomaliesLineChart
           ] = await Promise.all([
             GetCaptureProgress(commonBody),
             // GetBrandDonutData(brandDonutBody),
@@ -465,17 +466,15 @@ const Insights = () => {
             GetBarChartData(commonBody),
             GetVMscoreBar(commonBody),
             // GetFullnessForOneWeek(body),
-            GetVMComplianceForOneWeek(body),
-            GetAnomaliesForOneWeek(body)
+            GetVMComplianceForOneWeek(body)
+            // GetAnomaliesForOneWeek(body)
           ]);
 
           const CapData = await GetCapProg(capBody);
           const popPercentageData = await GetPopPercentage(popKpiCardBody);
           const popLineData = await GetPopWeekLineData(popKpiCardBody);
           const histogramData = await GetPopHistogramData(popKpiCardBody);
-
-          // console.log('popPercentageData', popPercentageData.data);
-          // console.log('popLineData', popLineData);
+          const anomaliesData = await GetAnomalies(donutBody);
 
           if (popLineData) {
             const popScoreFullnessLine = popLineData.data;
@@ -575,12 +574,12 @@ const Insights = () => {
 
             setChartConfig(updatedChartConfig);
           }
-          if (popLineData) {
-            const popScoreFullnessLine = popLineData.data;
+          if (anomaliesData) {
+            const popScoreFullnessLine = anomaliesData.data;
 
-            const anomaliesDetectedLine = popScoreFullnessLine.map((item) => {
-              if (item.data && item.data.total_anomalies_in_pop_detected) {
-                const percentage = item.data.total_anomalies_in_pop_detected;
+            const anomaliesDetectedLine = popScoreFullnessLine.response.map((item) => {
+              if (item.anomalies_found) {
+                const percentage = item.anomalies_found;
                 return percentage;
               } else {
                 return 0;
@@ -589,10 +588,14 @@ const Insights = () => {
             console.log('anomaliesDetectedLine', anomaliesDetectedLine);
             const lastElement = anomaliesDetectedLine[anomaliesDetectedLine.length - 1] || 0;
             const secondLastElement = anomaliesDetectedLine[anomaliesDetectedLine.length - 2] || 0;
-            const difference = `${(((lastElement - secondLastElement) / secondLastElement) * 100).toFixed(1)}`;
+            const difference =
+              secondLastElement === 0 || lastElement === 0
+                ? 0
+                : `${(((lastElement - secondLastElement) / secondLastElement) * 100).toFixed(1)}`;
+            console.log('difference', difference);
             setAnomaliesChipData(difference);
 
-            const dates = popScoreFullnessLine.map((item) => item._id);
+            const dates = popScoreFullnessLine.response.map((item) => item.Date);
 
             const updatedChartConfig = {
               ...anomaliesChartConfig,
@@ -654,11 +657,11 @@ const Insights = () => {
               setPopPercentage(popPercentageData.data.fullnessPopPercent);
             }
           }
-          if (popPercentageData) {
-            if (popPercentageData.data === null) {
+          if (anomaliesData) {
+            if (anomaliesData.data === null) {
               setAnomaliesPercentage('0');
             } else {
-              setAnomaliesPercentage(popPercentageData.data.total_anomalies_in_pop_detected);
+              setAnomaliesPercentage(anomaliesData.data.response[anomaliesData.data.response.length - 1].anomalies_found);
             }
           }
 
@@ -672,6 +675,7 @@ const Insights = () => {
 
           if (anomaliesKpiData) {
             setAnomalies(anomaliesKpiData.data);
+            console.log('anomaliesKpiData', anomaliesKpiData);
           }
 
           if (anomaliesBarChartData) {
