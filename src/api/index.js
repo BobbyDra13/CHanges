@@ -625,3 +625,20 @@ export const GetpopKPI = async (data) => {
     console.log('Error Calling GetDates API: ', error);
   }
 };
+
+export const SendAlert = async (data, apiKey, apiUrl) => {
+  console.log('SendAlert', data);
+
+  axios
+    .post(apiUrl, data, {
+      headers: {
+        Authorization: `Bearer ${apiKey}`
+      }
+    })
+    .then((response) => {
+      console.log('API Call Successful (Aisensy):', response.data);
+    })
+    .catch((error) => {
+      console.error('API Call Failed:', error.message);
+    });
+};
