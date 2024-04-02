@@ -588,15 +588,7 @@ const Insights = () => {
             console.log('anomaliesDetectedLine', anomaliesDetectedLine);
             const lastElement = anomaliesDetectedLine[anomaliesDetectedLine.length - 1] || 0;
             const secondLastElement = anomaliesDetectedLine[anomaliesDetectedLine.length - 2] || 0;
-            let difference;
-            if (secondLastElement === 0 && lastElement !== 0) {
-              difference = 100;
-            } else {
-              difference =
-                secondLastElement === 0 || lastElement === 0
-                  ? 0
-                  : (((lastElement - secondLastElement) / secondLastElement) * 100).toFixed(1);
-            }
+            const difference = lastElement - secondLastElement;
             console.log('difference', difference);
             setAnomaliesChipData(difference);
 
