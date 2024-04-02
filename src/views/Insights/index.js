@@ -938,7 +938,7 @@ const Insights = () => {
               chart={fullnessChartConfig}
               title="PoP Score"
               count={`${parseFloat(popPercentage) === 0 ? '0' : parseFloat(popPercentage).toFixed(1)}%`}
-              percentage={Math.abs(popChipData)}
+              percentage={`${Math.abs(popChipData)}%`}
               chipColor={+popChipData < 0 ? 'error' : 'success'}
               isLoss={+popChipData < 0}
               color={theme.palette.success.main}
@@ -977,7 +977,7 @@ const Insights = () => {
               title="Anomalies Found"
               count={`${anomaliesPercentage}`}
               percentage={Math.abs(anomaliesChipData)}
-              chipColor={anomaliesChipData < 0 ? 'error' : 'success'}
+              chipColor={anomaliesChipData >= 0 ? 'error' : 'success'}
               isLoss={anomaliesChipData < 0}
               color={theme.palette.error.main}
             />
