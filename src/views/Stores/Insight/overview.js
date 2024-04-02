@@ -5,21 +5,27 @@ import { avgDwelTime } from '../../../api/sentinelAPI';
 // import { footfallCard } from '../../../api/sentinelAPI';
 import { getRatio } from 'api/sentinelAPI';
 // import NoDataImg from '../../../assets/images/No_data-amico.svg';
-import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
+// import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import DatePickerStore from './Calendar';
-import UpdateIcon from '@mui/icons-material/Update';
+// import UpdateIcon from '@mui/icons-material/Update';
 import Uniquejourney from './KPICards/Uniquejourney';
 // import DonutChart from './TrendsViewCharts/DonutChart';
 // import DonutChartTwo from './TrendsViewCharts/DonutChartTwo';
 // import GroupIcon from '@mui/icons-material/Group';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import Diversity3Icon from '@mui/icons-material/Diversity3';
+// import Diversity3Icon from '@mui/icons-material/Diversity3';
 import LineChartToggle from './lineChartToggle';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import { IoMdSettings } from 'react-icons/io';
 import CsvModal from './CsvUpload';
 import RadarChart from './RadarChart';
-import { GetPopPercentage, GetpopKPI } from 'api';
+import { GetPopPercentage, GetpopKPI, GetCapProg, GetAnomalies } from 'api';
+import { IoIosWarning } from 'react-icons/io';
+// import { get } from 'react-hook-form';
+import Chart from 'react-apexcharts';
+import popIcon from '../../../assets/images/pop_icon.png';
+
+import pog from '../../../assets/images/pog.jpeg';
 
 function Overview() {
   const theme = useTheme();
@@ -32,10 +38,16 @@ function Overview() {
   const [footfalldata, setFootfalldata] = useState(false);
   const [ftfall, setftfall] = useState([]);
   const [date, setSelectedDate] = useState('');
+  //eslint-disable-next-line
   const [empCount, setEmpCount] = useState('');
+  //eslint-disable-next-line
   const [costcnt, setCostcnt] = useState('');
   // const [ratio, setRatio] = useState('');
   const [openPopScoreModal, setOpenPopScoreModal] = useState(false);
+  //eslint-disable-next-line
+  const [captureProg, setCaptureProg] = useState([]);
+  const [capProgressValue, setCapProgressValue] = useState(0);
+  const [anomaliesCount, setAnomaliesCount] = useState(0);
 
   const handleClickPopScoreModal = () => {
     setOpenPopScoreModal((prev) => !prev);
@@ -44,6 +56,67 @@ function Overview() {
 
   const handleClose = () => {
     setOpenPopScoreModal(false);
+  };
+
+  const accentColLight = theme.palette.success.light;
+  const accentColDark = theme.palette.success.dark;
+  const progressChart = {
+    options: {
+      chart: {
+        height: 180,
+        type: 'radialBar',
+        sparkline: {
+          enabled: true
+        }
+      },
+      colors: [accentColLight],
+      plotOptions: {
+        radialBar: {
+          hollow: {
+            margin: 0,
+            padding: 0,
+            size: '30%'
+            // background: '#293450'
+          },
+          track: {
+            dropShadow: {
+              enabled: true,
+              top: 2,
+              left: 0,
+              blur: 4,
+              opacity: 0.15
+            }
+          },
+          dataLabels: {
+            show: false,
+            name: {
+              offsetY: -10,
+              color: '#fff',
+              fontSize: '13px'
+            },
+            value: {
+              color: '#fff',
+              fontSize: '30px',
+              show: false
+            }
+          }
+        }
+      },
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shade: 'dark',
+          type: 'vertical',
+          gradientToColors: [accentColDark],
+          stops: [0, 100]
+        }
+      },
+      stroke: {
+        // lineCap: 'round'
+      }
+      // labels: ['Progress']
+    },
+    series: [68]
   };
 
   const modalStyle = {
@@ -178,12 +251,45 @@ function Overview() {
           console.log(error);
         }
       }
+      //eslint-disable-next-line
+      async function getCaptureProg() {
+        try {
+          const capProgress = await GetCapProg(popBody);
+          console.log('capTop ', capProgress.data);
+
+          const capProg = capProgress.data.captureProgressZoneData.map((item) => {
+            return {
+              ...item,
+              captureProgress: parseFloat(item.captureProgress.replace('%', ''))
+            };
+          });
+          setCaptureProg(capProg);
+          setCapProgressValue(capProgress.data.storeCapturePercentage);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      //eslint-disable-next-line
+      async function getAnomalies() {
+        try {
+          const anomalies = await GetAnomalies(popBody);
+          console.log('Anomalies ', anomalies.data.anomaly_count);
+          setAnomaliesCount(anomalies.data.anomaly_count);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      getAnomalies();
       getFootfalldata();
       getDataDwell();
       getRatioData();
+      getCaptureProg();
     }
     return () => {
       setFootfalldata(false);
+      setCaptureProg([]);
+      setAnomaliesCount(0);
       // setftfall(false)
     };
     // eslint-disable-next-line
@@ -211,7 +317,8 @@ function Overview() {
                   <div className="flex  w-full  flex-col gap-1 p-3">
                     <div className="flex items-center justify-center gap-2 w-full">
                       {footfalldata.length > 0 ? (
-                        <DirectionsWalkIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" />
+                        // <DirectionsWalkIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" />
+                        <img src={popIcon} alt="pop" className="h-14 w-14" />
                       ) : (
                         <Skeleton variant="circular" width={60} height={45} />
                       )}
@@ -268,6 +375,7 @@ function Overview() {
                               <LinearProgress
                                 variant="determinate"
                                 value={percentage}
+                                className="rounded-lg"
                                 sx={{
                                   marginTop: '5px',
                                   backgroundColor: 'white', // Set color for unfilled part
@@ -287,8 +395,7 @@ function Overview() {
                 ) : (
                   <div className="flex  w-full  flex-col gap-1 p-3">
                     <div className="flex items-center justify-center gap-2 w-full">
-                      <DirectionsWalkIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" />
-
+                      <img src={popIcon} alt="pop" className="h-14 w-14" />
                       <div className="w-full">
                         <p className="text-3xl text-gray-500 ">NA</p>
                         <p className="text-lg font-semibold">PoP</p>
@@ -322,7 +429,7 @@ function Overview() {
                   <div className="flex flex-col w-full gap-1 p-3">
                     <div className="flex items-center justify-center gap-2 w-full">
                       {storeDwelTime ? (
-                        <UpdateIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" />
+                        <img src={pog} alt="pop" className="h-14 w-14" />
                       ) : (
                         <Skeleton variant="circular" width={45} height={45} />
                       )}
@@ -384,7 +491,7 @@ function Overview() {
                   <div className="flex  w-full  flex-col gap-1 p-3">
                     <div className="flex items-center justify-center gap-2 w-full">
                       {/* <DirectionsWalkIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" /> */}
-                      <UpdateIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" />
+                      <img src={pog} alt="pop" className="h-14 w-14" />
 
                       <div className="w-full">
                         <p className="text-3xl text-gray-500 ">NA</p>
@@ -407,7 +514,7 @@ function Overview() {
               </Card>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
-              <div style={{ height: '275px' }} className="flex flex-col">
+              <div style={{ height: '276px' }} className="flex flex-col">
                 {/* <Card
                   className="border border-gray-300 h-[85px]"
                   sx={{
@@ -427,8 +534,7 @@ function Overview() {
                 <Card
                   className="border border-gray-300 h-full"
                   sx={{
-                    padding: '5px',
-                    marginTop: '5px'
+                    padding: '5px'
                   }}
                 >
                   <RadarChart date={date} />
@@ -436,45 +542,42 @@ function Overview() {
               </div>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
-              <div className=" " style={{ height: '275px' }}>
+              <div className=" flex flex-col gap-2 " style={{ height: '275px' }}>
                 <Card
-                  className="border border-gray-300 h-1/3"
+                  className="border border-gray-300 h-2/3"
                   style={{
-                    padding: '10px',
-                    textAlign: 'center',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    height: '84.8px'
+                    padding: '5px'
                   }}
                 >
-                  <Diversity3Icon className="bg-[#444444] text-white rounded-full p-2 text-5xl" />
-                  <div className="flex flex-col items-start pt-1">
-                    {empCount ? <h3 className="text-4xl">{empCount}</h3> : <h3 className="text-4xl">NA</h3>}
-                    <p>Total employee count</p>
+                  <div className="flex items-center">
+                    <div>
+                      <Chart
+                        options={progressChart.options}
+                        series={capProgressValue ? [parseFloat(capProgressValue)] : [0]}
+                        type={progressChart.options.chart.type}
+                        height={progressChart.options.chart.height}
+                      />
+                    </div>
+                    <div className="flex gap-1 flex-col">
+                      <div className="text-4xl font-semibold">{capProgressValue}</div>
+                      <div className="text-sm font-semibold">Capture Progress</div>
+                    </div>
                   </div>
                 </Card>
                 <Card
-                  className="border border-gray-300 mt-[5px] h-1/3"
+                  className="border border-gray-300 h-1/3"
                   style={{
-                    padding: '10px',
-                    textAlign: 'center',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    height: '90.47px'
+                    padding: '10px'
                   }}
                 >
-                  <Diversity3Icon className="bg-[#444444] text-white rounded-full p-2 text-5xl" />
-                  <div className="flex flex-col items-start pt-1">
-                    {empCount ? (
-                      <h3 className="text-4xl">
-                        {empCount}:{costcnt}
-                      </h3>
-                    ) : (
-                      <h3 className="text-4xl">NA</h3>
-                    )}
-                    <p>Assoc.-Cust. ratio</p>
+                  <div className="flex gap-3">
+                    <div>
+                      <IoIosWarning className="bg-[#444444] text-white rounded-full p-2 text-6xl" />
+                    </div>
+                    <div className="w-full">
+                      <p className="text-4xl text-gray-500 ">{anomaliesCount}</p>
+                      <p className="text-lg font-semibold">Anomalies Found</p>
+                    </div>
                   </div>
                 </Card>
               </div>
@@ -489,7 +592,7 @@ function Overview() {
               </Card>
             </Grid>
             <Grid item className="mb-10" xs={12} lg={3} xl={2.4}>
-              <Card className="border border-gray-300" sx={{ height: '550px' }}>
+              <Card className="border border-gray-300 opacity-30 hover:cursor-not-allowed" sx={{ height: '550px' }}>
                 <div
                   style={{
                     padding: '10px',
@@ -499,14 +602,14 @@ function Overview() {
                     gap: '0.5rem'
                   }}
                 >
-                  <QuestionAnswerIcon className="bg-[#444444] text-white rounded-full p-2 text-5xl" />
+                  <QuestionAnswerIcon className="bg-[#111921] text-white rounded-full p-2 text-5xl" />
                   <div className="flex flex-col items-start pt-1">
                     <h3 className="text-4xl">12</h3>
                     <p>Message Logs</p>
                   </div>
                 </div>
                 <Card
-                  className=" rounded-lg bg-slate-700 text-white w-[95%] mx-auto"
+                  className=" rounded-lg bg-[#111921] text-white w-[95%] mx-auto"
                   sx={{
                     marginTop: '5px',
                     padding: '0.5rem'
@@ -528,7 +631,7 @@ function Overview() {
                   </div>
                 </Card>
                 <Card
-                  className=" rounded-lg bg-slate-700 text-white w-[95%] mx-auto"
+                  className=" rounded-lg bg-[#111921] text-white w-[95%] mx-auto"
                   sx={{
                     marginTop: '5px',
                     padding: '0.5rem'
@@ -538,8 +641,8 @@ function Overview() {
                     <AccountCircleIcon className="bg-white text-slate-700 rounded-full p-1 text-3xl" />
                     <div className="flex flex-col gap-2">
                       <div>
-                        Heavy customer traffic detected at Phone zone. Please re-assign <span className="font-bold">Ritesh Kumar</span> to
-                        Phones zone for optimal customer - employee ratio.
+                        Heavy customer traffic detected at Phone zone. Please re-assign{' '}
+                        <span className="font-bold text-cyan-300">Ritesh Kumar</span> to Phones zone for optimal customer - employee ratio.
                       </div>
                       <div className="text-blue-500 cursor-pointer font-bold">View {'->'}</div>
                     </div>
@@ -553,7 +656,7 @@ function Overview() {
                   </div>
                 </Card>
                 <Card
-                  className=" rounded-lg bg-slate-700 text-white w-[95%] mx-auto"
+                  className=" rounded-lg bg-[#111921] text-white w-[95%] mx-auto"
                   sx={{
                     marginTop: '5px',
                     padding: '0.5rem'

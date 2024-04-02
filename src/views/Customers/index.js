@@ -416,7 +416,9 @@ const Customers = () => {
               BayId: data.zone_id,
               ShelfId: data.shelf_id,
               AnomaliesTypes: data.anomaly_type,
+              //eslint-disable-next-line
               BayId: data.zone_id,
+              //eslint-disable-next-line
               ShelfId: 'Shelf- 4',
               CustomMessage: 'Please the Anomalie'
             }
@@ -1064,45 +1066,44 @@ const Customers = () => {
                             </Typography>
                           </Box>
                         ) : (
-                          cData.anomalies[0].map((item, index) => (
-                            item.map((itm, ind)=>(
-                            <Tooltip
-                              key={index+ind}
-                              title={
-                                <div>
-                                  <Typography variant="body1">
-                                    Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
-                                  </Typography>
-                                  <Typography variant="body1">
-                                    Description: {itm.article_description ? itm.article_description : 'No Data Found'}
-                                  </Typography>
-                                  <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
-                                </div>
-                              }
-                            >
-                              <Box
-                                key={index}
-                                paddingX={0.2}
-                                paddingY={0.04}
-                                className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                onMouseOver={() => {
-                                  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
-                                }}
-                                onMouseOut={() => {
-                                  if (antn) {
-                                    setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                    setAntn(!antn);
-                                  }
-                                }}
+                          cData.anomalies[0].map((item, index) =>
+                            item.map((itm, ind) => (
+                              <Tooltip
+                                key={index + ind}
+                                title={
+                                  <div>
+                                    <Typography variant="body1">
+                                      Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
+                                    </Typography>
+                                    <Typography variant="body1">
+                                      Description: {itm.article_description ? itm.article_description : 'No Data Found'}
+                                    </Typography>
+                                    <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
+                                  </div>
+                                }
                               >
-                                <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
-                                <Typography paddingRight={2} variant="h6">
-                                  {itm.anomaly_type}
-                                </Typography>
-                              </Box>
-                            </Tooltip>
-                          )))
-                          
+                                <Box
+                                  key={index}
+                                  paddingX={0.2}
+                                  paddingY={0.04}
+                                  className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                  onMouseOver={() => {
+                                    calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
+                                  }}
+                                  onMouseOut={() => {
+                                    if (antn) {
+                                      setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                      setAntn(!antn);
+                                    }
+                                  }}
+                                >
+                                  <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
+                                  <Typography paddingRight={2} variant="h6">
+                                    {itm.anomaly_type}
+                                  </Typography>
+                                </Box>
+                              </Tooltip>
+                            ))
                           )
                         )}
                       </div>
