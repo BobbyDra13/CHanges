@@ -20,15 +20,16 @@ const ProtectedRoute = ({ element }) => {
     return () => unsubscribe();
   }, []);
 
-
   // If isAuthenticated is still being determined, you can render a loading indicator or wait for the result
   if (isAuthenticated === null) {
-    return (<div className="flex justify-center items-center fixed top-0 left-0 z-10 text-5xl overflow-x-hidden bg-white w-screen h-screen">
-    <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
-  </div>);
+    return (
+      <div className="flex justify-center items-center fixed top-0 left-0 z-10 text-5xl overflow-x-hidden bg-white w-screen h-screen">
+        <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
+      </div>
+    );
   }
   // console.log('isAuthenticated', isAuthenticated);
-  return isAuthenticated ? element : <Navigate to="/" />;  // If user is not logged in, redirect to login page
+  return isAuthenticated ? element : <Navigate to="/" />; // If user is not logged in, redirect to login page
 };
 
 export default ProtectedRoute;

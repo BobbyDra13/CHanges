@@ -34,7 +34,8 @@ const SearchSection = () => {
             <>
               <Button
                 sx={{
-                  minWidth: { xs: 35 }, color: "white"
+                  minWidth: { xs: 35 },
+                  color: 'white'
                 }}
                 aria-haspopup="true"
                 {...bindToggle(popupState)}

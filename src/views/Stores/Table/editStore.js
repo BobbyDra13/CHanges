@@ -116,7 +116,6 @@ export default function EditStore() {
 
   return (
     <>
-
       <Dialog fullWidth={fullWidth} maxWidth={maxWidth} open={open} onClose={handleClose}>
         <DialogContent className="overflow-y-auto scrollbar">
           <div className="w-full">

@@ -95,8 +95,8 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
         formErrors = { ...formErrors, number: 'Please enter a valid phone number' };
       }
     }
-    if(whatsapp==null){
-      formErrors = {...formErrors,email:'This is required'}
+    if (whatsapp == null) {
+      formErrors = { ...formErrors, email: 'This is required' };
     }
 
     setErrors(formErrors);
@@ -119,53 +119,53 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
     fetchData();
   }, []);
 
-    const onValueChange = async (e) => {
-      const { name, value } = e.target;
+  const onValueChange = async (e) => {
+    const { name, value } = e.target;
 
-      if (name === 'store_id') {
-        const selectedStore = storesList.find((store) => store.store_id === value);
-        setUser({ ...user, store_id: value, stores: selectedStore.id });
-      } else {
-        setUser({ ...user, [name]: value });
-      }
-      if (name === 'user_role') {
-        setIsEmailEditable(value != 'Agent');
-      }
+    if (name === 'store_id') {
+      const selectedStore = storesList.find((store) => store.store_id === value);
+      setUser({ ...user, store_id: value, stores: selectedStore.id });
+    } else {
+      setUser({ ...user, [name]: value });
+    }
+    if (name === 'user_role') {
+      setIsEmailEditable(value != 'Agent');
+    }
 
-      let fieldError = '';
-      switch (name) {
-        case 'user_role':
-          fieldError = !value ? 'User Role is required' : '';
-          break;
+    let fieldError = '';
+    switch (name) {
+      case 'user_role':
+        fieldError = !value ? 'User Role is required' : '';
+        break;
 
-        case 'user_id':
-          fieldError = !value ? 'User ID is required' : value.length < 4 ? 'User ID must be at least 4 characters' : '';
-          if (!fieldError) {
-            const response = await checkId(value);
-            if (response != null) {
-              fieldError = 'This ID is already taken. User ID must be unique.';
-            }
+      case 'user_id':
+        fieldError = !value ? 'User ID is required' : value.length < 4 ? 'User ID must be at least 4 characters' : '';
+        if (!fieldError) {
+          const response = await checkId(value);
+          if (response != null) {
+            fieldError = 'This ID is already taken. User ID must be unique.';
           }
-          break;
+        }
+        break;
 
-        case 'user_name':
-          fieldError = !value ? 'User Name is required' : '';
-          break;
+      case 'user_name':
+        fieldError = !value ? 'User Name is required' : '';
+        break;
 
-        case 'store_id':
-          fieldError = !value ? 'Store ID is required' : '';
-          break;
+      case 'store_id':
+        fieldError = !value ? 'Store ID is required' : '';
+        break;
 
-        case 'email':
-          fieldError = isEmailEditable && !validateEmail(value) ? 'Please enter a valid email address' : '';
-          break;
+      case 'email':
+        fieldError = isEmailEditable && !validateEmail(value) ? 'Please enter a valid email address' : '';
+        break;
 
       case 'number':
         fieldError = !value ? 'Phone Number is required' : !validatePhoneNumber(value) ? 'Please enter a valid phone number' : '';
         break;
-      
+
       case 'whatsapp':
-        fieldError = (value==null) ? 'This is required' : '';
+        fieldError = value == null ? 'This is required' : '';
         break;
       default:
         break;
@@ -173,30 +173,30 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
     setErrors({ ...errors, [name]: fieldError });
   };
 
-    const addUserDetails = async () => {
-      try {
-        const isFormValid = await validateForm();
-        if (isFormValid) {
-          setApiResponded(false);
-          await createUser(user);
-          handleSnackbarOpen();
-          setSnackbarMessage('User added successfully !');
-          handleAddUserDialogClose();
-        }
-      } catch (error) {
-        console.error('Error adding user:', error);
+  const addUserDetails = async () => {
+    try {
+      const isFormValid = await validateForm();
+      if (isFormValid) {
+        setApiResponded(false);
+        await createUser(user);
         handleSnackbarOpen();
-        setSnackbarMessage('Failed to add user.');
-      } finally {
-        setApiResponded(true);
+        setSnackbarMessage('User added successfully !');
+        handleAddUserDialogClose();
       }
-    };
+    } catch (error) {
+      console.error('Error adding user:', error);
+      handleSnackbarOpen();
+      setSnackbarMessage('Failed to add user.');
+    } finally {
+      setApiResponded(true);
+    }
+  };
 
-    return (
-      <Paper elevation={6} sx={{ padding: '20px', borderRadius: '12px' }}>
-        <Typography variant="h3" gutterBottom>
-          Add User
-        </Typography>
+  return (
+    <Paper elevation={6} sx={{ padding: '20px', borderRadius: '12px' }}>
+      <Typography variant="h3" gutterBottom>
+        Add User
+      </Typography>
 
       <Box sx={{ mb: 3 }}>
         <Typography variant="h6" gutterBottom>
@@ -490,24 +490,31 @@ const AddStore = ({ handleAddUserDialogClose, handleSnackbarOpen, setSnackbarMes
               helperText={errors.number}
             />
             <FormControl error={!!errors.whatsapp}>
-            <FormLabel id="demo-controlled-radio-buttons-group">Is this number on WhatsApp?</FormLabel>
-            <RadioGroup name="whatsapp" onChange={(e) => onValueChange(e)} row aria-labelledby="demo-controlled-radio-buttons-group" value={whatsapp} required='true'>
-              <FormControlLabel
-                value={true}
-                name="controlled-radio-buttons-group"
-                control={<Radio />}
-                label="Yes"
-                onClick={() => setWhatsapp(true)}
-              />
-              <FormControlLabel
-                value={false}
-                name="controlled-radio-buttons-group"
-                control={<Radio />}
-                label="No"
-                onClick={() => setWhatsapp(false)}
-              />
-            </RadioGroup>
-            <FormHelperText>{errors.whatsapp}</FormHelperText>
+              <FormLabel id="demo-controlled-radio-buttons-group">Is this number on WhatsApp?</FormLabel>
+              <RadioGroup
+                name="whatsapp"
+                onChange={(e) => onValueChange(e)}
+                row
+                aria-labelledby="demo-controlled-radio-buttons-group"
+                value={whatsapp}
+                required="true"
+              >
+                <FormControlLabel
+                  value={true}
+                  name="controlled-radio-buttons-group"
+                  control={<Radio />}
+                  label="Yes"
+                  onClick={() => setWhatsapp(true)}
+                />
+                <FormControlLabel
+                  value={false}
+                  name="controlled-radio-buttons-group"
+                  control={<Radio />}
+                  label="No"
+                  onClick={() => setWhatsapp(false)}
+                />
+              </RadioGroup>
+              <FormHelperText>{errors.whatsapp}</FormHelperText>
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={6}>

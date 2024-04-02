@@ -39,7 +39,7 @@ const dailySalesChart = {
       data: [35, 78, 16, 81, 94, 21, 86]
     }
   ],
-  
+
   options: {
     ...chartsConfig,
     colors: ['#10b981'],
@@ -63,10 +63,9 @@ const dailySalesChart = {
     yaxis: {
       labels: {
         show: false
-      },
+      }
     }
-  },
-  
+  }
 };
 
 const completedTasksChart = {
@@ -80,7 +79,7 @@ const completedTasksChart = {
 };
 
 const discountPromoChart = {
-  ...dailySalesChart,   
+  ...dailySalesChart,
   series: [
     {
       name: 'Promo %',

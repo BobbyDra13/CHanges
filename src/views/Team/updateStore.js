@@ -32,7 +32,7 @@ const initialValue = {
   store_id: '',
   email: '',
   number: '',
-  whatsapp:'',
+  whatsapp: ''
 };
 const roles = ['Agent', 'Department Manager', 'Store Manager', 'Cluster Manager', 'NHK Super User'];
 const depts = ['Operations', 'VM', 'Marketing', 'Analysis'];
@@ -41,7 +41,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
   const theme = useTheme();
   const [user, setUser] = useState(initialValue);
   const { user_dept, user_role, user_id, user_name, store_id, number } = user;
-  var {whatsapp} = user;
+  var { whatsapp } = user;
   const [isEmailEditable, setIsEmailEditable] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(true);
@@ -111,18 +111,18 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
       if (!validatePhoneNumber(number)) {
         formErrors = { ...formErrors, number: 'Please enter a valid phone number' };
       }
-    if (!number) {
-      formErrors = { ...formErrors, number: 'Phone Number is required' };
-    } else {
-      if (!validatePhoneNumber(number)) {
-        formErrors = { ...formErrors, number: 'Please enter a valid phone number' };
+      if (!number) {
+        formErrors = { ...formErrors, number: 'Phone Number is required' };
+      } else {
+        if (!validatePhoneNumber(number)) {
+          formErrors = { ...formErrors, number: 'Please enter a valid phone number' };
+        }
       }
     }
-  }
 
     setErrors(formErrors);
     return Object.keys(formErrors).length === 0;
-};
+  };
 
   useEffect(() => {
     const loadUserDetails = async () => {
@@ -130,7 +130,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
         const response = await getOneUser(rowId);
         setUser(response.data);
         setEmail(response.data.email);
-        whatsapp= response.data.whatsapp;
+        whatsapp = response.data.whatsapp;
         setLoading(false);
         setCurrentUserId(response.data.user_id);
       } catch (error) {
@@ -546,8 +546,8 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
                     name="controlled-radio-buttons-group"
                     control={<Radio />}
                     label="No"
-                    onClick={()=>{
-                      whatsapp= true;
+                    onClick={() => {
+                      whatsapp = true;
                     }}
                   />
                 </RadioGroup>

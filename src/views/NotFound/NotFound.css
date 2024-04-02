@@ -1,25 +1,23 @@
-.notfound{
+.notfound {
   position: absolute;
-  top: 2px ;
+  top: 2px;
   left: -8px;
 
   height: 99vh;
   width: 100vw;
-  
+
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   background-color: white;
   /* padding: 60px 20px; */
-  
 }
 
-.notfound > img{
+.notfound > img {
   height: 80vh;
   width: 80vw;
 }
-
 
 /* .error-content > h1{
   font-weight: 900;
@@ -83,4 +81,3 @@
     aspect-ratio: auto;
   }
 } */
-

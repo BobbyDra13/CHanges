@@ -24,7 +24,7 @@ const StoresHistogramChart = ({ bgColor, chartData, title }) => {
                   <Grid container spacing={1}>
                     <Stack direction={'row'} spacing={1}>
                       <Typography variant="h3" color="inherit">
-                        {title}
+                        {'hola'}
                       </Typography>
                       <Typography className="self-end" variant="subtitle1" color="inherit">
                         Stores

@@ -1,7 +1,8 @@
 import { React, useEffect, useState } from 'react';
 
 // APIs
-import { GetAnomaliesBarChartData } from 'api';
+import { GetAnomalies } from 'api';
+// , GetAnomaliesBarChartData
 
 // material-ui
 // import { useTheme } from '@mui/material/styles';
@@ -23,7 +24,7 @@ const columnChartOptions = {
       show: false
     }
   },
-  colors: ['#ff413a', '#00ac69'],
+  colors: ['#00ac69', '#ff413a'],
   plotOptions: {
     bar: {
       columnWidth: '30%',
@@ -108,28 +109,29 @@ const columnChartOptions = {
 
 // ==============================|| ANOMALIES BAR CHART ||============================== //
 
-const AnomaliesBarChart = ({ date }) => {
+const AnomaliesBarChart = ({ selectedDate }) => {
   const [series, setSeries] = useState([]);
   const [options, setOptions] = useState({});
-  const [chartData, setChartData] = useState(false);
+  const [chartData, setChartData] = useState(null);
+
+  const todayDate = new Date().toString();
 
   useEffect(() => {
     async function fetchBarChartData() {
+      const finalDate = selectedDate ? selectedDate : todayDate;
       const body = {
-        // start_date: date.toString(),
-        start_date: "2024-01-12",
-        Store_IDs: ['6582be9ac5ed94d792a563b8']
+        date: finalDate,
+        store_id: '65c74d4112465588b7a4984c'
       };
-      setChartData(false);
 
       try {
-        const data = await GetAnomaliesBarChartData(body);
+        const data = await GetAnomalies(body);
         if (data) {
-          console.log('BarDATA', data.data);
-          if (data.data.length > 0) {
-            const extractedDates = data.data.map((item) => item.date);
-            const extractedResolved = data.data.map((item) => item.resolveCounts.resolved ?? 0);
-            const extractedUnresolved = data.data.map((item) => item.resolveCounts.unresolved ?? 0);
+          console.log('BarDATA', data.data.response);
+          if (data.data.response.length > 0) {
+            const extractedDates = data.data.response.map((item) => item.Date);
+            const extractedResolved = data.data.response.map((item) => item.anomalies_resolved);
+            const extractedFound = data.data.response.map((item) => item.anomalies_found);
             setOptions({
               ...columnChartOptions,
               xaxis: {
@@ -138,37 +140,35 @@ const AnomaliesBarChart = ({ date }) => {
             });
             setSeries([
               {
-                name: 'Anomalies remaining',
-                data: extractedUnresolved
+                name: 'Anomalies Resolved',
+                data: extractedResolved
               },
               {
-                name: 'Anomalies resolved',
-                data: extractedResolved
+                name: 'Anomalies Found',
+                data: extractedFound
               }
             ]);
           }
-          setChartData(data.data);
+          setChartData(data.data.response);
         }
       } catch (error) {
         console.log(error);
       }
     }
     fetchBarChartData();
-    console.log("chart data", chartData);
-  }, [date]);
+    return () => {
+      setChartData(null);
+    };
+    //eslint-disable-next-line
+  }, [selectedDate]);
 
-  // console.log('Dates', extractedDates);
-  // console.log('Resolved', extractedResolved);
-  // console.log('Unresolved', extractedUnresolved);
-  // console.log('Options', options);
-  // console.log('Series', series);
   return (
     <>
-      {chartData.length > 0 ? (
+      {chartData && chartData.length > 0 ? (
         <div id="chart">
           <ReactApexChart options={options} series={series} type={options.chart.type} height={options.chart.height} />
         </div>
-      ) : chartData.length === 0 ? (
+      ) : chartData && chartData.length === 0 ? (
         <div className="w-full h-full flex justify-center place-items-center">
           <img style={{ height: '344px' }} src={NoDataImg} alt="No data" />
         </div>

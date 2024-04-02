@@ -7,7 +7,9 @@ import StoreLayout from 'views/Stores/Table/layout';
 import EditStore from 'views/Team/updateStore';
 import ProtectedRoute from './ProtectedRoute';
 import NotFound from 'views/NotFound/NotFound';
-
+import NewStorePage from 'views/Stores/Insight/newStorePage';
+import Overview from 'views/Stores/Insight/overview';
+import Videos from 'views/Stores/Insight/videos';
 
 const Insight = Loadable(lazy(() => import('../views/Insights')));
 
@@ -44,6 +46,20 @@ const MainRoutes = {
       element: <Customers />
     },
     {
+      path: '/main/stores/storeinsight',
+      element: <NewStorePage />,
+      children: [
+        {
+          path: '/main/stores/storeinsight/overview',
+          element: <Overview />
+        },
+        {
+          path: '/main/stores/storeinsight/video',
+          element: <Videos />
+        }
+      ]
+    },
+    {
       path: '/main/team',
       element: <Team />,
       children: [
@@ -55,9 +71,8 @@ const MainRoutes = {
     },
     { path: '/main/utils/util-typography', element: <UtilsTypography /> },
     { path: '/main/sample-page', element: <SamplePage /> },
-    { path: '*', element: <NotFound btn= "Go back" flag='1'/> }
+    { path: '*', element: <NotFound btn="Go back" flag="1" /> }
   ]
 };
-
 
 export default MainRoutes;

@@ -459,12 +459,10 @@ const StoreLayout = () => {
             <span className="cursor-pointer text-lg text-black-600 opacity-60 hover:opacity-100">Back</span>
           </div>
 
-           
-            <Box sx={{ margin: '1rem', visibility:(openBay || openShelves)?'hidden':''}}>
-              {/* <DatePickerevent SetSelectedDate={setSelectedDate} /> */}
-              <DatePickerComp SetSelectedDate={setSelectedDate} />
-            </Box>
-          
+          <Box sx={{ margin: '1rem', visibility: openBay || openShelves ? 'hidden' : '' }}>
+            {/* <DatePickerevent SetSelectedDate={setSelectedDate} /> */}
+            <DatePickerComp SetSelectedDate={setSelectedDate} />
+          </Box>
         </Stack>
 
         <div

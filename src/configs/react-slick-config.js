@@ -63,7 +63,7 @@ export const settings = {
       breakpoint: 900,
       settings: {
         slidesToShow: 5,
-        slidesToScroll: 5,
+        slidesToScroll: 5
         // initialSlide: 1
       }
     },
@@ -71,7 +71,7 @@ export const settings = {
       breakpoint: 800,
       settings: {
         slidesToShow: 4,
-        slidesToScroll: 4,
+        slidesToScroll: 4
         // initialSlide: 1
       }
     },
@@ -79,7 +79,7 @@ export const settings = {
       breakpoint: 700,
       settings: {
         slidesToShow: 3,
-        slidesToScroll: 3,
+        slidesToScroll: 3
         // initialSlide: 1
       }
     },
@@ -87,7 +87,7 @@ export const settings = {
       breakpoint: 600,
       settings: {
         slidesToShow: 2,
-        slidesToScroll: 2,
+        slidesToScroll: 2
         // initialSlide: 1
       }
     },
