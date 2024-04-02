@@ -72,6 +72,9 @@ import settings from '../../configs/react-slick-config';
 import CheckMarkImg from '../../assets/images/checkmark.png';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import { CgSpinner } from 'react-icons/cg';
+import { FaAngleDoubleRight } from 'react-icons/fa';
+import { FaAngleDoubleLeft } from 'react-icons/fa';
+// import { current } from '@reduxjs/toolkit';
 // import MapImg from '../../assets/images/mapImg.png';
 // import OrionImg from '../../assets/images/MapImages/orion.png';
 
@@ -127,6 +130,7 @@ const Customers = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [msg, setMsg] = useState('');
   const [loadsend, setLoadsend] = useState(false);
+  const [nextBtn, setNextbtn] = useState(false);
   const theme = useTheme();
   const success = theme.palette.success.main;
   const successDark = theme.palette.success.dark;
@@ -496,6 +500,37 @@ const Customers = () => {
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
     // setButtonLabel('Submit');
+  };
+
+  const handleNextClick = () => {
+    const series = updatedData[0].allAnomalies.map((itm) => itm.shelf_id);
+    // console.log(series);
+    const currentShelf = cData.shelf_id;
+    // console.log(currentShelf)
+    const index = series.indexOf(currentShelf);
+    // console.log(index)
+    const len = series.length;
+    // console.log(len);
+    const nextInd = (index + 1) % len;
+    //  console.log(nextInd);
+    const current = updatedData[0].allAnomalies[nextInd];
+    // console.log(current);
+    setCdata(current);
+  };
+
+  const handlePrevClick = () => {
+    const series = updatedData[0].allAnomalies.map((itm) => itm.shelf_id);
+
+    const currentShelf = cData.shelf_id;
+
+    const index = series.indexOf(currentShelf);
+
+    const len = series.length;
+
+    const nextInd = (index - 1 + len) % len;
+
+    const current = updatedData[0].allAnomalies[nextInd];
+    setCdata(current);
   };
 
   return (
@@ -973,7 +1008,15 @@ const Customers = () => {
                               <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
                             </div>
                           )}
-                          <div style={{ position: 'relative' }}>
+                          <div
+                            style={{ position: 'relative' }}
+                            onMouseOver={() => {
+                              setNextbtn(true);
+                            }}
+                            onMouseOut={() => {
+                              setNextbtn(false);
+                            }}
+                          >
                             <img
                               className="image rounded-md"
                               // src={liveAnomalyImg ? selectedImage : anomalyDetails[0]?.reference_img}
@@ -986,6 +1029,36 @@ const Customers = () => {
                               //   setImageLoading(false);
                               // }}
                             />
+                            {nextBtn && (
+                              <>
+                                <IconButton
+                                  className="absolute top-1/2 right-0"
+                                  style={{
+                                    fontSize: '30px',
+                                    color: 'white',
+                                    backgroundColor: 'black',
+                                    borderRadius: '50%',
+                                    padding: '5px'
+                                  }}
+                                  onClick={handleNextClick}
+                                >
+                                  <FaAngleDoubleRight />
+                                </IconButton>
+                                <IconButton
+                                  className="absolute top-1/2 left-0"
+                                  style={{
+                                    fontSize: '30px',
+                                    color: 'white',
+                                    backgroundColor: 'black',
+                                    borderRadius: '50%',
+                                    padding: '5px'
+                                  }}
+                                  onClick={handlePrevClick}
+                                >
+                                  <FaAngleDoubleLeft />
+                                </IconButton>
+                              </>
+                            )}
                             {antn && <div style={highlightStyle}></div>}
                           </div>
                           {/* <div className="toggle-button-container absolute top-1 right-2">
