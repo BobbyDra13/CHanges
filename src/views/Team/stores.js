@@ -56,6 +56,7 @@ const AllStores = () => {
     try {
       setLoading(true);
       let response = await getUsers();
+      console.log(response.data);
       rowchange(response?.data);
     } catch (error) {
       console.error('Error Fetching Users: ', error);
@@ -71,11 +72,11 @@ const AllStores = () => {
 
   const prepareExportData = () => {
     const dataForExport = rows.map((row) => ({
-      Department: row.user_dept,
-      Role: row.user_role,
-      ID: row.user_id,
-      Name: row.user_name,
-      Store: row.store_id,
+      Department: row.id,
+      Role: row.role,
+      ID: row._id,
+      Name: row.name,
+      Store: row.store_name,
       Email: row.email,
       Phone: row.number
     }));
@@ -134,16 +135,16 @@ const AllStores = () => {
   // };
   const filteredAndSortedRows = useMemo(() => {
     let filteredData = rows.filter((row) => {
-      if (roleFilter !== '' && row.user_role !== roleFilter) {
+      if (roleFilter !== '' && row.role !== roleFilter) {
         return false;
       }
 
       const searchQueryLowerCase = searchQuery.toLowerCase();
       return (
         // row.user_dept.toLowerCase().includes(searchQueryLowerCase) ||
-        row.user_role.toLowerCase().includes(searchQueryLowerCase) ||
-        row.user_id.toLowerCase().includes(searchQueryLowerCase) ||
-        row.user_name.toLowerCase().includes(searchQueryLowerCase) ||
+        row.role.toLowerCase().includes(searchQueryLowerCase) ||
+        row._id.toLowerCase().includes(searchQueryLowerCase) ||
+        row.name.toLowerCase().includes(searchQueryLowerCase) ||
         row.store_id.toLowerCase().includes(searchQueryLowerCase) ||
         row.number.toLowerCase().includes(searchQueryLowerCase)
       );
@@ -184,22 +185,22 @@ const AllStores = () => {
       >
         <Button
           // onClick={handleAddUserDialogOpen}
-          className="cursor-not-allowed"
           component={Link}
           variant="contained"
           startIcon={<AddIcon />}
+          disabled
+          className="cursor-not-allowed"
           sx={{
             // bgcolor: theme.palette.success.main,
-            bgcolor: '#6ee7b7',
+            // bgcolor: '#6ee7b7',
             color: '#FFFFFF',
             borderRadius: '8px',
             padding: '10px 20px',
-            marginBottom: !isSmallScreen ? '1%' : '',
-            transition: 'background-color 0.3s ease',
-            '&:hover': {
-              // bgcolor: theme.palette.success.dark
-              bgcolor: '#6ee7b7'
-            }
+            marginBottom: !isSmallScreen ? '1%' : ''
+            // transition: 'background-color 0.3s ease',
+            // '&:hover': {
+            //   bgcolor: theme.palette.success.dark
+            // },
             // '&:active': {
             //   bgcolor: theme.palette.success.light,
             //   transform: 'scale(0.98)'

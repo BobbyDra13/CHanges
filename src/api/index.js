@@ -122,7 +122,7 @@ export const GetImagesFromSignedUrl = async (data) => {
 
 export const getUsers = async () => {
   try {
-    const res = await axios.get(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/getalluser`, {
+    const res = await axios.get(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/team/getalluser`, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -185,16 +185,12 @@ export const updateUser = async (id, user) => {
 
 export const createUser = async (user) => {
   try {
-    const res = await axios.post(
-      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/create`,
-      user,
-      {
-        headers: {
-          Accept: 'application/json',
-          Authorization: await token()
-        }
+    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/team/create`, user, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
       }
-    );
+    });
     // //console.log("api image response", res);
     return res;
   } catch (error) {

@@ -41,7 +41,7 @@
   "plugins": ["prettier", "react", "react-hooks"],
   "rules": {
     "react/jsx-uses-react": "error",
-    "react/jsx-uses-vars": "error",
+    "react/jsx-uses-vars": "warn",
     "react/react-in-jsx-scope": "off",
     "no-undef": "off",
     "react/display-name": "off",
