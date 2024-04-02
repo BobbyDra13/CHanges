@@ -803,7 +803,7 @@ const Insights = () => {
 
   let series = [
     {
-      name: 'Groups',
+      name: 'Bays',
       data: seriesData.map((value, i) => ({
         x: 5 + i * 10,
         y: value
@@ -868,7 +868,7 @@ const Insights = () => {
         },
 
         title: {
-          text: 'Number of Groups',
+          text: 'Number of Bays',
           style: {
             color: '#fff',
             fontSize: '12px'
