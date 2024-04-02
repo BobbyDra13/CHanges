@@ -151,7 +151,7 @@ const StoresTable = ({
               <TableCell padding="checkbox"></TableCell>
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_dept')} sortedKey="user_dept" label="Department" />
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_role')} sortedKey="user_role" label="Role" />
-              <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_id')} sortedKey="user_id" label="ID" />
+              {/* <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_id')} sortedKey="user_id" label="ID" /> */}
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_name')} sortedKey="user_name" label="Name" />
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('store_id')} sortedKey="store_id" label="Store" />
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('email')} sortedKey="email" label="Email" />
@@ -175,12 +175,12 @@ const StoresTable = ({
                   <Checkbox checked={isSelected(row.id)} onChange={() => handleRowSelect(row.id)} />
                 </TableCell>
                 <TableCell component={'th'} scope="row">
-                  {row.user_dept}
+                  {row.id}
                 </TableCell>
-                <TableCell align="left">{row.user_role}</TableCell>
-                <TableCell align="left">{row.user_id}</TableCell>
-                <TableCell align="left">{row.user_name}</TableCell>
-                <TableCell align="left">{row.store_id}</TableCell>
+                <TableCell align="left">{row.role}</TableCell>
+                {/* <TableCell align="left">{row._id}</TableCell> */}
+                <TableCell align="left">{row.name}</TableCell>
+                <TableCell align="left">{row.store_name}</TableCell>
                 <TableCell align="left">{row.email}</TableCell>
                 <TableCell align="left">{row.number}</TableCell>
                 <TableCell align="left">
