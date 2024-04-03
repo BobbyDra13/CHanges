@@ -5,6 +5,7 @@ import { IoIosSearch } from 'react-icons/io';
 const SearchBar = ({ searchQuery, handleSearchChange }) => {
   return (
     <TextField
+      className="hidden"
       id="outlined-disabled"
       value={searchQuery}
       onChange={handleSearchChange}
