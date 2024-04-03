@@ -401,11 +401,9 @@ const Customers = () => {
   // const navigate = useNavigate()
   useEffect(() => {
     async function sendAlertMsg() {
-      console.log(alertData);
-      if (alertData.user_id) {
+      if (alertData.zone_id) {
+        console.log(alertData);
         console.log('Number:', alertData.user_number);
-        const mssg = alertData.message === '' ? ' ' : alertData.message;
-        const num = alertData.user_number === '3024011800' ? '9960240543' : data.user_number;
         const API_KEY =
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NWY2MmE5Yzk4Nzk3MGFlZWM1ZTg0MCIsIm5hbWUiOiJOZW9QaHl0ZSIsImFwcE5hbWUiOiJBaVNlbnN5IiwiY2xpZW50SWQiOiI2NTVmNjJhOGM5ODc5NzBhZWVjNWU4M2IiLCJhY3RpdmVQbGFuIjoiQkFTSUNfTU9OVEhMWSIsImlhdCI6MTcwMDc0OTk5M30.8-SugzKOaRlF3BFhgTn944znZnsydeoUPudFEIZdNWs'; // Replace with your actual API key
         const API_URL = 'https://backend.aisensy.com/campaign/t1/api/v2';
@@ -413,20 +411,20 @@ const Customers = () => {
           return {
             apiKey: API_KEY,
             campaignName: 'disha_smart_alert_message_API_Campaign',
-            destination: '91' + num,
-            userName: data.user_name,
+            destination: '91' + '8085503475',
+            userName: 'Mayur Pawar',
             templateParams: ['$AgentName', '$BayId', '$ShelfId', '$AnomaliesTypes', '$BayId', '$ShelfId', '$CustomMessage'],
             tags: ['AgentName', 'BayId', 'ShelfId', 'AnomaliesTypes', 'BayId', 'ShelfId', 'CustomMessage'],
             attributes: {
-              AgentName: data.user_name,
+              AgentName: 'Mayur',
               BayId: data.zone_id,
               ShelfId: data.shelf_id,
               AnomaliesTypes: data.anomaly_type,
               //eslint-disable-next-line
               BayId: data.zone_id,
               //eslint-disable-next-line
-              ShelfId: data.shelf_id,
-              CustomMessage: mssg
+              ShelfId: 'Shelf- 4',
+              CustomMessage: 'Please the Anomalie'
             }
           };
         };
@@ -437,11 +435,11 @@ const Customers = () => {
 
         // const status = await SendAlert(alertData);
         // console.log(status);
-        if (status) {
-          setLoadsend(false);
-          setSnackbarOpen(true);
-          //  console.log('hello');
-        }
+        // if (status.status === 200) {
+        setLoadsend(false);
+        setSnackbarOpen(true);
+        //  console.log('hello');
+        // }
       }
     }
     sendAlertMsg();
@@ -1151,7 +1149,14 @@ const Customers = () => {
                                       Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
                                     </Typography>
                                     <Typography variant="body1">
-                                      Description: {itm.article_description ? itm.article_description : 'No Data Found'}
+                                      <span>Description :</span>
+                                      {itm.anomaly_type === 'alien_pop'
+                                        ? itm.print_tag
+                                          ? itm.print_tag
+                                          : 'No Data Found'
+                                        : itm.article_description
+                                        ? itm.article_description
+                                        : 'No Data Found'}
                                     </Typography>
                                     <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
                                   </div>

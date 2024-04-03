@@ -442,7 +442,14 @@ export default function ShelfView({ date }) {
                                       Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
                                     </Typography>
                                     <Typography variant="body1">
-                                      Description: {itm.article_description ? itm.article_description : 'No Data Found'}
+                                      <span>Description :</span>
+                                      {itm.anomaly_type === 'alien_pop'
+                                        ? itm.print_tag
+                                          ? itm.print_tag
+                                          : 'No Data Found'
+                                        : itm.article_description
+                                        ? itm.article_description
+                                        : 'No Data Found'}
                                     </Typography>
                                     <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
                                   </div>
