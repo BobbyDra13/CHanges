@@ -142,11 +142,11 @@ const AllStores = () => {
       const searchQueryLowerCase = searchQuery.toLowerCase();
       return (
         // row.user_dept.toLowerCase().includes(searchQueryLowerCase) ||
-        row.role.toLowerCase().includes(searchQueryLowerCase) ||
-        row._id.toLowerCase().includes(searchQueryLowerCase) ||
-        row.name.toLowerCase().includes(searchQueryLowerCase) ||
-        row.store_id.toLowerCase().includes(searchQueryLowerCase) ||
-        row.number.toLowerCase().includes(searchQueryLowerCase)
+        // row.role.toLowerCase().includes(searchQueryLowerCase) ||
+        // row._id.toLowerCase().includes(searchQueryLowerCase) ||
+        // row.number.toLowerCase().includes(searchQueryLowerCase) ||
+        // row.store_id.toLowerCase().includes(searchQueryLowerCase) ||
+        row.name.toLowerCase().includes(searchQueryLowerCase)
       );
     });
 
