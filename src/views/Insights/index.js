@@ -588,15 +588,7 @@ const Insights = () => {
             console.log('anomaliesDetectedLine', anomaliesDetectedLine);
             const lastElement = anomaliesDetectedLine[anomaliesDetectedLine.length - 1] || 0;
             const secondLastElement = anomaliesDetectedLine[anomaliesDetectedLine.length - 2] || 0;
-            let difference;
-            if (secondLastElement === 0 && lastElement !== 0) {
-              difference = 100;
-            } else {
-              difference =
-                secondLastElement === 0 || lastElement === 0
-                  ? 0
-                  : (((lastElement - secondLastElement) / secondLastElement) * 100).toFixed(1);
-            }
+            const difference = lastElement - secondLastElement;
             console.log('difference', difference);
             setAnomaliesChipData(difference);
 
@@ -811,7 +803,7 @@ const Insights = () => {
 
   let series = [
     {
-      name: 'Groups',
+      name: 'Bays',
       data: seriesData.map((value, i) => ({
         x: 5 + i * 10,
         y: value
@@ -876,7 +868,7 @@ const Insights = () => {
         },
 
         title: {
-          text: 'Number of Groups',
+          text: 'Number of Bays',
           style: {
             color: '#fff',
             fontSize: '12px'
@@ -938,7 +930,7 @@ const Insights = () => {
               chart={fullnessChartConfig}
               title="PoP Score"
               count={`${parseFloat(popPercentage) === 0 ? '0' : parseFloat(popPercentage).toFixed(1)}%`}
-              percentage={Math.abs(popChipData)}
+              percentage={`${Math.abs(popChipData)}%`}
               chipColor={+popChipData < 0 ? 'error' : 'success'}
               isLoss={+popChipData < 0}
               color={theme.palette.success.main}
@@ -977,7 +969,7 @@ const Insights = () => {
               title="Anomalies Found"
               count={`${anomaliesPercentage}`}
               percentage={Math.abs(anomaliesChipData)}
-              chipColor={anomaliesChipData < 0 ? 'error' : 'success'}
+              chipColor={anomaliesChipData >= 0 ? 'error' : 'success'}
               isLoss={anomaliesChipData < 0}
               color={theme.palette.error.main}
             />

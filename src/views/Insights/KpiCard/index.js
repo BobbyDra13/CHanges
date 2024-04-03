@@ -51,7 +51,7 @@ const KpiCard = ({ isLoaded, color, chipColor, title, count, percentage, isLoss,
                     {isLoss && <TrendingDownIcon style={{ fontSize: '1rem', color: 'inherit' }} />}
                   </>
                 }
-                label={`${percentage}%`}
+                label={`${percentage}`}
                 sx={{ ml: 1.25, pl: 1 }}
                 size="small"
               />
