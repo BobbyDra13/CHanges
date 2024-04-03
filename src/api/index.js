@@ -624,17 +624,17 @@ export const GetpopKPI = async (data) => {
 
 export const SendAlert = async (data, apiKey, apiUrl) => {
   console.log('SendAlert', data);
-  try{
-  const response = await axios.post(apiUrl, data, {
+  try {
+    const response = await axios.post(apiUrl, data, {
       headers: {
         Authorization: `Bearer ${apiKey}`
       }
-    })
-   
-      console.log('API Call Successful (Aisensy):', response.data);
-      return true;
-  }catch(error)  {
-      console.error('API Call Failed:', error.message);
-      return false;
-    };
+    });
+
+    console.log('API Call Successful (Aisensy):', response.data);
+    return true;
+  } catch (error) {
+    console.error('API Call Failed:', error.message);
+    return false;
+  }
 };

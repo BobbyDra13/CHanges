@@ -405,7 +405,7 @@ const Customers = () => {
       if (alertData.user_id) {
         console.log('Number:', alertData.user_number);
         const mssg = alertData.message === '' ? ' ' : alertData.message;
-        const num = alertData.user_number ==='3024011800' ? '9960240543':data.user_number;
+        const num = alertData.user_number === '3024011800' ? '9960240543' : data.user_number;
         const API_KEY =
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NWY2MmE5Yzk4Nzk3MGFlZWM1ZTg0MCIsIm5hbWUiOiJOZW9QaHl0ZSIsImFwcE5hbWUiOiJBaVNlbnN5IiwiY2xpZW50SWQiOiI2NTVmNjJhOGM5ODc5NzBhZWVjNWU4M2IiLCJhY3RpdmVQbGFuIjoiQkFTSUNfTU9OVEhMWSIsImlhdCI6MTcwMDc0OTk5M30.8-SugzKOaRlF3BFhgTn944znZnsydeoUPudFEIZdNWs'; // Replace with your actual API key
         const API_URL = 'https://backend.aisensy.com/campaign/t1/api/v2';
