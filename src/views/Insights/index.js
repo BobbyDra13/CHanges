@@ -733,7 +733,7 @@ const Insights = () => {
       if (barChartData) {
         setSelected(histogramChartRequirements.selectOptions[0].value);
         let chart = barChartData[0].data;
-        console.log("chartsss", chart);
+        console.log('chartsss', chart);
         let allRanges = chart.map((item) => item.range);
         let allCount = chart.map((item) => item.count);
         let newArray = allRanges.map((range, index) => ({ [range]: allCount[index] }));
