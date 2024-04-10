@@ -311,7 +311,7 @@ const Insights = () => {
         };
         const popKpiCardBody = {
           date: selectedDate.toString(),
-          store_id: '65c74d4112465588b7a4984c'
+          user_id: '660a457638e022104c155c06'
         };
         const donutBody = {
           date: selectedDate.toString(),
@@ -449,7 +449,7 @@ const Insights = () => {
             vmComplianceKpiData,
             anomaliesKpiData,
             anomaliesBarChartData,
-            barChart,
+            // barChart,
             vmcChart,
             // fullnessLineChart,
             vmcLineChart
@@ -681,7 +681,7 @@ const Insights = () => {
           }
           if (histogramData) {
             setBarChartData(histogramData.data);
-            console.log('histogramData', barChart);
+            console.log('histogramData', barChartData);
           }
           if (vmcChart) {
             setVmChartData(vmcChart.data);
@@ -732,7 +732,8 @@ const Insights = () => {
       //   console.log('barchart', barchart.asuk);
       if (barChartData) {
         setSelected(histogramChartRequirements.selectOptions[0].value);
-        let chart = barChartData.result;
+        let chart = barChartData[0].data;
+        console.log("chartsss", chart);
         let allRanges = chart.map((item) => item.range);
         let allCount = chart.map((item) => item.count);
         let newArray = allRanges.map((range, index) => ({ [range]: allCount[index] }));
