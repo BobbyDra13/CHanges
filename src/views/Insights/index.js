@@ -6,7 +6,7 @@ import {
   // GetBrandDonutData,
   GetFullnessKpi,
   GetAnomaliesKpi,
-  GetAnomaliesBarChartData,
+  // GetAnomaliesBarChartData,
   GetVMCompliance,
   GetVMComplianceForOneWeek,
   // GetFullnessForOneWeek,
@@ -15,7 +15,7 @@ import {
   GetBarChartData,
   GetVMscoreBar,
   GetCapProg,
-  GetPopPercentage,
+  // GetPopPercentage, //NOT NEEDED
   GetPopWeekLineData,
   GetPopHistogramData,
   GetAnomalies
@@ -110,7 +110,7 @@ const Insights = () => {
     series: [
       {
         name: 'Compliance %',
-        data: [67, 14, 52, 93, 30, 81, 45]
+        data: [0, 0, 0, 0, 0, 0, 0]
       }
     ],
     options: {
@@ -147,7 +147,7 @@ const Insights = () => {
     series: [
       {
         name: 'PoP Score %',
-        data: [67, 14, 52, 93, 30, 81, 45]
+        data: [0, 0, 0, 0, 0, 0, 0]
       }
     ],
 
@@ -185,7 +185,7 @@ const Insights = () => {
     series: [
       {
         name: 'Anomalies',
-        data: [72, 41, 89, 63, 27, 54, 94]
+        data: [0, 0, 0, 0, 0, 0, 0]
       }
     ],
     options: {
@@ -311,8 +311,8 @@ const Insights = () => {
         };
         const popKpiCardBody = {
           date: selectedDate.toString(),
-          store_id: '65c74d4112465588b7a4984c'
-        };
+          "user_id":"660a457638e022104c155c06"
+      }
         const donutBody = {
           date: selectedDate.toString(),
           store_id: '65c74d4112465588b7a4984c'
@@ -335,7 +335,7 @@ const Insights = () => {
           series: [
             {
               name: 'PoP Score %',
-              data: [67, 14, 52, 93, 30, 81, 45]
+              data: [0, 0, 0, 0, 0, 0, 0]
             }
           ],
 
@@ -411,7 +411,7 @@ const Insights = () => {
           series: [
             {
               name: 'Anomalies',
-              data: [72, 41, 89, 63, 27, 54, 94]
+              data: [0, 0, 0, 0, 0, 0, 0]
             }
           ],
           options: {
@@ -448,7 +448,7 @@ const Insights = () => {
             fullnessKpiData,
             vmComplianceKpiData,
             anomaliesKpiData,
-            anomaliesBarChartData,
+            // anomaliesBarChartData,
             barChart,
             vmcChart,
             // fullnessLineChart,
@@ -462,7 +462,7 @@ const Insights = () => {
             GetFullnessKpi(commonBody),
             GetVMCompliance(commonBody),
             GetAnomaliesKpi(commonBody),
-            GetAnomaliesBarChartData(commonBody),
+            // GetAnomaliesBarChartData(commonBody),
             GetBarChartData(commonBody),
             GetVMscoreBar(commonBody),
             // GetFullnessForOneWeek(body),
@@ -471,22 +471,23 @@ const Insights = () => {
           ]);
 
           const CapData = await GetCapProg(capBody);
-          const popPercentageData = await GetPopPercentage(popKpiCardBody);
+          //  const popPercentageData = await GetPopPercentage(popKpiCardBody); //No need
           const popLineData = await GetPopWeekLineData(popKpiCardBody);
           const histogramData = await GetPopHistogramData(popKpiCardBody);
-          const anomaliesData = await GetAnomalies(donutBody);
+          const anomaliesData = await GetAnomalies(popKpiCardBody);
 
           if (popLineData) {
             const popScoreFullnessLine = popLineData.data;
+            console.log('popScoreFullness', popLineData);
             const popScoreFullness = popScoreFullnessLine.map((item) => {
-              if (item.data && item.data.FullnessPopPercent) {
-                const percentage = parseFloat(item.data.FullnessPopPercent.replace('%', ''));
+              console.log(item.averagePopScore);
+              if (item && item.averagePopScore!='No data found') {
+                const percentage = parseFloat(item.averagePopScore.replace('%', ''));
                 return `${percentage.toFixed(2)}%`;
               } else {
                 return '0%';
               }
             });
-            console.log('popScoreFullness', popScoreFullness);
             const lastElement = parseFloat(popScoreFullness[popScoreFullness.length - 1].replace('%', '')) || 0;
             const secondLastElement = parseFloat(popScoreFullness[popScoreFullness.length - 2].replace('%', '')) || 0;
             const difference = `${(lastElement - secondLastElement).toFixed(1)}`;
@@ -575,11 +576,12 @@ const Insights = () => {
             setChartConfig(updatedChartConfig);
           }
           if (anomaliesData) {
+            console.log('anomaliesData', anomaliesData);
             const popScoreFullnessLine = anomaliesData.data;
 
-            const anomaliesDetectedLine = popScoreFullnessLine.response.map((item) => {
-              if (item.anomalies_found) {
-                const percentage = item.anomalies_found;
+            const anomaliesDetectedLine = popScoreFullnessLine.map((item) => {
+              if (item.anomaliesFound) {
+                const percentage = item.anomaliesFound-item.anomaliesResolved;
                 return percentage;
               } else {
                 return 0;
@@ -592,7 +594,7 @@ const Insights = () => {
             console.log('difference', difference);
             setAnomaliesChipData(difference);
 
-            const dates = popScoreFullnessLine.response.map((item) => item.Date);
+            const dates = popScoreFullnessLine.map((item) => item.date);
 
             const updatedChartConfig = {
               ...anomaliesChartConfig,
@@ -610,8 +612,18 @@ const Insights = () => {
                 }
               }
             };
-
+            
             setAnomaliesChartConfig(updatedChartConfig);
+
+          
+              setAnomaliesPercentage(anomaliesDetectedLine[anomaliesDetectedLine.length-1]);
+            
+
+
+            // if (anomaliesBarChartData) {
+            //   setAnomaliesBarChart(anomaliesBarChartData.data);
+            //   console.log('anomaliesBarChartData', anomaliesBarChartData);
+            // }
           }
           if (capProgressData) {
             if (capProgressData.data.length > 0) {
@@ -647,18 +659,11 @@ const Insights = () => {
 
             setBrandDonut(brandDonutData.data);
           }
-          if (popPercentageData) {
-            if (popPercentageData.data === null) {
+          if (popLineData) {
+            if (popLineData.data === null) {
               setPopPercentage('0%');
             } else {
-              setPopPercentage(popPercentageData.data.fullnessPopPercent);
-            }
-          }
-          if (anomaliesData) {
-            if (anomaliesData.data === null) {
-              setAnomaliesPercentage('0');
-            } else {
-              setAnomaliesPercentage(anomaliesData.data.response[anomaliesData.data.response.length - 1].anomalies_found);
+              setPopPercentage(popLineData.data[6].averagePopScore);
             }
           }
 
@@ -675,10 +680,7 @@ const Insights = () => {
             console.log('anomaliesKpiData', anomaliesKpiData);
           }
 
-          if (anomaliesBarChartData) {
-            setAnomaliesBarChart(anomaliesBarChartData.data);
-            console.log('anomaliesBarChartData', anomaliesBarChartData);
-          }
+          
           if (histogramData) {
             setBarChartData(histogramData.data);
             console.log('histogramData', barChart);
@@ -705,6 +707,7 @@ const Insights = () => {
   console.log('bar', barChartData);
   console.log('vmc bar', vmChartData);
   console.log('chartConfig', vmc);
+  
   useEffect(
     () => {
       // if (barChartData && barChartData.length > 0 && selected === histogramChartRequirements.selectOptions[0].value) {
@@ -732,7 +735,8 @@ const Insights = () => {
       //   console.log('barchart', barchart.asuk);
       if (barChartData) {
         setSelected(histogramChartRequirements.selectOptions[0].value);
-        let chart = barChartData.result;
+        let chart = barChartData[0].data;
+        console.log("chartsss", chart);
         let allRanges = chart.map((item) => item.range);
         let allCount = chart.map((item) => item.count);
         let newArray = allRanges.map((range, index) => ({ [range]: allCount[index] }));

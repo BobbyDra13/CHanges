@@ -121,17 +121,17 @@ const AnomaliesBarChart = ({ selectedDate }) => {
       const finalDate = selectedDate ? selectedDate : todayDate;
       const body = {
         date: finalDate,
-        store_id: '65c74d4112465588b7a4984c'
-      };
+        user_id: "660a457638e022104c155c06"
+    }
 
       try {
         const data = await GetAnomalies(body);
         if (data) {
-          console.log('BarDATA', data.data.response);
-          if (data.data.response.length > 0) {
-            const extractedDates = data.data.response.map((item) => item.Date);
-            const extractedResolved = data.data.response.map((item) => item.anomalies_resolved);
-            const extractedFound = data.data.response.map((item) => item.anomalies_found);
+          if (data.data.length > 0) {
+            const extractedDates = data.data.map((item) => item.date);
+            const extractedResolved = data.data.map((item) => parseInt(item.anomaliesResolved) || 0);
+            const extractedFound = data.data.map((item) => parseInt(item.anomaliesFound) || 0);
+            // console.log('BarDATA', extractedFound);
             setOptions({
               ...columnChartOptions,
               xaxis: {
@@ -149,7 +149,7 @@ const AnomaliesBarChart = ({ selectedDate }) => {
               }
             ]);
           }
-          setChartData(data.data.response);
+          setChartData(data.data);
         }
       } catch (error) {
         console.log(error);
