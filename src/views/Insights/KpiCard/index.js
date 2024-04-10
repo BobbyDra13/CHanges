@@ -41,23 +41,21 @@ const KpiCard = ({ isLoaded, color, chipColor, title, count, percentage, isLoss,
             )}
           </Grid>
           {isLoaded ? (
-            percentage && (
-              <Grid item>
-                <Chip
-                  variant="combined"
-                  color={chipColor}
-                  icon={
-                    <>
-                      {!isLoss && <TrendingUpIcon style={{ fontSize: '1rem', color: 'inherit' }} />}
-                      {isLoss && <TrendingDownIcon style={{ fontSize: '1rem', color: 'inherit' }} />}
-                    </>
-                  }
-                  label={`${percentage}%`}
-                  sx={{ ml: 1.25, pl: 1 }}
-                  size="small"
-                />
-              </Grid>
-            )
+            <Grid item>
+              <Chip
+                variant="combined"
+                color={chipColor}
+                icon={
+                  <>
+                    {!isLoss && <TrendingUpIcon style={{ fontSize: '1rem', color: 'inherit' }} />}
+                    {isLoss && <TrendingDownIcon style={{ fontSize: '1rem', color: 'inherit' }} />}
+                  </>
+                }
+                label={`${percentage}`}
+                sx={{ ml: 1.25, pl: 1 }}
+                size="small"
+              />
+            </Grid>
           ) : (
             <Skeleton sx={{ marginTop: 1.75 }} animation="wave" variant="rounded" width={55} height={26} />
           )}

@@ -10,11 +10,13 @@ import './zoom-card-item.css';
 import { bouncy } from 'ldrs';
 import MapComponent from './map';
 bouncy.register();
-
+// import whatsappApiService from '../../api/whatsAppService';
+// import MuiAlert from '@mui/material/Alert';
 // api imports
 import {
   GetStoreData,
-  GetStoreWiseInfo
+  GetStoreWiseInfo,
+  SendAlert
   // GetImagesFromSignedUrl,
   // GetAnolamayDetails
 } from 'api';
@@ -29,7 +31,7 @@ import {
   Box,
   useTheme,
   Tooltip,
-  Avatar,
+  // Avatar,
   AvatarGroup,
   IconButton,
   Menu,
@@ -41,7 +43,9 @@ import {
   // ImageListItemBar,
   // ToggleButton,
   // ToggleButtonGroup,
-  TextField
+  TextField,
+  Snackbar,
+  Alert
 } from '@mui/material';
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -67,6 +71,10 @@ import settings from '../../configs/react-slick-config';
 // import OrionImg from '../../assets/images/MapImages/orion.png';
 import CheckMarkImg from '../../assets/images/checkmark.png';
 import BarChartIcon from '@mui/icons-material/BarChart';
+import { CgSpinner } from 'react-icons/cg';
+import { FaAngleDoubleRight } from 'react-icons/fa';
+import { FaAngleDoubleLeft } from 'react-icons/fa';
+// import { current } from '@reduxjs/toolkit';
 // import MapImg from '../../assets/images/mapImg.png';
 // import OrionImg from '../../assets/images/MapImages/orion.png';
 
@@ -107,7 +115,22 @@ const Customers = () => {
   const [updatedData, setUpdateddata] = useState(false);
   const [cData, setCdata] = useState(false);
   const [lcData, setLCdata] = useState(false);
-
+  const [alertData, setAlertData] = useState({
+    zone_id: false,
+    shelf_id: false,
+    group_id: false,
+    user_name: false,
+    user_id: false,
+    user_number: false,
+    user_email: false,
+    user_role: false,
+    anomaly_type: false,
+    message: false
+  });
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [msg, setMsg] = useState('');
+  const [loadsend, setLoadsend] = useState(false);
+  const [nextBtn, setNextbtn] = useState(false);
   const theme = useTheme();
   const success = theme.palette.success.main;
   const successDark = theme.palette.success.dark;
@@ -118,14 +141,15 @@ const Customers = () => {
   const navigate = useNavigate();
   const options = [
     {
-      label: 'View',
-      icon: <VisibilityIcon />,
-      onClick: () => navigate('/main/stores/layout')
-    },
-    {
       label: 'Analysis',
       icon: <BarChartIcon />,
       onClick: () => navigate('/main/stores/storeinsight/overview')
+    },
+    {
+      label: 'View',
+      icon: <VisibilityIcon />,
+      onClick: () => navigate('/main/stores/layout'),
+      disabled: true
     },
     { label: 'Edit', icon: <EditIcon />, disabled: true },
     { label: 'Delete', icon: <DeleteIcon />, color: 'red', disabled: true }
@@ -240,7 +264,7 @@ const Customers = () => {
     // }
 
     const dt = {
-      date: '2024-03-21'
+      date: new Date()
     };
 
     try {
@@ -249,6 +273,7 @@ const Customers = () => {
       if (response2) {
         setUpdateddata(response2.data);
         // console.log(updatedData[0].store_name);
+        console.log('dop', response2.data);
       }
       if (response) {
         console.log('Store Data', response.data.storeDetails);
@@ -374,8 +399,140 @@ const Customers = () => {
   // };
 
   // const navigate = useNavigate()
+  useEffect(() => {
+    async function sendAlertMsg() {
+      if (alertData.zone_id) {
+        console.log(alertData);
+        console.log('Number:', alertData.user_number);
+        const API_KEY =
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NWY2MmE5Yzk4Nzk3MGFlZWM1ZTg0MCIsIm5hbWUiOiJOZW9QaHl0ZSIsImFwcE5hbWUiOiJBaVNlbnN5IiwiY2xpZW50SWQiOiI2NTVmNjJhOGM5ODc5NzBhZWVjNWU4M2IiLCJhY3RpdmVQbGFuIjoiQkFTSUNfTU9OVEhMWSIsImlhdCI6MTcwMDc0OTk5M30.8-SugzKOaRlF3BFhgTn944znZnsydeoUPudFEIZdNWs'; // Replace with your actual API key
+        const API_URL = 'https://backend.aisensy.com/campaign/t1/api/v2';
+        const formatDataForAPI = (data) => {
+          return {
+            apiKey: API_KEY,
+            campaignName: 'disha_smart_alert_message_API_Campaign',
+            destination: '91' + '8085503475',
+            userName: 'Mayur Pawar',
+            templateParams: ['$AgentName', '$BayId', '$ShelfId', '$AnomaliesTypes', '$BayId', '$ShelfId', '$CustomMessage'],
+            tags: ['AgentName', 'BayId', 'ShelfId', 'AnomaliesTypes', 'BayId', 'ShelfId', 'CustomMessage'],
+            attributes: {
+              AgentName: 'Mayur',
+              BayId: data.zone_id,
+              ShelfId: data.shelf_id,
+              AnomaliesTypes: data.anomaly_type,
+              //eslint-disable-next-line
+              BayId: data.zone_id,
+              //eslint-disable-next-line
+              ShelfId: 'Shelf- 4',
+              CustomMessage: 'Please the Anomalie'
+            }
+          };
+        };
 
+        const formattedData = formatDataForAPI(alertData);
+        const status = await SendAlert(formattedData, API_KEY, API_URL);
+        console.log('status', status);
+
+        // const status = await SendAlert(alertData);
+        // console.log(status);
+        // if (status.status === 200) {
+        setLoadsend(false);
+        setSnackbarOpen(true);
+        //  console.log('hello');
+        // }
+      }
+    }
+    sendAlertMsg();
+    // return () => {
+    //   setAlertData({
+    //     zone_id: false,
+    //     shelf_id: false,
+    //     group_id: false,
+    //     user_name: false,
+    //     user_id: false,
+    //     user_number: false,
+    //     user_email: false,
+    //     user_role: false,
+    //     anomaly_type: false,
+    //     message: false
+    //   });
+    // };
+  }, [alertData]);
+
+  const handelAlertClick = () => {
+    setLoadsend(true);
+    const array = cData.anomalies[0][0].map((item) => item.anomaly_type);
+    const uniqueSet = new Set(array);
+    const uniqueArray = Array.from(uniqueSet);
+
+    let result;
+    if (uniqueArray.length === 1) {
+      result = array[0].split('_')[0].charAt(0).toUpperCase() + array[0].split('_')[0].slice(1);
+    } else {
+      result = array
+        .map((item) => item.split('_')[0].charAt(0).toUpperCase() + item.split('_')[0].slice(1))
+        .reverse()
+        .join(' and ');
+    }
+
+    const string = cData.shelf_id;
+    console.log(string);
+    const substring = string.substring(string.indexOf('S') + 1);
+    const shelf = 'Shelf ' + substring;
+    console.log(shelf);
+
+    setAlertData({
+      zone_id: cData.zone_id,
+      shelf_id: shelf,
+      group_id: cData.group_id,
+      user_name: cData.user_name,
+      user_id: cData.user_id,
+      user_number: cData.user_number,
+      user_email: cData.user_email,
+      user_role: cData.user_role,
+      anomaly_type: result,
+      message: msg
+    });
+  };
+  console.log(alertData);
   console.log('fullness araya', fullnessArray);
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+    // setButtonLabel('Submit');
+  };
+
+  const handleNextClick = () => {
+    const series = updatedData[0].allAnomalies.map((itm) => itm.shelf_id);
+    // console.log(series);
+    const currentShelf = cData.shelf_id;
+    // console.log(currentShelf)
+    const index = series.indexOf(currentShelf);
+    // console.log(index)
+    const len = series.length;
+    // console.log(len);
+    const nextInd = (index + 1) % len;
+    //  console.log(nextInd);
+    const current = updatedData[0].allAnomalies[nextInd];
+    // console.log(current);
+    setCdata(current);
+  };
+
+  const handlePrevClick = () => {
+    const series = updatedData[0].allAnomalies.map((itm) => itm.shelf_id);
+
+    const currentShelf = cData.shelf_id;
+
+    const index = series.indexOf(currentShelf);
+
+    const len = series.length;
+
+    const nextInd = (index - 1 + len) % len;
+
+    const current = updatedData[0].allAnomalies[nextInd];
+    setCdata(current);
+  };
+
   return (
     <>
       <Breadcrumb title="Stores">
@@ -655,16 +812,17 @@ const Customers = () => {
                       <Stack direction={'column'}>
                         <Typography className="drop-shadow-md" align="center" variant="h2">
                           0/
-                          {!clickedBar.isUpKeep && !clickedBar.isVm && !clickedBar.isPop
+                          {/* {!clickedBar.isUpKeep && !clickedBar.isVm && !clickedBar.isPop
                             ? anomalies_count
                             : clickedBar.isUpKeep
                             ? fullnessArray.length
-                            : colorArray.length}
+                            : colorArray.length} */}
+                          {updatedData[0].anomalies_detected}
                         </Typography>
                         <Typography className="drop-shadow-md" align="center" variant="h6">
                           Anomalies solved
                         </Typography>
-                        <div className="w-full mt-2 flex justify-center">
+                        {/* <div className="w-full mt-2 flex justify-center">
                           <AvatarGroup
                             sx={{
                               '& .MuiAvatar-root': { width: 24, height: 24, fontSize: 15 }
@@ -695,7 +853,7 @@ const Customers = () => {
                               </Tooltip>
                             ))}
                           </AvatarGroup>
-                        </div>
+                        </div> */}
                       </Stack>
                     </div>
                   </Grid>
@@ -850,7 +1008,15 @@ const Customers = () => {
                               <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
                             </div>
                           )}
-                          <div style={{ position: 'relative' }}>
+                          <div
+                            style={{ position: 'relative' }}
+                            onMouseOver={() => {
+                              setNextbtn(true);
+                            }}
+                            onMouseOut={() => {
+                              setNextbtn(false);
+                            }}
+                          >
                             <img
                               className="image rounded-md"
                               // src={liveAnomalyImg ? selectedImage : anomalyDetails[0]?.reference_img}
@@ -863,6 +1029,36 @@ const Customers = () => {
                               //   setImageLoading(false);
                               // }}
                             />
+                            {nextBtn && (
+                              <>
+                                <IconButton
+                                  className="absolute top-1/2 right-0"
+                                  style={{
+                                    fontSize: '30px',
+                                    color: 'white',
+                                    backgroundColor: 'black',
+                                    borderRadius: '50%',
+                                    padding: '5px'
+                                  }}
+                                  onClick={handleNextClick}
+                                >
+                                  <FaAngleDoubleRight />
+                                </IconButton>
+                                <IconButton
+                                  className="absolute top-1/2 left-0"
+                                  style={{
+                                    fontSize: '30px',
+                                    color: 'white',
+                                    backgroundColor: 'black',
+                                    borderRadius: '50%',
+                                    padding: '5px'
+                                  }}
+                                  onClick={handlePrevClick}
+                                >
+                                  <FaAngleDoubleLeft />
+                                </IconButton>
+                              </>
+                            )}
                             {antn && <div style={highlightStyle}></div>}
                           </div>
                           {/* <div className="toggle-button-container absolute top-1 right-2">
@@ -943,48 +1139,58 @@ const Customers = () => {
                             </Typography>
                           </Box>
                         ) : (
-                          cData.anomalies[0][0].map((itm, index) => (
-                            <Tooltip
-                              title={
-                                <div>
-                                  <Typography variant="body1">
-                                    Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
-                                  </Typography>
-                                  <Typography variant="body1">
-                                    Description: {itm.article_description ? itm.article_description : 'No Data Found'}
-                                  </Typography>
-                                  <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
-                                </div>
-                              }
-                            >
-                              <Box
-                                key={index}
-                                paddingX={0.2}
-                                paddingY={0.04}
-                                className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                onMouseOver={() => {
-                                  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
-                                }}
-                                onMouseOut={() => {
-                                  if (antn) {
-                                    setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                    setAntn(!antn);
-                                  }
-                                }}
+                          cData.anomalies[0].map((item, index) =>
+                            item.map((itm, ind) => (
+                              <Tooltip
+                                key={index + ind}
+                                title={
+                                  <div>
+                                    <Typography variant="body1">
+                                      Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
+                                    </Typography>
+                                    <Typography variant="body1">
+                                      <span>Description :</span>
+                                      {itm.anomaly_type === 'alien_pop'
+                                        ? itm.print_tag
+                                          ? itm.print_tag
+                                          : 'No Data Found'
+                                        : itm.article_description
+                                        ? itm.article_description
+                                        : 'No Data Found'}
+                                    </Typography>
+                                    <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
+                                  </div>
+                                }
                               >
-                                <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
-                                <Typography paddingRight={2} variant="h6">
-                                  {itm.anomaly_type}
-                                </Typography>
-                              </Box>
-                            </Tooltip>
-                          ))
+                                <Box
+                                  key={index}
+                                  paddingX={0.2}
+                                  paddingY={0.04}
+                                  className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                  onMouseOver={() => {
+                                    calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
+                                  }}
+                                  onMouseOut={() => {
+                                    if (antn) {
+                                      setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                      setAntn(!antn);
+                                    }
+                                  }}
+                                >
+                                  <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
+                                  <Typography paddingRight={2} variant="h6">
+                                    {itm.anomaly_type}
+                                  </Typography>
+                                </Box>
+                              </Tooltip>
+                            ))
+                          )
                         )}
                       </div>
-                      <Typography width={'100%'} variant="h3">
+                      {/* <Typography width={'100%'} variant="h3">
                         Team
                       </Typography>
-                      <Divider />
+                      <Divider /> */}
                       <div style={{ paddingBottom: 13 }} className="w-full flex justify-start">
                         <AvatarGroup
                           sx={{
@@ -1020,23 +1226,28 @@ const Customers = () => {
                         placeholder="Give your Comments"
                         multiline
                         rows={4}
+                        onChange={(e) => setMsg(e.target.value)}
                       />
                     </div>
                     <div className="w-full bg-white mt-5 flex flex-row-reverse gap-3">
-                      <button className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 hover:cursor-not-allowed border-2 border-gray-400">
-                        <Typography>Ignore</Typography>
+                      <button className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 hover:cursor-not-allowed border-2 border-gray-300">
+                        <Typography className="text-gray-400">Ignore</Typography>
                       </button>
                       <button
                         className="lg:rounded-full rounded-xl md:w-[125px]  hover:cursor-not-allowed text-lg lg:text-2xl p-2.5"
-                        style={{ backgroundColor: success }}
+                        // style={{ backgroundColor: success }}
+                        style={{ backgroundColor: '#6ee7b7' }}
                       >
                         <Typography color={'white'}>Solved</Typography>
                       </button>
                       <button
-                        className="lg:rounded-full rounded-xl md:w-[125px] hover:cursor-not-allowed text-lg lg:text-2xl p-2.5"
+                        className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 flex align-middle justify-center"
                         style={{ backgroundColor: error }}
+                        onClick={() => handelAlertClick()}
+                        // style={{ backgroundColor: '#fca5a5' }}
                       >
-                        <Typography color={'white'}>Alert Store</Typography>
+                        {loadsend && <CgSpinner className="animate-spin" />}
+                        <Typography color={'white'}>{loadsend ? ' Alerting...' : 'Alert Store'} </Typography>
                       </button>
                     </div>
                   </div>
@@ -1047,6 +1258,17 @@ const Customers = () => {
           </DialogContent>
         </Dialog>
       )}
+      <Snackbar
+        open={snackbarOpen}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        key={'bottom' + 'right'}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} className="text-white" severity="success" sx={{ width: '100%', bgcolor: 'yellowgreen' }}>
+          Alert store message sent successfully !
+        </Alert>
+      </Snackbar>
     </>
   );
 };

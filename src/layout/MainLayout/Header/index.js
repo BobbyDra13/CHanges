@@ -127,6 +127,9 @@ const Header = ({ drawerToggle }) => {
             className={`text-lg hover:border-b-2 hover:border-emerald-500 hover:text-emerald-600 ${
               location.pathname === '/main/team' ? 'border-b-2 border-emerald-500 text-emerald-600' : ''
             }`}
+            // className={`text-lg hover:border-b-2 hover:border-emerald-500 hover:text-emerald-600 ${
+            //   location.pathname === '/main/team' ? 'border-b-2 border-emerald-500 text-emerald-600' : ''
+            // }`}
           >
             Teams
           </Link>

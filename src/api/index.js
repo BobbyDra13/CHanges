@@ -123,7 +123,7 @@ export const GetImagesFromSignedUrl = async (data) => {
 
 export const getUsers = async () => {
   try {
-    const res = await axios.get(`https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/getalluser`, {
+    const res = await axios.get(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/team/getalluser`, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -186,16 +186,12 @@ export const updateUser = async (id, user) => {
 
 export const createUser = async (user) => {
   try {
-    const res = await axios.post(
-      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/team/create`,
-      user,
-      {
-        headers: {
-          Accept: 'application/json',
-          Authorization: await token()
-        }
+    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/team/create`, user, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
       }
-    );
+    });
     // //console.log("api image response", res);
     return res;
   } catch (error) {
@@ -420,7 +416,7 @@ export const GetPartsWiseDetails = async (date, shelf_id) => {
 
 export const GetFullnessPop = async (data) => {
   try {
-    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/linechart`, data, {
+    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/linechart-2`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -502,7 +498,7 @@ export const GetZonedetails = async (data) => {
       }
     });
     // console.log("ZoneNameAPI",response);
-    const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.name }));
+    const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.id }));
     return res;
   } catch (error) {
     console.log('Error Calling GetCaptureProgress API: ', error);
@@ -536,5 +532,110 @@ export const GetShelfData = async (data) => {
     return res;
   } catch (error) {
     console.log('Error Calling GetCaptureProgress API: ', error);
+  }
+};
+
+export const GetPopPercentage = async (data) => {
+  try {
+    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/pop-score-2', data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetPopPercentage API: ', error);
+  }
+};
+
+export const GetPopWeekLineData = async (data) => {
+  try {
+    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/linechart-2', data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetPopWeekLineData API: ', error);
+  }
+};
+
+export const GetRadarChartData = async (data) => {
+  try {
+    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/doughnut-chart-2', data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetRadarChartData API: ', error);
+  }
+};
+
+export const GetDates = async (data) => {
+  try {
+    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/calender', data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetDates API: ', error);
+  }
+};
+
+export const GetPopHistogramData = async (data) => {
+  try {
+    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/histogram', data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetPopHistogramData API: ', error);
+  }
+};
+
+export const GetpopKPI = async (data) => {
+  try {
+    const res = await axios.post(
+      'https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/zone-wise-pop-score',
+      data,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: await token()
+        }
+      }
+    );
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetDates API: ', error);
+  }
+};
+
+export const SendAlert = async (data, apiKey, apiUrl) => {
+  console.log('SendAlert', data);
+  try {
+    const response = await axios.post(apiUrl, data, {
+      headers: {
+        Authorization: `Bearer ${apiKey}`
+      }
+    });
+
+    console.log('API Call Successful (Aisensy):', response.data);
+    return true;
+  } catch (error) {
+    console.error('API Call Failed:', error.message);
+    return false;
   }
 };

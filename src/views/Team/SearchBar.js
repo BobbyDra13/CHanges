@@ -12,7 +12,7 @@ const SearchBar = ({ searchQuery, handleSearchChange }) => {
         width: 150,
         '& .MuiOutlinedInput-notchedOutline': { borderRadius: '10px' }
       }}
-      placeholder="Search..."
+      placeholder="Search Name"
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">

@@ -56,6 +56,7 @@ const AllStores = () => {
     try {
       setLoading(true);
       let response = await getUsers();
+      console.log(response.data);
       rowchange(response?.data);
     } catch (error) {
       console.error('Error Fetching Users: ', error);
@@ -71,11 +72,11 @@ const AllStores = () => {
 
   const prepareExportData = () => {
     const dataForExport = rows.map((row) => ({
-      Department: row.user_dept,
-      Role: row.user_role,
-      ID: row.user_id,
-      Name: row.user_name,
-      Store: row.store_id,
+      Department: row.id,
+      Role: row.role,
+      ID: row._id,
+      Name: row.name,
+      Store: row.store_name,
       Email: row.email,
       Phone: row.number
     }));
@@ -124,28 +125,28 @@ const AllStores = () => {
     setSortConfig({ key, direction });
   };
 
-  const handleDeleteSelectedRows = async () => {
-    const remainingRows = rows.filter((row) => !selectedRows.includes(row.id));
-    for (const selectedRowId of selectedRows) {
-      await deleteUserData(selectedRowId);
-    }
-    rowchange(remainingRows);
-    setSelectedRows([]);
-  };
+  // const handleDeleteSelectedRows = async () => {
+  //   const remainingRows = rows.filter((row) => !selectedRows.includes(row.id));
+  //   for (const selectedRowId of selectedRows) {
+  //     await deleteUserData(selectedRowId);
+  //   }
+  //   rowchange(remainingRows);
+  //   setSelectedRows([]);
+  // };
   const filteredAndSortedRows = useMemo(() => {
     let filteredData = rows.filter((row) => {
-      if (roleFilter !== '' && row.user_role !== roleFilter) {
+      if (roleFilter !== '' && row.role !== roleFilter) {
         return false;
       }
 
       const searchQueryLowerCase = searchQuery.toLowerCase();
       return (
         // row.user_dept.toLowerCase().includes(searchQueryLowerCase) ||
-        row.user_role.toLowerCase().includes(searchQueryLowerCase) ||
-        row.user_id.toLowerCase().includes(searchQueryLowerCase) ||
-        row.user_name.toLowerCase().includes(searchQueryLowerCase) ||
-        row.store_id.toLowerCase().includes(searchQueryLowerCase) ||
-        row.number.toLowerCase().includes(searchQueryLowerCase)
+        // row.role.toLowerCase().includes(searchQueryLowerCase) ||
+        // row._id.toLowerCase().includes(searchQueryLowerCase) ||
+        // row.number.toLowerCase().includes(searchQueryLowerCase) ||
+        // row.store_id.toLowerCase().includes(searchQueryLowerCase) ||
+        row.name.toLowerCase().includes(searchQueryLowerCase)
       );
     });
 
@@ -163,9 +164,9 @@ const AllStores = () => {
   }, [rows, roleFilter, searchQuery, sortConfig]);
   const [showAddUserDialog, setShowAddUserDialog] = useState(false);
 
-  const handleAddUserDialogOpen = () => {
-    setShowAddUserDialog(true);
-  };
+  // const handleAddUserDialogOpen = () => {
+  //   setShowAddUserDialog(true);
+  // };
 
   const handleAddUserDialogClose = () => {
     setShowAddUserDialog(false);
@@ -183,27 +184,30 @@ const AllStores = () => {
         }}
       >
         <Button
-          onClick={handleAddUserDialogOpen}
+          // onClick={handleAddUserDialogOpen}
           component={Link}
           variant="contained"
           startIcon={<AddIcon />}
+          disabled
+          className="cursor-not-allowed"
           sx={{
-            bgcolor: theme.palette.success.main,
+            // bgcolor: theme.palette.success.main,
+            // bgcolor: '#6ee7b7',
             color: '#FFFFFF',
             borderRadius: '8px',
             padding: '10px 20px',
-            marginBottom: !isSmallScreen ? '1%' : '',
-            transition: 'background-color 0.3s ease',
-            '&:hover': {
-              bgcolor: theme.palette.success.dark
-            },
-            '&:active': {
-              bgcolor: theme.palette.success.light,
-              transform: 'scale(0.98)'
-            },
-            '&:focus': {
-              outline: 'none'
-            }
+            marginBottom: !isSmallScreen ? '1%' : ''
+            // transition: 'background-color 0.3s ease',
+            // '&:hover': {
+            //   bgcolor: theme.palette.success.dark
+            // },
+            // '&:active': {
+            //   bgcolor: theme.palette.success.light,
+            //   transform: 'scale(0.98)'
+            // },
+            // '&:focus': {
+            //   outline: 'none'
+            // }
           }}
         >
           Add User
@@ -243,16 +247,18 @@ const AllStores = () => {
           <div style={{ display: 'flex', alignItems: 'center' }}>
             {selectedRows.length > 0 && (
               <IconButton
-                className="btn btn-primary"
+                className="btn btn-primary cursor-not-allowed"
                 variant="contained"
-                onClick={handleDeleteSelectedRows}
+                // onClick={handleDeleteSelectedRows}
                 sx={{
-                  color: theme.palette.error.dark,
+                  // color: theme.palette.error.dark,
+                  color: '#fca5a5',
                   fontSize: '14px',
                   lineHeight: '17px',
                   textTransform: 'none',
                   '&:hover': {
-                    bgcolor: theme.palette.error.light
+                    // bgcolor: theme.palette.error.light
+                    bgcolor: '#fca5a5'
                   }
                 }}
               >
