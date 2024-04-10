@@ -18,6 +18,7 @@ export const GetCaptureProgress = async (data) => {
   }
 };
 
+
 export const dates = async () => {
   try {
     const res = await axios.get(`${lambUrl}/store/calender`);

@@ -310,6 +310,7 @@ const Insights = () => {
         setBrandDonut(false);
         setBarChartData(false);
         setVmChartData(false);
+        consoel.log("line 313", chartConfig)
         setFullChartConfig({
           type: 'line',
           height: 100,

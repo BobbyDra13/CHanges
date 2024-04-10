@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Grid, Stack, Typography, Card, Skeleton, LinearProgress } from '@mui/material';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { avgDwelTime } from '../../../api/sentinelAPI';
-import { footfallCard } from '../../../api/sentinelAPI';
+import { footfallCard, GetAnomaliesAndAnomalyRatio } from '../../../api/sentinelAPI';
 import { getRatio } from 'api/sentinelAPI';
 // import NoDataImg from '../../../assets/images/No_data-amico.svg';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
@@ -27,10 +27,10 @@ function Overview() {
   const [footfalldata, setFootfalldata] = useState(false);
   const [ftfall, setftfall] = useState([]);
   const [date, setSelectedDate] = useState('');
-  const [empCount, setEmpCount] = useState('');
-  const [costcnt, setCostcnt] = useState('');
+  const [articleCount, setArticleCount] = useState('');
+  const [anomalyCount, setAnomalyCount] = useState('');
   const [ratio, setRatio] = useState('');
-  console.log(ratio);
+  // console.log(ratio);
 
   // const calDate = (d) => {
   //   setSelectedDate(d.toString());
@@ -84,7 +84,7 @@ function Overview() {
           console.log(error);
         }
       }
-      console.log(commonBody);
+      // console.log(commonBody);
       // eslint-disable-next-line
       async function getFootfalldata() {
         try {
@@ -107,10 +107,30 @@ function Overview() {
           console.log(error);
         }
       }
+      async function getAnomaliesAndAnomalyRatio() {
+        const body = {
+          "date": "2024-03-21",
+          "store_id": "65c74d4112465588b7a4984c"
+        };
+        try {
+          const res = await GetAnomaliesAndAnomalyRatio(body);
+          const {
+            total_anomalies_detected,
+            totalCorrectArticles,
+            ratio: anomalyRatio 
+          } = res[0];
+          setAnomalyCount(total_anomalies_detected);
+          setArticleCount(totalCorrectArticles);
+          setRatio(anomalyRatio); 
+
+        } catch (error) {
+          console.log(error);
+        }
+      }
       async function getRatioData() {
         const body = {
-          start_date: date,
-          storeId: '65c5e26a0b5be5dc7af327dc'
+          "date": "2024-03-21",
+          "store_id": "65c74d4112465588b7a4984c"
         };
         try {
           const {
@@ -134,6 +154,7 @@ function Overview() {
       getFootfalldata();
       getDataDwell();
       getRatioData();
+      getAnomaliesAndAnomalyRatio();
     }
     // eslint-disable-next-line
   }, [date]);
@@ -394,8 +415,8 @@ function Overview() {
                 >
                   <Diversity3Icon className="bg-[#444444] text-white rounded-full p-2 text-5xl" />
                   <div className="flex flex-col items-start pt-1">
-                    {empCount ? <h3 className="text-4xl">{empCount}</h3> : <h3 className="text-4xl">NA</h3>}
-                    <p>Total employee count</p>
+                    {anomalyCount ? <h3 className="text-4xl">{anomalyCount}</h3> : <h3 className="text-4xl">NA</h3>}
+                    <p>Total anomaly count</p>
                   </div>
                 </Card>
                 <Card
@@ -411,14 +432,14 @@ function Overview() {
                 >
                   <Diversity3Icon className="bg-[#444444] text-white rounded-full p-2 text-5xl" />
                   <div className="flex flex-col items-start pt-1">
-                    {empCount ? (
+                    {anomalyCount ? (
                       <h3 className="text-4xl">
-                        {empCount}:{costcnt}
+                        {anomalyCount}:{articleCount}
                       </h3>
                     ) : (
                       <h3 className="text-4xl">NA</h3>
                     )}
-                    <p>Assoc.-Cust. ratio</p>
+                    <p>Anomalies : Articles ratio</p>
                   </div>
                 </Card>
               </div>
