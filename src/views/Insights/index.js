@@ -642,7 +642,7 @@ const Insights = () => {
             setCapProgress(CapData.data[0].captureProgressZoneData);
           }
           if (brandDonutData) {
-            console.log('Brand Data', brandDonutData.data);
+            // console.log('Brand Data', brandDonutData.data);
             if (brandDonutData.data.length > 0) {
               // const extractedFullness = brandDonutData.data.map((item) => Math.floor(item.fullness));
               // const extractedFullness = brandDonutData.map((item) => (item ? item.total_zone_missing_pop : 0));
