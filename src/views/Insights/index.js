@@ -2,7 +2,7 @@ import { React, useState, useEffect } from 'react';
 
 // API imports
 import {
-  GetCaptureProgress,
+  // GetCaptureProgress,
   // GetBrandDonutData,
   GetFullnessKpi,
   GetAnomaliesKpi,
@@ -308,7 +308,7 @@ const Insights = () => {
         };
         const capBody = {
           date: selectedDate.toString(),
-          store_id: '65c74d4112465588b7a4984c'
+          user_id: '660a457638e022104c155c06'
         };
         const popKpiCardBody = {
           date: selectedDate.toString(),
@@ -444,7 +444,7 @@ const Insights = () => {
         });
         try {
           const [
-            capProgressData,
+            // capProgressData,
             brandDonutData,
             fullnessKpiData,
             vmComplianceKpiData,
@@ -459,7 +459,7 @@ const Insights = () => {
             //eslint-disable-next-line
             // anomaliesLineChart
           ] = await Promise.all([
-            GetCaptureProgress(commonBody),
+            // GetCaptureProgress(commonBody),
             // GetBrandDonutData(brandDonutBody),
             GetRadarChartData(donutBody),
             GetFullnessKpi(commonBody),
@@ -484,7 +484,7 @@ const Insights = () => {
             console.log('popScoreFullness', popLineData);
             const popScoreFullness = popScoreFullnessLine.map((item) => {
               console.log(item.averagePopScore);
-              if (item && item.averagePopScore!='No data found') {
+              if (item && item.averagePopScore != 'No data found') {
                 const percentage = parseFloat(item.averagePopScore.replace('%', ''));
                 return `${percentage.toFixed(2)}%`;
               } else {
@@ -584,7 +584,7 @@ const Insights = () => {
 
             const anomaliesDetectedLine = popScoreFullnessLine.map((item) => {
               if (item.anomaliesFound) {
-                const percentage = item.anomaliesFound-item.anomaliesResolved;
+                const percentage = item.anomaliesFound - item.anomaliesResolved;
                 return percentage;
               } else {
                 return 0;
@@ -598,7 +598,7 @@ const Insights = () => {
             setAnomaliesChipData(difference);
 
             const dates = popScoreFullnessLine.map((item) => item.date);
-            console.log("datess", dates);
+            console.log('datess', dates);
 
             const updatedChartConfig = {
               ...anomaliesChartConfig,
@@ -616,33 +616,30 @@ const Insights = () => {
                 }
               }
             };
-            
+
             setAnomaliesChartConfig(updatedChartConfig);
 
-          
-              setAnomaliesPercentage(anomaliesDetectedLine[anomaliesDetectedLine.length-1]);
-            
-
+            setAnomaliesPercentage(anomaliesDetectedLine[anomaliesDetectedLine.length - 1]);
 
             // if (anomaliesBarChartData) {
             //   setAnomaliesBarChart(anomaliesBarChartData.data);
             //   console.log('anomaliesBarChartData', anomaliesBarChartData);
             // }
           }
-          if (capProgressData) {
-            if (capProgressData.data.length > 0) {
+          if (CapData) {
+            if (CapData.data.length > 0) {
               // const totalCapturePercentage = capProgressData.data.reduce((acc, item) => acc + item.capture_percentage, 0);
               // const average = totalCapturePercentage / capProgressData.data.length;
 
               // setAvgCapProgress(Math.floor(average));
-              setAvgCapProgress(CapData.data.storeCapturePercentage);
+              setAvgCapProgress(CapData.data[0].storeCapturePercentage);
             } else {
               setAvgCapProgress('');
               // setCapProgress('');
             }
             // setCapProgress(capProgressData.data);
             // console.log(capProgressData.data);
-            setCapProgress(CapData.data.captureProgressZoneData);
+            setCapProgress(CapData.data[0].captureProgressZoneData);
           }
           if (brandDonutData) {
             console.log('Brand Data', brandDonutData.data);
@@ -654,9 +651,9 @@ const Insights = () => {
                 item.total_zone_alien_pop,
                 item.total_zone_incorrect_pop,
                 item.total_zone_no_read_pop
-            ]);
+              ]);
               // const extractedBrandNames = brandDonutData.data.map((item) => item.group_id);
-              const extractedBrandNames = ["missing_pop", "incorrect_pop", "alien_pop", "no_read_pop"];
+              const extractedBrandNames = ['missing_pop', 'incorrect_pop', 'alien_pop', 'no_read_pop'];
 
               setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
 
@@ -672,7 +669,8 @@ const Insights = () => {
             setBrandDonut(brandDonutData.data);
           }
           if (popLineData) {
-            if (popLineData.data === null) {x
+            if (popLineData.data === null) {
+              x;
               setPopPercentage('0%');
             } else {
               setPopPercentage(popLineData.data[6].averagePopScore);
@@ -693,7 +691,6 @@ const Insights = () => {
             console.log('anomaliesKpiData', anomaliesKpiData);
           }
 
-          
           if (histogramData) {
             setBarChartData(histogramData.data);
             console.log('histogramData', barChartData);
@@ -721,7 +718,7 @@ const Insights = () => {
   console.log('fullness', brandFullness[0]);
   console.log('vmc bar', vmChartData);
   console.log('chartConfig', vmc);
-  
+
   useEffect(
     () => {
       // if (barChartData && barChartData.length > 0 && selected === histogramChartRequirements.selectOptions[0].value) {
@@ -1294,7 +1291,7 @@ const Insights = () => {
                   <div className="flex flex-col gap-1">
                     <Typography variant="h1" sx={{ color: accentColMain, paddingTop: 8 }}>
                       {avgCapProgress ? (
-                        `${avgCapProgress}`
+                        `${avgCapProgress}%`
                       ) : avgCapProgress === 0 ? ( //edited as zero from ''
                         '0%'
                       ) : (
@@ -1324,7 +1321,7 @@ const Insights = () => {
                 className="overflow-y-auto flex flex-col gap-1 scrollbar"
               >
                 <Grid container spacing={gridSpacing}>
-                  {avgCapProgress ? (
+                  {capProgress ? (
                     // capProgress.map((item) => (
                     <Grid item xs={12}>
                       <Grid container justifyContent={'space-between'} alignItems="center" spacing={1}>
@@ -1372,7 +1369,7 @@ const Insights = () => {
                                 capProgress.map((item, index) => (
                                   <>
                                     <Typography key={index} className="m-2" variant="body1" color="initial">
-                                      {item.zone_id} - {item.captureProgress}
+                                      {item.zone_id} - {item.capturePercentage}%
                                     </Typography>
                                     <LinearProgress
                                       sx={{
@@ -1384,7 +1381,7 @@ const Insights = () => {
                                       }}
                                       variant="determinate"
                                       aria-label="direct"
-                                      value={parseFloat(item.captureProgress)}
+                                      value={parseFloat(item.capturePercentage)}
                                       color="primary"
                                       // onClick={()=>(setOpenZone(!openZone))}
                                     />

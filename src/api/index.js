@@ -18,7 +18,6 @@ export const GetCaptureProgress = async (data) => {
   }
 };
 
-
 export const dates = async () => {
   try {
     const res = await axios.get(`${lambUrl}/store/calender`);
@@ -431,7 +430,7 @@ export const GetFullnessPop = async (data) => {
 
 export const GetStoreData = async (data) => {
   try {
-    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/stores/get-config-stores`, data, {
+    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/stores/get-stores-details`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -461,7 +460,7 @@ export const GetAnomalies = async (data) => {
 
 export const GetCapProg = async (data) => {
   try {
-    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/capture-progress`, data, {
+    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/capture-progress-2`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -552,7 +551,7 @@ export const GetPopPercentage = async (data) => {
 
 export const GetPopWeekLineData = async (data) => {
   try {
-    console.log(data)
+    console.log(data);
     const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/pop_score_linechart', data, {
       headers: {
         Accept: 'application/json',
@@ -640,5 +639,18 @@ export const SendAlert = async (data, apiKey, apiUrl) => {
   } catch (error) {
     console.error('API Call Failed:', error.message);
     return false;
+  }
+};
+export const getAnomalyForStore = async (data) => {
+  try {
+    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/stores/get-anomalies', data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res.data[0];
+  } catch (error) {
+    console.log('Error Calling getAnomalyForStore API: ', error);
   }
 };
