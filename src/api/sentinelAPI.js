@@ -1,6 +1,47 @@
 import axios from 'axios';
 import token from './authToken';
 
+
+// export const GetAnomaliesAndAnomalyRatio = async (data) => {
+//   try {
+//     const res = await axios.post(``, data, {
+//       headers: {
+//         Accept: 'application/json',
+//         Authorization: await token()
+//       }
+//     });
+//     return res;
+//   } catch (error) {
+//     console.log('Error Calling GetAnomaliesAndAnomalyRatio API: ', error);
+//   }
+// };
+
+
+export const GetAnomaliesAndAnomalyRatio = async (body) => {
+  const url = 'https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/anomalies-article';
+  const body1 = {
+    date: "2024-03-21",
+    store_id: "65c74d4112465588b7a4984c"
+  }
+  // console.log(body);
+  try {
+    const response = await axios.post(url, body1, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+
+    const data = response.data;
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.log('Error Calling GetAnomaliesAndAnomalyRatio API: ', error);
+    throw error; // Rethrow the error to be handled by the calling code if needed
+  }
+};
+
+
 export const footfallGraph = async (body) => {
   const url = 'https://i6zcdr9gb5.execute-api.eu-west-2.amazonaws.com/test/store/footfall_graph';
   // const body = {
