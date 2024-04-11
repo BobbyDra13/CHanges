@@ -96,6 +96,7 @@ const Insights = () => {
   const [anomaliesBarChart, setAnomaliesBarChart] = useState(false);
   //eslint-disable-next-line
   const [brandDonut, setBrandDonut] = useState(false);
+  const [brandNames, setBrandNames] = useState([]);
   const [brandChartOptions, setBrandChartOptions] = useState(BrandChartData.options);
   const [brandFullness, setBrandFullness] = useState(false);
   const [barChartData, setBarChartData] = useState(false);
@@ -315,7 +316,7 @@ const Insights = () => {
         };
         const donutBody = {
           date: selectedDate.toString(),
-          store_id: '65c74d4112465588b7a4984c'
+          user_id: '660a457638e022104c155c06'
         };
 
         setAvgCapProgress(false);
@@ -629,18 +630,26 @@ const Insights = () => {
             setCapProgress(CapData.data.captureProgressZoneData);
           }
           if (brandDonutData) {
-            // console.log('Brand Data', brandDonutData);
+            console.log('Brand Data', brandDonutData.data);
             if (brandDonutData.data.length > 0) {
               // const extractedFullness = brandDonutData.data.map((item) => Math.floor(item.fullness));
-              const extractedFullness = brandDonutData.data.map((item) => (item.data ? parseFloat(item.data.FullnessPopPercent) : 0));
-              const extractedBrandNames = brandDonutData.data.map((item) => item.group_id);
+              // const extractedFullness = brandDonutData.map((item) => (item ? item.total_zone_missing_pop : 0));
+              const extractedFullness = brandDonutData.data.map((item) => [
+                item.total_zone_missing_pop,
+                item.total_zone_alien_pop,
+                item.total_zone_incorrect_pop,
+                item.total_zone_no_read_pop
+            ]);
+              // const extractedBrandNames = brandDonutData.data.map((item) => item.group_id);
+              const extractedBrandNames = ["missing_pop", "incorrect_pop", "alien_pop", "no_read_pop"];
 
               setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
 
               setBrandFullness(extractedFullness);
-              console.log('brandfullness', extractedFullness.length);
+              // console.log('brandfullness', extractedFullness.length);
               console.log('Brand Fullness', extractedFullness);
-              // setBrandNames(extractedBrandNames);
+              setBrandNames(extractedBrandNames);
+              console.log('Brand Names', brandNames);
             } else {
               setBrandFullness([]);
             }
@@ -703,6 +712,7 @@ const Insights = () => {
     //eslint-disable-next-line
   }, [selectedDate]);
   console.log('bar', barChartData);
+  console.log('fullness', brandFullness[0]);
   console.log('vmc bar', vmChartData);
   console.log('chartConfig', vmc);
   useEffect(
@@ -1217,7 +1227,7 @@ const Insights = () => {
                           <Grid item>
                             <BrandDonutChart
                               chartOptions={brandChartOptions}
-                              chartSeries={brandFullness}
+                              chartSeries={brandFullness[0]}
                               chartHeight={BrandChartData.height}
                               chartType={BrandChartData.type}
                             />
