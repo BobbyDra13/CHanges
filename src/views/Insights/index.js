@@ -450,8 +450,8 @@ const Insights = () => {
             vmComplianceKpiData,
             anomaliesKpiData,
             // anomaliesBarChartData,
-            barChart,
-            anomaliesBarChartData,
+            // barChart,
+            // anomaliesBarChartData,
             // barChart,
             vmcChart,
             // fullnessLineChart,
@@ -496,7 +496,7 @@ const Insights = () => {
             const difference = `${(lastElement - secondLastElement).toFixed(1)}`;
             setPopChipData(difference);
 
-            const dates = popScoreFullnessLine.map((item) => item._id);
+            const dates = popScoreFullnessLine.map((item) => item.date);
 
             const updatedFullnessChartConfig = {
               ...fullnessChartConfig,
@@ -598,6 +598,7 @@ const Insights = () => {
             setAnomaliesChipData(difference);
 
             const dates = popScoreFullnessLine.map((item) => item.date);
+            console.log("datess", dates);
 
             const updatedChartConfig = {
               ...anomaliesChartConfig,
@@ -671,7 +672,7 @@ const Insights = () => {
             setBrandDonut(brandDonutData.data);
           }
           if (popLineData) {
-            if (popLineData.data === null) {
+            if (popLineData.data === null) {x
               setPopPercentage('0%');
             } else {
               setPopPercentage(popLineData.data[6].averagePopScore);
@@ -680,6 +681,7 @@ const Insights = () => {
 
           if (fullnessKpiData) {
             setFullness(fullnessKpiData.data);
+            // console.log('fullnessKpiData', fullnessKpiData);
           }
 
           if (vmComplianceKpiData) {

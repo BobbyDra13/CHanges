@@ -23,7 +23,7 @@ export const GetAnomaliesAndAnomalyRatio = async (body) => {
     date: "2024-03-21",
     store_id: "65c74d4112465588b7a4984c"
   }
-  // console.log(body);
+  console.log(body);
   try {
     const response = await axios.post(url, body1, {
       headers: {
