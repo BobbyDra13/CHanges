@@ -16,7 +16,8 @@ bouncy.register();
 import {
   GetStoreData,
   GetStoreWiseInfo,
-  SendAlert
+  SendAlert,
+  getAnomalyForStore
   // GetImagesFromSignedUrl,
   // GetAnolamayDetails
 } from 'api';
@@ -115,6 +116,7 @@ const Customers = () => {
   const [updatedData, setUpdateddata] = useState(false);
   const [cData, setCdata] = useState(false);
   const [lcData, setLCdata] = useState(false);
+  const [storeAnomalies, setStoreAnomalies] = useState([]);
   const [alertData, setAlertData] = useState({
     zone_id: false,
     shelf_id: false,
@@ -264,7 +266,8 @@ const Customers = () => {
     // }
 
     const dt = {
-      date: new Date()
+      date: new Date(),
+      user_id: '660a457638e022104c155c06'
     };
 
     try {
@@ -503,7 +506,7 @@ const Customers = () => {
   };
 
   const handleNextClick = () => {
-    const series = updatedData[0].allAnomalies.map((itm) => itm.shelf_id);
+    const series = storeAnomalies[cData._id].allAnomalies.map((itm) => itm.shelf_id);
     // console.log(series);
     const currentShelf = cData.shelf_id;
     // console.log(currentShelf)
@@ -513,14 +516,13 @@ const Customers = () => {
     // console.log(len);
     const nextInd = (index + 1) % len;
     //  console.log(nextInd);
-    const current = updatedData[0].allAnomalies[nextInd];
+    const current = storeAnomalies[cData._id].allAnomalies[nextInd];
     // console.log(current);
     setCdata(current);
   };
 
   const handlePrevClick = () => {
-    const series = updatedData[0].allAnomalies.map((itm) => itm.shelf_id);
-
+    const series = storeAnomalies[cData._id].allAnomalies.map((itm) => itm.shelf_id);
     const currentShelf = cData.shelf_id;
 
     const index = series.indexOf(currentShelf);
@@ -529,8 +531,34 @@ const Customers = () => {
 
     const nextInd = (index - 1 + len) % len;
 
-    const current = updatedData[0].allAnomalies[nextInd];
+    const current = storeAnomalies[cData._id].allAnomalies[nextInd];
     setCdata(current);
+  };
+  useEffect(() => {
+    fetchData();
+  }, [updatedData]);
+  const fetchData = async () => {
+    if (updatedData.length > 0) {
+      const promises = updatedData.map(async (s) => {
+        try {
+          const data = await getAnomalyForStore({ store_id: s.store });
+          return { storeId: s.store, data };
+        } catch (error) {
+          console.error(`Error fetching anomalies for store ${s.store}:`, error);
+          return { storeId: s.store, data: null }; // Set data to null in case of error
+        }
+      });
+      try {
+        const results = await Promise.all(promises);
+        const anomaliesData = {};
+        results.forEach((result) => {
+          anomaliesData[result.storeId] = result.data;
+        });
+        setStoreAnomalies(anomaliesData);
+      } catch (error) {
+        console.error('Error fetching anomalies for stores:', error);
+      }
+    }
   };
 
   return (
@@ -547,8 +575,8 @@ const Customers = () => {
         <Typography variant="h6" component="h2" sx={{ paddingLeft: '25px', paddingTop: '12px' }}>
           *Showing last Captured data.
         </Typography>
-        {storesData && storesData.length > 0 ? (
-          storesData.map((item, index) => (
+        {updatedData && updatedData.length > 0 ? (
+          updatedData.map((item, index) => (
             <Grid key={index} xs={12} item>
               <Card className="shadow-xl" sx={{ padding: 1 }}>
                 <Grid container spacing={1}>
@@ -566,10 +594,10 @@ const Customers = () => {
                             onClick={() => navigate('/main/stores/layout')}
                           /> */}
                         <MapComponent
-                          lat={updatedData[0].location.latitude}
-                          lng={updatedData[0].location.longitude}
-                          address={updatedData[0].address}
-                          name={updatedData[0].store_name}
+                          lat={item.location.latitude}
+                          lng={item.location.longitude}
+                          address={item.address}
+                          name={item.store_name}
                         />
                         {/* </Tooltip> */}
                         {/* <div className="rounded-md border border-gray-300 w-20 h-[105px] drop-shadow-md">
@@ -595,7 +623,7 @@ const Customers = () => {
                                 variant="h5"
                                 onClick={() => navigate('/main/stores/storeinsight/overview')}
                               >
-                                {updatedData[0]?.store_id} - {updatedData[0]?.store_name}
+                                {item.store_id} - {item.store_name}
                               </Typography>
                             </Stack>
                             <IconButton
@@ -664,13 +692,13 @@ const Customers = () => {
                                 }}
                                 variant="determinate"
                                 // value={item.capture_count ? Math.min(Math.floor((item.capture_count / totalParts) * 100), 100) : 0}
-                                value={updatedData[0].capture_percentage ? parseFloat(updatedData[0].capture_percentage) : 0}
+                                value={item.capture_percentage ? parseFloat(item.capture_percentage) : 0}
                                 // color="secondary"
                               />
                               <button className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center">
                                 <Typography sx={{ color: 'white' }} variant="subtitle2">
                                   {/* {item.capture_count ? Math.min(Math.floor((item.capture_count / totalParts) * 100), 100) : 0} % */}
-                                  {updatedData[0].capture_percentage ? updatedData[0].capture_percentage : '0%'}
+                                  {item.capture_percentage ? parseFloat(item.capture_percentage) : '0'}%
                                 </Typography>
                               </button>
                             </Box>
@@ -790,7 +818,7 @@ const Customers = () => {
                                 }}
                                 variant="determinate"
                                 // value={0}
-                                value={updatedData[0].pop_percentage ? parseFloat(updatedData[0].pop_percentage) : 0}
+                                value={item.pop_percentage ? parseFloat(item.pop_percentage) : 0}
                                 // color="secondary"
                               />
                               <button
@@ -798,7 +826,7 @@ const Customers = () => {
                                 className="absolute hover:cursor-pointer w-full h-full flex justify-center place-items-center"
                               >
                                 <Typography sx={{ color: 'white' }} variant="subtitle2">
-                                  {updatedData[0].pop_percentage ? updatedData[0].pop_percentage : '0%'}
+                                {item.pop_percentage ? parseFloat(item.pop_percentage).toFixed(2) : '0'}%
                                 </Typography>
                               </button>
                             </Box>
@@ -817,7 +845,7 @@ const Customers = () => {
                             : clickedBar.isUpKeep
                             ? fullnessArray.length
                             : colorArray.length} */}
-                          {updatedData[0].anomalies_detected}
+                          {storeAnomalies[item.store] ? storeAnomalies[item.store].anomalies_detected : '...'}
                         </Typography>
                         <Typography className="drop-shadow-md" align="center" variant="h6">
                           Anomalies solved
@@ -862,7 +890,8 @@ const Customers = () => {
                       {!clickedBar.isUpKeep && !clickedBar.isVm && !clickedBar.isPop ? (
                         <Slider {...settings}>
                           {/* {item.store_anomalies.map((anomaly, index) => (  */}
-                          {updatedData[0].allAnomalies.map((anomaly, index) => (
+                          {storeAnomalies[item.store] ? (
+                            storeAnomalies[item.store].allAnomalies.map((anomaly, index) => (
                             <div
                               onClick={() =>
                                 handleImageClick(
@@ -873,7 +902,7 @@ const Customers = () => {
                                   // anomaly.store_anomalies.anomalies_found[0].type,
                                   anomaly,
                                   // anomaly.store_anomalies.timestamps
-                                  '2024-01-01'
+                                  // '2024-01-01'
                                 )
                               }
                               key={index}
@@ -888,7 +917,9 @@ const Customers = () => {
                                 loading="lazy"
                               />
                             </div>
-                          ))}
+                          ))):(
+                            <div> No anomalies found.</div>
+                          )}
                         </Slider>
                       ) : clickedBar.isUpKeep && !clickedBar.isVm && !clickedBar.isPop && fullnessArray.length > 0 ? (
                         <Slider {...settings}>
