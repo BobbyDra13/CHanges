@@ -18,6 +18,7 @@ export const GetCaptureProgress = async (data) => {
   }
 };
 
+
 export const dates = async () => {
   try {
     const res = await axios.get(`${lambUrl}/store/calender`);
@@ -445,7 +446,7 @@ export const GetStoreData = async (data) => {
 
 export const GetAnomalies = async (data) => {
   try {
-    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/anomalies-graph`, data, {
+    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/anomalie-bar-graph`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -481,7 +482,7 @@ export const GetDonutData = async (data) => {
         Authorization: await token()
       }
     });
-    //console.log(res);
+    console.log(res);
     return res;
   } catch (error) {
     console.log('Error Calling GetCaptureProgress API: ', error);
@@ -550,7 +551,8 @@ export const GetPopPercentage = async (data) => {
 
 export const GetPopWeekLineData = async (data) => {
   try {
-    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/linechart-2', data, {
+    console.log(data)
+    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/pop_score_linechart', data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
