@@ -2,7 +2,7 @@ import { React, useState, useEffect } from 'react';
 
 // API imports
 import {
-  GetCaptureProgress,
+  // GetCaptureProgress,
   // GetBrandDonutData,
   GetFullnessKpi,
   GetAnomaliesKpi,
@@ -307,7 +307,7 @@ const Insights = () => {
         };
         const capBody = {
           date: selectedDate.toString(),
-          store_id: '65c74d4112465588b7a4984c'
+          user_id: '660a457638e022104c155c06'
         };
         const popKpiCardBody = {
           date: selectedDate.toString(),
@@ -443,14 +443,14 @@ const Insights = () => {
         });
         try {
           const [
-            capProgressData,
+            // capProgressData,
             brandDonutData,
             fullnessKpiData,
             vmComplianceKpiData,
             anomaliesKpiData,
             // anomaliesBarChartData,
-            barChart,
-            anomaliesBarChartData,
+            // barChart,
+            // anomaliesBarChartData,
             // barChart,
             vmcChart,
             // fullnessLineChart,
@@ -458,7 +458,7 @@ const Insights = () => {
             //eslint-disable-next-line
             // anomaliesLineChart
           ] = await Promise.all([
-            GetCaptureProgress(commonBody),
+            // GetCaptureProgress(commonBody),
             // GetBrandDonutData(brandDonutBody),
             GetRadarChartData(donutBody),
             GetFullnessKpi(commonBody),
@@ -627,20 +627,20 @@ const Insights = () => {
             //   console.log('anomaliesBarChartData', anomaliesBarChartData);
             // }
           }
-          if (capProgressData) {
-            if (capProgressData.data.length > 0) {
+          if (CapData) {
+            if (CapData.data.length > 0) {
               // const totalCapturePercentage = capProgressData.data.reduce((acc, item) => acc + item.capture_percentage, 0);
               // const average = totalCapturePercentage / capProgressData.data.length;
 
               // setAvgCapProgress(Math.floor(average));
-              setAvgCapProgress(CapData.data.storeCapturePercentage);
+              setAvgCapProgress(CapData.data[0].storeCapturePercentage);
             } else {
               setAvgCapProgress('');
               // setCapProgress('');
             }
             // setCapProgress(capProgressData.data);
             // console.log(capProgressData.data);
-            setCapProgress(CapData.data.captureProgressZoneData);
+            setCapProgress(CapData.data[0].captureProgressZoneData);
           }
           if (brandDonutData) {
             // console.log('Brand Data', brandDonutData);
@@ -1282,7 +1282,7 @@ const Insights = () => {
                   <div className="flex flex-col gap-1">
                     <Typography variant="h1" sx={{ color: accentColMain, paddingTop: 8 }}>
                       {avgCapProgress ? (
-                        `${avgCapProgress}`
+                        `${avgCapProgress}%`
                       ) : avgCapProgress === 0 ? ( //edited as zero from ''
                         '0%'
                       ) : (
@@ -1312,7 +1312,7 @@ const Insights = () => {
                 className="overflow-y-auto flex flex-col gap-1 scrollbar"
               >
                 <Grid container spacing={gridSpacing}>
-                  {avgCapProgress ? (
+                  {capProgress ? (
                     // capProgress.map((item) => (
                     <Grid item xs={12}>
                       <Grid container justifyContent={'space-between'} alignItems="center" spacing={1}>
@@ -1360,7 +1360,7 @@ const Insights = () => {
                                 capProgress.map((item, index) => (
                                   <>
                                     <Typography key={index} className="m-2" variant="body1" color="initial">
-                                      {item.zone_id} - {item.captureProgress}
+                                      {item.zone_id} - {item.capturePercentage}%
                                     </Typography>
                                     <LinearProgress
                                       sx={{
@@ -1372,7 +1372,7 @@ const Insights = () => {
                                       }}
                                       variant="determinate"
                                       aria-label="direct"
-                                      value={parseFloat(item.captureProgress)}
+                                      value={parseFloat(item.capturePercentage)}
                                       color="primary"
                                       // onClick={()=>(setOpenZone(!openZone))}
                                     />
