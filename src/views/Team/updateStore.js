@@ -130,6 +130,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
         const response = await getOneUser(rowId);
         setUser(response.data);
         setEmail(response.data.email);
+        // eslint-disable-next-line
         whatsapp = response.data.whatsapp;
         setLoading(false);
         setCurrentUserId(response.data.user_id);

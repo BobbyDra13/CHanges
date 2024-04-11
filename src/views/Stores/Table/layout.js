@@ -117,6 +117,7 @@ const StoreLayout = () => {
 
   useEffect(() => {
     getLayoutData();
+    // eslint-disable-next-line
   }, [selectedDate]);
 
   const getShelfData = async (bay_id) => {
