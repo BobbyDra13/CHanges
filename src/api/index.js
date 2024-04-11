@@ -542,6 +542,7 @@ export const GetPopPercentage = async (data) => {
         Authorization: await token()
       }
     });
+    console.log("anomaly_data", res);
     return res;
   } catch (error) {
     console.log('Error Calling GetPopPercentage API: ', error);
@@ -565,7 +566,7 @@ export const GetPopWeekLineData = async (data) => {
 
 export const GetRadarChartData = async (data) => {
   try {
-    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/doughnut-chart-2', data, {
+    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/anomalies-group', data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -599,6 +600,7 @@ export const GetPopHistogramData = async (data) => {
         Authorization: await token()
       }
     });
+    console.log("histogram data", res)
     return res;
   } catch (error) {
     console.log('Error Calling GetPopHistogramData API: ', error);

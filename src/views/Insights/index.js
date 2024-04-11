@@ -96,6 +96,7 @@ const Insights = () => {
   const [anomaliesBarChart, setAnomaliesBarChart] = useState(false);
   //eslint-disable-next-line
   const [brandDonut, setBrandDonut] = useState(false);
+  const [brandNames, setBrandNames] = useState([]);
   const [brandChartOptions, setBrandChartOptions] = useState(BrandChartData.options);
   const [brandFullness, setBrandFullness] = useState(false);
   const [barChartData, setBarChartData] = useState(false);
@@ -315,7 +316,7 @@ const Insights = () => {
         };
         const donutBody = {
           date: selectedDate.toString(),
-          store_id: '65c74d4112465588b7a4984c'
+          user_id: '660a457638e022104c155c06'
         };
 
         setAvgCapProgress(false);
@@ -483,7 +484,7 @@ const Insights = () => {
             console.log('popScoreFullness', popLineData);
             const popScoreFullness = popScoreFullnessLine.map((item) => {
               console.log(item.averagePopScore);
-              if (item && item.averagePopScore!='No data found') {
+              if (item && item.averagePopScore != 'No data found') {
                 const percentage = parseFloat(item.averagePopScore.replace('%', ''));
                 return `${percentage.toFixed(2)}%`;
               } else {
@@ -495,7 +496,7 @@ const Insights = () => {
             const difference = `${(lastElement - secondLastElement).toFixed(1)}`;
             setPopChipData(difference);
 
-            const dates = popScoreFullnessLine.map((item) => item._id);
+            const dates = popScoreFullnessLine.map((item) => item.date);
 
             const updatedFullnessChartConfig = {
               ...fullnessChartConfig,
@@ -583,7 +584,7 @@ const Insights = () => {
 
             const anomaliesDetectedLine = popScoreFullnessLine.map((item) => {
               if (item.anomaliesFound) {
-                const percentage = item.anomaliesFound-item.anomaliesResolved;
+                const percentage = item.anomaliesFound - item.anomaliesResolved;
                 return percentage;
               } else {
                 return 0;
@@ -597,6 +598,7 @@ const Insights = () => {
             setAnomaliesChipData(difference);
 
             const dates = popScoreFullnessLine.map((item) => item.date);
+            console.log('datess', dates);
 
             const updatedChartConfig = {
               ...anomaliesChartConfig,
@@ -614,13 +616,10 @@ const Insights = () => {
                 }
               }
             };
-            
+
             setAnomaliesChartConfig(updatedChartConfig);
 
-          
-              setAnomaliesPercentage(anomaliesDetectedLine[anomaliesDetectedLine.length-1]);
-            
-
+            setAnomaliesPercentage(anomaliesDetectedLine[anomaliesDetectedLine.length - 1]);
 
             // if (anomaliesBarChartData) {
             //   setAnomaliesBarChart(anomaliesBarChartData.data);
@@ -643,18 +642,26 @@ const Insights = () => {
             setCapProgress(CapData.data[0].captureProgressZoneData);
           }
           if (brandDonutData) {
-            // console.log('Brand Data', brandDonutData);
+            console.log('Brand Data', brandDonutData.data);
             if (brandDonutData.data.length > 0) {
               // const extractedFullness = brandDonutData.data.map((item) => Math.floor(item.fullness));
-              const extractedFullness = brandDonutData.data.map((item) => (item.data ? parseFloat(item.data.FullnessPopPercent) : 0));
-              const extractedBrandNames = brandDonutData.data.map((item) => item.group_id);
+              // const extractedFullness = brandDonutData.map((item) => (item ? item.total_zone_missing_pop : 0));
+              const extractedFullness = brandDonutData.data.map((item) => [
+                item.total_zone_missing_pop,
+                item.total_zone_alien_pop,
+                item.total_zone_incorrect_pop,
+                item.total_zone_no_read_pop
+              ]);
+              // const extractedBrandNames = brandDonutData.data.map((item) => item.group_id);
+              const extractedBrandNames = ['missing_pop', 'incorrect_pop', 'alien_pop', 'no_read_pop'];
 
               setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
 
               setBrandFullness(extractedFullness);
-              console.log('brandfullness', extractedFullness.length);
+              // console.log('brandfullness', extractedFullness.length);
               console.log('Brand Fullness', extractedFullness);
-              // setBrandNames(extractedBrandNames);
+              setBrandNames(extractedBrandNames);
+              console.log('Brand Names', brandNames);
             } else {
               setBrandFullness([]);
             }
@@ -663,6 +670,7 @@ const Insights = () => {
           }
           if (popLineData) {
             if (popLineData.data === null) {
+              x;
               setPopPercentage('0%');
             } else {
               setPopPercentage(popLineData.data[6].averagePopScore);
@@ -671,6 +679,7 @@ const Insights = () => {
 
           if (fullnessKpiData) {
             setFullness(fullnessKpiData.data);
+            // console.log('fullnessKpiData', fullnessKpiData);
           }
 
           if (vmComplianceKpiData) {
@@ -682,7 +691,6 @@ const Insights = () => {
             console.log('anomaliesKpiData', anomaliesKpiData);
           }
 
-          
           if (histogramData) {
             setBarChartData(histogramData.data);
             console.log('histogramData', barChartData);
@@ -707,9 +715,10 @@ const Insights = () => {
     //eslint-disable-next-line
   }, [selectedDate]);
   console.log('bar', barChartData);
+  console.log('fullness', brandFullness[0]);
   console.log('vmc bar', vmChartData);
   console.log('chartConfig', vmc);
-  
+
   useEffect(
     () => {
       // if (barChartData && barChartData.length > 0 && selected === histogramChartRequirements.selectOptions[0].value) {
@@ -1222,7 +1231,7 @@ const Insights = () => {
                           <Grid item>
                             <BrandDonutChart
                               chartOptions={brandChartOptions}
-                              chartSeries={brandFullness}
+                              chartSeries={brandFullness[0]}
                               chartHeight={BrandChartData.height}
                               chartType={BrandChartData.type}
                             />
