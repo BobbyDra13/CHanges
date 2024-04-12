@@ -255,7 +255,7 @@ function Overview() {
       async function getCaptureProg() {
         try {
           const capProgress = await GetCapProgStoreView(popBody);
-          console.log('capTop ', capProgress);
+          // console.log('capTop ', capProgress);
 
           // const capProg = capProgress.data.captureProgressZoneData.map((item) => {
           //   return {
@@ -265,7 +265,7 @@ function Overview() {
           // });
           // setCaptureProg(capProg);
           setCapProgressValue(capProgress.data[0].capture_percentage);
-          console.log("capture progress", capProgressValue);
+          // console.log("capture progress", capProgressValue);
         } catch (error) {
           console.log(error);
         }
