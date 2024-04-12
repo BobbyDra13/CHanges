@@ -428,6 +428,21 @@ export const GetFullnessPop = async (data) => {
   }
 };
 
+export const GetSevenDayCapProgress = async (data) => {
+  try {
+    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/seven_day_capture_progress`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    //console.log(res);
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetCaptureProgress API: ', error);
+  }
+};
+
 export const GetStoreData = async (data) => {
   try {
     const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/stores/get-stores-details`, data, {
@@ -467,6 +482,21 @@ export const GetCapProg = async (data) => {
       }
     });
     //console.log(res);
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetCaptureProgress API: ', error);
+  }
+};
+
+export const GetCapProgStoreView = async (data) => {
+  try {
+    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/capture-progress`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    console.log("cap_res",res);
     return res;
   } catch (error) {
     console.log('Error Calling GetCaptureProgress API: ', error);
