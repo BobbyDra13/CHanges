@@ -2,7 +2,7 @@ import { Box, CircularProgress } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 // import { footfallGraph } from 'api/sentinelAPI';
-import { GetFullnessPop } from 'api';
+import { GetFullnessPop, GetSevenDayCapProgress } from 'api';
 // import Bubbledxaxis from './Bubbledx-axis';
 // import {footfallGraph} from "api/sentinelAPI";
 // const footfalldata=footfallGraph();
@@ -10,26 +10,25 @@ import { GetFullnessPop } from 'api';
 const Areachart = ({ date }) => {
   const [category, setCategory] = useState([]);
   const [custCount, setCustCount] = useState([]);
+  const [capProgress, setCapProgress] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function getData() {
-      // console.log(date);
+      console.log(date);
       const body = {
-        // start_date: date,
-        // storeId: '65c5e26a0b5be5dc7af327dc'
         date: date,
         store_id: '65c74d4112465588b7a4984c'
       };
       try {
         setLoading(true);
         const data = await GetFullnessPop(body);
-        // console.log(data);
+        // console.log("data", data);
         if (data) {
-          const catagorydata = data.data.map((d) => d._id);
-          console.log(catagorydata);
-          const custdata = data.data.map((d) => (d.data != 'Data not found' ? parseFloat(d.data.FullnessPopPercent) : 0));
-          console.log(custdata);
+          const catagorydata = data.data.map((d) => d.date);
+          // console.log("catagorydata", catagorydata);
+          const custdata = data.data.map((d) => (d.data != 'Data not found' ? parseFloat(d.pop_percentage).toFixed(1) : 0));
+          // console.log("custdata", custdata);
           setCategory(catagorydata);
           setCustCount(custdata);
           setLoading(false);
@@ -39,9 +38,38 @@ const Areachart = ({ date }) => {
         console.log(error);
       }
     }
-    getData();
-  }, [date]);
 
+    async function getCaptureData() {
+      console.log("date", date);
+      const captureBody = {
+        // start_date: date,
+        // storeId: '65c5e26a0b5be5dc7af327dc'
+        date: date,
+        store_id: '65c74d4112465588b7a4984c'
+      };
+      try {
+        setLoading(true);
+        const capData = await GetSevenDayCapProgress(captureBody);
+        // console.log("capture_data", capData);
+        if (capData) {
+          const capturedata = capData.data.map((d) => d.date);
+          // console.log("capturedata", capturedata);
+          const capture = capData.data.map((d) => (d.data != 'Data not found' ? parseFloat(d.capture_percentage).toFixed(1) : 0));
+          // console.log("capture", capture);
+          setCategory(capturedata);
+          setCapProgress(capture);
+          setLoading(false);
+        }
+        // return data;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    getData();
+    getCaptureData();
+  }, [date]);
+// console.log("capturesss", capProgress);
+// console.log("pop", custCount);
   //graph options start
 
   const state = {
@@ -50,11 +78,11 @@ const Areachart = ({ date }) => {
         name: 'Pop Score',
         data: custCount
         // [4, 7, 4, 20, 18, 80, 100,40, 60,30, 20, 33, 15,9, 4 ]
-      }
-      //     , {
-      //       name: 'Male',
-      //       data: [3, 6, 2, 12, 10, 52, 41,80,40, 85, 56,18,20,9,4]
-      //     },
+      },
+           {
+            name: 'Capture Progress',
+            data: capProgress
+          },
       // {
 
       //         name: 'Female',
@@ -130,7 +158,7 @@ const Areachart = ({ date }) => {
         </Box>
       ) : custCount.length > 0 ? (
         <Box sx={{ overflow: 'hidden' }}>
-          <ReactApexChart options={state.options} series={state.series} type="area" width="100%" height={400} />
+          <ReactApexChart options={state.options} series={state.series} type="line" width="100%" height={400} />
         </Box>
       ) : (
         <div className="w-full h-full flex justify-center place-items-center text-xl">No data</div>

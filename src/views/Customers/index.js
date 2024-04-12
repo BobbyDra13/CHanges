@@ -698,7 +698,7 @@ const Customers = () => {
                               <button className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center">
                                 <Typography sx={{ color: 'white' }} variant="subtitle2">
                                   {/* {item.capture_count ? Math.min(Math.floor((item.capture_count / totalParts) * 100), 100) : 0} % */}
-                                  {item.capture_percentage ? parseFloat(item.capture_percentage) : '0'}%
+                                  {item.capture_percentage ? parseFloat(item.capture_percentage).toFixed(1) : '0'}%
                                 </Typography>
                               </button>
                             </Box>

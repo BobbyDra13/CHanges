@@ -19,7 +19,7 @@ import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import { IoMdSettings } from 'react-icons/io';
 import CsvModal from './CsvUpload';
 import RadarChart from './RadarChart';
-import { GetPopPercentage, GetpopKPI, GetCapProg, GetAnomalies } from 'api';
+import { GetPopPercentage, GetpopKPI, GetCapProgStoreView, GetAnomalies } from 'api';
 import { IoIosWarning } from 'react-icons/io';
 // import { get } from 'react-hook-form';
 import Chart from 'react-apexcharts';
@@ -229,8 +229,8 @@ function Overview() {
       // eslint-disable-next-line
       async function getRatioData() {
         const body = {
-          "date": "2024-03-21",
-          "store_id": "65c74d4112465588b7a4984c"
+          date: '2024-03-21',
+          store_id: '65c74d4112465588b7a4984c'
         };
         try {
           const {
@@ -254,17 +254,18 @@ function Overview() {
       //eslint-disable-next-line
       async function getCaptureProg() {
         try {
-          const capProgress = await GetCapProg(popBody);
-          console.log('capTop ', capProgress.data);
+          const capProgress = await GetCapProgStoreView(popBody);
+          // console.log('capTop ', capProgress);
 
-          const capProg = capProgress.data.captureProgressZoneData.map((item) => {
-            return {
-              ...item,
-              captureProgress: parseFloat(item.captureProgress.replace('%', ''))
-            };
-          });
-          setCaptureProg(capProg);
-          setCapProgressValue(capProgress.data.storeCapturePercentage);
+          // const capProg = capProgress.data.captureProgressZoneData.map((item) => {
+          //   return {
+          //     ...item,
+          //     captureProgress: parseFloat(item.captureProgress.replace('%', ''))
+          //   };
+          // });
+          // setCaptureProg(capProg);
+          setCapProgressValue(capProgress.data[0].capture_percentage);
+          console.log("capture progress", capProgressValue);
         } catch (error) {
           console.log(error);
         }
@@ -288,7 +289,8 @@ function Overview() {
     }
     return () => {
       setFootfalldata(false);
-      setCaptureProg([]);
+      // setCaptureProg([]);
+      setCapProgressValue(0);
       setAnomaliesCount(0);
       // setftfall(false)
     };
@@ -553,13 +555,13 @@ function Overview() {
                     <div>
                       <Chart
                         options={progressChart.options}
-                        series={capProgressValue ? [parseFloat(capProgressValue)] : [0]}
+                        series={capProgressValue ? [parseFloat(capProgressValue).toFixed(1)] : [0]}
                         type={progressChart.options.chart.type}
                         height={progressChart.options.chart.height}
                       />
                     </div>
                     <div className="flex gap-1 flex-col">
-                      <div className="text-4xl font-semibold">{capProgressValue}</div>
+                      <div className="text-4xl font-semibold">{capProgressValue ? parseFloat(capProgressValue).toFixed(1) : 0}%</div>
                       <div className="text-sm font-semibold">Capture Progress</div>
                     </div>
                   </div>
