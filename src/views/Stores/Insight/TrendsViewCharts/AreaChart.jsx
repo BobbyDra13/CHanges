@@ -15,22 +15,20 @@ const Areachart = ({ date }) => {
 
   useEffect(() => {
     async function getData() {
-      // console.log(date);
+      console.log(date);
       const body = {
-        // start_date: date,
-        // storeId: '65c5e26a0b5be5dc7af327dc'
         date: date,
         store_id: '65c74d4112465588b7a4984c'
       };
       try {
         setLoading(true);
         const data = await GetFullnessPop(body);
-        // console.log(data);
+        // console.log("data", data);
         if (data) {
-          const catagorydata = data.data.map((d) => d._id);
-          // console.log(catagorydata);
-          const custdata = data.data.map((d) => (d.data != 'Data not found' ? parseFloat(d.data.FullnessPopPercent) : 0));
-          // console.log(custdata);
+          const catagorydata = data.data.map((d) => d.date);
+          // console.log("catagorydata", catagorydata);
+          const custdata = data.data.map((d) => (d.data != 'Data not found' ? parseFloat(d.pop_percentage).toFixed(1) : 0));
+          // console.log("custdata", custdata);
           setCategory(catagorydata);
           setCustCount(custdata);
           setLoading(false);
@@ -42,7 +40,7 @@ const Areachart = ({ date }) => {
     }
 
     async function getCaptureData() {
-      // console.log(date);
+      console.log("date", date);
       const captureBody = {
         // start_date: date,
         // storeId: '65c5e26a0b5be5dc7af327dc'
@@ -52,11 +50,11 @@ const Areachart = ({ date }) => {
       try {
         setLoading(true);
         const capData = await GetSevenDayCapProgress(captureBody);
-        // console.log("data", capData);
+        // console.log("capture_data", capData);
         if (capData) {
-          const capturedata = capData.data.map((d) => d._id);
+          const capturedata = capData.data.map((d) => d.date);
           // console.log("capturedata", capturedata);
-          const capture = capData.data.map((d) => (d.data != 'Data not found' ? parseFloat(d.capture_percentage) : 0));
+          const capture = capData.data.map((d) => (d.data != 'Data not found' ? parseFloat(d.capture_percentage).toFixed(1) : 0));
           // console.log("capture", capture);
           setCategory(capturedata);
           setCapProgress(capture);
@@ -71,6 +69,7 @@ const Areachart = ({ date }) => {
     getCaptureData();
   }, [date]);
 // console.log("capturesss", capProgress);
+// console.log("pop", custCount);
   //graph options start
 
   const state = {
@@ -79,8 +78,8 @@ const Areachart = ({ date }) => {
         name: 'Pop Score',
         data: custCount
         // [4, 7, 4, 20, 18, 80, 100,40, 60,30, 20, 33, 15,9, 4 ]
-      }
-          , {
+      },
+           {
             name: 'Capture Progress',
             data: capProgress
           },

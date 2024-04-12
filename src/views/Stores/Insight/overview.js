@@ -229,8 +229,8 @@ function Overview() {
       // eslint-disable-next-line
       async function getRatioData() {
         const body = {
-          "date": "2024-03-21",
-          "store_id": "65c74d4112465588b7a4984c"
+          date: '2024-03-21',
+          store_id: '65c74d4112465588b7a4984c'
         };
         try {
           const {
@@ -265,7 +265,7 @@ function Overview() {
           // });
           // setCaptureProg(capProg);
           setCapProgressValue(capProgress.data[0].capture_percentage);
-          // console.log("capture progress", capProgressValue);
+          console.log("capture progress", capProgressValue);
         } catch (error) {
           console.log(error);
         }
@@ -555,13 +555,13 @@ function Overview() {
                     <div>
                       <Chart
                         options={progressChart.options}
-                        series={capProgressValue ? [parseFloat(capProgressValue)] : [0]}
+                        series={capProgressValue ? [parseFloat(capProgressValue).toFixed(1)] : [0]}
                         type={progressChart.options.chart.type}
                         height={progressChart.options.chart.height}
                       />
                     </div>
                     <div className="flex gap-1 flex-col">
-                      <div className="text-4xl font-semibold">{capProgressValue}</div>
+                      <div className="text-4xl font-semibold">{capProgressValue ? parseFloat(capProgressValue).toFixed(1) : 0}%</div>
                       <div className="text-sm font-semibold">Capture Progress</div>
                     </div>
                   </div>

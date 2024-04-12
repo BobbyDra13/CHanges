@@ -1291,7 +1291,7 @@ const Insights = () => {
                   <div className="flex flex-col gap-1">
                     <Typography variant="h1" sx={{ color: accentColMain, paddingTop: 8 }}>
                       {avgCapProgress ? (
-                        `${avgCapProgress}%`
+                        `${parseFloat(avgCapProgress).toFixed(1)}%`
                       ) : avgCapProgress === 0 ? ( //edited as zero from ''
                         '0%'
                       ) : (
@@ -1331,7 +1331,7 @@ const Insights = () => {
                         <Grid item>
                           <Typography variant="body2" align="right">
                             {/* {Math.floor(item.capture_percentage)}% */}
-                            {avgCapProgress}
+                            {parseFloat(avgCapProgress).toFixed(1)}
                           </Typography>
                         </Grid>
                         <Grid item xs={12}>

@@ -415,7 +415,7 @@ export const GetPartsWiseDetails = async (date, shelf_id) => {
 
 export const GetFullnessPop = async (data) => {
   try {
-    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/linechart-2`, data, {
+    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/seven_day_pop_score`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
