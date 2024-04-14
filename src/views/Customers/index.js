@@ -826,7 +826,7 @@ const Customers = () => {
                                 className="absolute hover:cursor-pointer w-full h-full flex justify-center place-items-center"
                               >
                                 <Typography sx={{ color: 'white' }} variant="subtitle2">
-                                {item.pop_percentage ? parseFloat(item.pop_percentage).toFixed(2) : '0'}%
+                                  {item.pop_percentage ? parseFloat(item.pop_percentage).toFixed(2) : '0'}%
                                 </Typography>
                               </button>
                             </Box>
@@ -892,32 +892,33 @@ const Customers = () => {
                           {/* {item.store_anomalies.map((anomaly, index) => (  */}
                           {storeAnomalies[item.store] ? (
                             storeAnomalies[item.store].allAnomalies.map((anomaly, index) => (
-                            <div
-                              onClick={() =>
-                                handleImageClick(
-                                  anomaly.raw_img_url,
-                                  // anomaly.img_url,
-                                  // anomaly.store_anomalies.analysis_id,
-                                  // anomaly.zone_id,
-                                  // anomaly.store_anomalies.anomalies_found[0].type,
-                                  anomaly,
-                                  // anomaly.store_anomalies.timestamps
-                                  // '2024-01-01'
-                                )
-                              }
-                              key={index}
-                              className="rounded-md border shadow-md h-[147px]"
-                            >
-                              <img
-                                style={{ width: '100%', objectFit: 'cover' }}
-                                className="rounded-md shadow-md h-full hover:cursor-pointer"
-                                // src={anomaly.img_url}
-                                src={anomaly.raw_img_url}
-                                alt="no Img"
-                                loading="lazy"
-                              />
-                            </div>
-                          ))):(
+                              <div
+                                onClick={() =>
+                                  handleImageClick(
+                                    anomaly.raw_img_url,
+                                    // anomaly.img_url,
+                                    // anomaly.store_anomalies.analysis_id,
+                                    // anomaly.zone_id,
+                                    // anomaly.store_anomalies.anomalies_found[0].type,
+                                    anomaly
+                                    // anomaly.store_anomalies.timestamps
+                                    // '2024-01-01'
+                                  )
+                                }
+                                key={index}
+                                className="rounded-md border shadow-md h-[147px]"
+                              >
+                                <img
+                                  style={{ width: '100%', objectFit: 'cover' }}
+                                  className="rounded-md shadow-md h-full hover:cursor-pointer"
+                                  // src={anomaly.img_url}
+                                  src={anomaly.raw_img_url}
+                                  alt="no Img"
+                                  loading="lazy"
+                                />
+                              </div>
+                            ))
+                          ) : (
                             <div> No anomalies found.</div>
                           )}
                         </Slider>
