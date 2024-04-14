@@ -557,6 +557,13 @@ const Insights = () => {
                       fillColor: status[5] ? '#10B981' : 'grey',
                       strokeColor: 'white',
                       size: 4
+                    },
+                    {
+                      seriesIndex: 0,
+                      dataPointIndex: 6,
+                      fillColor: status[6] ? '#10B981' : 'grey',
+                      strokeColor: 'white',
+                      size: 4
                     }
                   ]
                 },
@@ -704,6 +711,13 @@ const Insights = () => {
                       seriesIndex: 0,
                       dataPointIndex: 5,
                       fillColor: status[5] ? '#10B981' : 'grey',
+                      strokeColor: 'white',
+                      size: 4
+                    },
+                    {
+                      seriesIndex: 0,
+                      dataPointIndex: 6,
+                      fillColor: status[6] ? '#10B981' : 'grey',
                       strokeColor: 'white',
                       size: 4
                     }
