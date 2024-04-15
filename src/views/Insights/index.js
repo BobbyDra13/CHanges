@@ -476,6 +476,7 @@ const Insights = () => {
           const CapData = await GetCapProg(capBody);
           //  const popPercentageData = await GetPopPercentage(popKpiCardBody); //No need
           const popLineData = await GetPopWeekLineData(popKpiCardBody);
+          console.log('popLineData', popLineData);
           const histogramData = await GetPopHistogramData(popKpiCardBody);
           const anomaliesData = await GetAnomalies(popKpiCardBody);
 
@@ -483,7 +484,6 @@ const Insights = () => {
             const popScoreFullnessLine = popLineData.data;
             console.log('popScoreFullness', popLineData);
             const popScoreFullness = popScoreFullnessLine.map((item) => {
-              console.log(item.averagePopScore);
               if (item && item.averagePopScore != 'No data found') {
                 const percentage = parseFloat(item.averagePopScore.replace('%', ''));
                 return `${percentage.toFixed(2)}%`;
@@ -498,6 +498,11 @@ const Insights = () => {
 
             const dates = popScoreFullnessLine.map((item) => item.date);
 
+            const status = popScoreFullnessLine.map((i) => {
+              return i.capture_status;
+            });
+            console.log('staus', status);
+
             const updatedFullnessChartConfig = {
               ...fullnessChartConfig,
               series: [
@@ -509,6 +514,59 @@ const Insights = () => {
 
               options: {
                 ...fullnessChartConfig.options,
+                markers: {
+                  discrete: [
+                    {
+                      seriesIndex: 0,
+                      dataPointIndex: 0,
+                      fillColor: status[0] ? '#10B981' : '#dadada',
+                      strokeColor: 'white',
+                      size: 4
+                    },
+                    {
+                      seriesIndex: 0,
+                      dataPointIndex: 1,
+                      fillColor: status[1] ? '#10B981' : '#dadada',
+                      strokeColor: 'white',
+                      size: 4
+                    },
+                    {
+                      seriesIndex: 0,
+                      dataPointIndex: 2,
+                      fillColor: status[2] ? '#10B981' : '#dadada',
+                      strokeColor: 'white',
+                      size: 4
+                    },
+                    {
+                      seriesIndex: 0,
+                      dataPointIndex: 3,
+                      fillColor: status[3] ? '#10B981' : '#dadada',
+                      strokeColor: 'white',
+                      size: 4
+                    },
+                    {
+                      seriesIndex: 0,
+                      dataPointIndex: 4,
+                      fillColor: status[4] ? '#10B981' : '#dadada',
+                      strokeColor: 'white',
+                      size: 4
+                    },
+                    {
+                      seriesIndex: 0,
+                      dataPointIndex: 5,
+                      fillColor: status[5] ? '#10B981' : '#dadada',
+                      strokeColor: 'white',
+                      size: 4
+                    },
+                    {
+                      seriesIndex: 0,
+                      dataPointIndex: 6,
+                      fillColor: status[6] ? '#10B981' : '#dadada',
+                      strokeColor: 'white',
+                      size: 4
+                    }
+                  ]
+                },
                 xaxis: {
                   ...fullnessChartConfig.options.xaxis,
                   categories: dates
@@ -579,9 +637,8 @@ const Insights = () => {
             setChartConfig(updatedChartConfig);
           }
           if (anomaliesData) {
-            console.log('anomaliesData', anomaliesData);
             const popScoreFullnessLine = anomaliesData.data;
-
+            console.log('popScoreFullnessLine', popScoreFullnessLine);
             const anomaliesDetectedLine = popScoreFullnessLine.map((item) => {
               if (item.anomaliesFound) {
                 const percentage = item.anomaliesFound - item.anomaliesResolved;
@@ -590,7 +647,10 @@ const Insights = () => {
                 return 0;
               }
             });
-            console.log('anomaliesDetectedLine', anomaliesDetectedLine);
+            const status = popScoreFullnessLine.map((i) => {
+              return i.capture_status;
+            });
+            console.log('stausAnomaly', status);
             const lastElement = anomaliesDetectedLine[anomaliesDetectedLine.length - 1] || 0;
             const secondLastElement = anomaliesDetectedLine[anomaliesDetectedLine.length - 2] || 0;
             const difference = lastElement - secondLastElement;
@@ -610,6 +670,59 @@ const Insights = () => {
               ],
               options: {
                 ...anomaliesChartConfig.options,
+                markers: {
+                  discrete: [
+                    {
+                      seriesIndex: 0,
+                      dataPointIndex: 0,
+                      fillColor: status[0] ? '#FF6761' : '#dadada',
+                      strokeColor: 'white',
+                      size: 4
+                    },
+                    {
+                      seriesIndex: 0,
+                      dataPointIndex: 1,
+                      fillColor: status[1] ? '#FF6761' : '#dadada',
+                      strokeColor: 'white',
+                      size: 4
+                    },
+                    {
+                      seriesIndex: 0,
+                      dataPointIndex: 2,
+                      fillColor: status[2] ? '#FF6761' : '#dadada',
+                      strokeColor: 'white',
+                      size: 4
+                    },
+                    {
+                      seriesIndex: 0,
+                      dataPointIndex: 3,
+                      fillColor: status[3] ? '#FF6761' : '#dadada',
+                      strokeColor: 'white',
+                      size: 4
+                    },
+                    {
+                      seriesIndex: 0,
+                      dataPointIndex: 4,
+                      fillColor: status[4] ? '#FF6761' : '#dadada',
+                      strokeColor: 'white',
+                      size: 4
+                    },
+                    {
+                      seriesIndex: 0,
+                      dataPointIndex: 5,
+                      fillColor: status[5] ? '#FF6761' : '#dadada',
+                      strokeColor: 'white',
+                      size: 4
+                    },
+                    {
+                      seriesIndex: 0,
+                      dataPointIndex: 6,
+                      fillColor: status[6] ? '#FF6761' : '#dadada',
+                      strokeColor: 'white',
+                      size: 4
+                    }
+                  ]
+                },
                 xaxis: {
                   ...anomaliesChartConfig.options.xaxis,
                   categories: dates
@@ -679,7 +792,7 @@ const Insights = () => {
 
           if (fullnessKpiData) {
             setFullness(fullnessKpiData.data);
-            // console.log('fullnessKpiData', fullnessKpiData);
+            console.log('fullnessKpiData', fullnessKpiData);
           }
 
           if (vmComplianceKpiData) {

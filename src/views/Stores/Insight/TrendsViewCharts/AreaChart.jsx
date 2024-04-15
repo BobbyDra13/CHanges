@@ -40,7 +40,7 @@ const Areachart = ({ date }) => {
     }
 
     async function getCaptureData() {
-      console.log("date", date);
+      console.log('date', date);
       const captureBody = {
         // start_date: date,
         // storeId: '65c5e26a0b5be5dc7af327dc'
@@ -68,8 +68,8 @@ const Areachart = ({ date }) => {
     getData();
     getCaptureData();
   }, [date]);
-// console.log("capturesss", capProgress);
-// console.log("pop", custCount);
+  // console.log("capturesss", capProgress);
+  // console.log("pop", custCount);
   //graph options start
 
   const state = {
@@ -79,10 +79,10 @@ const Areachart = ({ date }) => {
         data: custCount
         // [4, 7, 4, 20, 18, 80, 100,40, 60,30, 20, 33, 15,9, 4 ]
       },
-           {
-            name: 'Capture Progress',
-            data: capProgress
-          },
+      {
+        name: 'Capture Progress',
+        data: capProgress
+      }
       // {
 
       //         name: 'Female',
