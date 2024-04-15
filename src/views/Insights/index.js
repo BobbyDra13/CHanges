@@ -519,49 +519,49 @@ const Insights = () => {
                     {
                       seriesIndex: 0,
                       dataPointIndex: 0,
-                      fillColor: status[0] ? '#10B981' : 'grey',
+                      fillColor: status[0] ? '#10B981' : '#dadada',
                       strokeColor: 'white',
                       size: 4
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 1,
-                      fillColor: status[1] ? '#10B981' : 'grey',
+                      fillColor: status[1] ? '#10B981' : '#dadada',
                       strokeColor: 'white',
                       size: 4
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 2,
-                      fillColor: status[2] ? '#10B981' : 'grey',
+                      fillColor: status[2] ? '#10B981' : '#dadada',
                       strokeColor: 'white',
                       size: 4
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 3,
-                      fillColor: status[3] ? '#10B981' : 'grey',
+                      fillColor: status[3] ? '#10B981' : '#dadada',
                       strokeColor: 'white',
                       size: 4
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 4,
-                      fillColor: status[4] ? '#10B981' : 'grey',
+                      fillColor: status[4] ? '#10B981' : '#dadada',
                       strokeColor: 'white',
                       size: 4
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 5,
-                      fillColor: status[5] ? '#10B981' : 'grey',
+                      fillColor: status[5] ? '#10B981' : '#dadada',
                       strokeColor: 'white',
                       size: 4
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 6,
-                      fillColor: status[6] ? '#10B981' : 'grey',
+                      fillColor: status[6] ? '#10B981' : '#dadada',
                       strokeColor: 'white',
                       size: 4
                     }
@@ -675,49 +675,49 @@ const Insights = () => {
                     {
                       seriesIndex: 0,
                       dataPointIndex: 0,
-                      fillColor: status[0] ? '#10B981' : 'grey',
+                      fillColor: status[0] ? '#FF6761' : '#dadada',
                       strokeColor: 'white',
                       size: 4
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 1,
-                      fillColor: status[1] ? '#10B981' : 'grey',
+                      fillColor: status[1] ? '#FF6761' : '#dadada',
                       strokeColor: 'white',
                       size: 4
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 2,
-                      fillColor: status[2] ? '#10B981' : 'grey',
+                      fillColor: status[2] ? '#FF6761' : '#dadada',
                       strokeColor: 'white',
                       size: 4
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 3,
-                      fillColor: status[3] ? '#10B981' : 'grey',
+                      fillColor: status[3] ? '#FF6761' : '#dadada',
                       strokeColor: 'white',
                       size: 4
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 4,
-                      fillColor: status[4] ? '#10B981' : 'grey',
+                      fillColor: status[4] ? '#FF6761' : '#dadada',
                       strokeColor: 'white',
                       size: 4
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 5,
-                      fillColor: status[5] ? '#10B981' : 'grey',
+                      fillColor: status[5] ? '#FF6761' : '#dadada',
                       strokeColor: 'white',
                       size: 4
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 6,
-                      fillColor: status[6] ? '#10B981' : 'grey',
+                      fillColor: status[6] ? '#FF6761' : '#dadada',
                       strokeColor: 'white',
                       size: 4
                     }
