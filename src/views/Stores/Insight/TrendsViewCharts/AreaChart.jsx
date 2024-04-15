@@ -107,7 +107,7 @@ const Areachart = ({ date }) => {
         show: true, // Ensure legend is visible
         position: 'top', // Set position to 'top'
         horizontalAlign: 'center',
-        customLegendItems: ['Pop Score'],
+        // customLegendItems: ['Pop Score'],
         showForSingleSeries: true
         // ... other legend options
       },
@@ -135,8 +135,8 @@ const Areachart = ({ date }) => {
         type: 'Number'
         // categories:['0','5','10','15','20','25','30','35','40','45','50','55','60','65','70','75','80','85','90','95','100']
       },
-      colors: ['#37c6fa']
-      // , '#9887fa', '#9C27B0'],
+      colors: ['#37c6fa'
+      , '#9887fa', '#9C27B0'],
     }
   };
 

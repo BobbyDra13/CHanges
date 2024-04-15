@@ -121,8 +121,8 @@ const AnomaliesBarChart = ({ selectedDate }) => {
       const finalDate = selectedDate ? selectedDate : todayDate;
       const body = {
         date: finalDate,
-        user_id: "660a457638e022104c155c06"
-    }
+        user_id: '660a457638e022104c155c06'
+      };
 
       try {
         const data = await GetAnomalies(body);

@@ -371,7 +371,7 @@ function Overview() {
                                   {' '}
                                 </div> */}
                                 <div>
-                                  {item.zone_id} : {percentage} %
+                                  {item.zone_id} :<span style={{color:barcolor}}> {percentage} %</span>
                                 </div>
                               </div>
                               <LinearProgress

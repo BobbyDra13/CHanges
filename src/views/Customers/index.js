@@ -104,6 +104,7 @@ const Customers = () => {
   const [anomalyType, setAnomalyType] = useState('');
   // eslint-disable-next-line
   const [loading, setLoading] = useState(false);
+  // eslint-disable-next-line
   const [clickedBar, setClickedBar] = useState({
     isUpKeep: false,
     isVm: false,
@@ -174,27 +175,27 @@ const Customers = () => {
   //   setLiveAnomalyImg(!liveAnomalyImg);
   // };
 
-  const upKeepClicked = () => {
-    if (!clickedBar.isUpKeep) {
-      setClickedBar({ isUpKeep: true, isVm: false, isPop: false });
-    } else {
-      setClickedBar({ isUpKeep: false, isVm: false, isPop: false });
-    }
-  };
-  const vMClicked = () => {
-    if (!clickedBar.isVm) {
-      setClickedBar({ isUpKeep: false, isVm: true, isPop: false });
-    } else {
-      setClickedBar({ isUpKeep: false, isVm: false, isPop: false });
-    }
-  };
-  const popClicked = () => {
-    // if (!clickedBar.isPop) {
-    //   setClickedBar({ isUpKeep: false, isVm: false, isPop: true });
-    // } else {
-    //   setClickedBar({ isUpKeep: false, isVm: false, isPop: false });
-    // }
-  };
+  // const upKeepClicked = () => {
+  //   if (!clickedBar.isUpKeep) {
+  //     setClickedBar({ isUpKeep: true, isVm: false, isPop: false });
+  //   } else {
+  //     setClickedBar({ isUpKeep: false, isVm: false, isPop: false });
+  //   }
+  // };
+  // const vMClicked = () => {
+  //   if (!clickedBar.isVm) {
+  //     setClickedBar({ isUpKeep: false, isVm: true, isPop: false });
+  //   } else {
+  //     setClickedBar({ isUpKeep: false, isVm: false, isPop: false });
+  //   }
+  // };
+  // const popClicked = () => {
+  //   // if (!clickedBar.isPop) {
+  //   //   setClickedBar({ isUpKeep: false, isVm: false, isPop: true });
+  //   // } else {
+  //   //   setClickedBar({ isUpKeep: false, isVm: false, isPop: false });
+  //   // }
+  // };
 
   // const getAnomalyDetails = async (id) => {
   //   console.log('id:', id);
@@ -739,7 +740,7 @@ const Customers = () => {
                                 // color="secondary"
                               />
                               <button
-                                onClick={upKeepClicked}
+                                // onClick={upKeepClicked}
                                 className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center"
                               >
                                 <Typography sx={{ color: 'white' }} variant="subtitle1">
@@ -785,7 +786,7 @@ const Customers = () => {
                                 // color="secondary"
                               />
                               <button
-                                onClick={vMClicked}
+                                // onClick={vMClicked}
                                 className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center"
                               >
                                 <Typography sx={{ color: 'white' }} variant="subtitle1">
@@ -822,11 +823,11 @@ const Customers = () => {
                                 // color="secondary"
                               />
                               <button
-                                onClick={popClicked}
+                                // onClick={popClicked}
                                 className="absolute hover:cursor-pointer w-full h-full flex justify-center place-items-center"
                               >
                                 <Typography sx={{ color: 'white' }} variant="subtitle2">
-                                {item.pop_percentage ? parseFloat(item.pop_percentage).toFixed(2) : '0'}%
+                                  {item.pop_percentage ? parseFloat(item.pop_percentage).toFixed(2) : '0'}%
                                 </Typography>
                               </button>
                             </Box>
@@ -892,32 +893,33 @@ const Customers = () => {
                           {/* {item.store_anomalies.map((anomaly, index) => (  */}
                           {storeAnomalies[item.store] ? (
                             storeAnomalies[item.store].allAnomalies.map((anomaly, index) => (
-                            <div
-                              onClick={() =>
-                                handleImageClick(
-                                  anomaly.raw_img_url,
-                                  // anomaly.img_url,
-                                  // anomaly.store_anomalies.analysis_id,
-                                  // anomaly.zone_id,
-                                  // anomaly.store_anomalies.anomalies_found[0].type,
-                                  anomaly,
-                                  // anomaly.store_anomalies.timestamps
-                                  // '2024-01-01'
-                                )
-                              }
-                              key={index}
-                              className="rounded-md border shadow-md h-[147px]"
-                            >
-                              <img
-                                style={{ width: '100%', objectFit: 'cover' }}
-                                className="rounded-md shadow-md h-full hover:cursor-pointer"
-                                // src={anomaly.img_url}
-                                src={anomaly.raw_img_url}
-                                alt="no Img"
-                                loading="lazy"
-                              />
-                            </div>
-                          ))):(
+                              <div
+                                onClick={() =>
+                                  handleImageClick(
+                                    anomaly.raw_img_url,
+                                    // anomaly.img_url,
+                                    // anomaly.store_anomalies.analysis_id,
+                                    // anomaly.zone_id,
+                                    // anomaly.store_anomalies.anomalies_found[0].type,
+                                    anomaly
+                                    // anomaly.store_anomalies.timestamps
+                                    // '2024-01-01'
+                                  )
+                                }
+                                key={index}
+                                className="rounded-md border shadow-md h-[147px]"
+                              >
+                                <img
+                                  style={{ width: '100%', objectFit: 'cover' }}
+                                  className="rounded-md shadow-md h-full hover:cursor-pointer"
+                                  // src={anomaly.img_url}
+                                  src={anomaly.raw_img_url}
+                                  alt="no Img"
+                                  loading="lazy"
+                                />
+                              </div>
+                            ))
+                          ) : (
                             <div> No anomalies found.</div>
                           )}
                         </Slider>
