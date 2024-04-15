@@ -100,6 +100,17 @@ function DatePickerComp({ SetSelectedDate }) {
   }, [calender]);
   // console.log('Calender', calender.toLocaleDateString('en-GB'));
   // console.log("date", new Date(2023, 11, 26))
+  function handleCalOpen(){
+    const daysToHighlight = events.map((event) => {
+      if (event.getMonth() === calender.getMonth()) {
+        return event.getDate();
+      }
+      return;
+    });
+
+    setHighlightedDays([]);
+    setHighlightedDays(daysToHighlight);
+  };
   return (
     <div>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -134,6 +145,7 @@ function DatePickerComp({ SetSelectedDate }) {
           minDate={new Date(2023, 11, 26)}
           maxDate={new Date()}
           closeOnSelect={false}
+          onOpen={handleCalOpen}
         />
       </LocalizationProvider>
     </div>
