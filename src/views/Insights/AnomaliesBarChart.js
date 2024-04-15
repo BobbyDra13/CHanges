@@ -140,12 +140,12 @@ const AnomaliesBarChart = ({ selectedDate }) => {
             });
             setSeries([
               {
-                name: 'Anomalies Resolved',
-                data: extractedResolved
-              },
-              {
                 name: 'Anomalies Found',
                 data: extractedFound
+              },
+              {
+                name: 'Anomalies Resolved',
+                data: extractedResolved
               }
             ]);
           }
