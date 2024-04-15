@@ -122,7 +122,7 @@ const Insights = () => {
         curve: 'smooth'
       },
       markers: {
-        size: 4
+        size: 7
       },
       grid: {
         show: false
@@ -132,7 +132,7 @@ const Insights = () => {
         labels: {
           show: false
         },
-        categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
       },
       yaxis: {
         labels: {
@@ -160,7 +160,7 @@ const Insights = () => {
         curve: 'smooth'
       },
       markers: {
-        size: 4
+        size: 7
       },
       grid: {
         show: false
@@ -170,7 +170,7 @@ const Insights = () => {
         labels: {
           show: false
         },
-        categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
       },
       yaxis: {
         labels: {
@@ -197,7 +197,7 @@ const Insights = () => {
         curve: 'smooth'
       },
       markers: {
-        size: 4
+        size: 7
       },
       grid: {
         show: false
@@ -207,7 +207,7 @@ const Insights = () => {
         labels: {
           show: false
         },
-        categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
       },
       yaxis: {
         labels: {
@@ -348,7 +348,7 @@ const Insights = () => {
               curve: 'smooth'
             },
             markers: {
-              size: 4
+              size: 7
             },
             grid: {
               show: false
@@ -358,7 +358,7 @@ const Insights = () => {
               labels: {
                 show: false
               },
-              categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+              categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
             },
             yaxis: {
               labels: {
@@ -386,7 +386,7 @@ const Insights = () => {
               curve: 'smooth'
             },
             markers: {
-              size: 4
+              size: 7
             },
             grid: {
               show: false
@@ -396,7 +396,7 @@ const Insights = () => {
               labels: {
                 show: false
               },
-              categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+              categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
             },
             yaxis: {
               labels: {
@@ -423,7 +423,7 @@ const Insights = () => {
               curve: 'smooth'
             },
             markers: {
-              size: 4
+              size: 7
             },
             grid: {
               show: false
@@ -433,7 +433,7 @@ const Insights = () => {
               labels: {
                 show: false
               },
-              categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+              categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
             },
             yaxis: {
               labels: {
@@ -521,49 +521,49 @@ const Insights = () => {
                       dataPointIndex: 0,
                       fillColor: status[0] ? '#10B981' : '#dadada',
                       strokeColor: 'white',
-                      size: 4
+                      size: 7
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 1,
                       fillColor: status[1] ? '#10B981' : '#dadada',
                       strokeColor: 'white',
-                      size: 4
+                      size: 7
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 2,
                       fillColor: status[2] ? '#10B981' : '#dadada',
                       strokeColor: 'white',
-                      size: 4
+                      size: 7
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 3,
                       fillColor: status[3] ? '#10B981' : '#dadada',
                       strokeColor: 'white',
-                      size: 4
+                      size: 7
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 4,
                       fillColor: status[4] ? '#10B981' : '#dadada',
                       strokeColor: 'white',
-                      size: 4
+                      size: 7
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 5,
                       fillColor: status[5] ? '#10B981' : '#dadada',
                       strokeColor: 'white',
-                      size: 4
+                      size: 7
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 6,
                       fillColor: status[6] ? '#10B981' : '#dadada',
                       strokeColor: 'white',
-                      size: 4
+                      size: 7
                     }
                   ]
                 },
@@ -641,7 +641,7 @@ const Insights = () => {
             console.log('popScoreFullnessLine', popScoreFullnessLine);
             const anomaliesDetectedLine = popScoreFullnessLine.map((item) => {
               if (item.anomaliesFound) {
-                const percentage = item.anomaliesFound - item.anomaliesResolved;
+                const percentage = item.anomaliesFound;
                 return percentage;
               } else {
                 return 0;
@@ -677,49 +677,49 @@ const Insights = () => {
                       dataPointIndex: 0,
                       fillColor: status[0] ? '#FF6761' : '#dadada',
                       strokeColor: 'white',
-                      size: 4
+                      size: 7
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 1,
                       fillColor: status[1] ? '#FF6761' : '#dadada',
                       strokeColor: 'white',
-                      size: 4
+                      size: 7
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 2,
                       fillColor: status[2] ? '#FF6761' : '#dadada',
                       strokeColor: 'white',
-                      size: 4
+                      size: 7
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 3,
                       fillColor: status[3] ? '#FF6761' : '#dadada',
                       strokeColor: 'white',
-                      size: 4
+                      size: 7
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 4,
                       fillColor: status[4] ? '#FF6761' : '#dadada',
                       strokeColor: 'white',
-                      size: 4
+                      size: 7
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 5,
                       fillColor: status[5] ? '#FF6761' : '#dadada',
                       strokeColor: 'white',
-                      size: 4
+                      size: 7
                     },
                     {
                       seriesIndex: 0,
                       dataPointIndex: 6,
                       fillColor: status[6] ? '#FF6761' : '#dadada',
                       strokeColor: 'white',
-                      size: 4
+                      size: 7
                     }
                   ]
                 },
@@ -827,10 +827,11 @@ const Insights = () => {
     };
     //eslint-disable-next-line
   }, [selectedDate]);
-  console.log('bar', barChartData);
-  console.log('fullness', brandFullness[0]);
+  // console.log('bar', barChartData);
+  // console.log('fullness', brandFullness[0]);
   console.log('vmc bar', vmChartData);
   console.log('chartConfig', vmc);
+  // console.log('Current anomaly', anomaliesPercentage);
 
   useEffect(
     () => {
@@ -965,7 +966,7 @@ const Insights = () => {
         max: 100,
         tickAmount: 10,
 
-        categories: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+        categories: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 
         labels: {
           show: true,
@@ -1081,7 +1082,7 @@ const Insights = () => {
           <Grid item lg={3} sm={6} xs={12}>
             <KpiPop
               isLoaded={fullness}
-              chart={statisticsChartsData[3].chart}
+              chart={statisticsChartsData[2].chart}
               title="UpKeep Score"
               count="NA"
               percentage="NA"

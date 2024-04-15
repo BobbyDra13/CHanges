@@ -24,7 +24,7 @@ const columnChartOptions = {
       show: false
     }
   },
-  colors: ['#00ac69', '#ff413a'],
+  colors: ['#ff413a', '#00ac69'],
   plotOptions: {
     bar: {
       columnWidth: '30%',
