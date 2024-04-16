@@ -45,7 +45,7 @@ const KpiPop = ({ isLoaded, color, chipColor, title, count, percentage, isLoss, 
               <Grid item>
                 <Chip
                   variant="combined"
-                  color={chipColor}
+                  // color={chipColor}
                   icon={
                     <>
                       {!isLoss && <TrendingUpIcon style={{ fontSize: '1rem', color: 'inherit' }} />}
@@ -53,7 +53,7 @@ const KpiPop = ({ isLoaded, color, chipColor, title, count, percentage, isLoss, 
                     </>
                   }
                   label={`${percentage}%`}
-                  sx={{ ml: 1.25, pl: 1 }}
+                  sx={{ ml: 1.25, pl: 1, backgroundColor: '#9CA3AF' }}
                   size="small"
                 />
               </Grid>
