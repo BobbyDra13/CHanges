@@ -1,6 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
-import { Box, Dialog, DialogContent, Divider, IconButton, Paper, TextField, Tooltip, Typography } from '@mui/material';
+import {
+  Box,
+  Dialog,
+  DialogContent,
+  Divider,
+  IconButton,
+  Paper,
+  TextField,
+  Tooltip,
+  Typography,
+  Avatar,
+  AvatarGroup,
+  useTheme
+} from '@mui/material';
 import { FaCamera } from 'react-icons/fa';
 // import src1 from '../../../assets/images/heatmap.jpg';
 // import src2 from '../../../assets/images/heatmap2.jpg';
@@ -32,6 +45,8 @@ export default function ShelfView({ date }) {
   const [imageLoading, setImageLoading] = useState(false);
   const [nextClickLoad, setNextClickLoad] = useState(false);
   const [nextBtn, setNextbtn] = useState(false);
+  const theme = useTheme();
+  const success = theme.palette.success.main;
 
   async function zoneDetails(id) {
     setloading(true);
@@ -77,7 +92,7 @@ export default function ShelfView({ date }) {
       shelf_id: id
     };
     const data = await GetShelfData(body);
-    console.log(data.data);
+    console.log('This is the data', data.data);
 
     handleImageClick(data.data[0]);
   }
@@ -478,11 +493,34 @@ export default function ShelfView({ date }) {
                               </Tooltip>
                             ))}
                         </div>
-                        {/* <Typography width={'100%'} variant="h3">
-                        Team
-                      </Typography>
-                      <Divider /> */}
-
+                        <Typography width={'100%'} variant="h3">
+                          Team
+                        </Typography>
+                        <Divider />
+                        <div style={{ paddingBottom: 13 }} className="w-full flex justify-start">
+                          <AvatarGroup
+                            sx={{
+                              '& .MuiAvatar-root': { width: 40, height: 40, fontSize: 24 }
+                            }}
+                            max={2}
+                          >
+                            <Tooltip
+                              title={
+                                <div className="w-[200px] p-2 flex flex-col space-y-2">
+                                  <Typography sx={{ width: '100%', color: 'white' }} variant="h6">
+                                    Agent Details
+                                  </Typography>
+                                  <Typography variant="subtitle2">Name: {cData.user_name}</Typography>
+                                  <Typography variant="subtitle2">Number: {cData.user_number}</Typography>
+                                </div>
+                              }
+                              enterTouchDelay={1}
+                              leaveTouchDelay={100000}
+                            >
+                              <Avatar className="hover:cursor-pointer" sx={{ bgcolor: success }} alt={cData.user_name} src="/example.jpg" />
+                            </Tooltip>
+                          </AvatarGroup>
+                        </div>
                         <Typography sx={{ paddingBottom: 1 }} width={'100%'} variant="h3">
                           Comments
                         </Typography>

@@ -100,7 +100,7 @@ function DatePickerComp({ SetSelectedDate }) {
   }, [calender]);
   // console.log('Calender', calender.toLocaleDateString('en-GB'));
   // console.log("date", new Date(2023, 11, 26))
-  function handleCalOpen(){
+  function handleCalOpen() {
     const daysToHighlight = events.map((event) => {
       if (event.getMonth() === calender.getMonth()) {
         return event.getDate();
