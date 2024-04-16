@@ -1022,9 +1022,10 @@ const Insights = () => {
     }
   };
 
-  console.log('seriesData', seriesData);
-  console.log('anomalies', anomalies);
-  console.log('anomalies bar', anomaliesBarChart);
+  // console.log('seriesData', seriesData);
+  // console.log("brandFull", brandFullness);
+  // console.log('anomalies', anomalies);
+  // console.log('anomalies bar', anomaliesBarChart);
 
   return (
     <Grid container spacing={gridSpacing}>
