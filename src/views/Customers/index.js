@@ -17,7 +17,7 @@ import {
   GetStoreData,
   GetStoreWiseInfo,
   SendAlert,
-  getAnomalyForStore,
+  getAnomalyForStore
   // getUpdatedStatus
   // GetImagesFromSignedUrl,
   // GetAnolamayDetails

@@ -161,7 +161,7 @@ const AnomaliesBarChart = ({ selectedDate }) => {
     };
     //eslint-disable-next-line
   }, [selectedDate]);
-console.log("chartData", chartData);
+  console.log('chartData', chartData);
   return (
     <>
       {chartData && chartData.length > 0 ? (

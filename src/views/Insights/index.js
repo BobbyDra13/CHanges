@@ -93,6 +93,7 @@ const Insights = () => {
   const [fullness, setFullness] = useState(false);
   const [vmc, setVmc] = useState(false);
   const [anomalies, setAnomalies] = useState(false);
+  //eslint-disable-next-line
   const [anomaliesBarChart, setAnomaliesBarChart] = useState(false);
   //eslint-disable-next-line
   const [brandDonut, setBrandDonut] = useState(false);
@@ -763,7 +764,7 @@ const Insights = () => {
               const extractedFullness = brandDonutData.data.map((item) => [
                 item.total_zone_missing_pop,
                 item.total_zone_alien_pop,
-                item.total_zone_incorrect_pop,
+                item.total_zone_incorrect_pop
               ]);
               // const extractedBrandNames = brandDonutData.data.map((item) => item.group_id);
               const extractedBrandNames = ['missing_pop', 'incorrect_pop', 'alien_pop'];
@@ -828,10 +829,11 @@ const Insights = () => {
     //eslint-disable-next-line
   }, [selectedDate]);
   // console.log('bar', barChartData);
-  // console.log('fullness', brandFullness[0]);
+  console.log('fullness', brandFullness[0]);
   console.log('vmc bar', vmChartData);
   console.log('chartConfig', vmc);
   // console.log('Current anomaly', anomaliesPercentage);
+  const allZero = brandFullness && brandFullness[0].every((data) => data === 0);
 
   useEffect(
     () => {
@@ -1338,7 +1340,7 @@ const Insights = () => {
                           </Grid>
                         </Grid>
 
-                        {brandFullness.length === 0 ? (
+                        {allZero ? (
                           <div className="w-full h-full flex justify-center place-items-center">
                             <img style={{ height: '310px' }} src={NoDataImg} alt="No data" />
                           </div>
@@ -1352,13 +1354,6 @@ const Insights = () => {
                             />
                           </Grid>
                         ) : (
-                          // <BrandDonutChart
-                          //   chartOptions={brandChartOptions}
-                          //   chartSeries={[0]}
-                          //   chartHeight={BrandChartData.height}
-                          //   chartType={BrandChartData.type}
-                          // />
-
                           <div className="w-full h-full flex justify-center place-items-center">
                             <Skeleton variant="circular" width={300} height={310} />
                           </div>
