@@ -133,8 +133,11 @@ const Customers = () => {
     message: false
   });
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
   const [msg, setMsg] = useState('');
   const [loadsend, setLoadsend] = useState(false);
+  const [solvedLoad, setSolvedLoad] = useState(false);
+  const [ignoreLoad, setIgnoreLoad] = useState(false);
   const [nextBtn, setNextbtn] = useState(false);
   const theme = useTheme();
   const success = theme.palette.success.main;
@@ -191,15 +194,31 @@ const Customers = () => {
   //   }
   // };
 
-  // const handleSolved = (id) => {
-  //   console.log('required ID', id);
-  //   // setSolvedLoading(true);
+  const handleSolved = () => {
+    // console.log('required ID', id);
+    // setSolvedLoading(true);
+    setSolvedLoad(true);
+   
+    setTimeout(() => {
+      setSolvedLoad(false);
+      setSnackbarMessage('Solved successfully!');
+      setSnackbarOpen(true);
+    }, 3000); // 3 seconds
+    // updateMetadataSolved(id);
+  };
 
-  //   // setTimeout(() => {
-  //   //   setSolvedLoading(false);
-  //   // }, 3000); // 3 seconds
-  //   updateMetadataSolved(id);
-  // };
+  const handleIgnored = () => {
+    // console.log('required ID', id);
+    // setSolvedLoading(true);
+    setIgnoreLoad(true);
+   
+    setTimeout(() => {
+      setIgnoreLoad(false);
+      setSnackbarMessage('Ignored successfully!');
+      setSnackbarOpen(true);
+    }, 3000); // 3 seconds
+    // updateMetadataSolved(id);
+  };
   // const handleToggleImage = () => {
   //   setImageLoading(true);
   //   setLiveAnomalyImg(!liveAnomalyImg);
@@ -476,6 +495,7 @@ const Customers = () => {
         // if (status.status === 200) {
         setLoadsend(false);
         setSnackbarOpen(true);
+        setSnackbarMessage('Alert store message sent successfully!');
         //  console.log('hello');
         // }
       }
@@ -1300,15 +1320,20 @@ const Customers = () => {
                       />
                     </div>
                     <div className="w-full bg-white mt-5 flex flex-row-reverse gap-3">
-                      <button className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 border-2 border-gray-300">
-                        <Typography className="text-gray-400">Ignore</Typography>
+                      <button className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 border-2 border-gray-300 flex align-middle justify-center"
+                      onClick={() => handleIgnored()}
+                      >
+                      {ignoreLoad && <CgSpinner className="animate-spin" />}
+                        <Typography className="text-gray-400">{ignoreLoad ? ' Ignoring...' : 'Ignore'}</Typography>
                       </button>
                       <button
-                        className="lg:rounded-full rounded-xl md:w-[125px] text-lg lg:text-2xl p-2.5"
+                        className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 flex align-middle justify-center"
                         // style={{ backgroundColor: success }}
-                        style={{ backgroundColor: '#6ee7b7' }}
+                        style={{ backgroundColor: success }}
+                        onClick={() => handleSolved()}
                       >
-                        <Typography color={'white'}>Solved</Typography>
+                         {solvedLoad && <CgSpinner className="animate-spin" />}
+                        <Typography color={'white'}>{solvedLoad ? ' Solving...' : 'Solved'}</Typography>
                       </button>
                       {/* <button
                         onClick={() => handleSolved()}
@@ -1346,7 +1371,8 @@ const Customers = () => {
         onClose={handleCloseSnackbar}
       >
         <Alert onClose={handleCloseSnackbar} className="text-white" severity="success" sx={{ width: '100%', bgcolor: 'yellowgreen' }}>
-          Alert store message sent successfully !
+          {/* Alert store message sent successfully ! */}
+          {snackbarMessage}
         </Alert>
       </Snackbar>
     </>
