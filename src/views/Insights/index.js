@@ -106,6 +106,7 @@ const Insights = () => {
   const [anomaliesPercentage, setAnomaliesPercentage] = useState('0');
   const [popChipData, setPopChipData] = useState('');
   const [anomaliesChipData, setAnomaliesChipData] = useState('');
+  const [capStatus, setCapStatus] = useState(true);
   const [chartConfig, setChartConfig] = useState({
     type: 'line',
     height: 100,
@@ -788,6 +789,7 @@ const Insights = () => {
               setPopPercentage('0%');
             } else {
               setPopPercentage(popLineData.data[6].averagePopScore);
+              setCapStatus(popLineData.data[6].capture_status);
             }
           }
 
@@ -1065,7 +1067,7 @@ const Insights = () => {
               percentage={`${Math.abs(popChipData)}%`}
               chipColor={+popChipData < 0 ? 'error' : 'success'}
               isLoss={+popChipData < 0}
-              color={theme.palette.success.main}
+              color={capStatus ? theme.palette.success.main : '#9ca3af'}
             />
           </Grid>
           <Grid item lg={3} sm={6} xs={12}>
