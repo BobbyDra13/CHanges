@@ -37,7 +37,7 @@ function Overview() {
   const [dweltimeData, setDweltimedata] = useState(false);
   const [footfalldata, setFootfalldata] = useState(false);
   const [ftfall, setftfall] = useState([]);
-  const [date, setSelectedDate] = useState('');
+  const [date, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
   //eslint-disable-next-line
   const [empCount, setEmpCount] = useState('');
   //eslint-disable-next-line
