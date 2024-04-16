@@ -12,7 +12,7 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 
 // ==============================|| REPORT CARD ||============================== //
-
+//eslint-disable-next-line
 const KpiPop = ({ isLoaded, color, chipColor, title, count, percentage, isLoss, chart }) => {
   return (
     <Card sx={{ paddingTop: isLoaded ? 2.25 : 0, paddingBottom: 2.25 }}>

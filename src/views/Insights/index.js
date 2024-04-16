@@ -26,7 +26,7 @@ import Chart from 'react-apexcharts';
 import chartsConfig from 'configs/charts-configs';
 
 // material-ui
-import { useTheme, createTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import { Grid, Card, CardContent, Typography, LinearProgress, Box, Stack, TextField, MenuItem, Skeleton, Paper } from '@mui/material';
 
 //project import
@@ -82,17 +82,6 @@ const Insights = () => {
   const accentColDark = theme.palette.success.dark;
   const accentColLight = theme.palette.success.light;
   const accentColMain = theme.palette.success.main;
-
-  const chipGreyTheme = createTheme({
-    palette: {
-      grey: {
-        main: '#9CA3AF',
-        light: '#E9DB5D',
-        dark: '#A29415',
-        contrastText: '#242105'
-      }
-    }
-  });
 
   // const { totalStores } = histogramChartRequirements;
   const { selectOptions } = histogramChartRequirements;
