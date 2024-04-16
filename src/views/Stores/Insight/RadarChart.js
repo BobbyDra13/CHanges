@@ -5,6 +5,21 @@ import { GetpopKPI } from 'api';
 const RadarChart = ({ date }) => {
   const [radarData, setRadarData] = useState([]);
   const [options, setOptions] = useState({});
+  const defaultOption = {
+    chart: {
+      type: 'radar',
+      toolbar: {
+        show: false
+      }
+    },
+    series: [
+      {
+        name: 'No data available',
+        data: [0, 0, 0, 0, 0, 0, 0, 0]
+      }
+    ],
+    labels: ['W12001', 'W12002', 'W12003', 'W16002', 'W16003', 'W16004', 'W16005', 'W16006']
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,14 +53,16 @@ const RadarChart = ({ date }) => {
 
   return (
     <div className="h-full p-2 ">
-      {radarData.length !== 0 ? (
-        <div className="flex flex-col items-center">
-          <p className="font-semibold text-xl  ">Store Goodness Profile</p>
+      <div className="flex flex-col items-center">
+        <p className="font-semibold text-xl  ">Store Goodness Profile</p>
+        {radarData.length !== 0 ? (
           <Chart options={options} series={options.series} type="radar" height={240} />
-        </div>
-      ) : (
-        <div className="text-2xl text-center h-full bg-slate-100 p-5 rounded-lg">No data available</div>
-      )}
+        ) : (
+          <div className="flex-grow relative">
+            <Chart className="relative" options={defaultOption} series={defaultOption.series} type="radar" height={240} />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
