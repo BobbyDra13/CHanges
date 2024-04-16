@@ -764,10 +764,9 @@ const Insights = () => {
                 item.total_zone_missing_pop,
                 item.total_zone_alien_pop,
                 item.total_zone_incorrect_pop,
-                item.total_zone_no_read_pop
               ]);
               // const extractedBrandNames = brandDonutData.data.map((item) => item.group_id);
-              const extractedBrandNames = ['missing_pop', 'incorrect_pop', 'alien_pop', 'no_read_pop'];
+              const extractedBrandNames = ['missing_pop', 'incorrect_pop', 'alien_pop'];
 
               setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
 
@@ -1023,9 +1022,10 @@ const Insights = () => {
     }
   };
 
-  console.log('seriesData', seriesData);
-  console.log('anomalies', anomalies);
-  console.log('anomalies bar', anomaliesBarChart);
+  // console.log('seriesData', seriesData);
+  // console.log("brandFull", brandFullness);
+  // console.log('anomalies', anomalies);
+  // console.log('anomalies bar', anomaliesBarChart);
 
   return (
     <Grid container spacing={gridSpacing}>
