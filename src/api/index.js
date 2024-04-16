@@ -481,6 +481,21 @@ export const GetAnomalies = async (data) => {
   }
 };
 
+export const GetAnomaliesCount = async (data) => {
+  try {
+    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/anomalies-group `, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    //console.log(res);
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetCaptureProgress API: ', error);
+  }
+};
+
 export const GetCapProg = async (data) => {
   try {
     const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/capture-progress-2`, data, {
