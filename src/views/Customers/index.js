@@ -17,7 +17,8 @@ import {
   GetStoreData,
   GetStoreWiseInfo,
   SendAlert,
-  getAnomalyForStore
+  getAnomalyForStore,
+  // getUpdatedStatus
   // GetImagesFromSignedUrl,
   // GetAnolamayDetails
 } from 'api';
@@ -96,6 +97,7 @@ const Customers = () => {
   // const [promoArray, setPromoArray] = useState([]);
   const [anomalies_count, setAnomalies_count] = useState(false);
   const [fullnessArray, setFullnessArray] = useState([]);
+  // const [solvedLoading, setSolvedLoading] = useState(null);
   // eslint-disable-next-line
   const [anomalyDetails, setAnonmalyDetails] = useState([]);
   // eslint-disable-next-line
@@ -117,6 +119,7 @@ const Customers = () => {
   const [cData, setCdata] = useState(false);
   const [lcData, setLCdata] = useState(false);
   const [storeAnomalies, setStoreAnomalies] = useState([]);
+  const [metadata, setMetadata] = useState('');
   const [alertData, setAlertData] = useState({
     zone_id: false,
     shelf_id: false,
@@ -169,6 +172,34 @@ const Customers = () => {
     setAnchorEl(null);
   };
 
+  // const body = {
+  //   // metadata_id: ,
+  //   fieldToUpdate: 'solved'
+  // };
+  // const updateMetadataSolved = async () => {
+  //   // console.log('id:', id);
+  //   setSolvedLoading(true);
+  //   try {
+  //     const response = await getUpdatedStatus(body);
+  //     if (response) {
+  //       console.log('AnomalyDetails api', response);
+  //       // setAnonmalyDetails(response.data);
+  //       setSolvedLoading(false);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  // const handleSolved = (id) => {
+  //   console.log('required ID', id);
+  //   // setSolvedLoading(true);
+
+  //   // setTimeout(() => {
+  //   //   setSolvedLoading(false);
+  //   // }, 3000); // 3 seconds
+  //   updateMetadataSolved(id);
+  // };
   // const handleToggleImage = () => {
   //   setImageLoading(true);
   //   setLiveAnomalyImg(!liveAnomalyImg);
@@ -213,7 +244,9 @@ const Customers = () => {
   //   }
   // };
 
-  const handleImageClick = (url, anomaly, time) => {
+  const handleImageClick = (url, id, anomaly, time) => {
+    setMetadata(id);
+
     if (antn) {
       setPos({ lft: false, tp: false, wdth: false, ht: false });
       setAntn(!antn);
@@ -266,7 +299,7 @@ const Customers = () => {
     // } catch (error) {
     //   console.log(error);
     // }
-
+    console.log('metadata', metadata);
     const dt = {
       date: new Date(),
       user_id: '660a457638e022104c155c06'
@@ -544,6 +577,7 @@ const Customers = () => {
       const promises = updatedData.map(async (s) => {
         try {
           const data = await getAnomalyForStore({ store_id: s.store });
+          console.log('anomaly', data);
           return { storeId: s.store, data };
         } catch (error) {
           console.error(`Error fetching anomalies for store ${s.store}:`, error);
@@ -562,6 +596,8 @@ const Customers = () => {
       }
     }
   };
+
+  console.log('storeAnomalies', storeAnomalies);
 
   return (
     <>
@@ -898,7 +934,7 @@ const Customers = () => {
                                 onClick={() =>
                                   handleImageClick(
                                     anomaly.raw_img_url,
-                                    // anomaly.img_url,
+                                    anomaly.metadata_id,
                                     // anomaly.store_anomalies.analysis_id,
                                     // anomaly.zone_id,
                                     // anomaly.store_anomalies.anomalies_found[0].type,
@@ -1264,16 +1300,26 @@ const Customers = () => {
                       />
                     </div>
                     <div className="w-full bg-white mt-5 flex flex-row-reverse gap-3">
-                      <button className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 hover:cursor-not-allowed border-2 border-gray-300">
+                      <button className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 border-2 border-gray-300">
                         <Typography className="text-gray-400">Ignore</Typography>
                       </button>
                       <button
-                        className="lg:rounded-full rounded-xl md:w-[125px]  hover:cursor-not-allowed text-lg lg:text-2xl p-2.5"
+                        className="lg:rounded-full rounded-xl md:w-[125px] text-lg lg:text-2xl p-2.5"
                         // style={{ backgroundColor: success }}
                         style={{ backgroundColor: '#6ee7b7' }}
                       >
                         <Typography color={'white'}>Solved</Typography>
                       </button>
+                      {/* <button
+                        onClick={() => handleSolved()}
+                        className="lg:rounded-full rounded-xl md:w-[125px] flex hover:cursor-pointer text-lg lg:text-2xl p-2.5"
+                        style={{ backgroundColor: success }}
+                      >
+                        {solvedLoading && <CgSpinner className="animate-spin" />}
+                        <Typography className="w-full" color={'white'}>
+                          Solved
+                        </Typography>
+                      </button> */}
                       <button
                         className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 flex align-middle justify-center"
                         style={{ backgroundColor: error }}

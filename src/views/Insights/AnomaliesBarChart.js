@@ -161,14 +161,14 @@ const AnomaliesBarChart = ({ selectedDate }) => {
     };
     //eslint-disable-next-line
   }, [selectedDate]);
-
+console.log("chartData", chartData);
   return (
     <>
       {chartData && chartData.length > 0 ? (
         <div id="chart">
           <ReactApexChart options={options} series={series} type={options.chart.type} height={options.chart.height} />
         </div>
-      ) : chartData && chartData.length === 0 ? (
+      ) : chartData === null ? (
         <div className="w-full h-full flex justify-center place-items-center">
           <img style={{ height: '344px' }} src={NoDataImg} alt="No data" />
         </div>

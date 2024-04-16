@@ -110,7 +110,7 @@ function DatePickerComp({ SetSelectedDate }) {
 
     setHighlightedDays([]);
     setHighlightedDays(daysToHighlight);
-  };
+  }
   return (
     <div>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
