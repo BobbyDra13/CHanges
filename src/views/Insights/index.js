@@ -1031,6 +1031,9 @@ const Insights = () => {
   // console.log('anomalies', anomalies);
   // console.log('anomalies bar', anomaliesBarChart);
 
+  const allZerHistogram = series && series[0].data.every((data) => data.y === 0);
+  console.log('checki', allZerHistogram);
+
   return (
     <Grid container spacing={gridSpacing}>
       <Grid
@@ -1081,7 +1084,8 @@ const Insights = () => {
               //   vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0 ? 'error' : 'success'
               // }
               // isLoss={vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0}
-              color={theme.palette.success.main}
+              color={'#dadada'}
+              // color={theme.palette.success.main}
             />
           </Grid>
           <Grid item lg={3} sm={6} xs={12}>
@@ -1093,7 +1097,8 @@ const Insights = () => {
               percentage="NA"
               // isLoss
               // chipColor="success"
-              color={theme.palette.success.main}
+              color={'#dadada'}
+              // color={theme.palette.success.main}
             />
           </Grid>
           <Grid item lg={3} sm={6} xs={12}>
@@ -1163,13 +1168,18 @@ const Insights = () => {
                                   </Grid>
                                 </Grid>
                               </Grid>
-                              <Grid item>
+                              <Grid className="relative" item>
                                 <Chart
                                   options={histogramOptions.options}
                                   series={series}
                                   type={histogramOptions.options.chart.type}
                                   height={histogramOptions.options.chart.height}
                                 />
+                                {allZerHistogram && (
+                                  <div className="w-full h-full flex justify-center items-center text-xl absolute z-40 -mt-80 text-white">
+                                    No data available
+                                  </div>
+                                )}
                               </Grid>
                             </Box>
                           </CardContent>
