@@ -650,10 +650,9 @@ const Insights = () => {
                 item.total_zone_missing_pop,
                 item.total_zone_alien_pop,
                 item.total_zone_incorrect_pop,
-                item.total_zone_no_read_pop
               ]);
               // const extractedBrandNames = brandDonutData.data.map((item) => item.group_id);
-              const extractedBrandNames = ['missing_pop', 'incorrect_pop', 'alien_pop', 'no_read_pop'];
+              const extractedBrandNames = ['missing_pop', 'incorrect_pop', 'alien_pop'];
 
               setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
 
