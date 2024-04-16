@@ -19,8 +19,8 @@ import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import { IoMdSettings } from 'react-icons/io';
 import CsvModal from './CsvUpload';
 import RadarChart from './RadarChart';
-import { GetPopPercentage, GetpopKPI, GetCapProgStoreView, GetAnomalies } from 'api';
-import { IoIosWarning } from 'react-icons/io';
+import { GetPopPercentage, GetpopKPI, GetCapProgStoreView, GetAnomaliesCount } from 'api';
+// import { IoIosWarning } from 'react-icons/io';
 // import { get } from 'react-hook-form';
 import Chart from 'react-apexcharts';
 import popIcon from '../../../assets/images/pop_icon.png';
@@ -47,7 +47,9 @@ function Overview() {
   //eslint-disable-next-line
   const [captureProg, setCaptureProg] = useState([]);
   const [capProgressValue, setCapProgressValue] = useState(0);
-  const [anomaliesCount, setAnomaliesCount] = useState(0);
+  //eslint-disable-next-line
+  const [anomaliesCount, setAnomaliesCount] = useState([]);
+  const [anomaliesLoading, setAnomaliesLoading] = useState(true);
 
   const handleClickPopScoreModal = () => {
     setOpenPopScoreModal((prev) => !prev);
@@ -265,7 +267,7 @@ function Overview() {
           // });
           // setCaptureProg(capProg);
           setCapProgressValue(capProgress.data[0].capture_percentage);
-          console.log("capture progress", capProgressValue);
+          console.log('capture progress', capProgressValue);
         } catch (error) {
           console.log(error);
         }
@@ -273,9 +275,11 @@ function Overview() {
       //eslint-disable-next-line
       async function getAnomalies() {
         try {
-          const anomalies = await GetAnomalies(popBody);
-          console.log('Anomalies ', anomalies.data.anomaly_count);
-          setAnomaliesCount(anomalies.data.anomaly_count);
+          const anomalies = await GetAnomaliesCount(popBody);
+          if (anomalies) {
+            setAnomaliesLoading(false);
+            setAnomaliesCount(anomalies.data);
+          }
         } catch (error) {
           console.log(error);
         }
@@ -287,15 +291,16 @@ function Overview() {
       getRatioData();
       getCaptureProg();
     }
-    return () => {
-      setFootfalldata(false);
-      // setCaptureProg([]);
-      setCapProgressValue(0);
-      setAnomaliesCount(0);
-      // setftfall(false)
-    };
+    // return () => {
+    //   setFootfalldata(false);
+    //   // setCaptureProg([]);
+    //   setCapProgressValue(0);
+    //   setAnomaliesCount(false);
+    //   // setftfall(false)
+    // };
     // eslint-disable-next-line
   }, [date]);
+  console.log('Anomalies ', anomaliesCount);
 
   // ftfall && ftfall.sort((a, b) => b.totalCustomerZone - a.totalCustomerZone);
   // dweltimeData && dweltimeData.sort((a, b) => b.avgDwellTime - a.avgDwellTime);
@@ -371,7 +376,11 @@ function Overview() {
                                   {' '}
                                 </div> */}
                                 <div>
-                                  {item.zone_id} : {percentage} %
+                                  {item.zone_id} :
+                                  <span className="text-base font-semibold" style={{ color: barcolor }}>
+                                    {' '}
+                                    {percentage} %
+                                  </span>
                                 </div>
                               </div>
                               <LinearProgress
@@ -572,13 +581,36 @@ function Overview() {
                     padding: '10px'
                   }}
                 >
-                  <div className="flex gap-3">
-                    <div>
-                      <IoIosWarning className="bg-[#444444] text-white rounded-full p-2 text-6xl" />
+                  <div className="flex w-full h-full">
+                    <div className="w-2/6 h-full flex flex-col">
+                      <span className="text-center text-sm font-semibold">Missing</span>
+                      {!anomaliesLoading ? (
+                        <span className="text-center flex-grow flex flex-col justify-center text-3xl font-semibold">
+                          {anomaliesCount[0].totalMissingPopCount}
+                        </span>
+                      ) : (
+                        <Skeleton variant="rectangular" height={184} className="rounded-md" />
+                      )}
                     </div>
-                    <div className="w-full">
-                      <p className="text-4xl text-gray-500 ">{anomaliesCount}</p>
-                      <p className="text-lg font-semibold">Anomalies Found</p>
+                    <div className="w-2/6 h-full flex flex-col border-2 border-t-0 border-b-0 border-l-gray-500 border-r-gray-500">
+                      <span className="text-center text-sm font-semibold">Alien</span>
+                      {!anomaliesLoading ? (
+                        <span className="text-center flex-grow flex flex-col justify-center text-3xl font-semibold">
+                          {anomaliesCount[0].totalAlienPopCount}
+                        </span>
+                      ) : (
+                        <Skeleton variant="rectangular" height={184} className="rounded-md" />
+                      )}
+                    </div>
+                    <div className="w-2/6 h-full flex flex-col">
+                      <span className="text-center text-sm font-semibold">Incorrect</span>
+                      {!anomaliesLoading ? (
+                        <span className="text-center flex-grow flex flex-col justify-center text-3xl font-semibold">
+                          {anomaliesCount[0].totalIncorrectPopCount}
+                        </span>
+                      ) : (
+                        <Skeleton variant="rectangular" height={184} className="rounded-md" />
+                      )}
                     </div>
                   </div>
                 </Card>

@@ -33,7 +33,7 @@ import {
   Box,
   useTheme,
   Tooltip,
-  // Avatar,
+  Avatar,
   AvatarGroup,
   IconButton,
   Menu,
@@ -204,7 +204,7 @@ const Customers = () => {
   //   setImageLoading(true);
   //   setLiveAnomalyImg(!liveAnomalyImg);
   // };
-
+  // eslint-disable-next-line
   const upKeepClicked = () => {
     if (!clickedBar.isUpKeep) {
       setClickedBar({ isUpKeep: true, isVm: false, isPop: false });
@@ -212,6 +212,7 @@ const Customers = () => {
       setClickedBar({ isUpKeep: false, isVm: false, isPop: false });
     }
   };
+  // eslint-disable-next-line
   const vMClicked = () => {
     if (!clickedBar.isVm) {
       setClickedBar({ isUpKeep: false, isVm: true, isPop: false });
@@ -219,6 +220,7 @@ const Customers = () => {
       setClickedBar({ isUpKeep: false, isVm: false, isPop: false });
     }
   };
+  // eslint-disable-next-line
   const popClicked = () => {
     // if (!clickedBar.isPop) {
     //   setClickedBar({ isUpKeep: false, isVm: false, isPop: true });
@@ -712,9 +714,9 @@ const Customers = () => {
                             </Menu>
                           </Box>
                           <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
-                            <Typography sx={{ width: 120 }} variant="h6">
+                            {/* <Typography sx={{ width: 120 }} variant="h6">
                               Capture %
-                            </Typography>
+                            </Typography> */}
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'start' }}>
                               <LinearProgress
                                 sx={{
@@ -732,17 +734,17 @@ const Customers = () => {
                                 // color="secondary"
                               />
                               <button className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center">
-                                <Typography sx={{ color: 'white' }} variant="subtitle2">
+                                <Typography sx={{ color: 'black' }} variant="subtitle1">
                                   {/* {item.capture_count ? Math.min(Math.floor((item.capture_count / totalParts) * 100), 100) : 0} % */}
-                                  {item.capture_percentage ? parseFloat(item.capture_percentage).toFixed(1) : '0'}%
+                                  Capture: {item.capture_percentage ? parseFloat(item.capture_percentage).toFixed(1) : '0'}%
                                 </Typography>
                               </button>
                             </Box>
                           </Stack>
                           <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
-                            <Typography sx={{ width: 120 }} variant={clickedBar.isUpKeep ? 'h5' : 'h6'}>
+                            {/* <Typography sx={{ width: 120 }} variant={clickedBar.isUpKeep ? 'h5' : 'h6'}>
                               Up-Keep Score
-                            </Typography>
+                            </Typography> */}
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
                               <LinearProgress
                                 sx={{
@@ -775,20 +777,20 @@ const Customers = () => {
                                 // color="secondary"
                               />
                               <button
-                                onClick={upKeepClicked}
+                                // onClick={upKeepClicked}
                                 className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center"
                               >
-                                <Typography sx={{ color: 'white' }} variant="subtitle1">
+                                <Typography sx={{ color: 'black' }} variant="subtitle1">
                                   {/* {Math.floor(item.store_fullness) || 0} % */}
-                                  NA
+                                  Up-Keep Score: NA
                                 </Typography>
                               </button>
                             </Box>
                           </Stack>
                           <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
-                            <Typography sx={{ width: 120 }} variant={clickedBar.isVm ? 'h5' : 'h6'}>
+                            {/* <Typography sx={{ width: 120 }} variant={clickedBar.isVm ? 'h5' : 'h6'}>
                               VM Score
-                            </Typography>
+                            </Typography> */}
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
                               <LinearProgress
                                 sx={{
@@ -821,23 +823,23 @@ const Customers = () => {
                                 // color="secondary"
                               />
                               <button
-                                onClick={vMClicked}
+                                // onClick={vMClicked}
                                 className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center"
                               >
-                                <Typography sx={{ color: 'white' }} variant="subtitle1">
+                                <Typography sx={{ color: 'black' }} variant="subtitle1">
                                   {/* {Math.floor((anomalies_count / totalParts) * 100) > 100
                                     ? 100
                                     : Math.floor((anomalies_count / totalParts) * 100)}{' '}
                                   % */}
-                                  NA
+                                  VM Score: NA
                                 </Typography>
                               </button>
                             </Box>
                           </Stack>
                           <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
-                            <Typography sx={{ width: 120 }} variant={clickedBar.isPop ? 'h5' : 'h6'}>
+                            {/* <Typography sx={{ width: 120 }} variant={clickedBar.isPop ? 'h5' : 'h6'}>
                               PoP Score
-                            </Typography>
+                            </Typography> */}
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
                               <LinearProgress
                                 sx={{
@@ -858,11 +860,11 @@ const Customers = () => {
                                 // color="secondary"
                               />
                               <button
-                                onClick={popClicked}
+                                // onClick={popClicked}
                                 className="absolute hover:cursor-pointer w-full h-full flex justify-center place-items-center"
                               >
-                                <Typography sx={{ color: 'white' }} variant="subtitle2">
-                                  {item.pop_percentage ? parseFloat(item.pop_percentage).toFixed(2) : '0'}%
+                                <Typography sx={{ color: 'black' }} variant="subtitle1">
+                                  PoP Score: {item.pop_percentage ? parseFloat(item.pop_percentage).toFixed(2) : '0'}%
                                 </Typography>
                               </button>
                             </Box>
@@ -1255,10 +1257,10 @@ const Customers = () => {
                           )
                         )}
                       </div>
-                      {/* <Typography width={'100%'} variant="h3">
+                      <Typography width={'100%'} variant="h3">
                         Team
                       </Typography>
-                      <Divider /> */}
+                      <Divider />
                       <div style={{ paddingBottom: 13 }} className="w-full flex justify-start">
                         <AvatarGroup
                           sx={{
@@ -1266,21 +1268,21 @@ const Customers = () => {
                           }}
                           max={2}
                         >
-                          {/* <Tooltip
+                          <Tooltip
                             title={
                               <div className="w-[200px] p-2 flex flex-col space-y-2">
                                 <Typography sx={{ width: '100%', color: 'white' }} variant="h6">
                                   Agent Details
                                 </Typography>
-                                <Typography variant="subtitle2">Name: {details.user_name}</Typography>
-                                <Typography variant="subtitle2">Number: {details.user_number}</Typography>
+                                <Typography variant="subtitle2">Name: {cData.user_name}</Typography>
+                                <Typography variant="subtitle2">Number: {cData.user_number}</Typography>
                               </div>
                             }
                             enterTouchDelay={1}
                             leaveTouchDelay={100000}
                           >
-                            <Avatar className="hover:cursor-pointer" sx={{ bgcolor: success }} alt={details.user_name} src="/example.jpg" />
-                          </Tooltip> */}
+                            <Avatar className="hover:cursor-pointer" sx={{ bgcolor: success }} alt={cData.user_name} src="/example.jpg" />
+                          </Tooltip>
                         </AvatarGroup>
                       </div>
                       <Typography sx={{ paddingBottom: 1 }} width={'100%'} variant="h3">

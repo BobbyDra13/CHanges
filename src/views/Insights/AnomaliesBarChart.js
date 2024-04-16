@@ -24,7 +24,7 @@ const columnChartOptions = {
       show: false
     }
   },
-  colors: ['#00ac69', '#ff413a'],
+  colors: ['#ff413a', '#00ac69'],
   plotOptions: {
     bar: {
       columnWidth: '30%',
@@ -121,8 +121,8 @@ const AnomaliesBarChart = ({ selectedDate }) => {
       const finalDate = selectedDate ? selectedDate : todayDate;
       const body = {
         date: finalDate,
-        user_id: "660a457638e022104c155c06"
-    }
+        user_id: '660a457638e022104c155c06'
+      };
 
       try {
         const data = await GetAnomalies(body);
@@ -140,12 +140,12 @@ const AnomaliesBarChart = ({ selectedDate }) => {
             });
             setSeries([
               {
-                name: 'Anomalies Resolved',
-                data: extractedResolved
-              },
-              {
                 name: 'Anomalies Found',
                 data: extractedFound
+              },
+              {
+                name: 'Anomalies Resolved',
+                data: extractedResolved
               }
             ]);
           }

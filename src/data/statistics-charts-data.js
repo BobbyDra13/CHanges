@@ -68,25 +68,61 @@ const dailySalesChart = {
   }
 };
 
-const completedTasksChart = {
-  ...dailySalesChart,
-  series: [
-    {
-      name: 'Compliance %',
-      data: [0, 14, 52, 93, 30, 81, 45]
-    }
-  ]
-};
+// const completedTasksChart = {
+//   ...dailySalesChart,
+//   series: [
+//     {
+//       name: 'Compliance %',
+//       data: [0, 14, 52, 93, 30, 81, 45]
+//     }
+//   ]
+// };
 
-const discountPromoChart = {
+const disabledVMChart = {
   ...dailySalesChart,
   series: [
     {
-      name: 'Promo %',
+      name: 'VM Score %',
       data: [0, 0, 0, 0, 0, 0, 0]
     }
   ],
-  height: 82
+  height: 82,
+  options: {
+    ...dailySalesChart.options,
+    markers: {
+      size: 7
+    },
+    xaxis: {
+      ...chartsConfig.xaxis,
+      labels: {
+        show: false
+      },
+      categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
+    }
+  }
+};
+const disabledUpKeepChart = {
+  ...dailySalesChart,
+  series: [
+    {
+      name: 'Up Keep Score %',
+      data: [0, 0, 0, 0, 0, 0, 0]
+    }
+  ],
+  height: 82,
+  options: {
+    ...dailySalesChart.options,
+    markers: {
+      size: 7
+    },
+    xaxis: {
+      ...chartsConfig.xaxis,
+      labels: {
+        show: false
+      },
+      categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
+    }
+  }
 };
 
 const anomaliesChart = {
@@ -94,7 +130,7 @@ const anomaliesChart = {
   series: [
     {
       name: 'Anomalies',
-      data: [72, 41, 89, 63, 27, 54, 94]
+      data: [0, 0, 0, 0, 0, 0, 0]
     }
   ],
   options: {
@@ -115,7 +151,7 @@ const anomaliesChart = {
       labels: {
         show: false
       },
-      categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+      categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
     },
     yaxis: {
       labels: {
@@ -145,14 +181,14 @@ export const statisticsChartsData = [
     title: 'Completed Tasks',
     description: 'Last Campaign Performance',
     footer: 'just updated',
-    chart: completedTasksChart
+    chart: disabledUpKeepChart
   },
   {
     color: 'green',
     title: 'Completed Tasks',
     description: 'Last Campaign Performance',
     footer: 'just updated',
-    chart: discountPromoChart
+    chart: disabledVMChart
   },
   {
     color: 'green',
