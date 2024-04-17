@@ -1098,7 +1098,7 @@ const Insights = () => {
             <KpiPop
               isLoaded={fullness}
               chart={statisticsChartsData[2].chart}
-              title="UpKeep Score"
+              title="OSA"
               count="NA"
               percentage="NA"
               // isLoss

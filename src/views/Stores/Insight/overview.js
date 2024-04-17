@@ -12,10 +12,10 @@ import Uniquejourney from './KPICards/Uniquejourney';
 // import DonutChart from './TrendsViewCharts/DonutChart';
 // import DonutChartTwo from './TrendsViewCharts/DonutChartTwo';
 // import GroupIcon from '@mui/icons-material/Group';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+// import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 // import Diversity3Icon from '@mui/icons-material/Diversity3';
 import LineChartToggle from './lineChartToggle';
-import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+// import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import { IoMdSettings } from 'react-icons/io';
 import CsvModal from './CsvUpload';
 import RadarChart from './RadarChart';
@@ -26,6 +26,7 @@ import Chart from 'react-apexcharts';
 import popIcon from '../../../assets/images/pop_icon.png';
 
 import pog from '../../../assets/images/pog.jpeg';
+import associate from '../../../assets/images/profile-user.png';
 
 function Overview() {
   const theme = useTheme();
@@ -526,33 +527,131 @@ function Overview() {
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <div style={{ height: '276px' }} className="flex flex-col">
-                {/* <Card
-                  className="border border-gray-300 h-[85px]"
-                  sx={{
-                    padding: '4px'
-                  }}
-                >
-                  <div className="flex gap-2">
-                    <div className="w-24 flex items-center justify-center">
-                      <GroupIcon className=" bg-[#444444] text-white rounded-full p-2 text-6xl" />
+                <Card className="border border-gray-300" sx={{ height: '276px' }}>
+                  {/* {!ftfall ? (
+                    <div className="flex  w-full  flex-col gap-1 p-3">
+                      <div className="flex items-center justify-center gap-2 w-full">
+                        {footfalldata.length > 0 ? (
+                          <img src={popIcon} alt="pop" className="h-14 w-14" />
+                        ) : (
+                          <Skeleton variant="circular" width={60} height={45} />
+                        )}
+                        <div className="w-full">
+                          {footfalldata.length > 0 ? (
+                            <p className="text-3xl">{totalPOP} %</p>
+                          ) : (
+                            <Skeleton variant="rectangular" className="mb-3 rounded-sm" width={50} height={20} />
+                          )}
+
+                          {footfalldata.length > 0 ? (
+                            <p className="text-lg font-semibold">PoP</p>
+                          ) : (
+                            <Skeleton variant="rectangular" width={150} height={15} className=" mb-2 rounded-sm" />
+                          )}
+                        </div>
+                        <>
+                          <IoMdSettings className="text-5xl cursor-pointer" onClick={handleClickPopScoreModal} />
+                          <Modal
+                            open={openPopScoreModal}
+                            onClose={handleClose}
+                            aria-labelledby="modal-modal-title"
+                            aria-describedby="modal-modal-description"
+                          >
+                            <Box sx={modalStyle}>
+                              <CsvModal />
+                            </Box>
+                          </Modal>
+                        </>
+                      </div>
+                      {footfalldata.length > 0 ? (
+                        <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
+                          {footfalldata.map((item, index) => {
+                            // const percentage = (item.totalCustomerZone / ftfall[0].totalCustomerZone) * 100;
+                            const percentage =
+                              item.data.FullnessPopPercent != undefined ? Math.round(parseFloat(item.data.FullnessPopPercent)) : 0;
+                            const barcolor = percentage >= 80 ? '#00ac69' : percentage >= 50 ? '#f4a100' : '#ff413a';
+                            // console.log(percentage);
+                            return (
+                              <div className="mt-2" key={index}>
+                                <div className="flex gap-1 items-center">
+                                  <div>
+                                    {item.zone_id} :
+                                    <span className="text-base font-semibold" style={{ color: barcolor }}>
+                                      {percentage} %
+                                    </span>
+                                  </div>
+                                </div>
+                                <LinearProgress
+                                  variant="determinate"
+                                  value={percentage}
+                                  className="rounded-lg"
+                                  sx={{
+                                    marginTop: '5px',
+                                    backgroundColor: 'white', // Set color for unfilled part
+                                    '& .MuiLinearProgress-bar': {
+                                      backgroundColor: `${barcolor}` // Set color for filled part
+                                    }
+                                  }}
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <Skeleton variant="rectangular" height={184} className="rounded-md" />
+                      )}
                     </div>
-                    <div className="flex flex-col">
-                      <p className="text-4xl text-[#444444]">32</p>
-                      <p className="text-lg text-[#444444]">Groups</p>
+                  ) : ( */}
+                  <div className="flex  w-full  flex-col gap-1 p-3">
+                    <div className="flex items-center justify-center gap-2 w-full">
+                      <img src={associate} alt="pop" className="h-14 w-14" />
+                      <div className="w-full">
+                        <p className="text-3xl text-gray-500 ">NA</p>
+                        <p className="text-lg font-semibold">Associate Score</p>
+                      </div>
+                      <>
+                        <Modal
+                          open={openPopScoreModal}
+                          onClose={handleClose}
+                          aria-labelledby="modal-modal-title"
+                          aria-describedby="modal-modal-description"
+                        >
+                          <Box sx={modalStyle}>
+                            <CsvModal />
+                          </Box>
+                        </Modal>
+                      </>
+                    </div>
+                    <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
+                      <p className="text-base font-semibold text-gray-500">Currently No data available</p>
                     </div>
                   </div>
-                </Card> */}
-                <Card
-                  className="border border-gray-300 h-full"
-                  sx={{
-                    padding: '5px'
-                  }}
-                >
-                  <RadarChart date={date} />
+                  {/* <img src={NoDataImg} style={{ height: '100%', width: '100%' }} alt="No data" /> */}
+                  {/* )} */}
                 </Card>
               </div>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
+              <Card
+                className="border border-gray-300 h-full"
+                sx={{
+                  padding: '5px'
+                }}
+                style={{ height: '275px' }}
+              >
+                <RadarChart date={date} />
+              </Card>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <Grid container spacing={2}>
+            <Grid className="mb-10" item xs={12} lg={9} xl={9.6}>
+              <Card className="border border-gray-300" sx={{ height: '550px' }}>
+                <LineChartToggle date={date} />
+              </Card>
+            </Grid>
+            <Grid item className="mb-10" xs={12} lg={3} xl={2.4}>
               <div className=" flex flex-col gap-2 " style={{ height: '275px' }}>
                 <Card
                   className="border border-gray-300 h-2/3"
@@ -576,26 +675,26 @@ function Overview() {
                   </div>
                 </Card>
                 <Card
-                  className="border border-gray-300 h-1/3"
+                  className="border border-gray-300 bg-[#ff413a] h-1/3"
                   style={{
                     padding: '10px'
                   }}
                 >
                   <div className="flex w-full h-full">
                     <div className="w-2/6 h-full flex flex-col">
-                      <span className="text-center text-sm font-semibold">Missing</span>
+                      <span className="text-center text-white text-sm font-semibold">Missing</span>
                       {!anomaliesLoading ? (
-                        <span className="text-center flex-grow flex flex-col justify-center text-3xl font-semibold">
+                        <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
                           {anomaliesCount[0].totalMissingPopCount}
                         </span>
                       ) : (
                         <Skeleton variant="rectangular" height={184} className="rounded-md" />
                       )}
                     </div>
-                    <div className="w-2/6 h-full flex flex-col border-2 border-t-0 border-b-0 border-l-gray-500 border-r-gray-500">
-                      <span className="text-center text-sm font-semibold">Alien</span>
+                    <div className="w-2/6 h-full flex flex-col border-2 border-t-0 border-b-0 border-l-white border-r-white">
+                      <span className="text-center text-white  text-sm font-semibold">Alien</span>
                       {!anomaliesLoading ? (
-                        <span className="text-center flex-grow flex flex-col justify-center text-3xl font-semibold">
+                        <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
                           {anomaliesCount[0].totalAlienPopCount}
                         </span>
                       ) : (
@@ -603,9 +702,9 @@ function Overview() {
                       )}
                     </div>
                     <div className="w-2/6 h-full flex flex-col">
-                      <span className="text-center text-sm font-semibold">Incorrect</span>
+                      <span className="text-center text-white  text-sm font-semibold">Incorrect</span>
                       {!anomaliesLoading ? (
-                        <span className="text-center flex-grow flex flex-col justify-center text-3xl font-semibold">
+                        <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
                           {anomaliesCount[0].totalIncorrectPopCount}
                         </span>
                       ) : (
@@ -615,103 +714,6 @@ function Overview() {
                   </div>
                 </Card>
               </div>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item xs={12}>
-          <Grid container spacing={2}>
-            <Grid className="mb-10" item xs={12} lg={9} xl={9.6}>
-              <Card className="border border-gray-300" sx={{ height: '550px' }}>
-                <LineChartToggle date={date} />
-              </Card>
-            </Grid>
-            <Grid item className="mb-10" xs={12} lg={3} xl={2.4}>
-              <Card className="border border-gray-300 opacity-30 hover:cursor-not-allowed" sx={{ height: '550px' }}>
-                <div
-                  style={{
-                    padding: '10px',
-                    textAlign: 'center',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem'
-                  }}
-                >
-                  <QuestionAnswerIcon className="bg-[#111921] text-white rounded-full p-2 text-5xl" />
-                  <div className="flex flex-col items-start pt-1">
-                    <h3 className="text-4xl">12</h3>
-                    <p>Message Logs</p>
-                  </div>
-                </div>
-                <Card
-                  className=" rounded-lg bg-[#111921] text-white w-[95%] mx-auto"
-                  sx={{
-                    marginTop: '5px',
-                    padding: '0.5rem'
-                  }}
-                >
-                  <div className="flex gap-3 mb-1">
-                    <AccountCircleIcon className="bg-white text-slate-700 rounded-full p-1 text-3xl" />
-                    <div className="flex flex-col gap-2">
-                      <div>has not interacted with a customer over 15 mins.</div>
-                      <div className="text-blue-500 cursor-pointer font-bold">View {'->'}</div>
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      textAlign: 'right'
-                    }}
-                  >
-                    08:02:53 30-01-2024
-                  </div>
-                </Card>
-                <Card
-                  className=" rounded-lg bg-[#111921] text-white w-[95%] mx-auto"
-                  sx={{
-                    marginTop: '5px',
-                    padding: '0.5rem'
-                  }}
-                >
-                  <div className="flex gap-3 mb-1">
-                    <AccountCircleIcon className="bg-white text-slate-700 rounded-full p-1 text-3xl" />
-                    <div className="flex flex-col gap-2">
-                      <div>
-                        Heavy customer traffic detected at Phone zone. Please re-assign{' '}
-                        <span className="font-bold text-cyan-300">Ritesh Kumar</span> to Phones zone for optimal customer - employee ratio.
-                      </div>
-                      <div className="text-blue-500 cursor-pointer font-bold">View {'->'}</div>
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      textAlign: 'right'
-                    }}
-                  >
-                    08:02:53 30-01-2024
-                  </div>
-                </Card>
-                <Card
-                  className=" rounded-lg bg-[#111921] text-white w-[95%] mx-auto"
-                  sx={{
-                    marginTop: '5px',
-                    padding: '0.5rem'
-                  }}
-                >
-                  <div className="flex gap-3 mb-1 ">
-                    <AccountCircleIcon className="bg-white text-slate-700 rounded-full p-1 text-3xl" />
-                    <div className="flex flex-col gap-2">
-                      <div>Loyal customer 3330123 detected at entry gate.</div>
-                      <div className="text-blue-500 cursor-pointer font-bold">View {'->'}</div>
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      textAlign: 'right'
-                    }}
-                  >
-                    <p>08:02:53 30-01-2024</p>
-                  </div>
-                </Card>
-              </Card>
             </Grid>
           </Grid>
         </Grid>

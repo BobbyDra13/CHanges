@@ -79,13 +79,13 @@ const Areachart = ({ date }) => {
   const state = {
     series: [
       {
+        name: 'Capture Progress',
+        data: capProgress
+      },
+      {
         name: 'Pop Score',
         data: custCount
         // [4, 7, 4, 20, 18, 80, 100,40, 60,30, 20, 33, 15,9, 4 ]
-      },
-      {
-        name: 'Capture Progress',
-        data: capProgress
       }
       // {
 
@@ -108,98 +108,98 @@ const Areachart = ({ date }) => {
             dataPointIndex: 0,
             fillColor: status[0] ? '#33C393' : '#dadada',
             strokeColor: 'white',
-            size: 7
+            size: 12
           },
           {
             seriesIndex: 0,
             dataPointIndex: 1,
             fillColor: status[1] ? '#33C393' : '#dadada',
             strokeColor: 'white',
-            size: 7
+            size: 12
           },
           {
             seriesIndex: 0,
             dataPointIndex: 2,
             fillColor: status[2] ? '#33C393' : '#dadada',
             strokeColor: 'white',
-            size: 7
+            size: 12
           },
           {
             seriesIndex: 0,
             dataPointIndex: 3,
             fillColor: status[3] ? '#33C393' : '#dadada',
             strokeColor: 'white',
-            size: 7
+            size: 12
           },
           {
             seriesIndex: 0,
             dataPointIndex: 4,
             fillColor: status[4] ? '#33C393' : '#dadada',
             strokeColor: 'white',
-            size: 7
+            size: 12
           },
           {
             seriesIndex: 0,
             dataPointIndex: 5,
             fillColor: status[5] ? '#33C393' : '#dadada',
             strokeColor: 'white',
-            size: 7
+            size: 12
           },
           {
             seriesIndex: 0,
             dataPointIndex: 6,
             fillColor: status[6] ? '#33C393' : '#dadada',
             strokeColor: 'white',
-            size: 7
+            size: 12
           },
           {
             seriesIndex: 1,
             dataPointIndex: 0,
             fillColor: status[0] ? '#2BC0DA' : '#dadada',
             strokeColor: 'white',
-            size: 7
+            size: 12
           },
           {
             seriesIndex: 1,
             dataPointIndex: 1,
             fillColor: status[1] ? '#2BC0DA' : '#dadada',
             strokeColor: 'white',
-            size: 7
+            size: 12
           },
           {
             seriesIndex: 1,
             dataPointIndex: 2,
             fillColor: status[2] ? '#2BC0DA' : '#dadada',
             strokeColor: 'white',
-            size: 7
+            size: 12
           },
           {
             seriesIndex: 1,
             dataPointIndex: 3,
             fillColor: status[3] ? '#2BC0DA' : '#dadada',
             strokeColor: 'white',
-            size: 7
+            size: 12
           },
           {
             seriesIndex: 1,
             dataPointIndex: 4,
             fillColor: status[4] ? '#2BC0DA' : '#dadada',
             strokeColor: 'white',
-            size: 7
+            size: 12
           },
           {
             seriesIndex: 1,
             dataPointIndex: 5,
             fillColor: status[5] ? '#2BC0DA' : '#dadada',
             strokeColor: 'white',
-            size: 7
+            size: 12
           },
           {
             seriesIndex: 1,
             dataPointIndex: 6,
             fillColor: status[6] ? '#2BC0DA' : '#dadada',
             strokeColor: 'white',
-            size: 7
+            size: 12
           }
         ]
       },
