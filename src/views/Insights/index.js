@@ -121,7 +121,8 @@ const Insights = () => {
       colors: ['#10b981'],
       stroke: {
         lineCap: 'round',
-        curve: 'smooth'
+        curve: 'smooth',
+        width: 5
       },
       markers: {
         size: 7
@@ -159,7 +160,8 @@ const Insights = () => {
       colors: ['#10b981'],
       stroke: {
         lineCap: 'round',
-        curve: 'smooth'
+        curve: 'smooth',
+        width: 5
       },
       markers: {
         size: 7
@@ -196,7 +198,8 @@ const Insights = () => {
       colors: ['#ff413a'],
       stroke: {
         lineCap: 'round',
-        curve: 'smooth'
+        curve: 'smooth',
+        width: 5
       },
       markers: {
         size: 7
@@ -273,6 +276,7 @@ const Insights = () => {
       },
       stroke: {
         // lineCap: 'round'
+        width: 5
       }
       // labels: ['Progress']
     },
@@ -347,7 +351,8 @@ const Insights = () => {
             colors: ['#10b981'],
             stroke: {
               lineCap: 'round',
-              curve: 'smooth'
+              curve: 'smooth',
+              width: 5
             },
             markers: {
               size: 7
@@ -385,7 +390,8 @@ const Insights = () => {
             colors: ['#10b981'],
             stroke: {
               lineCap: 'round',
-              curve: 'smooth'
+              curve: 'smooth',
+              width: 5
             },
             markers: {
               size: 7
@@ -422,7 +428,8 @@ const Insights = () => {
             colors: ['#ff413a'],
             stroke: {
               lineCap: 'round',
-              curve: 'smooth'
+              curve: 'smooth',
+              width: 5
             },
             markers: {
               size: 7
