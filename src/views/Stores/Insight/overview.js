@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Stack, Typography, Card, Skeleton, LinearProgress, Modal, Box } from '@mui/material';
+import { Grid, Stack, Typography, Card, Skeleton, LinearProgress, Modal, Box, Tooltip, IconButton } from '@mui/material';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { avgDwelTime } from '../../../api/sentinelAPI';
 // import { footfallCard } from '../../../api/sentinelAPI';
@@ -19,11 +19,12 @@ import LineChartToggle from './lineChartToggle';
 import { IoMdSettings } from 'react-icons/io';
 import CsvModal from './CsvUpload';
 import RadarChart from './RadarChart';
-import { GetPopPercentage, GetpopKPI, GetCapProgStoreView, GetAnomaliesCount } from 'api';
+import { GetPopPercentage, GetpopKPI, GetCapProgStoreView, GetAnomaliesCount, getAssociateScoreData } from 'api';
 // import { IoIosWarning } from 'react-icons/io';
 // import { get } from 'react-hook-form';
 import Chart from 'react-apexcharts';
 import popIcon from '../../../assets/images/pop_icon.png';
+import { FaCircleInfo } from 'react-icons/fa6';
 
 import pog from '../../../assets/images/pog.jpeg';
 import associate from '../../../assets/images/profile-user.png';
@@ -37,8 +38,9 @@ function Overview() {
   const [averageDwellTime, setAverageDwellTime] = useState(false);
   const [dweltimeData, setDweltimedata] = useState(false);
   const [footfalldata, setFootfalldata] = useState(false);
+  const [associateScoreData, setAssociateScoreData] = useState([]);
   const [ftfall, setftfall] = useState([]);
-  const [date, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
+  const [date, setSelectedDate] = useState(new Date().toString().slice(0, 10));
   //eslint-disable-next-line
   const [empCount, setEmpCount] = useState('');
   //eslint-disable-next-line
@@ -218,7 +220,7 @@ function Overview() {
               item.data.FullnessPopPercent = parseFloat(percentageString);
             });
             group.sort((a, b) => a.data.FullnessPopPercent - b.data.FullnessPopPercent);
-            // console.log(group);
+            console.log('pxs', group);
             setftfall(true);
             // console.log(zones);
             setFootfalldata(group);
@@ -286,11 +288,30 @@ function Overview() {
         }
       }
 
+      //eslint-disable-next-line
+      async function getAssociateScore() {
+        const body = {
+          // date: '2024-04-17',
+          date: date,
+          store_id: '65c74d4112465588b7a4984c'
+        };
+        try {
+          const associateScore = await getAssociateScoreData(body);
+          if (associateScore) {
+            setAssociateScoreData(associateScore.data);
+            console.log('Associate Score', associateScore.data);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
       getAnomalies();
       getFootfalldata();
       getDataDwell();
       getRatioData();
       getCaptureProg();
+      getAssociateScore();
     }
     // return () => {
     //   setFootfalldata(false);
@@ -602,32 +623,107 @@ function Overview() {
                       )}
                     </div>
                   ) : ( */}
-                  <div className="flex  w-full  flex-col gap-1 p-3">
-                    <div className="flex items-center justify-center gap-2 w-full">
-                      <img src={associate} alt="pop" className="h-14 w-14" />
-                      <div className="w-full">
-                        <p className="text-3xl text-gray-500 ">NA</p>
-                        <p className="text-lg font-semibold">Associate Score</p>
+                  {!associateScoreData.length > 0 || associateScoreData[0].user_id !== null ? (
+                    <div className="flex  w-full  flex-col gap-1 p-3">
+                      <div className="flex items-center justify-center gap-2 w-full">
+                        <img src={associate} alt="pop" className="h-14 w-14" />
+                        <div className="w-full">
+                          <p className="text-3xl text-gray-500 ">NA</p>
+                          <p className="text-lg font-semibold">Associate Score</p>
+                        </div>
+                        <>
+                          <IoMdSettings className="text-5xl cursor-not-allowed" />
+                          <Modal
+                            open={openPopScoreModal}
+                            onClose={handleClose}
+                            aria-labelledby="modal-modal-title"
+                            aria-describedby="modal-modal-description"
+                          >
+                            <Box sx={modalStyle}>
+                              <CsvModal />
+                            </Box>
+                          </Modal>
+                        </>
                       </div>
-                      <>
-                        <Modal
-                          open={openPopScoreModal}
-                          onClose={handleClose}
-                          aria-labelledby="modal-modal-title"
-                          aria-describedby="modal-modal-description"
-                        >
-                          <Box sx={modalStyle}>
-                            <CsvModal />
-                          </Box>
-                        </Modal>
-                      </>
+                      <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
+                        {associateScoreData.length > 0 && associateScoreData[0].user_id !== null ? (
+                          associateScoreData.map((item, index) => {
+                            const percentage = Math.round(parseFloat(item.total_pop_percentage));
+                            const barcolor = percentage >= 80 ? '#00ac69' : percentage >= 50 ? '#f4a100' : '#ff413a';
+                            const assignedGroup = item.groups.map((i) => {
+                              return i._id.group;
+                            });
+                            const assignedGroupString = assignedGroup.join(', ');
+                            return (
+                              <div className="mt-2" key={index}>
+                                <div className="flex gap-1 items-center justify-between">
+                                  <div>
+                                    {item.name} :
+                                    <span className="text-base font-semibold" style={{ color: barcolor }}>
+                                      {' ' + percentage} %
+                                    </span>
+                                  </div>
+                                  <Tooltip
+                                    key={index}
+                                    title={
+                                      <div className="p-2">
+                                        <p className="text-base">Assigned Group</p>
+                                        <p className="text-xs mt-1 text-center"> {assignedGroupString}</p>
+                                      </div>
+                                    }
+                                  >
+                                    <IconButton>
+                                      <FaCircleInfo className="text-xs" />
+                                    </IconButton>
+                                  </Tooltip>
+                                </div>
+                                <LinearProgress
+                                  variant="determinate"
+                                  value={percentage}
+                                  className="rounded-lg"
+                                  sx={{
+                                    marginTop: '5px',
+                                    backgroundColor: 'white', // Set color for unfilled part
+                                    '& .MuiLinearProgress-bar': {
+                                      backgroundColor: `${barcolor}` // Set color for filled part
+                                    }
+                                  }}
+                                />
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <Skeleton variant="rectangular" height={184} className="rounded-md" />
+                        )}
+                      </div>
                     </div>
-                    <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
-                      <p className="text-base font-semibold text-gray-500">Currently No data available</p>
+                  ) : (
+                    <div className="flex  w-full  flex-col gap-1 p-3">
+                      <div className="flex items-center justify-center gap-2 w-full">
+                        <img src={popIcon} alt="pop" className="h-14 w-14" />
+                        <div className="w-full">
+                          <p className="text-3xl text-gray-500 ">NA</p>
+                          <p className="text-lg font-semibold">Associate Score</p>
+                        </div>
+                        <>
+                          <IoMdSettings className="text-5xl cursor-not-allowed" />
+                          <Modal
+                            open={openPopScoreModal}
+                            onClose={handleClose}
+                            aria-labelledby="modal-modal-title"
+                            aria-describedby="modal-modal-description"
+                          >
+                            <Box sx={modalStyle}>
+                              <CsvModal />
+                            </Box>
+                          </Modal>
+                        </>
+                      </div>
+                      <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
+                        <p className="text-base font-semibold text-gray-500">Currently No data available</p>
+                      </div>
                     </div>
-                  </div>
-                  {/* <img src={NoDataImg} style={{ height: '100%', width: '100%' }} alt="No data" /> */}
-                  {/* )} */}
+                  )}
                 </Card>
               </div>
             </Grid>
