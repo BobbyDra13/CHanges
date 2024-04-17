@@ -498,7 +498,10 @@ const Insights = () => {
             const difference = `${(lastElement - secondLastElement).toFixed(1)}`;
             setPopChipData(difference);
 
-            const dates = popScoreFullnessLine.map((item) => item.date);
+            const dates = popScoreFullnessLine.map((item) => {
+              let date = item.capture_status ? item.date : `${item.date} (Data not captured)`;
+              return date;
+            });
 
             const status = popScoreFullnessLine.map((i) => {
               return i.capture_status;
@@ -659,7 +662,10 @@ const Insights = () => {
             console.log('difference', difference);
             setAnomaliesChipData(difference);
 
-            const dates = popScoreFullnessLine.map((item) => item.date);
+            const dates = popScoreFullnessLine.map((item) => {
+              let date = item.capture_status ? item.date : `${item.date} (Data not captured)`;
+              return date;
+            });
             console.log('datess', dates);
 
             const updatedChartConfig = {
@@ -1068,7 +1074,7 @@ const Insights = () => {
               title="PoP Score"
               count={`${parseFloat(popPercentage) === 0 ? '0' : parseFloat(popPercentage).toFixed(1)}%`}
               percentage={`${Math.abs(popChipData)}%`}
-              chipColor={+popChipData < 0 ? 'error' : 'success'}
+              chipColor={!capStatus ? '#9CA3AF' : +popChipData < 0 ? '#FF6761' : '#10B981'}
               isLoss={+popChipData < 0}
               color={capStatus ? theme.palette.success.main : '#9ca3af'}
             />
@@ -1084,7 +1090,7 @@ const Insights = () => {
               //   vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0 ? 'error' : 'success'
               // }
               // isLoss={vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0}
-              color={'#dadada'}
+              color={'#9CA3AF'}
               // color={theme.palette.success.main}
             />
           </Grid>
@@ -1097,7 +1103,7 @@ const Insights = () => {
               percentage="NA"
               // isLoss
               // chipColor="success"
-              color={'#dadada'}
+              color={'#9CA3AF'}
               // color={theme.palette.success.main}
             />
           </Grid>
@@ -1108,7 +1114,7 @@ const Insights = () => {
               title="Anomalies Found"
               count={`${anomaliesPercentage}`}
               percentage={Math.abs(anomaliesChipData)}
-              chipColor={anomaliesChipData >= 0 ? 'error' : 'success'}
+              chipColor={!capStatus ? '#9CA3AF' : anomaliesChipData >= 0 ? '#FF6761' : '#10B981'}
               isLoss={anomaliesChipData < 0}
               color={theme.palette.error.main}
             />
