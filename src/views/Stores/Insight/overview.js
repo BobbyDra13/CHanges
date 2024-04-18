@@ -19,7 +19,7 @@ import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import { IoMdSettings } from 'react-icons/io';
 import CsvModal from './CsvUpload';
 import RadarChart from './RadarChart';
-import { GetPopPercentage, GetpopKPI, GetCapProgStoreView, GetAnomaliesCount } from 'api';
+import { GetPopPercentage, GetpopKPI, GetCapProgStoreView } from 'api';
 // import { IoIosWarning } from 'react-icons/io';
 // import { get } from 'react-hook-form';
 import Chart from 'react-apexcharts';
@@ -48,8 +48,8 @@ function Overview() {
   const [captureProg, setCaptureProg] = useState([]);
   const [capProgressValue, setCapProgressValue] = useState(0);
   //eslint-disable-next-line
-  const [anomaliesCount, setAnomaliesCount] = useState([]);
-  const [anomaliesLoading, setAnomaliesLoading] = useState(true);
+  // const [anomaliesCount, setAnomaliesCount] = useState([]);
+  // const [anomaliesLoading, setAnomaliesLoading] = useState(true);
 
   const handleClickPopScoreModal = () => {
     setOpenPopScoreModal((prev) => !prev);
@@ -273,19 +273,19 @@ function Overview() {
         }
       }
       //eslint-disable-next-line
-      async function getAnomalies() {
-        try {
-          const anomalies = await GetAnomaliesCount(popBody);
-          if (anomalies) {
-            setAnomaliesLoading(false);
-            setAnomaliesCount(anomalies.data);
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      }
+      // async function getAnomalies() {
+      //   try {
+      //     const anomalies = await GetAnomaliesCount(popBody);
+      //     if (anomalies) {
+      //       setAnomaliesLoading(false);
+      //       setAnomaliesCount(anomalies.data);
+      //     }
+      //   } catch (error) {
+      //     console.log(error);
+      //   }
+      // }
 
-      getAnomalies();
+      // getAnomalies();
       getFootfalldata();
       getDataDwell();
       getRatioData();

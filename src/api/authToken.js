@@ -1,7 +1,7 @@
 // import { getFirebaseAuth } from '../service/firebase';
 // import { async } from "@firebase/util";
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from 'firebase.config';
+import { auth } from '../firebase-config';
 // import React, {useEffect} from "react";
 // import { useState } from "react";
 // import { authentication, getFirebaseAuth } from "../firebaseAuth/firebase";
