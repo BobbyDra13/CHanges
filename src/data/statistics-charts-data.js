@@ -89,6 +89,7 @@ const disabledVMChart = {
   height: 82,
   options: {
     ...dailySalesChart.options,
+    colors: ['#dadada'],
     markers: {
       size: 7
     },
@@ -112,6 +113,7 @@ const disabledUpKeepChart = {
   height: 82,
   options: {
     ...dailySalesChart.options,
+    colors: ['#dadada'],
     markers: {
       size: 7
     },

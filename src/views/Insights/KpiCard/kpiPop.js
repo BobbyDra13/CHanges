@@ -12,7 +12,7 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 
 // ==============================|| REPORT CARD ||============================== //
-
+//eslint-disable-next-line
 const KpiPop = ({ isLoaded, color, chipColor, title, count, percentage, isLoss, chart }) => {
   return (
     <Card sx={{ paddingTop: isLoaded ? 2.25 : 0, paddingBottom: 2.25 }}>
@@ -45,7 +45,7 @@ const KpiPop = ({ isLoaded, color, chipColor, title, count, percentage, isLoss, 
               <Grid item>
                 <Chip
                   variant="combined"
-                  color={chipColor}
+                  // color={chipColor}
                   icon={
                     <>
                       {!isLoss && <TrendingUpIcon style={{ fontSize: '1rem', color: 'inherit' }} />}
@@ -53,7 +53,7 @@ const KpiPop = ({ isLoaded, color, chipColor, title, count, percentage, isLoss, 
                     </>
                   }
                   label={`${percentage}%`}
-                  sx={{ ml: 1.25, pl: 1 }}
+                  sx={{ ml: 1.25, pl: 1, backgroundColor: '#9CA3AF' }}
                   size="small"
                 />
               </Grid>

@@ -87,7 +87,7 @@ const Insights = () => {
   const { selectOptions } = histogramChartRequirements;
   const [selected, setSelected] = useState(selectOptions[0].value);
   const [seriesData, setSeriesData] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(new Date().toString());
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [capProgress, setCapProgress] = useState(false);
   const [avgCapProgress, setAvgCapProgress] = useState(false);
   const [fullness, setFullness] = useState(false);
@@ -121,7 +121,8 @@ const Insights = () => {
       colors: ['#10b981'],
       stroke: {
         lineCap: 'round',
-        curve: 'smooth'
+        curve: 'smooth',
+        width: 5
       },
       markers: {
         size: 7
@@ -159,7 +160,8 @@ const Insights = () => {
       colors: ['#10b981'],
       stroke: {
         lineCap: 'round',
-        curve: 'smooth'
+        curve: 'smooth',
+        width: 5
       },
       markers: {
         size: 7
@@ -196,7 +198,8 @@ const Insights = () => {
       colors: ['#ff413a'],
       stroke: {
         lineCap: 'round',
-        curve: 'smooth'
+        curve: 'smooth',
+        width: 5
       },
       markers: {
         size: 7
@@ -273,6 +276,7 @@ const Insights = () => {
       },
       stroke: {
         // lineCap: 'round'
+        width: 5
       }
       // labels: ['Progress']
     },
@@ -347,7 +351,8 @@ const Insights = () => {
             colors: ['#10b981'],
             stroke: {
               lineCap: 'round',
-              curve: 'smooth'
+              curve: 'smooth',
+              width: 5
             },
             markers: {
               size: 7
@@ -385,7 +390,8 @@ const Insights = () => {
             colors: ['#10b981'],
             stroke: {
               lineCap: 'round',
-              curve: 'smooth'
+              curve: 'smooth',
+              width: 5
             },
             markers: {
               size: 7
@@ -422,7 +428,8 @@ const Insights = () => {
             colors: ['#ff413a'],
             stroke: {
               lineCap: 'round',
-              curve: 'smooth'
+              curve: 'smooth',
+              width: 5
             },
             markers: {
               size: 7
@@ -498,7 +505,10 @@ const Insights = () => {
             const difference = `${(lastElement - secondLastElement).toFixed(1)}`;
             setPopChipData(difference);
 
-            const dates = popScoreFullnessLine.map((item) => item.date);
+            const dates = popScoreFullnessLine.map((item) => {
+              let date = item.capture_status ? item.date : `${item.date} (Data not captured)`;
+              return date;
+            });
 
             const status = popScoreFullnessLine.map((i) => {
               return i.capture_status;
@@ -659,7 +669,10 @@ const Insights = () => {
             console.log('difference', difference);
             setAnomaliesChipData(difference);
 
-            const dates = popScoreFullnessLine.map((item) => item.date);
+            const dates = popScoreFullnessLine.map((item) => {
+              let date = item.capture_status ? item.date : `${item.date} (Data not captured)`;
+              return date;
+            });
             console.log('datess', dates);
 
             const updatedChartConfig = {
@@ -1031,6 +1044,9 @@ const Insights = () => {
   // console.log('anomalies', anomalies);
   // console.log('anomalies bar', anomaliesBarChart);
 
+  const allZerHistogram = series && series[0].data.every((data) => data.y === 0);
+  console.log('checki', allZerHistogram);
+
   return (
     <Grid container spacing={gridSpacing}>
       <Grid
@@ -1065,7 +1081,7 @@ const Insights = () => {
               title="PoP Score"
               count={`${parseFloat(popPercentage) === 0 ? '0' : parseFloat(popPercentage).toFixed(1)}%`}
               percentage={`${Math.abs(popChipData)}%`}
-              chipColor={+popChipData < 0 ? 'error' : 'success'}
+              chipColor={!capStatus ? '#9CA3AF' : +popChipData < 0 ? '#FF6761' : '#10B981'}
               isLoss={+popChipData < 0}
               color={capStatus ? theme.palette.success.main : '#9ca3af'}
             />
@@ -1081,19 +1097,21 @@ const Insights = () => {
               //   vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0 ? 'error' : 'success'
               // }
               // isLoss={vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0}
-              color={theme.palette.success.main}
+              color={'#9CA3AF'}
+              // color={theme.palette.success.main}
             />
           </Grid>
           <Grid item lg={3} sm={6} xs={12}>
             <KpiPop
               isLoaded={fullness}
               chart={statisticsChartsData[2].chart}
-              title="UpKeep Score"
+              title="OSA"
               count="NA"
               percentage="NA"
               // isLoss
               // chipColor="success"
-              color={theme.palette.success.main}
+              color={'#9CA3AF'}
+              // color={theme.palette.success.main}
             />
           </Grid>
           <Grid item lg={3} sm={6} xs={12}>
@@ -1103,7 +1121,7 @@ const Insights = () => {
               title="Anomalies Found"
               count={`${anomaliesPercentage}`}
               percentage={Math.abs(anomaliesChipData)}
-              chipColor={anomaliesChipData >= 0 ? 'error' : 'success'}
+              chipColor={!capStatus ? '#9CA3AF' : anomaliesChipData >= 0 ? '#FF6761' : '#10B981'}
               isLoss={anomaliesChipData < 0}
               color={theme.palette.error.main}
             />
@@ -1163,13 +1181,18 @@ const Insights = () => {
                                   </Grid>
                                 </Grid>
                               </Grid>
-                              <Grid item>
+                              <Grid className="relative" item>
                                 <Chart
                                   options={histogramOptions.options}
                                   series={series}
                                   type={histogramOptions.options.chart.type}
                                   height={histogramOptions.options.chart.height}
                                 />
+                                {allZerHistogram && (
+                                  <div className="w-full h-full flex justify-center items-center text-xl absolute z-40 -mt-80 text-white">
+                                    No data available
+                                  </div>
+                                )}
                               </Grid>
                             </Box>
                           </CardContent>

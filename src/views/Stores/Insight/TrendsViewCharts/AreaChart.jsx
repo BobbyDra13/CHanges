@@ -12,6 +12,7 @@ const Areachart = ({ date }) => {
   const [custCount, setCustCount] = useState([]);
   const [capProgress, setCapProgress] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState([]);
 
   useEffect(() => {
     async function getData() {
@@ -50,15 +51,18 @@ const Areachart = ({ date }) => {
       try {
         setLoading(true);
         const capData = await GetSevenDayCapProgress(captureBody);
-        // console.log("capture_data", capData);
+        console.log('capture_data', capData);
         if (capData) {
           const capturedata = capData.data.map((d) => d.date);
           // console.log("capturedata", capturedata);
           const capture = capData.data.map((d) => (d.data != 'Data not found' ? parseFloat(d.capture_percentage).toFixed(1) : 0));
           // console.log("capture", capture);
+          const statusArray = capData.data.map((d) => d.capture_status);
+          // console.log('statusArray', statusArray);
           setCategory(capturedata);
           setCapProgress(capture);
           setLoading(false);
+          setStatus(statusArray);
         }
         // return data;
       } catch (error) {
@@ -75,13 +79,13 @@ const Areachart = ({ date }) => {
   const state = {
     series: [
       {
+        name: 'Capture Progress',
+        data: capProgress
+      },
+      {
         name: 'Pop Score',
         data: custCount
         // [4, 7, 4, 20, 18, 80, 100,40, 60,30, 20, 33, 15,9, 4 ]
-      },
-      {
-        name: 'Capture Progress',
-        data: capProgress
       }
       // {
 
@@ -96,6 +100,108 @@ const Areachart = ({ date }) => {
         toolbar: {
           show: false
         }
+      },
+      markers: {
+        discrete: [
+          {
+            seriesIndex: 0,
+            dataPointIndex: 0,
+            fillColor: status[0] ? '#33C393' : '#dadada',
+            strokeColor: 'white',
+            size: 12
+          },
+          {
+            seriesIndex: 0,
+            dataPointIndex: 1,
+            fillColor: status[1] ? '#33C393' : '#dadada',
+            strokeColor: 'white',
+            size: 12
+          },
+          {
+            seriesIndex: 0,
+            dataPointIndex: 2,
+            fillColor: status[2] ? '#33C393' : '#dadada',
+            strokeColor: 'white',
+            size: 12
+          },
+          {
+            seriesIndex: 0,
+            dataPointIndex: 3,
+            fillColor: status[3] ? '#33C393' : '#dadada',
+            strokeColor: 'white',
+            size: 12
+          },
+          {
+            seriesIndex: 0,
+            dataPointIndex: 4,
+            fillColor: status[4] ? '#33C393' : '#dadada',
+            strokeColor: 'white',
+            size: 12
+          },
+          {
+            seriesIndex: 0,
+            dataPointIndex: 5,
+            fillColor: status[5] ? '#33C393' : '#dadada',
+            strokeColor: 'white',
+            size: 12
+          },
+          {
+            seriesIndex: 0,
+            dataPointIndex: 6,
+            fillColor: status[6] ? '#33C393' : '#dadada',
+            strokeColor: 'white',
+            size: 12
+          },
+          {
+            seriesIndex: 1,
+            dataPointIndex: 0,
+            fillColor: status[0] ? '#2BC0DA' : '#dadada',
+            strokeColor: 'white',
+            size: 12
+          },
+          {
+            seriesIndex: 1,
+            dataPointIndex: 1,
+            fillColor: status[1] ? '#2BC0DA' : '#dadada',
+            strokeColor: 'white',
+            size: 12
+          },
+          {
+            seriesIndex: 1,
+            dataPointIndex: 2,
+            fillColor: status[2] ? '#2BC0DA' : '#dadada',
+            strokeColor: 'white',
+            size: 12
+          },
+          {
+            seriesIndex: 1,
+            dataPointIndex: 3,
+            fillColor: status[3] ? '#2BC0DA' : '#dadada',
+            strokeColor: 'white',
+            size: 12
+          },
+          {
+            seriesIndex: 1,
+            dataPointIndex: 4,
+            fillColor: status[4] ? '#2BC0DA' : '#dadada',
+            strokeColor: 'white',
+            size: 12
+          },
+          {
+            seriesIndex: 1,
+            dataPointIndex: 5,
+            fillColor: status[5] ? '#2BC0DA' : '#dadada',
+            strokeColor: 'white',
+            size: 12
+          },
+          {
+            seriesIndex: 1,
+            dataPointIndex: 6,
+            fillColor: status[6] ? '#2BC0DA' : '#dadada',
+            strokeColor: 'white',
+            size: 12
+          }
+        ]
       },
       dataLabels: {
         enabled: false

@@ -198,7 +198,7 @@ const Customers = () => {
     // console.log('required ID', id);
     // setSolvedLoading(true);
     setSolvedLoad(true);
-   
+
     setTimeout(() => {
       setSolvedLoad(false);
       setSnackbarMessage('Solved successfully!');
@@ -211,7 +211,7 @@ const Customers = () => {
     // console.log('required ID', id);
     // setSolvedLoading(true);
     setIgnoreLoad(true);
-   
+
     setTimeout(() => {
       setIgnoreLoad(false);
       setSnackbarMessage('Ignored successfully!');
@@ -1320,10 +1320,11 @@ const Customers = () => {
                       />
                     </div>
                     <div className="w-full bg-white mt-5 flex flex-row-reverse gap-3">
-                      <button className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 border-2 border-gray-300 flex align-middle justify-center"
-                      onClick={() => handleIgnored()}
+                      <button
+                        className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 border-2 border-gray-300 flex align-middle justify-center"
+                        onClick={() => handleIgnored()}
                       >
-                      {ignoreLoad && <CgSpinner className="animate-spin" />}
+                        {ignoreLoad && <CgSpinner className="animate-spin" />}
                         <Typography className="text-gray-400">{ignoreLoad ? ' Ignoring...' : 'Ignore'}</Typography>
                       </button>
                       <button
@@ -1332,7 +1333,7 @@ const Customers = () => {
                         style={{ backgroundColor: success }}
                         onClick={() => handleSolved()}
                       >
-                         {solvedLoad && <CgSpinner className="animate-spin" />}
+                        {solvedLoad && <CgSpinner className="animate-spin" />}
                         <Typography color={'white'}>{solvedLoad ? ' Solving...' : 'Solved'}</Typography>
                       </button>
                       {/* <button
