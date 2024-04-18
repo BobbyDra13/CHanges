@@ -651,8 +651,8 @@ function Overview() {
                           associateScoreData.map((item, index) => {
                             const percentage = Math.round(parseFloat(item.total_pop_percentage));
                             const barcolor = percentage >= 80 ? '#00ac69' : percentage >= 50 ? '#f4a100' : '#ff413a';
-                            const assignedGroup = item.groups.map((i) => {
-                              return i._id.group;
+                            const assignedGroup = item.zones.map((i) => {
+                              return i._id.zone;
                             });
                             const assignedGroupString = assignedGroup.join(', ');
                             return (
@@ -668,10 +668,10 @@ function Overview() {
                                     key={index}
                                     title={
                                       <div className="p-2">
-                                        <p className="text-base">Assigned Group</p>
+                                        <p className="text-base">Assigned Zones</p>
                                         <p className="text-xs mt-1"> {assignedGroupString}</p>
                                         <p className="text-sm pt-2">Name: {item.name}</p>
-                                        <p className="text-sm pt-2">First Score: {' ' + percentage} %</p>
+                                        {/* <p className="text-sm pt-2">First Score: {' ' + percentage} %</p> */}
                                       </div>
                                     }
                                   >
