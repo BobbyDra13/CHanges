@@ -87,7 +87,7 @@ const Insights = () => {
   const { selectOptions } = histogramChartRequirements;
   const [selected, setSelected] = useState(selectOptions[0].value);
   const [seriesData, setSeriesData] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(new Date().toString());
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [capProgress, setCapProgress] = useState(false);
   const [avgCapProgress, setAvgCapProgress] = useState(false);
   const [fullness, setFullness] = useState(false);

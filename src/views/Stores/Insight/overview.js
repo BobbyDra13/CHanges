@@ -39,8 +39,9 @@ function Overview() {
   const [dweltimeData, setDweltimedata] = useState(false);
   const [footfalldata, setFootfalldata] = useState(false);
   const [associateScoreData, setAssociateScoreData] = useState([]);
+  //eslint-disable-next-line
   const [ftfall, setftfall] = useState([]);
-  const [date, setSelectedDate] = useState(new Date().toString().slice(0, 10));
+  const [date, setSelectedDate] = useState(new Date());
   //eslint-disable-next-line
   const [empCount, setEmpCount] = useState('');
   //eslint-disable-next-line
@@ -204,9 +205,9 @@ function Overview() {
           const data = await GetpopKPI(popBody);
           const data2 = await GetPopPercentage(popBody);
           // console.log(data2.data);
-          data2.data != null ? setTotalPop(parseFloat(data2.data.fullnessPopPercent).toFixed(1)) : setTotalPop(false);
+          data2.data !== null ? setTotalPop(parseFloat(data2.data.average_pop_score).toFixed(1)) : setTotalPop(false);
 
-          // console.log(data.data);
+          console.log('pop data', data2.data);
           if (data.data.length === 0) {
             // console.log('hello')
             setFootfalldata(false);
@@ -342,7 +343,7 @@ function Overview() {
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <Card className="border border-gray-300" sx={{ height: '276px' }}>
-                {ftfall ? (
+                {totalPOP ? (
                   <div className="flex  w-full  flex-col gap-1 p-3">
                     <div className="flex items-center justify-center gap-2 w-full">
                       {footfalldata.length > 0 ? (
@@ -623,7 +624,7 @@ function Overview() {
                       )}
                     </div>
                   ) : ( */}
-                  {!associateScoreData.length > 0 || associateScoreData[0].user_id !== null ? (
+                  {associateScoreData.length > 0 ? (
                     <div className="flex  w-full  flex-col gap-1 p-3">
                       <div className="flex items-center justify-center gap-2 w-full">
                         <img src={associate} alt="pop" className="h-14 w-14" />
@@ -646,7 +647,7 @@ function Overview() {
                         </>
                       </div>
                       <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
-                        {associateScoreData.length > 0 && associateScoreData[0].user_id !== null ? (
+                        {associateScoreData.length > 0 ? (
                           associateScoreData.map((item, index) => {
                             const percentage = Math.round(parseFloat(item.total_pop_percentage));
                             const barcolor = percentage >= 80 ? '#00ac69' : percentage >= 50 ? '#f4a100' : '#ff413a';
@@ -668,7 +669,9 @@ function Overview() {
                                     title={
                                       <div className="p-2">
                                         <p className="text-base">Assigned Group</p>
-                                        <p className="text-xs mt-1 text-center"> {assignedGroupString}</p>
+                                        <p className="text-xs mt-1"> {assignedGroupString}</p>
+                                        <p className="text-sm pt-2">Name: {item.name}</p>
+                                        <p className="text-sm pt-2">First Score: {' ' + percentage} %</p>
                                       </div>
                                     }
                                   >

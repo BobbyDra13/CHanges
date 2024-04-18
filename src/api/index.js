@@ -589,7 +589,7 @@ export const GetShelfData = async (data) => {
 
 export const GetPopPercentage = async (data) => {
   try {
-    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/pop-score-2', data, {
+    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/pop-card', data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
