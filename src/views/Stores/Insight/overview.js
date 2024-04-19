@@ -307,7 +307,7 @@ function Overview() {
         }
       }
 
-      getAnomalies();
+      // getAnomalies();
       getFootfalldata();
       getDataDwell();
       getRatioData();

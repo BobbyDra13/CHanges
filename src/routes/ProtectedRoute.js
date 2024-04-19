@@ -2,7 +2,7 @@
 // import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { auth } from 'firebase.config';
+import { auth } from '../firebase-config';
 import { onAuthStateChanged } from 'firebase/auth';
 import { bouncy } from 'ldrs';
 bouncy.register();

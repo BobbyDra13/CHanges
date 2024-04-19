@@ -5,7 +5,7 @@ import { COUNTRYCODE } from './countryCode';
 import { Box, Button, FormHelperText, Snackbar } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 // import { useTheme } from '@mui/material';
-import { auth } from 'firebase.config';
+import { auth } from '../../firebase-config';
 import { RecaptchaVerifier, onAuthStateChanged, signInWithPhoneNumber } from 'firebase/auth';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -62,20 +62,31 @@ const FirebaseLogin = () => {
   });
 
   // THIS WILL CHECK THE USER IS AUTHORIZED OR NOT
+
   const checkUsers = async () => {
     setLoading(true);
     try {
       const response = await GetVerifiedUsers(phoneNumber);
+      console.log('data', response.data.data.number);
       setVerifyData(response.data);
-      if (response?.data?.number === phoneNumber) onSignup();
-      else toast.error('You are not authorized to access');
+      if (response.data.data.number === phoneNumber) {
+        console.log('entered if');
+        onSignup();
+      } else {
+        console.log('entered else');
+        toast.error('You are not authorized to access');
+      }
     } catch (error) {
       console.log('Error Calling userss API: ', error);
     }
   };
+  console.log('verify', verifyData);
+
   // console.log(verifyData);
   function onSignup() {
+    console.log('works');
     onCaptchVerify();
+    console.log('still works');
     let appVerifier = window.recaptchaVerifier;
     setLoading(true);
 
