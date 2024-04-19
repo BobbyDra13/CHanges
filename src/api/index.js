@@ -200,15 +200,12 @@ export const createUser = async (user) => {
 
 export const GetVerifiedUsers = async (phoneNumber) => {
   try {
-    const res = await axios.get(
-      `https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/mob_api/check_userid?number=${phoneNumber}`,
-      {
-        headers: {
-          Accept: 'application/json'
-        }
+    const res = await axios.get(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/mob_api/check_userid?number=${phoneNumber}`, {
+      headers: {
+        Accept: 'application/json'
       }
-    );
-    console.log("auth", res);
+    });
+    console.log('auth', res);
     return res;
   } catch (error) {
     console.log('Error Calling users API: ', error);
@@ -469,6 +466,21 @@ export const GetStoreData = async (data) => {
 export const GetAnomalies = async (data) => {
   try {
     const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/anomalie-bar-graph`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    //console.log(res);
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetCaptureProgress API: ', error);
+  }
+};
+
+export const GetAnomaliesCount = async (data) => {
+  try {
+    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/anomalies-group `, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
