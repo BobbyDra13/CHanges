@@ -89,7 +89,7 @@ const Login = () => {
       </Grid>
       {/* </Grid> */}
       <Typography sx={{ position: 'absolute', left: 3, bottom: 2 }} color="black" variant="subtitle">
-        Version: 0.002
+        Version: 1.0.1
       </Typography>
     </div>
   );
