@@ -43,8 +43,6 @@ const Areachart = ({ date }) => {
     async function getCaptureData() {
       console.log('date', date);
       const captureBody = {
-        // start_date: date,
-        // storeId: '65c5e26a0b5be5dc7af327dc'
         date: date,
         store_id: '65c74d4112465588b7a4984c'
       };
