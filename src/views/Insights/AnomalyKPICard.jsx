@@ -92,7 +92,7 @@ function AnomalyKPICard({ date }) {
     height: 100,
     series: [
       {
-        name: 'Anomalies',
+        name: 'Exceptions',
         data: anomalyData
       }
     ],
@@ -243,7 +243,7 @@ function AnomalyKPICard({ date }) {
               <Skeleton sx={{ marginTop: 1.75 }} animation="wave" variant="rounded" width={55} height={26} />
             </Grid>
             <Typography sx={{ paddingLeft: 2.25, paddingRight: 2.25 }} variant="h5" color="textSecondary">
-              PoP Score
+              Exceptions Found
             </Typography>
           </Stack>
         </Card>
