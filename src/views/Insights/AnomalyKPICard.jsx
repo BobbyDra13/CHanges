@@ -9,7 +9,6 @@ function AnomalyKPICard({ date }) {
   const [anomalyData, setAnomalyData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [anomalyChipData, setAnomalyChipData] = useState('');
-  //eslint-disable-next-line
   const [capStatus, setCapStatus] = useState(true);
   const [anomalyPercentage, setAnomalyPercentage] = useState('0');
   const [status, setStatus] = useState([]);
@@ -18,7 +17,7 @@ function AnomalyKPICard({ date }) {
 
   const dummyData = {
     data: [0, 0, 0, 0, 0, 0, 0],
-    capture_status: [true, true, true, true, true, true, true],
+    capture_status: [true, true, true, true, true, true, false],
     categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
   };
 
@@ -39,7 +38,7 @@ function AnomalyKPICard({ date }) {
           setAnomalyData(dummyData.data);
           setAnomalyChipData('NA');
           setAnomalyPercentage('NA');
-          setCapStatus(true);
+          setCapStatus(false);
           setLoading(false);
         }
         const popScoreFullnessLine = data.data;
@@ -255,7 +254,7 @@ function AnomalyKPICard({ date }) {
           title="Exceptions Found"
           count={`${anomalyPercentage}`}
           percentage={isDataAvailable ? Math.abs(anomalyChipData) : 'NA'}
-          chipColor={!isDataAvailable ? '#9CA3AF' : anomalyChipData >= 0 ? '#FF6761' : '#10B981'}
+          chipColor={!capStatus ? '#dadada' : anomalyChipData >= 0 ? '#FF6761' : '#10B981'}
           isLoss={anomalyChipData < 0}
           color={isDataAvailable ? theme.palette.error.main : '#9CA3AF'}
         />
