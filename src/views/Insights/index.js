@@ -16,9 +16,9 @@ import {
   GetVMscoreBar,
   GetCapProg,
   // GetPopPercentage, //NOT NEEDED
-  GetPopWeekLineData,
-  GetPopHistogramData,
-  GetAnomalies
+  // GetPopWeekLineData,
+  GetPopHistogramData
+  // GetAnomalies
 } from 'api';
 
 // Apex chart import
@@ -35,7 +35,6 @@ import statisticsChartsData from 'data/statistics-charts-data';
 import DatePickerComp from './DatePicker';
 import BrandDonutChart from './BrandDonutChart';
 import BrandChartData from './chart/brand-chart';
-import KpiCard from './KpiCard';
 import KpiPop from './KpiCard/kpiPop';
 import { gridSpacing } from 'config.js';
 import AnomaliesBarChart from './AnomaliesBarChart';
@@ -44,8 +43,8 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 // assets
 import NoDataPng from '../../assets/images/No_data.png';
 import NoDataImg from '../../assets/images/No_data-amico.svg';
-//eslint-disable-next-line
-import chartData from './chart/anomalies-chart';
+import PoPScoreKPICard from './PoPScoreKPICard';
+import AnomalyKPICard from './AnomalyKPICard';
 
 //eslint-disable-next-line
 const histogramData = {
@@ -92,6 +91,7 @@ const Insights = () => {
   const [avgCapProgress, setAvgCapProgress] = useState(false);
   const [fullness, setFullness] = useState(false);
   const [vmc, setVmc] = useState(false);
+  //eslint-disable-next-line
   const [anomalies, setAnomalies] = useState(false);
   //eslint-disable-next-line
   const [anomaliesBarChart, setAnomaliesBarChart] = useState(false);
@@ -102,11 +102,13 @@ const Insights = () => {
   const [brandFullness, setBrandFullness] = useState(false);
   const [barChartData, setBarChartData] = useState(false);
   const [vmChartData, setVmChartData] = useState(false);
+  //eslint-disable-next-line
   const [popPercentage, setPopPercentage] = useState('0');
+  //eslint-disable-next-line
   const [anomaliesPercentage, setAnomaliesPercentage] = useState('0');
-  const [popChipData, setPopChipData] = useState('');
-  const [anomaliesChipData, setAnomaliesChipData] = useState('');
-  const [capStatus, setCapStatus] = useState(true);
+  // const [popChipData, setPopChipData] = useState('');
+  // const [anomaliesChipData, setAnomaliesChipData] = useState('');
+  // const [capStatus, setCapStatus] = useState(true);
   const [chartConfig, setChartConfig] = useState({
     type: 'line',
     height: 100,
@@ -145,6 +147,7 @@ const Insights = () => {
       }
     }
   });
+  //eslint-disable-next-line
   const [fullnessChartConfig, setFullChartConfig] = useState({
     type: 'line',
     height: 100,
@@ -184,6 +187,7 @@ const Insights = () => {
       }
     }
   });
+  //eslint-disable-next-line
   const [anomaliesChartConfig, setAnomaliesChartConfig] = useState({
     type: 'line',
     height: 100,
@@ -484,126 +488,8 @@ const Insights = () => {
 
           const CapData = await GetCapProg(capBody);
           //  const popPercentageData = await GetPopPercentage(popKpiCardBody); //No need
-          const popLineData = await GetPopWeekLineData(popKpiCardBody);
-          console.log('popLineData', popLineData);
           const histogramData = await GetPopHistogramData(popKpiCardBody);
-          const anomaliesData = await GetAnomalies(popKpiCardBody);
 
-          if (popLineData) {
-            const popScoreFullnessLine = popLineData.data;
-            console.log('popScoreFullness', popLineData);
-            const popScoreFullness = popScoreFullnessLine.map((item) => {
-              if (item && item.averagePopScore != 'No data found') {
-                const percentage = parseFloat(item.averagePopScore.replace('%', ''));
-                return `${percentage.toFixed(2)}%`;
-              } else {
-                return '0%';
-              }
-            });
-            const lastElement = parseFloat(popScoreFullness[popScoreFullness.length - 1].replace('%', '')) || 0;
-            const secondLastElement = parseFloat(popScoreFullness[popScoreFullness.length - 2].replace('%', '')) || 0;
-            const difference = `${(lastElement - secondLastElement).toFixed(1)}`;
-            setPopChipData(difference);
-
-            const dates = popScoreFullnessLine.map((item) => {
-              let date = item.capture_status ? item.date : `${item.date} (Data not captured)`;
-              return date;
-            });
-
-            const status = popScoreFullnessLine.map((i) => {
-              return i.capture_status;
-            });
-            console.log('staus', status);
-
-            const updatedFullnessChartConfig = {
-              ...fullnessChartConfig,
-              series: [
-                {
-                  name: 'PoP Score %',
-                  data: popScoreFullness
-                }
-              ],
-
-              options: {
-                ...fullnessChartConfig.options,
-                markers: {
-                  discrete: [
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 0,
-                      fillColor: status[0] ? '#10B981' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 1,
-                      fillColor: status[1] ? '#10B981' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 2,
-                      fillColor: status[2] ? '#10B981' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 3,
-                      fillColor: status[3] ? '#10B981' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 4,
-                      fillColor: status[4] ? '#10B981' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 5,
-                      fillColor: status[5] ? '#10B981' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 6,
-                      fillColor: status[6] ? '#10B981' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    }
-                  ]
-                },
-                xaxis: {
-                  ...fullnessChartConfig.options.xaxis,
-                  categories: dates
-                },
-                annotations: {
-                  yaxis: [
-                    {
-                      y: 50.0,
-                      borderColor: '#FF0000',
-                      label: {
-                        borderColor: '#FF0000',
-                        style: {
-                          color: '#fff',
-                          background: '#FF0000'
-                        },
-                        text: '50%'
-                      }
-                    }
-                  ]
-                }
-              }
-            };
-
-            setFullChartConfig(updatedFullnessChartConfig);
-          }
           if (vmcLineChart) {
             const apiData = vmcLineChart.data;
             console.log('apiData', apiData);
@@ -648,112 +534,7 @@ const Insights = () => {
 
             setChartConfig(updatedChartConfig);
           }
-          if (anomaliesData) {
-            const popScoreFullnessLine = anomaliesData.data;
-            console.log('popScoreFullnessLine', popScoreFullnessLine);
-            const anomaliesDetectedLine = popScoreFullnessLine.map((item) => {
-              if (item.anomaliesFound) {
-                const percentage = item.anomaliesFound;
-                return percentage;
-              } else {
-                return 0;
-              }
-            });
-            const status = popScoreFullnessLine.map((i) => {
-              return i.capture_status;
-            });
-            console.log('stausAnomaly', status);
-            const lastElement = anomaliesDetectedLine[anomaliesDetectedLine.length - 1] || 0;
-            const secondLastElement = anomaliesDetectedLine[anomaliesDetectedLine.length - 2] || 0;
-            const difference = lastElement - secondLastElement;
-            console.log('difference', difference);
-            setAnomaliesChipData(difference);
 
-            const dates = popScoreFullnessLine.map((item) => {
-              let date = item.capture_status ? item.date : `${item.date} (Data not captured)`;
-              return date;
-            });
-            console.log('datess', dates);
-
-            const updatedChartConfig = {
-              ...anomaliesChartConfig,
-              series: [
-                {
-                  name: 'Anomalies',
-                  data: anomaliesDetectedLine
-                }
-              ],
-              options: {
-                ...anomaliesChartConfig.options,
-                markers: {
-                  discrete: [
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 0,
-                      fillColor: status[0] ? '#FF6761' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 1,
-                      fillColor: status[1] ? '#FF6761' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 2,
-                      fillColor: status[2] ? '#FF6761' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 3,
-                      fillColor: status[3] ? '#FF6761' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 4,
-                      fillColor: status[4] ? '#FF6761' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 5,
-                      fillColor: status[5] ? '#FF6761' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 6,
-                      fillColor: status[6] ? '#FF6761' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    }
-                  ]
-                },
-                xaxis: {
-                  ...anomaliesChartConfig.options.xaxis,
-                  categories: dates
-                }
-              }
-            };
-
-            setAnomaliesChartConfig(updatedChartConfig);
-
-            setAnomaliesPercentage(anomaliesDetectedLine[anomaliesDetectedLine.length - 1]);
-
-            // if (anomaliesBarChartData) {
-            //   setAnomaliesBarChart(anomaliesBarChartData.data);
-            //   console.log('anomaliesBarChartData', anomaliesBarChartData);
-            // }
-          }
           if (CapData) {
             if (CapData.data.length > 0) {
               // const totalCapturePercentage = capProgressData.data.reduce((acc, item) => acc + item.capture_percentage, 0);
@@ -781,7 +562,7 @@ const Insights = () => {
                 item.total_zone_incorrect_pop
               ]);
               // const extractedBrandNames = brandDonutData.data.map((item) => item.group_id);
-              const extractedBrandNames = ['missing_pop', 'incorrect_pop', 'alien_pop'];
+              const extractedBrandNames = ['alien_pop', 'incorrect_pop', 'missing_pop'];
 
               setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
 
@@ -795,15 +576,6 @@ const Insights = () => {
             }
 
             setBrandDonut(brandDonutData.data);
-          }
-          if (popLineData) {
-            if (popLineData.data === null) {
-              x;
-              setPopPercentage('0%');
-            } else {
-              setPopPercentage(popLineData.data[6].averagePopScore);
-              setCapStatus(popLineData.data[6].capture_status);
-            }
           }
 
           if (fullnessKpiData) {
@@ -1075,16 +847,7 @@ const Insights = () => {
       <Grid item xs={12}>
         <Grid container spacing={gridSpacing}>
           <Grid item lg={3} sm={6} xs={12}>
-            <KpiCard
-              isLoaded={fullness}
-              chart={fullnessChartConfig}
-              title="PoP Score"
-              count={`${parseFloat(popPercentage) === 0 ? '0' : parseFloat(popPercentage).toFixed(1)}%`}
-              percentage={`${Math.abs(popChipData)}%`}
-              chipColor={!capStatus ? '#9CA3AF' : +popChipData < 0 ? '#FF6761' : '#10B981'}
-              isLoss={+popChipData < 0}
-              color={capStatus ? theme.palette.success.main : '#9ca3af'}
-            />
+            <PoPScoreKPICard date={selectedDate} />
           </Grid>
           <Grid item lg={3} sm={6} xs={12}>
             <KpiPop
@@ -1115,16 +878,7 @@ const Insights = () => {
             />
           </Grid>
           <Grid item lg={3} sm={6} xs={12}>
-            <KpiCard
-              isLoaded={anomalies}
-              chart={anomaliesChartConfig}
-              title="Anomalies Found"
-              count={`${anomaliesPercentage}`}
-              percentage={Math.abs(anomaliesChipData)}
-              chipColor={!capStatus ? '#9CA3AF' : anomaliesChipData >= 0 ? '#FF6761' : '#10B981'}
-              isLoss={anomaliesChipData < 0}
-              color={theme.palette.error.main}
-            />
+            <AnomalyKPICard date={selectedDate} />
           </Grid>
         </Grid>
       </Grid>
@@ -1333,7 +1087,7 @@ const Insights = () => {
                             <Grid container spacing={1}>
                               <Typography paddingTop={1} className="self-end" variant="h5" color="inherit">
                                 {/* Brand Fullness */}
-                                Group PoP Score
+                                Exceptions Classification
                               </Typography>
                             </Grid>
                           </Grid>
