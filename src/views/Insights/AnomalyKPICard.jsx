@@ -254,7 +254,7 @@ function AnomalyKPICard({ date }) {
           title="Exceptions Found"
           count={`${anomalyPercentage}`}
           percentage={isDataAvailable ? Math.abs(anomalyChipData) : 'NA'}
-          chipColor={!capStatus ? '#dadada' : anomalyChipData >= 0 ? '#FF6761' : '#10B981'}
+          chipColor={!capStatus ? '#9CA3AF' : anomalyChipData >= 0 ? '#FF6761' : '#10B981'}
           isLoss={anomalyChipData < 0}
           color={isDataAvailable ? theme.palette.error.main : '#9CA3AF'}
         />
