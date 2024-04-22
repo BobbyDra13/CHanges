@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Stack, Typography, Card, Skeleton, LinearProgress, Modal, Box, Tooltip, IconButton } from '@mui/material';
+import { Grid, Stack, Typography, Card, Skeleton, LinearProgress, Modal, Box, Tooltip, IconButton, Divider } from '@mui/material';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { avgDwelTime } from '../../../api/sentinelAPI';
 // import { footfallCard } from '../../../api/sentinelAPI';
@@ -292,7 +292,6 @@ function Overview() {
       //eslint-disable-next-line
       async function getAssociateScore() {
         const body = {
-          // date: '2024-04-17',
           date: date,
           store_id: '65c74d4112465588b7a4984c'
         };
@@ -550,80 +549,6 @@ function Overview() {
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <div style={{ height: '276px' }} className="flex flex-col">
                 <Card className="border border-gray-300" sx={{ height: '276px' }}>
-                  {/* {!ftfall ? (
-                    <div className="flex  w-full  flex-col gap-1 p-3">
-                      <div className="flex items-center justify-center gap-2 w-full">
-                        {footfalldata.length > 0 ? (
-                          <img src={popIcon} alt="pop" className="h-14 w-14" />
-                        ) : (
-                          <Skeleton variant="circular" width={60} height={45} />
-                        )}
-                        <div className="w-full">
-                          {footfalldata.length > 0 ? (
-                            <p className="text-3xl">{totalPOP} %</p>
-                          ) : (
-                            <Skeleton variant="rectangular" className="mb-3 rounded-sm" width={50} height={20} />
-                          )}
-
-                          {footfalldata.length > 0 ? (
-                            <p className="text-lg font-semibold">PoP</p>
-                          ) : (
-                            <Skeleton variant="rectangular" width={150} height={15} className=" mb-2 rounded-sm" />
-                          )}
-                        </div>
-                        <>
-                          <IoMdSettings className="text-5xl cursor-pointer" onClick={handleClickPopScoreModal} />
-                          <Modal
-                            open={openPopScoreModal}
-                            onClose={handleClose}
-                            aria-labelledby="modal-modal-title"
-                            aria-describedby="modal-modal-description"
-                          >
-                            <Box sx={modalStyle}>
-                              <CsvModal />
-                            </Box>
-                          </Modal>
-                        </>
-                      </div>
-                      {footfalldata.length > 0 ? (
-                        <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
-                          {footfalldata.map((item, index) => {
-                            // const percentage = (item.totalCustomerZone / ftfall[0].totalCustomerZone) * 100;
-                            const percentage =
-                              item.data.FullnessPopPercent != undefined ? Math.round(parseFloat(item.data.FullnessPopPercent)) : 0;
-                            const barcolor = percentage >= 80 ? '#00ac69' : percentage >= 50 ? '#f4a100' : '#ff413a';
-                            // console.log(percentage);
-                            return (
-                              <div className="mt-2" key={index}>
-                                <div className="flex gap-1 items-center">
-                                  <div>
-                                    {item.zone_id} :
-                                    <span className="text-base font-semibold" style={{ color: barcolor }}>
-                                      {percentage} %
-                                    </span>
-                                  </div>
-                                </div>
-                                <LinearProgress
-                                  variant="determinate"
-                                  value={percentage}
-                                  className="rounded-lg"
-                                  sx={{
-                                    marginTop: '5px',
-                                    backgroundColor: 'white', // Set color for unfilled part
-                                    '& .MuiLinearProgress-bar': {
-                                      backgroundColor: `${barcolor}` // Set color for filled part
-                                    }
-                                  }}
-                                />
-                              </div>
-                            );
-                          })}
-                        </div>
-                      ) : (
-                        <Skeleton variant="rectangular" height={184} className="rounded-md" />
-                      )}
-                    </div>
-                  ) : ( */}
                   {associateScoreData.length > 0 ? (
                     <div className="flex  w-full  flex-col gap-1 p-3">
                       <div className="flex items-center justify-center gap-2 w-full">
@@ -651,10 +576,14 @@ function Overview() {
                           associateScoreData.map((item, index) => {
                             const percentage = Math.round(parseFloat(item.total_pop_percentage));
                             const barcolor = percentage >= 80 ? '#00ac69' : percentage >= 50 ? '#f4a100' : '#ff413a';
-                            const assignedGroup = item.zones.map((i) => {
+                            const capturedZone = item.zones.map((i) => {
                               return i._id.zone;
                             });
-                            const assignedGroupString = assignedGroup.join(', ');
+                            const capturedZoneString = capturedZone.join(', ');
+                            const assignedZone = item.assigned_zones;
+                            const assignedZoneString = assignedZone.join(', ');
+                            const firstScore = parseFloat(item.total_pop_percentage_first).toFixed(1);
+                            const secondScore = parseFloat(item.total_pop_percentage).toFixed(1);
                             return (
                               <div className="mt-2" key={index}>
                                 <div className="flex gap-1 items-center justify-between">
@@ -667,11 +596,29 @@ function Overview() {
                                   <Tooltip
                                     key={index}
                                     title={
-                                      <div className="p-2">
-                                        <p className="text-base">Assigned Zones</p>
-                                        <p className="text-xs mt-1"> {assignedGroupString}</p>
-                                        <p className="text-sm pt-2">Name: {item.name}</p>
-                                        {/* <p className="text-sm pt-2">First Score: {' ' + percentage} %</p> */}
+                                      <div>
+                                        <div className="mb-2 p-2">
+                                          <p className="text-base">Assigned Zones</p>
+                                          <p className="text-xs "> {assignedZoneString}</p>
+                                        </div>
+                                        <Divider
+                                          sx={{
+                                            bgcolor: 'white'
+                                          }}
+                                        />
+                                        <div className="mb-2 p-2">
+                                          <p className="text-base">Captured Zones</p>
+                                          <p className="text-xs "> {capturedZoneString}</p>
+                                        </div>
+                                        <Divider
+                                          sx={{
+                                            bgcolor: 'white'
+                                          }}
+                                        />
+                                        <div className=" p-2">
+                                          <p className="text-xs">First Score :{' ' + firstScore} </p>
+                                          <p className="text-xs ">Second Score :{' ' + secondScore} </p>
+                                        </div>
                                       </div>
                                     }
                                   >
