@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from 'react';
 
 // API imports
-import { GetRadarChartData, GetCapProg, GetPopHistogramData } from 'api';
+import { GetRadarChartData, GetCapProg, GetPopHistogramData, GetAnomaliesCount } from 'api';
 
 // Apex chart import
 import Chart from 'react-apexcharts';
@@ -57,7 +57,8 @@ const Insights = () => {
   const [brandChartOptions, setBrandChartOptions] = useState(BrandChartData.options);
   const [brandFullness, setBrandFullness] = useState(false);
   const [barChartData, setBarChartData] = useState(false);
-
+  const [anomaliesCount, setAnomaliesCount] = useState([]);
+  const [anomaliesLoading, setAnomaliesLoading] = useState(true);
   const [openZone, setOpenZone] = useState(false);
 
   const progressChart = {
@@ -147,6 +148,10 @@ const Insights = () => {
           date: selectedDate.toString(),
           user_id: '660a457638e022104c155c06'
         };
+        const anomlayBody = {
+          date: selectedDate.toString(),
+          store_id: '65c74d4112465588b7a4984c'
+        };
 
         setAvgCapProgress(false);
         setCapProgress(false);
@@ -157,7 +162,12 @@ const Insights = () => {
           const brandDonutData = await GetRadarChartData(donutBody);
           const CapData = await GetCapProg(capBody);
           const histogramData = await GetPopHistogramData(popKpiCardBody);
-
+          const anomalies = await GetAnomaliesCount(anomlayBody);
+          if (anomalies) {
+            setAnomaliesLoading(false);
+            setAnomaliesCount(anomalies.data);
+            console.log('abc', anomalies.data);
+          }
           if (CapData) {
             if (CapData.data.length > 0) {
               setAvgCapProgress(CapData.data[0].storeCapturePercentage);
@@ -669,142 +679,183 @@ const Insights = () => {
             </Grid>
           </Grid>
           <Grid item lg={3} xs={12}>
-            <Card>
-              <Grid container spacing={gridSpacing}>
-                <Grid item xs={6} sm={4} md={3} lg={7} xl={6}>
-                  <Chart
-                    options={progressChart.options}
-                    series={avgCapProgress ? [parseFloat(avgCapProgress)] : [0]}
-                    type={progressChart.options.chart.type}
-                    height={progressChart.options.chart.height}
-                  />
-                </Grid>
-                <Grid item alignContent={'center'} xs={6} sm={8} md={9} lg={5} xl={6}>
-                  <div className="flex flex-col gap-1">
-                    <Typography variant="h1" sx={{ color: accentColMain, paddingTop: 8 }}>
-                      {avgCapProgress ? (
-                        `${parseFloat(avgCapProgress).toFixed(1)}%`
-                      ) : avgCapProgress === 0 ? ( //edited as zero from ''
-                        '0%'
-                      ) : (
-                        <Stack spacing={0.5}>
-                          <Skeleton animation="wave" variant="rounded" width={60} height={10} />
-                          <Skeleton animation="wave" variant="rounded" width={75} height={10} />
-                          <Skeleton animation="wave" variant="rounded" width={90} height={10} />
-                        </Stack>
-                      )}
-                    </Typography>
-                    <Typography variant="h5" color="textSecondary">
-                      Capture Progress
-                    </Typography>
-                  </div>
-                </Grid>
-              </Grid>
-              <CardContent
-                sx={{
-                  height: 370,
-                  [theme.breakpoints.up('md')]: {
-                    height: 450 // Height for screens equal to or larger than 'md' breakpoint
-                  },
-                  [theme.breakpoints.up('lg')]: {
-                    height: 607 // Height for screens equal to or larger than 'lg' breakpoint
-                  }
+            <Stack spacing={gridSpacing}>
+              <Card
+                className="border border-gray-300 bg-[#ff413a]"
+                style={{
+                  padding: '10px'
                 }}
-                className="overflow-y-auto flex flex-col gap-1 scrollbar"
               >
+                <div className="flex w-full h-full">
+                  <div className="w-2/6 h-full flex flex-col">
+                    <span className="text-center text-white text-sm font-semibold">Missing</span>
+                    {!anomaliesLoading ? (
+                      <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
+                        {anomaliesCount[0].totalMissingPopCount}
+                      </span>
+                    ) : (
+                      <Skeleton variant="rectangular" height={45} className="rounded-md" />
+                    )}
+                  </div>
+                  <div className="w-2/6 h-full flex flex-col border-2 border-t-0 border-b-0 border-l-white border-r-white">
+                    <span className="text-center text-white  text-sm font-semibold">Alien</span>
+                    {!anomaliesLoading ? (
+                      <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
+                        {anomaliesCount[0].totalAlienPopCount}
+                      </span>
+                    ) : (
+                      <Skeleton variant="rectangular" height={45} className="rounded-md" />
+                    )}
+                  </div>
+                  <div className="w-2/6 h-full flex flex-col">
+                    <span className="text-center text-white  text-sm font-semibold">Incorrect</span>
+                    {!anomaliesLoading ? (
+                      <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
+                        {anomaliesCount[0].totalIncorrectPopCount}
+                      </span>
+                    ) : (
+                      <Skeleton variant="rectangular" height={45} className="rounded-md" />
+                    )}
+                  </div>
+                </div>
+              </Card>
+              <Card>
                 <Grid container spacing={gridSpacing}>
-                  {capProgress ? (
-                    // capProgress.map((item) => (
-                    <Grid item xs={12}>
-                      <Grid container justifyContent={'space-between'} alignItems="center" spacing={1}>
-                        <Grid item sm zeroMinWidth>
-                          {/* <Typography variant="body2">{item.store_id}</Typography> */}
-                        </Grid>
-                        <Grid item>
-                          <Typography variant="body2" align="right">
-                            {/* {Math.floor(item.capture_percentage)}% */}
-                            {parseFloat(avgCapProgress).toFixed(1)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12}>
-                          <div className="flex items-center justify-between">
-                            <div style={{ width: '88%' }}>
-                              <LinearProgress
-                                className="cursor-pointer"
-                                sx={{
-                                  borderRadius: 3,
-                                  height: 5,
+                  <Grid item xs={6} sm={4} md={3} lg={7} xl={6}>
+                    <Chart
+                      options={progressChart.options}
+                      series={avgCapProgress ? [parseFloat(avgCapProgress)] : [0]}
+                      type={progressChart.options.chart.type}
+                      height={progressChart.options.chart.height}
+                    />
+                  </Grid>
+                  <Grid item alignContent={'center'} xs={6} sm={8} md={9} lg={5} xl={6}>
+                    <div className="flex flex-col gap-1">
+                      <Typography variant="h1" sx={{ color: accentColMain, paddingTop: 8 }}>
+                        {avgCapProgress ? (
+                          `${parseFloat(avgCapProgress).toFixed(1)}%`
+                        ) : avgCapProgress === 0 ? ( //edited as zero from ''
+                          '0%'
+                        ) : (
+                          <Stack spacing={0.5}>
+                            <Skeleton animation="wave" variant="rounded" width={60} height={10} />
+                            <Skeleton animation="wave" variant="rounded" width={75} height={10} />
+                            <Skeleton animation="wave" variant="rounded" width={90} height={10} />
+                          </Stack>
+                        )}
+                      </Typography>
+                      <Typography variant="h5" color="textSecondary">
+                        Capture Progress
+                      </Typography>
+                    </div>
+                  </Grid>
+                </Grid>
+                <CardContent
+                  sx={{
+                    height: 370,
+                    [theme.breakpoints.up('md')]: {
+                      height: 450 // Height for screens equal to or larger than 'md' breakpoint
+                    },
+                    [theme.breakpoints.up('lg')]: {
+                      height: 503 // Height for screens equal to or larger than 'lg' breakpoint
+                    }
+                  }}
+                  className="overflow-y-auto flex flex-col gap-1 scrollbar"
+                >
+                  <Grid container spacing={gridSpacing}>
+                    {capProgress ? (
+                      // capProgress.map((item) => (
+                      <Grid item xs={12}>
+                        <Grid container justifyContent={'space-between'} alignItems="center" spacing={1}>
+                          <Grid item sm zeroMinWidth>
+                            {/* <Typography variant="body2">{item.store_id}</Typography> */}
+                          </Grid>
+                          <Grid item>
+                            <Typography variant="body2" align="right">
+                              {/* {Math.floor(item.capture_percentage)}% */}
+                              {parseFloat(avgCapProgress).toFixed(1)}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12}>
+                            <div className="flex items-center justify-between">
+                              <div style={{ width: '88%' }}>
+                                <LinearProgress
+                                  className="cursor-pointer"
+                                  sx={{
+                                    borderRadius: 3,
+                                    height: 5,
 
-                                  [theme.breakpoints.up('xl')]: {
-                                    height: 5 // Height for screens equal to or larger than 'lg' breakpoint
-                                  }
-                                }}
-                                variant="determinate"
-                                aria-label="direct"
-                                // value={Math.floor(item.capture_percentage)}
-                                value={parseFloat(avgCapProgress)}
-                                color="primary"
+                                    [theme.breakpoints.up('xl')]: {
+                                      height: 5 // Height for screens equal to or larger than 'lg' breakpoint
+                                    }
+                                  }}
+                                  variant="determinate"
+                                  aria-label="direct"
+                                  // value={Math.floor(item.capture_percentage)}
+                                  value={parseFloat(avgCapProgress)}
+                                  color="primary"
 
-                                // onScroll={()=>setOpenZone(false)}
-                              />
+                                  // onScroll={()=>setOpenZone(false)}
+                                />
+                              </div>
+                              {openZone ? (
+                                <FaEyeSlash className="cursor-pointer" onClick={() => setOpenZone(!openZone)} />
+                              ) : (
+                                <FaEye className="cursor-pointer" onClick={() => setOpenZone(!openZone)} />
+                              )}
                             </div>
-                            {openZone ? (
-                              <FaEyeSlash className="cursor-pointer" onClick={() => setOpenZone(!openZone)} />
-                            ) : (
-                              <FaEye className="cursor-pointer" onClick={() => setOpenZone(!openZone)} />
+                            {openZone && (
+                              <Paper className="mt-10 p-5" elevation={10}>
+                                <Typography variant="h4">Zone wise Capture Progress</Typography>
+                                {capProgress.length > 0 &&
+                                  capProgress.map((item, index) => (
+                                    <div key={index}>
+                                      <Typography key={index} className="m-2" variant="body1" color="initial">
+                                        {item.zone_id} - {item.capturePercentage}%
+                                      </Typography>
+                                      <LinearProgress
+                                        sx={{
+                                          borderRadius: 3,
+                                          height: 5,
+                                          [theme.breakpoints.up('xl')]: {
+                                            height: 5 // Height for screens equal to or larger than 'lg' breakpoint
+                                          }
+                                        }}
+                                        variant="determinate"
+                                        aria-label="direct"
+                                        value={parseFloat(item.capturePercentage)}
+                                        color="primary"
+                                        // onClick={()=>(setOpenZone(!openZone))}
+                                      />
+                                    </div>
+                                  ))}
+                              </Paper>
                             )}
-                          </div>
-                          {openZone && (
-                            <Paper className="mt-10 p-5" elevation={10}>
-                              <Typography variant="h4">Zone wise Capture Progress</Typography>
-                              {capProgress.length > 0 &&
-                                capProgress.map((item, index) => (
-                                  <>
-                                    <Typography key={index} className="m-2" variant="body1" color="initial">
-                                      {item.zone_id} - {item.capturePercentage}%
-                                    </Typography>
-                                    <LinearProgress
-                                      sx={{
-                                        borderRadius: 3,
-                                        height: 5,
-                                        [theme.breakpoints.up('xl')]: {
-                                          height: 5 // Height for screens equal to or larger than 'lg' breakpoint
-                                        }
-                                      }}
-                                      variant="determinate"
-                                      aria-label="direct"
-                                      value={parseFloat(item.capturePercentage)}
-                                      color="primary"
-                                      // onClick={()=>(setOpenZone(!openZone))}
-                                    />
-                                  </>
-                                ))}
-                            </Paper>
-                          )}
-                        </Grid>
-                        {/* <Grid item sm zeroMinWidth>
+                          </Grid>
+                          {/* <Grid item sm zeroMinWidth>
                           <Typography variant="body2">1:00 PM</Typography>
                         </Grid> */}
+                        </Grid>
                       </Grid>
-                    </Grid>
-                  ) : // ))
-                  capProgress.length === 0 ? (
-                    <div className="w-full h-full flex justify-center place-items-center">
-                      <img style={{ width: '100%' }} src={NoDataPng} alt="No data" />
-                    </div>
-                  ) : (
-                    // <>No data</>
-                    <Stack paddingLeft={gridSpacing} width={'100%'} spacing={gridSpacing}>
-                      <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
-                      <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
-                      <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
-                      <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
-                      <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
-                    </Stack>
-                  )}
-                </Grid>
-              </CardContent>
-            </Card>
+                    ) : // ))
+                    capProgress.length === 0 ? (
+                      <div className="w-full h-full flex justify-center place-items-center">
+                        <img style={{ width: '100%' }} src={NoDataPng} alt="No data" />
+                      </div>
+                    ) : (
+                      // <>No data</>
+                      <Stack paddingLeft={gridSpacing} width={'100%'} spacing={gridSpacing}>
+                        <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
+                        <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
+                        <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
+                        <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
+                        <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
+                      </Stack>
+                    )}
+                  </Grid>
+                </CardContent>
+              </Card>
+            </Stack>
           </Grid>
         </Grid>
       </Grid>

@@ -175,6 +175,7 @@ export const GetPartsWiseDetails = async (date, shelf_id) => {
 //--------------------------------- API for DISHA SMART ----------------------------------------------
 
 const lambUrl = 'https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/';
+// const lambUrl = 'https://m1xgkzhe9j.execute-api.ap-south-1.amazonaws.com/prod/web-app/';
 
 export const GetFullnessPop = async (data) => {
   try {
