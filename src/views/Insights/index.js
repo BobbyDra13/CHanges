@@ -1,29 +1,10 @@
 import { React, useState, useEffect } from 'react';
 
 // API imports
-import {
-  // GetCaptureProgress,
-  // GetBrandDonutData,
-  GetFullnessKpi,
-  GetAnomaliesKpi,
-  // GetAnomaliesBarChartData,
-  GetVMCompliance,
-  GetVMComplianceForOneWeek,
-  // GetFullnessForOneWeek,
-  GetRadarChartData,
-  // GetAnomaliesForOneWeek,
-  GetBarChartData,
-  GetVMscoreBar,
-  GetCapProg,
-  // GetPopPercentage, //NOT NEEDED
-  // GetPopWeekLineData,
-  GetPopHistogramData
-  // GetAnomalies
-} from 'api';
+import { GetRadarChartData, GetCapProg, GetPopHistogramData } from 'api';
 
 // Apex chart import
 import Chart from 'react-apexcharts';
-import chartsConfig from 'configs/charts-configs';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -31,7 +12,6 @@ import { Grid, Card, CardContent, Typography, LinearProgress, Box, Stack, TextFi
 
 //project import
 import statisticsChartsData from 'data/statistics-charts-data';
-// import KpiLineChartData from './KpiLineChart';
 import DatePickerComp from './DatePicker';
 import BrandDonutChart from './BrandDonutChart';
 import BrandChartData from './chart/brand-chart';
@@ -46,13 +26,6 @@ import NoDataImg from '../../assets/images/No_data-amico.svg';
 import PoPScoreKPICard from './PoPScoreKPICard';
 import AnomalyKPICard from './AnomalyKPICard';
 
-//eslint-disable-next-line
-const histogramData = {
-  asuk: [5, 10, 20, 25, 30, 35, 25, 15, 3, 2],
-  vmc: [10, 20, 30, 25, 15, 10, 15, 20, 17, 8],
-  dpe: [8, 15, 25, 40, 30, 10, 10, 5, 5, 12]
-};
-
 const histogramChartRequirements = {
   totalStores: 150,
   selectOptions: [
@@ -61,16 +34,6 @@ const histogramChartRequirements = {
       value: 'ASUK',
       disabled: false
     }
-    // {
-    //   label: 'VM score',
-    //   value: 'VMC',
-    //   disabled: false
-    // },
-    // {
-    //   label: 'PoP score',
-    //   value: 'DPE',
-    //   disabled: true
-    // }
   ]
 };
 
@@ -82,7 +45,6 @@ const Insights = () => {
   const accentColLight = theme.palette.success.light;
   const accentColMain = theme.palette.success.main;
 
-  // const { totalStores } = histogramChartRequirements;
   const { selectOptions } = histogramChartRequirements;
   const [selected, setSelected] = useState(selectOptions[0].value);
   const [seriesData, setSeriesData] = useState([]);
@@ -90,141 +52,11 @@ const Insights = () => {
   const [capProgress, setCapProgress] = useState(false);
   const [avgCapProgress, setAvgCapProgress] = useState(false);
   const [fullness, setFullness] = useState(false);
-  const [vmc, setVmc] = useState(false);
-  //eslint-disable-next-line
-  const [anomalies, setAnomalies] = useState(false);
-  //eslint-disable-next-line
-  const [anomaliesBarChart, setAnomaliesBarChart] = useState(false);
-  //eslint-disable-next-line
-  const [brandDonut, setBrandDonut] = useState(false);
+
   const [brandNames, setBrandNames] = useState([]);
   const [brandChartOptions, setBrandChartOptions] = useState(BrandChartData.options);
   const [brandFullness, setBrandFullness] = useState(false);
   const [barChartData, setBarChartData] = useState(false);
-  const [vmChartData, setVmChartData] = useState(false);
-  //eslint-disable-next-line
-  const [popPercentage, setPopPercentage] = useState('0');
-  //eslint-disable-next-line
-  const [anomaliesPercentage, setAnomaliesPercentage] = useState('0');
-  // const [popChipData, setPopChipData] = useState('');
-  // const [anomaliesChipData, setAnomaliesChipData] = useState('');
-  // const [capStatus, setCapStatus] = useState(true);
-  const [chartConfig, setChartConfig] = useState({
-    type: 'line',
-    height: 100,
-    series: [
-      {
-        name: 'Compliance %',
-        data: [0, 0, 0, 0, 0, 0, 0]
-      }
-    ],
-    options: {
-      ...chartsConfig,
-      colors: ['#10b981'],
-      stroke: {
-        lineCap: 'round',
-        curve: 'smooth',
-        width: 5
-      },
-      markers: {
-        size: 7
-      },
-      grid: {
-        show: false
-      },
-      xaxis: {
-        ...chartsConfig.xaxis,
-        labels: {
-          show: false
-        },
-        categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
-      },
-      yaxis: {
-        labels: {
-          show: false
-        },
-        max: 100
-      }
-    }
-  });
-  //eslint-disable-next-line
-  const [fullnessChartConfig, setFullChartConfig] = useState({
-    type: 'line',
-    height: 100,
-    series: [
-      {
-        name: 'PoP Score %',
-        data: [0, 0, 0, 0, 0, 0, 0]
-      }
-    ],
-
-    options: {
-      ...chartsConfig,
-      colors: ['#10b981'],
-      stroke: {
-        lineCap: 'round',
-        curve: 'smooth',
-        width: 5
-      },
-      markers: {
-        size: 7
-      },
-      grid: {
-        show: false
-      },
-      xaxis: {
-        ...chartsConfig.xaxis,
-        labels: {
-          show: false
-        },
-        categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
-      },
-      yaxis: {
-        labels: {
-          show: false
-        },
-        max: 100
-      }
-    }
-  });
-  //eslint-disable-next-line
-  const [anomaliesChartConfig, setAnomaliesChartConfig] = useState({
-    type: 'line',
-    height: 100,
-    series: [
-      {
-        name: 'Anomalies',
-        data: [0, 0, 0, 0, 0, 0, 0]
-      }
-    ],
-    options: {
-      ...chartsConfig,
-      colors: ['#ff413a'],
-      stroke: {
-        lineCap: 'round',
-        curve: 'smooth',
-        width: 5
-      },
-      markers: {
-        size: 7
-      },
-      grid: {
-        show: false
-      },
-      xaxis: {
-        ...chartsConfig.xaxis,
-        labels: {
-          show: false
-        },
-        categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
-      },
-      yaxis: {
-        labels: {
-          show: false
-        }
-      }
-    }
-  });
 
   const [openZone, setOpenZone] = useState(false);
 
@@ -303,19 +135,6 @@ const Insights = () => {
     /* eslint-disable no-inner-declarations */
     if (isMounted) {
       async function fetchDashboardData() {
-        const commonBody = {
-          start_date: selectedDate.toString(),
-          Store_IDs: ['6582be9ac5ed94d792a563b8']
-        };
-        // const brandDonutBody = {
-        //   start_date: selectedDate.toString(),
-        //   Store_IDs: ['6582be9ac5ed94d792a563b8']
-        // };
-        const body = {
-          start_date: selectedDate.toString(),
-          Store_IDs: ['6582be9ac5ed94d792a563b8'],
-          period: 7
-        };
         const capBody = {
           date: selectedDate.toString(),
           user_id: '660a457638e022104c155c06'
@@ -332,273 +151,44 @@ const Insights = () => {
         setAvgCapProgress(false);
         setCapProgress(false);
         setFullness(false);
-        setVmc(false);
-        setAnomalies(false);
-        setAnomaliesBarChart(false);
-        setBrandDonut(false);
         setBarChartData(false);
-        setVmChartData(false);
-        setPopPercentage('0');
-        setAnomaliesPercentage('0');
-        setFullChartConfig({
-          type: 'line',
-          height: 100,
-          series: [
-            {
-              name: 'PoP Score %',
-              data: [0, 0, 0, 0, 0, 0, 0]
-            }
-          ],
 
-          options: {
-            ...chartsConfig,
-            colors: ['#10b981'],
-            stroke: {
-              lineCap: 'round',
-              curve: 'smooth',
-              width: 5
-            },
-            markers: {
-              size: 7
-            },
-            grid: {
-              show: false
-            },
-            xaxis: {
-              ...chartsConfig.xaxis,
-              labels: {
-                show: false
-              },
-              categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
-            },
-            yaxis: {
-              labels: {
-                show: false
-              },
-              max: 100
-            }
-          }
-        });
-
-        setChartConfig({
-          type: 'line',
-          height: 100,
-          series: [
-            {
-              name: 'Compliance %',
-              data: [67, 14, 52, 93, 30, 81, 45]
-            }
-          ],
-          options: {
-            ...chartsConfig,
-            colors: ['#10b981'],
-            stroke: {
-              lineCap: 'round',
-              curve: 'smooth',
-              width: 5
-            },
-            markers: {
-              size: 7
-            },
-            grid: {
-              show: false
-            },
-            xaxis: {
-              ...chartsConfig.xaxis,
-              labels: {
-                show: false
-              },
-              categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
-            },
-            yaxis: {
-              labels: {
-                show: false
-              },
-              max: 100
-            }
-          }
-        });
-        setAnomaliesChartConfig({
-          type: 'line',
-          height: 100,
-          series: [
-            {
-              name: 'Anomalies',
-              data: [0, 0, 0, 0, 0, 0, 0]
-            }
-          ],
-          options: {
-            ...chartsConfig,
-            colors: ['#ff413a'],
-            stroke: {
-              lineCap: 'round',
-              curve: 'smooth',
-              width: 5
-            },
-            markers: {
-              size: 7
-            },
-            grid: {
-              show: false
-            },
-            xaxis: {
-              ...chartsConfig.xaxis,
-              labels: {
-                show: false
-              },
-              categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
-            },
-            yaxis: {
-              labels: {
-                show: false
-              }
-            }
-          }
-        });
         try {
-          const [
-            // capProgressData,
-            brandDonutData,
-            fullnessKpiData,
-            vmComplianceKpiData,
-            anomaliesKpiData,
-            // anomaliesBarChartData,
-            // barChart,
-            // anomaliesBarChartData,
-            // barChart,
-            vmcChart,
-            // fullnessLineChart,
-            vmcLineChart
-            //eslint-disable-next-line
-            // anomaliesLineChart
-          ] = await Promise.all([
-            // GetCaptureProgress(commonBody),
-            // GetBrandDonutData(brandDonutBody),
-            GetRadarChartData(donutBody),
-            GetFullnessKpi(commonBody),
-            GetVMCompliance(commonBody),
-            GetAnomaliesKpi(commonBody),
-            // GetAnomaliesBarChartData(commonBody),
-            GetBarChartData(commonBody),
-            GetVMscoreBar(commonBody),
-            // GetFullnessForOneWeek(body),
-            GetVMComplianceForOneWeek(body)
-            // GetAnomaliesForOneWeek(body)
-          ]);
-
+          const brandDonutData = await GetRadarChartData(donutBody);
           const CapData = await GetCapProg(capBody);
-          //  const popPercentageData = await GetPopPercentage(popKpiCardBody); //No need
           const histogramData = await GetPopHistogramData(popKpiCardBody);
-
-          if (vmcLineChart) {
-            const apiData = vmcLineChart.data;
-            console.log('apiData', apiData);
-
-            const anomalyPercentages = apiData.map((item) => item.withoutAnomalyPercentage);
-            const dates = apiData.map((item) => item.date);
-
-            const complianceData = anomalyPercentages.map((percentage) => `${percentage}%`);
-
-            const updatedChartConfig = {
-              ...chartConfig,
-              series: [
-                {
-                  name: 'Compliance %',
-                  data: complianceData
-                }
-              ],
-              options: {
-                ...chartConfig.options,
-                xaxis: {
-                  ...chartConfig.options.xaxis,
-                  categories: dates
-                },
-                annotations: {
-                  yaxis: [
-                    {
-                      y: 50.0,
-                      borderColor: '#FF0000',
-                      label: {
-                        borderColor: '#FF0000',
-                        style: {
-                          color: '#fff',
-                          background: '#FF0000'
-                        },
-                        text: '50%'
-                      }
-                    }
-                  ]
-                }
-              }
-            };
-
-            setChartConfig(updatedChartConfig);
-          }
 
           if (CapData) {
             if (CapData.data.length > 0) {
-              // const totalCapturePercentage = capProgressData.data.reduce((acc, item) => acc + item.capture_percentage, 0);
-              // const average = totalCapturePercentage / capProgressData.data.length;
-
-              // setAvgCapProgress(Math.floor(average));
               setAvgCapProgress(CapData.data[0].storeCapturePercentage);
             } else {
               setAvgCapProgress('');
-              // setCapProgress('');
             }
-            // setCapProgress(capProgressData.data);
-            // console.log(capProgressData.data);
             setCapProgress(CapData.data[0].captureProgressZoneData);
           }
           if (brandDonutData) {
-            // console.log('Brand Data', brandDonutData.data);
             if (brandDonutData.data.length > 0) {
               console.log('Donut chart data', brandDonutData);
-              // const extractedFullness = brandDonutData.data.map((item) => Math.floor(item.fullness));
-              // const extractedFullness = brandDonutData.map((item) => (item ? item.total_zone_missing_pop : 0));
               const extractedFullness = brandDonutData.data.map((item) => [
                 item.total_zone_missing_pop,
                 item.total_zone_alien_pop,
                 item.total_zone_incorrect_pop
               ]);
-              // const extractedBrandNames = brandDonutData.data.map((item) => item.group_id);
               const extractedBrandNames = ['alien_pop', 'incorrect_pop', 'missing_pop'];
-
               setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
-
               setBrandFullness(extractedFullness);
-              // console.log('brandfullness', extractedFullness.length);
               console.log('Brand Fullness', extractedFullness);
               setBrandNames(extractedBrandNames);
               console.log('Brand Names', brandNames);
             } else {
               setBrandFullness([]);
             }
-
-            setBrandDonut(brandDonutData.data);
-          }
-
-          if (fullnessKpiData) {
-            setFullness(fullnessKpiData.data);
-            console.log('fullnessKpiData', fullnessKpiData);
-          }
-
-          if (vmComplianceKpiData) {
-            setVmc(vmComplianceKpiData.data);
-          }
-
-          if (anomaliesKpiData) {
-            setAnomalies(anomaliesKpiData.data);
-            console.log('anomaliesKpiData', anomaliesKpiData);
           }
 
           if (histogramData) {
             setBarChartData(histogramData.data);
+            setFullness(true);
             console.log('histogramData', barChartData);
-          }
-          if (vmcChart) {
-            setVmChartData(vmcChart.data);
-            console.log('vmcchart', vmcChart);
           }
         } catch (error) {
           console.log(error);
@@ -615,38 +205,12 @@ const Insights = () => {
     };
     //eslint-disable-next-line
   }, [selectedDate]);
-  // console.log('bar', barChartData);
-  console.log('fullness', brandFullness[0]);
-  console.log('vmc bar', vmChartData);
-  console.log('chartConfig', vmc);
+
   // console.log('Current anomaly', anomaliesPercentage);
   const allZero = brandFullness && brandFullness[0].every((data) => data === 0);
 
   useEffect(
     () => {
-      // if (barChartData && barChartData.length > 0 && selected === histogramChartRequirements.selectOptions[0].value) {
-      //   setSelected(histogramChartRequirements.selectOptions[0].value);
-      //   let chart = barChartData[0]?.data.bayAnalysis;
-      //   console.log('chartttt', chart);
-
-      //   let allRanges = Array.from({ length: 10 }, (_, i) => `${i * 10}-${(i + 1) * 10}%`);
-      //   console.log('allRanges', allRanges);
-      //   let chartDataMap = Object.fromEntries(allRanges.map((range) => [range, chart[range] || 0]));
-      //   console.log('chartDataMap', chartDataMap);
-
-      //   let sortedKeys = Object.keys(chartDataMap).sort((a, b) => {
-      //     let [aStart, aEnd] = a.split('-').map(Number);
-      //     let [bStart, bEnd] = b.split('-').map(Number);
-
-      //     return aStart - bStart || aEnd - bEnd;
-      //   });
-      //   console.log('sortedKeys', sortedKeys);
-      //   // Retrieve values in the sorted order
-      //   const barchart = {
-      //     asuk: sortedKeys.map((key) => chartDataMap[key])
-      //   };
-
-      //   console.log('barchart', barchart.asuk);
       if (barChartData) {
         setSelected(histogramChartRequirements.selectOptions[0].value);
         let chart = barChartData[0].data;
@@ -660,61 +224,7 @@ const Insights = () => {
         console.log('allCount', allCount);
       }
     },
-    // else if (vmChartData && vmChartData.length > 0 && selected === histogramChartRequirements.selectOptions[1].value) {
-    //   setSelected(histogramChartRequirements.selectOptions[1].value);
-    //   console.log('vmc clicked');
-    //   let chart = vmChartData[0]?.data?.anomaliesCount;
-    //   console.log('charttttvmc', chart);
-    //   let allRanges = Array.from({ length: 10 }, (_, i) => `${i * 10}-${(i + 1) * 10}%`);
-    //   console.log('allRangesvmc', allRanges);
 
-    //   const manualRanges = ['0-10%', '10-20%', '20-30%', '30-40%', '40-50%', '50-60%', '60-70%', '70-80%', '80-90%', '90-100%'];
-
-    //   let chartDataMap = Object.fromEntries(manualRanges.map((range) => [range, chart[range] || 0]));
-    //   console.log('chartDataMapvmc', chartDataMap);
-
-    //   const totalBays = barChartData[0]?.data?.totalBaysCount;
-    //   const remainingBays = totalBays - Object.values(chart).reduce((sum, count) => sum + count, 0);
-
-    //   chartDataMap['0-10%'] += remainingBays;
-
-    //   let sortedKeys = Object.keys(chartDataMap).sort((a, b) => {
-    //     let [aStart, aEnd] = a.split('-').map(Number);
-    //     let [bStart, bEnd] = b.split('-').map(Number);
-
-    //     return aStart - bStart || aEnd - bEnd;
-    //   });
-
-    //   const barchart = {
-    //     vmc: sortedKeys.map((key) => chartDataMap[key])
-    //   };
-
-    //   console.log('barchartvmc', barchart);
-
-    //   setSeriesData(barchart.vmc);
-    // } else if (vmChartData && vmChartData.length === 0) {
-    //   setSelected(histogramChartRequirements.selectOptions[1].value);
-    //   const manualRanges = ['0-10%', '10-20%', '20-30%', '30-40%', '40-50%', '50-60%', '60-70%', '70-80%', '80-90%', '90-100%'];
-    //   const totalBays = barChartData[0]?.data?.totalBaysCount;
-
-    //   let chartDataMap = Object.fromEntries(manualRanges.map((range) => [range, 0]));
-    //   chartDataMap['90-100%'] += totalBays;
-
-    //   let sortedKeys = Object.keys(chartDataMap).sort((a, b) => {
-    //     let [aStart, aEnd] = a.split('-').map(Number);
-    //     let [bStart, bEnd] = b.split('-').map(Number);
-
-    //     return aStart - bStart || aEnd - bEnd;
-    //   });
-
-    //   const barchart = {
-    //     vmc: sortedKeys.map((key) => chartDataMap[key])
-    //   };
-
-    //   console.log('barchartvmc', barchart);
-
-    //   setSeriesData(barchart.vmc);
-    // }
     //eslint-disable-next-line
     [barChartData]
   );
@@ -810,11 +320,6 @@ const Insights = () => {
       }
     }
   };
-
-  // console.log('seriesData', seriesData);
-  // console.log("brandFull", brandFullness);
-  // console.log('anomalies', anomalies);
-  // console.log('anomalies bar', anomaliesBarChart);
 
   const allZerHistogram = series && series[0].data.every((data) => data.y === 0);
   console.log('checki', allZerHistogram);
@@ -1086,8 +591,7 @@ const Insights = () => {
                           <Grid item>
                             <Grid container spacing={1}>
                               <Typography paddingTop={1} className="self-end" variant="h5" color="inherit">
-                                {/* Brand Fullness */}
-                                Exceptions Classification
+                                Exceptions Distribution
                               </Typography>
                             </Grid>
                           </Grid>
@@ -1105,7 +609,6 @@ const Insights = () => {
                                     paddingTop: 0.7,
                                     fontSize: '1rem',
                                     fontWeight: 600
-                                    // color: 'white'
                                   }
                                 }}
                               >

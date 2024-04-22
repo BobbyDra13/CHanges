@@ -2,7 +2,6 @@ import { React, useEffect, useState } from 'react';
 
 // APIs
 import { GetAnomalies } from 'api';
-// , GetAnomaliesBarChartData
 
 // material-ui
 // import { useTheme } from '@mui/material/styles';
