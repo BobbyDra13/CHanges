@@ -811,7 +811,7 @@ const Insights = () => {
                                   capProgress.map((item, index) => (
                                     <div key={index}>
                                       <Typography key={index} className="m-2" variant="body1" color="initial">
-                                        {item.zone_id} - {item.capturePercentage}%
+                                        {item.zone_id} - {parseFloat(item.capturePercentage).toFixed(2)}%
                                       </Typography>
                                       <LinearProgress
                                         sx={{
