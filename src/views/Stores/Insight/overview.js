@@ -41,7 +41,13 @@ function Overview() {
   const [associateScoreData, setAssociateScoreData] = useState([]);
   //eslint-disable-next-line
   const [ftfall, setftfall] = useState([]);
-  const [date, setSelectedDate] = useState(new Date());
+
+  function padTo2Digits(num) {
+    return num.toString().padStart(2, '0');
+  }
+  const customDate = new Date();
+  const finalCustomDate = [customDate.getFullYear(), padTo2Digits(customDate.getMonth() + 1), padTo2Digits(customDate.getDate())].join('-');
+  const [date, setSelectedDate] = useState(finalCustomDate);
   //eslint-disable-next-line
   const [empCount, setEmpCount] = useState('');
   //eslint-disable-next-line
@@ -283,6 +289,8 @@ function Overview() {
           if (anomalies) {
             setAnomaliesLoading(false);
             setAnomaliesCount(anomalies.data);
+            console.log('def', anomalies.data);
+            console.log('def date', date);
           }
         } catch (error) {
           console.log(error);
@@ -313,13 +321,7 @@ function Overview() {
       getCaptureProg();
       getAssociateScore();
     }
-    // return () => {
-    //   setFootfalldata(false);
-    //   // setCaptureProg([]);
-    //   setCapProgressValue(0);
-    //   setAnomaliesCount(false);
-    //   // setftfall(false)
-    // };
+
     // eslint-disable-next-line
   }, [date]);
   console.log('Anomalies ', anomaliesCount);

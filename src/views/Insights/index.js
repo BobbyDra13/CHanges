@@ -157,7 +157,7 @@ const Insights = () => {
         setCapProgress(false);
         setFullness(false);
         setBarChartData(false);
-
+        console.log('abc date', selectedDate);
         try {
           const brandDonutData = await GetRadarChartData(donutBody);
           const CapData = await GetCapProg(capBody);
