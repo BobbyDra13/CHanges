@@ -165,6 +165,9 @@ const Customers = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const ITEM_HEIGHT = 48;
 
+  const user_id = JSON.parse(localStorage.getItem('userData')).data._id;
+  console.log('xx', user_id);
+
   const dateToday = new Date();
   const today = dateToday.toISOString().split('T')[0];
   const open = Boolean(anchorEl);
@@ -319,10 +322,12 @@ const Customers = () => {
     //   console.log(error);
     // }
     console.log('metadata', metadata);
+    console.log('id', user_id);
     const dt = {
       date: new Date(),
-      user_id: '660a457638e022104c155c06'
+      user_id: user_id
     };
+    console.log('id', user_id);
 
     try {
       const response = await GetStoreWiseInfo(date, store_id);

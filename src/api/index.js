@@ -123,7 +123,7 @@ export const GetStoreWiseInfo = async (date, store_id) => {
         Authorization: await token()
       }
     });
-    //console.log(res);
+    console.log('sad', res);
     return res;
   } catch (error) {
     console.log('Error calling store wise info', error);
@@ -215,7 +215,7 @@ export const GetStoreData = async (data) => {
     });
     return res;
   } catch (error) {
-    console.log('Error Calling GetCaptureProgress API: ', error);
+    console.log('Error Calling GetStoreData API: ', error);
   }
 };
 
@@ -363,12 +363,17 @@ export const GetPopWeekLineData = async (data) => {
 
 export const GetRadarChartData = async (data) => {
   try {
-    const res = await axios.post(`${lambUrl}dashboard/anomalies-group`, data, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
+    const res = await axios.post(
+      `${lambUrl}
+    `,
+      data,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: await token()
+        }
       }
-    });
+    );
     return res;
   } catch (error) {
     console.log('Error Calling GetRadarChartData API: ', error);

@@ -14,6 +14,8 @@ function PoPScoreKPICard({ date }) {
   const [status, setStatus] = useState([]);
   const [dates, setDates] = useState([]);
   const [isDataAvailable, setIsDataAvailable] = useState(false);
+  const user_id = JSON.parse(localStorage.getItem('userData')).data._id;
+  console.log('yyaa', user_id);
 
   const dummyData = {
     data: [0, 0, 0, 0, 0, 0, 0],
@@ -25,7 +27,7 @@ function PoPScoreKPICard({ date }) {
     async function getData() {
       const body = {
         date: date.toString(),
-        user_id: '660a457638e022104c155c06'
+        user_id: user_id
       };
 
       try {
