@@ -130,9 +130,9 @@ export const GetStoreWiseInfo = async (date, store_id) => {
   }
 };
 
-export const GetBayWiseDetails = async (date) => {
+export const GetBayWiseDetails = async (date, store_id) => {
   try {
-    const res = await axios.get(`${lambUrlFashion}/store/bay_wise_config?date=${date}&store_id=6582be9ac5ed94d792a563b8`, {
+    const res = await axios.get(`${lambUrlFashion}/store/bay_wise_config?date=${date}&store_id=${store_id}`, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -219,6 +219,21 @@ export const GetStoreData = async (data) => {
   }
 };
 
+export const UploadCSV = async(data) => {
+  try {
+    const res = await axios.post(`${lambUrl}store-view/upload_csv`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    })
+    // console.log("csvv",res);
+    return res;
+  } catch(error) {
+    console.log('Error Uploading CSV',error);
+  }
+}
+
 export const GetAnomalies = async (data) => {
   try {
     const res = await axios.post(`${lambUrl}dashboard/anomalie-bar-graph`, data, {
@@ -241,6 +256,7 @@ export const GetAnomaliesCount = async (data) => {
         Authorization: await token()
       }
     });
+    console.log("lolo",res);
     return res;
   } catch (error) {
     console.log('Error Calling GetCaptureProgress API: ', error);
@@ -364,7 +380,7 @@ export const GetPopWeekLineData = async (data) => {
 export const GetRadarChartData = async (data) => {
   try {
     const res = await axios.post(
-      `${lambUrl}
+      `${lambUrl}store-view/anomalies-group
     `,
       data,
       {

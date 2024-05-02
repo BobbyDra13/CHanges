@@ -245,7 +245,7 @@ const Insights = () => {
 
   // console.log('Current anomaly', anomaliesPercentage);
   console.log('jaii', brandFullness);
-  const allZero = brandFullness && brandFullness[0].every((data) => data === 0);
+  const allZero = brandFullness && brandFullness.length === 0;
 
   useEffect(
     () => {
