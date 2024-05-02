@@ -151,7 +151,7 @@ const Customers = () => {
     {
       label: 'Analysis',
       icon: <BarChartIcon />,
-      onClick: () => navigate('/main/stores/storeinsight/overview')
+      onClick: () => navigate(`/main/stores/storeinsight/overview/${item.store}`)
     },
     {
       label: 'View',
@@ -162,8 +162,12 @@ const Customers = () => {
     { label: 'Edit', icon: <EditIcon />, disabled: true },
     { label: 'Delete', icon: <DeleteIcon />, color: 'red', disabled: true }
   ];
+
   const [anchorEl, setAnchorEl] = useState(null);
   const ITEM_HEIGHT = 48;
+
+  const user_id = JSON.parse(localStorage.getItem('userData')).data._id;
+  console.log('xx', user_id);
 
   const dateToday = new Date();
   const today = dateToday.toISOString().split('T')[0];
@@ -295,8 +299,6 @@ const Customers = () => {
     //   Store_IDs: ['6582be9ac5ed94d792a563b8'],
     //   start_date: today
     // };
-    const store_id = '6582be9ac5ed94d792a563b8';
-    const date = today;
     setStoresData(false);
     // try {
     //   const response = await GetStoreLayout(input);
@@ -319,14 +321,23 @@ const Customers = () => {
     //   console.log(error);
     // }
     console.log('metadata', metadata);
+    console.log('id', user_id);
     const dt = {
       date: new Date(),
-      user_id: '660a457638e022104c155c06'
+      user_id: user_id
     };
+    console.log('id', user_id);
 
+    const store_id = '6582be9ac5ed94d792a563b8';
+    const date = today;
     try {
       const response = await GetStoreWiseInfo(date, store_id);
       const response2 = await GetStoreData(dt);
+      // const storess = response2.data;
+      // storess.map((st) => {
+      //   console.log("somestores",st.store);
+      // })
+      // console.log('nono',response2);
       if (response2) {
         setUpdateddata(response2.data);
         // console.log(updatedData[0].store_name);
@@ -679,7 +690,7 @@ const Customers = () => {
                               <Typography
                                 className="drop-shadow-md self-center cursor-pointer"
                                 variant="h5"
-                                onClick={() => navigate('/main/stores/storeinsight/overview')}
+                                onClick={() => navigate(`/main/stores/storeinsight/overview/${item.store}`)}
                               >
                                 {item.store_id} - {item.store_name}
                               </Typography>
@@ -718,14 +729,16 @@ const Customers = () => {
                               {options.map((option) => (
                                 <MenuItem
                                   key={option.label}
-                                  selected={option.label === 'View'}
+                                  selected={option.label === 'Analysis'}
                                   disabled={option.disabled} // Apply the disabled attribute conditionally
                                   onClick={() => {
                                     if (option.disabled != true) {
-                                      option.onClick();
+                                      // option.onClick();
+                                      navigate(`/main/stores/storeinsight/overview/${item.store}`);
                                       handleClose();
                                     }
                                   }}
+                                  // onClick={() => navigate(`/main/stores/storeinsight/overview/${item.store}`)}
                                 >
                                   {option.icon && <span style={{ marginRight: '8px', color: option.color }}>{option.icon}</span>}
                                   <span style={{ color: option.color }}>{option.label}</span>

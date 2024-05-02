@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import {
   Box,
@@ -35,6 +36,7 @@ bouncy.register();
 // };
 
 export default function ShelfView({ date }) {
+  const { store } = useParams();
   const [active, setActive] = useState(false);
   const [data, setData] = useState(false);
   const [shelves, setShelves] = useState(false);
@@ -53,10 +55,10 @@ export default function ShelfView({ date }) {
     const body = {
       zone_id: id,
       date: date.toString(),
-      store_id: '65c74d4112465588b7a4984c'
+      store_id: store
     };
     const shelvesData = await GetShelvesData(body);
-    console.log(shelvesData.data);
+    console.log('qqaa',shelvesData.data);
     setShelves(shelvesData.data[0]);
     setloading(false);
   }
@@ -88,7 +90,7 @@ export default function ShelfView({ date }) {
     setloading(true);
     const body = {
       date: date.toString(),
-      store_id: '65c74d4112465588b7a4984c',
+      store_id: store,
       shelf_id: id
     };
     const data = await GetShelfData(body);
@@ -102,7 +104,7 @@ export default function ShelfView({ date }) {
     setloading(true);
     const body = {
       date: date.toString(),
-      store_id: '65c74d4112465588b7a4984c',
+      store_id: store,
       shelf_id: id
     };
     const data = await GetShelfData(body);
@@ -114,7 +116,7 @@ export default function ShelfView({ date }) {
   useEffect(() => {
     async function GetZone() {
       const body = {
-        store_id: '65c74d4112465588b7a4984c'
+        store_id: store
       };
       const Zonedata = await GetZonedetails(body);
       setData(Zonedata);

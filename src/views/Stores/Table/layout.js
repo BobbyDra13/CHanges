@@ -110,7 +110,7 @@ const StoreLayout = () => {
   };
 
   const getLayoutData = async () => {
-    const response = await GetBayWiseDetails(selectedDate);
+    const response = await GetBayWiseDetails(selectedDate,store_id);
     console.log(response.data[0]);
     setLayoutData(response.data[0]);
   };

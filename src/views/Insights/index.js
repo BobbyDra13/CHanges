@@ -1,29 +1,10 @@
 import { React, useState, useEffect } from 'react';
 
 // API imports
-import {
-  // GetCaptureProgress,
-  // GetBrandDonutData,
-  GetFullnessKpi,
-  GetAnomaliesKpi,
-  // GetAnomaliesBarChartData,
-  GetVMCompliance,
-  GetVMComplianceForOneWeek,
-  // GetFullnessForOneWeek,
-  GetRadarChartData,
-  // GetAnomaliesForOneWeek,
-  GetBarChartData,
-  GetVMscoreBar,
-  GetCapProg,
-  // GetPopPercentage, //NOT NEEDED
-  GetPopWeekLineData,
-  GetPopHistogramData,
-  GetAnomalies
-} from 'api';
+import { GetRadarChartData, GetCapProg, GetPopHistogramData, GetAnomaliesCount } from 'api';
 
 // Apex chart import
 import Chart from 'react-apexcharts';
-import chartsConfig from 'configs/charts-configs';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -31,11 +12,9 @@ import { Grid, Card, CardContent, Typography, LinearProgress, Box, Stack, TextFi
 
 //project import
 import statisticsChartsData from 'data/statistics-charts-data';
-// import KpiLineChartData from './KpiLineChart';
 import DatePickerComp from './DatePicker';
 import BrandDonutChart from './BrandDonutChart';
 import BrandChartData from './chart/brand-chart';
-import KpiCard from './KpiCard';
 import KpiPop from './KpiCard/kpiPop';
 import { gridSpacing } from 'config.js';
 import AnomaliesBarChart from './AnomaliesBarChart';
@@ -44,15 +23,8 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 // assets
 import NoDataPng from '../../assets/images/No_data.png';
 import NoDataImg from '../../assets/images/No_data-amico.svg';
-//eslint-disable-next-line
-import chartData from './chart/anomalies-chart';
-
-//eslint-disable-next-line
-const histogramData = {
-  asuk: [5, 10, 20, 25, 30, 35, 25, 15, 3, 2],
-  vmc: [10, 20, 30, 25, 15, 10, 15, 20, 17, 8],
-  dpe: [8, 15, 25, 40, 30, 10, 10, 5, 5, 12]
-};
+import PoPScoreKPICard from './PoPScoreKPICard';
+import AnomalyKPICard from './AnomalyKPICard';
 
 const histogramChartRequirements = {
   totalStores: 150,
@@ -62,16 +34,6 @@ const histogramChartRequirements = {
       value: 'ASUK',
       disabled: false
     }
-    // {
-    //   label: 'VM score',
-    //   value: 'VMC',
-    //   disabled: false
-    // },
-    // {
-    //   label: 'PoP score',
-    //   value: 'DPE',
-    //   disabled: true
-    // }
   ]
 };
 
@@ -83,7 +45,6 @@ const Insights = () => {
   const accentColLight = theme.palette.success.light;
   const accentColMain = theme.palette.success.main;
 
-  // const { totalStores } = histogramChartRequirements;
   const { selectOptions } = histogramChartRequirements;
   const [selected, setSelected] = useState(selectOptions[0].value);
   const [seriesData, setSeriesData] = useState([]);
@@ -91,138 +52,29 @@ const Insights = () => {
   const [capProgress, setCapProgress] = useState(false);
   const [avgCapProgress, setAvgCapProgress] = useState(false);
   const [fullness, setFullness] = useState(false);
-  const [vmc, setVmc] = useState(false);
-  const [anomalies, setAnomalies] = useState(false);
-  //eslint-disable-next-line
-  const [anomaliesBarChart, setAnomaliesBarChart] = useState(false);
-  //eslint-disable-next-line
-  const [brandDonut, setBrandDonut] = useState(false);
+
   const [brandNames, setBrandNames] = useState([]);
   const [brandChartOptions, setBrandChartOptions] = useState(BrandChartData.options);
   const [brandFullness, setBrandFullness] = useState(false);
   const [barChartData, setBarChartData] = useState(false);
-  const [vmChartData, setVmChartData] = useState(false);
-  const [popPercentage, setPopPercentage] = useState('0');
-  const [anomaliesPercentage, setAnomaliesPercentage] = useState('0');
-  const [popChipData, setPopChipData] = useState('');
-  const [anomaliesChipData, setAnomaliesChipData] = useState('');
-  const [capStatus, setCapStatus] = useState(true);
-  const [chartConfig, setChartConfig] = useState({
-    type: 'line',
-    height: 100,
-    series: [
-      {
-        name: 'Compliance %',
-        data: [0, 0, 0, 0, 0, 0, 0]
-      }
-    ],
-    options: {
-      ...chartsConfig,
-      colors: ['#10b981'],
-      stroke: {
-        lineCap: 'round',
-        curve: 'smooth',
-        width: 5
-      },
-      markers: {
-        size: 7
-      },
-      grid: {
-        show: false
-      },
-      xaxis: {
-        ...chartsConfig.xaxis,
-        labels: {
-          show: false
-        },
-        categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
-      },
-      yaxis: {
-        labels: {
-          show: false
-        },
-        max: 100
-      }
-    }
-  });
-  const [fullnessChartConfig, setFullChartConfig] = useState({
-    type: 'line',
-    height: 100,
-    series: [
-      {
-        name: 'PoP Score %',
-        data: [0, 0, 0, 0, 0, 0, 0]
-      }
-    ],
-
-    options: {
-      ...chartsConfig,
-      colors: ['#10b981'],
-      stroke: {
-        lineCap: 'round',
-        curve: 'smooth',
-        width: 5
-      },
-      markers: {
-        size: 7
-      },
-      grid: {
-        show: false
-      },
-      xaxis: {
-        ...chartsConfig.xaxis,
-        labels: {
-          show: false
-        },
-        categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
-      },
-      yaxis: {
-        labels: {
-          show: false
-        },
-        max: 100
-      }
-    }
-  });
-  const [anomaliesChartConfig, setAnomaliesChartConfig] = useState({
-    type: 'line',
-    height: 100,
-    series: [
-      {
-        name: 'Anomalies',
-        data: [0, 0, 0, 0, 0, 0, 0]
-      }
-    ],
-    options: {
-      ...chartsConfig,
-      colors: ['#ff413a'],
-      stroke: {
-        lineCap: 'round',
-        curve: 'smooth',
-        width: 5
-      },
-      markers: {
-        size: 7
-      },
-      grid: {
-        show: false
-      },
-      xaxis: {
-        ...chartsConfig.xaxis,
-        labels: {
-          show: false
-        },
-        categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
-      },
-      yaxis: {
-        labels: {
-          show: false
-        }
-      }
-    }
-  });
-
-  const [openZone, setOpenZone] = useState(false);
+  const [anomaliesCount, setAnomaliesCount] = useState([]);
+  const [anomaliesLoading, setAnomaliesLoading] = useState(true);
+  const [openZone, setOpenZone] = useState({});
+  // const [anchorEl, setAnchorEl] = useState(null);
+  const handleZoneCaptureProgressMenuOpen = (key) => {
+    setOpenZone((prevState) => ({
+      ...prevState,
+      [key]: true
+    }));
+    // setAnchorEl(event.currentTarget);
+  };
+  const handleZoneCaptureProgressMenuClose = (key) => {
+    setOpenZone((prevState) => ({
+      ...prevState,
+      [key]: false
+    }));
+    // setAnchorEl(null);
+  };
 
   const progressChart = {
     options: {
@@ -295,538 +147,85 @@ const Insights = () => {
   }, []);
   // ------------------------
 
+  const user_id = JSON.parse(localStorage.getItem('userData')).data._id;
+  console.log('brooo', user_id);
   useEffect(() => {
     /* eslint-disable no-inner-declarations */
     if (isMounted) {
       async function fetchDashboardData() {
-        const commonBody = {
-          start_date: selectedDate.toString(),
-          Store_IDs: ['6582be9ac5ed94d792a563b8']
-        };
-        // const brandDonutBody = {
-        //   start_date: selectedDate.toString(),
-        //   Store_IDs: ['6582be9ac5ed94d792a563b8']
-        // };
-        const body = {
-          start_date: selectedDate.toString(),
-          Store_IDs: ['6582be9ac5ed94d792a563b8'],
-          period: 7
-        };
         const capBody = {
           date: selectedDate.toString(),
-          user_id: '660a457638e022104c155c06'
+          user_id: user_id
         };
         const popKpiCardBody = {
           date: selectedDate.toString(),
-          user_id: '660a457638e022104c155c06'
+          user_id: user_id
         };
         const donutBody = {
           date: selectedDate.toString(),
-          user_id: '660a457638e022104c155c06'
+          user_id: user_id
+        };
+
+        console.log('donutBody', donutBody);
+        const anomlayBody = {
+          date: selectedDate.toString(),
+          store_id: '65c74d4112465588b7a4984c'
         };
 
         setAvgCapProgress(false);
         setCapProgress(false);
         setFullness(false);
-        setVmc(false);
-        setAnomalies(false);
-        setAnomaliesBarChart(false);
-        setBrandDonut(false);
         setBarChartData(false);
-        setVmChartData(false);
-        setPopPercentage('0');
-        setAnomaliesPercentage('0');
-        setFullChartConfig({
-          type: 'line',
-          height: 100,
-          series: [
-            {
-              name: 'PoP Score %',
-              data: [0, 0, 0, 0, 0, 0, 0]
-            }
-          ],
-
-          options: {
-            ...chartsConfig,
-            colors: ['#10b981'],
-            stroke: {
-              lineCap: 'round',
-              curve: 'smooth',
-              width: 5
-            },
-            markers: {
-              size: 7
-            },
-            grid: {
-              show: false
-            },
-            xaxis: {
-              ...chartsConfig.xaxis,
-              labels: {
-                show: false
-              },
-              categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
-            },
-            yaxis: {
-              labels: {
-                show: false
-              },
-              max: 100
-            }
-          }
-        });
-
-        setChartConfig({
-          type: 'line',
-          height: 100,
-          series: [
-            {
-              name: 'Compliance %',
-              data: [67, 14, 52, 93, 30, 81, 45]
-            }
-          ],
-          options: {
-            ...chartsConfig,
-            colors: ['#10b981'],
-            stroke: {
-              lineCap: 'round',
-              curve: 'smooth',
-              width: 5
-            },
-            markers: {
-              size: 7
-            },
-            grid: {
-              show: false
-            },
-            xaxis: {
-              ...chartsConfig.xaxis,
-              labels: {
-                show: false
-              },
-              categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
-            },
-            yaxis: {
-              labels: {
-                show: false
-              },
-              max: 100
-            }
-          }
-        });
-        setAnomaliesChartConfig({
-          type: 'line',
-          height: 100,
-          series: [
-            {
-              name: 'Anomalies',
-              data: [0, 0, 0, 0, 0, 0, 0]
-            }
-          ],
-          options: {
-            ...chartsConfig,
-            colors: ['#ff413a'],
-            stroke: {
-              lineCap: 'round',
-              curve: 'smooth',
-              width: 5
-            },
-            markers: {
-              size: 7
-            },
-            grid: {
-              show: false
-            },
-            xaxis: {
-              ...chartsConfig.xaxis,
-              labels: {
-                show: false
-              },
-              categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
-            },
-            yaxis: {
-              labels: {
-                show: false
-              }
-            }
-          }
-        });
+        console.log('abc date', selectedDate);
         try {
-          const [
-            // capProgressData,
-            brandDonutData,
-            fullnessKpiData,
-            vmComplianceKpiData,
-            anomaliesKpiData,
-            // anomaliesBarChartData,
-            // barChart,
-            // anomaliesBarChartData,
-            // barChart,
-            vmcChart,
-            // fullnessLineChart,
-            vmcLineChart
-            //eslint-disable-next-line
-            // anomaliesLineChart
-          ] = await Promise.all([
-            // GetCaptureProgress(commonBody),
-            // GetBrandDonutData(brandDonutBody),
-            GetRadarChartData(donutBody),
-            GetFullnessKpi(commonBody),
-            GetVMCompliance(commonBody),
-            GetAnomaliesKpi(commonBody),
-            // GetAnomaliesBarChartData(commonBody),
-            GetBarChartData(commonBody),
-            GetVMscoreBar(commonBody),
-            // GetFullnessForOneWeek(body),
-            GetVMComplianceForOneWeek(body)
-            // GetAnomaliesForOneWeek(body)
-          ]);
-
+          const brandDonutData = await GetRadarChartData(anomlayBody);
+          console.log('bebo', brandDonutData);
           const CapData = await GetCapProg(capBody);
-          //  const popPercentageData = await GetPopPercentage(popKpiCardBody); //No need
-          const popLineData = await GetPopWeekLineData(popKpiCardBody);
-          console.log('popLineData', popLineData);
+          console.log('thala', CapData);
           const histogramData = await GetPopHistogramData(popKpiCardBody);
-          const anomaliesData = await GetAnomalies(popKpiCardBody);
-
-          if (popLineData) {
-            const popScoreFullnessLine = popLineData.data;
-            console.log('popScoreFullness', popLineData);
-            const popScoreFullness = popScoreFullnessLine.map((item) => {
-              if (item && item.averagePopScore != 'No data found') {
-                const percentage = parseFloat(item.averagePopScore.replace('%', ''));
-                return `${percentage.toFixed(2)}%`;
-              } else {
-                return '0%';
-              }
-            });
-            const lastElement = parseFloat(popScoreFullness[popScoreFullness.length - 1].replace('%', '')) || 0;
-            const secondLastElement = parseFloat(popScoreFullness[popScoreFullness.length - 2].replace('%', '')) || 0;
-            const difference = `${(lastElement - secondLastElement).toFixed(1)}`;
-            setPopChipData(difference);
-
-            const dates = popScoreFullnessLine.map((item) => {
-              let date = item.capture_status ? item.date : `${item.date} (Data not captured)`;
-              return date;
-            });
-
-            const status = popScoreFullnessLine.map((i) => {
-              return i.capture_status;
-            });
-            console.log('staus', status);
-
-            const updatedFullnessChartConfig = {
-              ...fullnessChartConfig,
-              series: [
-                {
-                  name: 'PoP Score %',
-                  data: popScoreFullness
-                }
-              ],
-
-              options: {
-                ...fullnessChartConfig.options,
-                markers: {
-                  discrete: [
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 0,
-                      fillColor: status[0] ? '#10B981' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 1,
-                      fillColor: status[1] ? '#10B981' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 2,
-                      fillColor: status[2] ? '#10B981' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 3,
-                      fillColor: status[3] ? '#10B981' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 4,
-                      fillColor: status[4] ? '#10B981' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 5,
-                      fillColor: status[5] ? '#10B981' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 6,
-                      fillColor: status[6] ? '#10B981' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    }
-                  ]
-                },
-                xaxis: {
-                  ...fullnessChartConfig.options.xaxis,
-                  categories: dates
-                },
-                annotations: {
-                  yaxis: [
-                    {
-                      y: 50.0,
-                      borderColor: '#FF0000',
-                      label: {
-                        borderColor: '#FF0000',
-                        style: {
-                          color: '#fff',
-                          background: '#FF0000'
-                        },
-                        text: '50%'
-                      }
-                    }
-                  ]
-                }
-              }
-            };
-
-            setFullChartConfig(updatedFullnessChartConfig);
-          }
-          if (vmcLineChart) {
-            const apiData = vmcLineChart.data;
-            console.log('apiData', apiData);
-
-            const anomalyPercentages = apiData.map((item) => item.withoutAnomalyPercentage);
-            const dates = apiData.map((item) => item.date);
-
-            const complianceData = anomalyPercentages.map((percentage) => `${percentage}%`);
-
-            const updatedChartConfig = {
-              ...chartConfig,
-              series: [
-                {
-                  name: 'Compliance %',
-                  data: complianceData
-                }
-              ],
-              options: {
-                ...chartConfig.options,
-                xaxis: {
-                  ...chartConfig.options.xaxis,
-                  categories: dates
-                },
-                annotations: {
-                  yaxis: [
-                    {
-                      y: 50.0,
-                      borderColor: '#FF0000',
-                      label: {
-                        borderColor: '#FF0000',
-                        style: {
-                          color: '#fff',
-                          background: '#FF0000'
-                        },
-                        text: '50%'
-                      }
-                    }
-                  ]
-                }
-              }
-            };
-
-            setChartConfig(updatedChartConfig);
-          }
-          if (anomaliesData) {
-            const popScoreFullnessLine = anomaliesData.data;
-            console.log('popScoreFullnessLine', popScoreFullnessLine);
-            const anomaliesDetectedLine = popScoreFullnessLine.map((item) => {
-              if (item.anomaliesFound) {
-                const percentage = item.anomaliesFound;
-                return percentage;
-              } else {
-                return 0;
-              }
-            });
-            const status = popScoreFullnessLine.map((i) => {
-              return i.capture_status;
-            });
-            console.log('stausAnomaly', status);
-            const lastElement = anomaliesDetectedLine[anomaliesDetectedLine.length - 1] || 0;
-            const secondLastElement = anomaliesDetectedLine[anomaliesDetectedLine.length - 2] || 0;
-            const difference = lastElement - secondLastElement;
-            console.log('difference', difference);
-            setAnomaliesChipData(difference);
-
-            const dates = popScoreFullnessLine.map((item) => {
-              let date = item.capture_status ? item.date : `${item.date} (Data not captured)`;
-              return date;
-            });
-            console.log('datess', dates);
-
-            const updatedChartConfig = {
-              ...anomaliesChartConfig,
-              series: [
-                {
-                  name: 'Anomalies',
-                  data: anomaliesDetectedLine
-                }
-              ],
-              options: {
-                ...anomaliesChartConfig.options,
-                markers: {
-                  discrete: [
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 0,
-                      fillColor: status[0] ? '#FF6761' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 1,
-                      fillColor: status[1] ? '#FF6761' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 2,
-                      fillColor: status[2] ? '#FF6761' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 3,
-                      fillColor: status[3] ? '#FF6761' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 4,
-                      fillColor: status[4] ? '#FF6761' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 5,
-                      fillColor: status[5] ? '#FF6761' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    },
-                    {
-                      seriesIndex: 0,
-                      dataPointIndex: 6,
-                      fillColor: status[6] ? '#FF6761' : '#dadada',
-                      strokeColor: 'white',
-                      size: 7
-                    }
-                  ]
-                },
-                xaxis: {
-                  ...anomaliesChartConfig.options.xaxis,
-                  categories: dates
-                }
-              }
-            };
-
-            setAnomaliesChartConfig(updatedChartConfig);
-
-            setAnomaliesPercentage(anomaliesDetectedLine[anomaliesDetectedLine.length - 1]);
-
-            // if (anomaliesBarChartData) {
-            //   setAnomaliesBarChart(anomaliesBarChartData.data);
-            //   console.log('anomaliesBarChartData', anomaliesBarChartData);
-            // }
+          const anomalies = await GetAnomaliesCount(anomlayBody);
+          if (anomalies) {
+            setAnomaliesLoading(false);
+            setAnomaliesCount(anomalies.data);
+            console.log('abc', anomalies.data);
           }
           if (CapData) {
             if (CapData.data.length > 0) {
-              // const totalCapturePercentage = capProgressData.data.reduce((acc, item) => acc + item.capture_percentage, 0);
-              // const average = totalCapturePercentage / capProgressData.data.length;
-
-              // setAvgCapProgress(Math.floor(average));
-              setAvgCapProgress(CapData.data[0].storeCapturePercentage);
+              let sum = 0;
+              for (let i = 0; i < CapData.data.length; i++) {
+                sum += CapData.data[i].storeCapturePercentage;
+              }
+              const average = sum / CapData.data.length;
+              setAvgCapProgress(average);
             } else {
               setAvgCapProgress('');
-              // setCapProgress('');
             }
-            // setCapProgress(capProgressData.data);
-            // console.log(capProgressData.data);
-            setCapProgress(CapData.data[0].captureProgressZoneData);
+            console.log('thik', CapData.data);
+            setCapProgress(CapData.data);
           }
           if (brandDonutData) {
-            // console.log('Brand Data', brandDonutData.data);
             if (brandDonutData.data.length > 0) {
               console.log('Donut chart data', brandDonutData);
-              // const extractedFullness = brandDonutData.data.map((item) => Math.floor(item.fullness));
-              // const extractedFullness = brandDonutData.map((item) => (item ? item.total_zone_missing_pop : 0));
               const extractedFullness = brandDonutData.data.map((item) => [
-                item.total_zone_missing_pop,
-                item.total_zone_alien_pop,
-                item.total_zone_incorrect_pop
+                item.totalMissingPopCount,
+                item.totalAlienPopCount,
+                item.totalIncorrectPopCount
               ]);
-              // const extractedBrandNames = brandDonutData.data.map((item) => item.group_id);
-              const extractedBrandNames = ['missing_pop', 'incorrect_pop', 'alien_pop'];
-
+              const extractedBrandNames = ['Missing pop', 'Alien pop', 'Incorrect pop'];
               setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
-
               setBrandFullness(extractedFullness);
-              // console.log('brandfullness', extractedFullness.length);
               console.log('Brand Fullness', extractedFullness);
               setBrandNames(extractedBrandNames);
               console.log('Brand Names', brandNames);
             } else {
               setBrandFullness([]);
             }
-
-            setBrandDonut(brandDonutData.data);
-          }
-          if (popLineData) {
-            if (popLineData.data === null) {
-              x;
-              setPopPercentage('0%');
-            } else {
-              setPopPercentage(popLineData.data[6].averagePopScore);
-              setCapStatus(popLineData.data[6].capture_status);
-            }
-          }
-
-          if (fullnessKpiData) {
-            setFullness(fullnessKpiData.data);
-            console.log('fullnessKpiData', fullnessKpiData);
-          }
-
-          if (vmComplianceKpiData) {
-            setVmc(vmComplianceKpiData.data);
-          }
-
-          if (anomaliesKpiData) {
-            setAnomalies(anomaliesKpiData.data);
-            console.log('anomaliesKpiData', anomaliesKpiData);
           }
 
           if (histogramData) {
             setBarChartData(histogramData.data);
+            setFullness(true);
             console.log('histogramData', barChartData);
-          }
-          if (vmcChart) {
-            setVmChartData(vmcChart.data);
-            console.log('vmcchart', vmcChart);
           }
         } catch (error) {
           console.log(error);
@@ -843,38 +242,13 @@ const Insights = () => {
     };
     //eslint-disable-next-line
   }, [selectedDate]);
-  // console.log('bar', barChartData);
-  console.log('fullness', brandFullness[0]);
-  console.log('vmc bar', vmChartData);
-  console.log('chartConfig', vmc);
+
   // console.log('Current anomaly', anomaliesPercentage);
-  const allZero = brandFullness && brandFullness[0].every((data) => data === 0);
+  console.log('jaii', brandFullness);
+  const allZero = brandFullness && brandFullness.length === 0;
 
   useEffect(
     () => {
-      // if (barChartData && barChartData.length > 0 && selected === histogramChartRequirements.selectOptions[0].value) {
-      //   setSelected(histogramChartRequirements.selectOptions[0].value);
-      //   let chart = barChartData[0]?.data.bayAnalysis;
-      //   console.log('chartttt', chart);
-
-      //   let allRanges = Array.from({ length: 10 }, (_, i) => `${i * 10}-${(i + 1) * 10}%`);
-      //   console.log('allRanges', allRanges);
-      //   let chartDataMap = Object.fromEntries(allRanges.map((range) => [range, chart[range] || 0]));
-      //   console.log('chartDataMap', chartDataMap);
-
-      //   let sortedKeys = Object.keys(chartDataMap).sort((a, b) => {
-      //     let [aStart, aEnd] = a.split('-').map(Number);
-      //     let [bStart, bEnd] = b.split('-').map(Number);
-
-      //     return aStart - bStart || aEnd - bEnd;
-      //   });
-      //   console.log('sortedKeys', sortedKeys);
-      //   // Retrieve values in the sorted order
-      //   const barchart = {
-      //     asuk: sortedKeys.map((key) => chartDataMap[key])
-      //   };
-
-      //   console.log('barchart', barchart.asuk);
       if (barChartData) {
         setSelected(histogramChartRequirements.selectOptions[0].value);
         let chart = barChartData[0].data;
@@ -888,61 +262,7 @@ const Insights = () => {
         console.log('allCount', allCount);
       }
     },
-    // else if (vmChartData && vmChartData.length > 0 && selected === histogramChartRequirements.selectOptions[1].value) {
-    //   setSelected(histogramChartRequirements.selectOptions[1].value);
-    //   console.log('vmc clicked');
-    //   let chart = vmChartData[0]?.data?.anomaliesCount;
-    //   console.log('charttttvmc', chart);
-    //   let allRanges = Array.from({ length: 10 }, (_, i) => `${i * 10}-${(i + 1) * 10}%`);
-    //   console.log('allRangesvmc', allRanges);
 
-    //   const manualRanges = ['0-10%', '10-20%', '20-30%', '30-40%', '40-50%', '50-60%', '60-70%', '70-80%', '80-90%', '90-100%'];
-
-    //   let chartDataMap = Object.fromEntries(manualRanges.map((range) => [range, chart[range] || 0]));
-    //   console.log('chartDataMapvmc', chartDataMap);
-
-    //   const totalBays = barChartData[0]?.data?.totalBaysCount;
-    //   const remainingBays = totalBays - Object.values(chart).reduce((sum, count) => sum + count, 0);
-
-    //   chartDataMap['0-10%'] += remainingBays;
-
-    //   let sortedKeys = Object.keys(chartDataMap).sort((a, b) => {
-    //     let [aStart, aEnd] = a.split('-').map(Number);
-    //     let [bStart, bEnd] = b.split('-').map(Number);
-
-    //     return aStart - bStart || aEnd - bEnd;
-    //   });
-
-    //   const barchart = {
-    //     vmc: sortedKeys.map((key) => chartDataMap[key])
-    //   };
-
-    //   console.log('barchartvmc', barchart);
-
-    //   setSeriesData(barchart.vmc);
-    // } else if (vmChartData && vmChartData.length === 0) {
-    //   setSelected(histogramChartRequirements.selectOptions[1].value);
-    //   const manualRanges = ['0-10%', '10-20%', '20-30%', '30-40%', '40-50%', '50-60%', '60-70%', '70-80%', '80-90%', '90-100%'];
-    //   const totalBays = barChartData[0]?.data?.totalBaysCount;
-
-    //   let chartDataMap = Object.fromEntries(manualRanges.map((range) => [range, 0]));
-    //   chartDataMap['90-100%'] += totalBays;
-
-    //   let sortedKeys = Object.keys(chartDataMap).sort((a, b) => {
-    //     let [aStart, aEnd] = a.split('-').map(Number);
-    //     let [bStart, bEnd] = b.split('-').map(Number);
-
-    //     return aStart - bStart || aEnd - bEnd;
-    //   });
-
-    //   const barchart = {
-    //     vmc: sortedKeys.map((key) => chartDataMap[key])
-    //   };
-
-    //   console.log('barchartvmc', barchart);
-
-    //   setSeriesData(barchart.vmc);
-    // }
     //eslint-disable-next-line
     [barChartData]
   );
@@ -1039,11 +359,6 @@ const Insights = () => {
     }
   };
 
-  // console.log('seriesData', seriesData);
-  // console.log("brandFull", brandFullness);
-  // console.log('anomalies', anomalies);
-  // console.log('anomalies bar', anomaliesBarChart);
-
   const allZerHistogram = series && series[0].data.every((data) => data.y === 0);
   console.log('checki', allZerHistogram);
 
@@ -1075,16 +390,7 @@ const Insights = () => {
       <Grid item xs={12}>
         <Grid container spacing={gridSpacing}>
           <Grid item lg={3} sm={6} xs={12}>
-            <KpiCard
-              isLoaded={fullness}
-              chart={fullnessChartConfig}
-              title="PoP Score"
-              count={`${parseFloat(popPercentage) === 0 ? '0' : parseFloat(popPercentage).toFixed(1)}%`}
-              percentage={`${Math.abs(popChipData)}%`}
-              chipColor={!capStatus ? '#9CA3AF' : +popChipData < 0 ? '#FF6761' : '#10B981'}
-              isLoss={+popChipData < 0}
-              color={capStatus ? theme.palette.success.main : '#9ca3af'}
-            />
+            <PoPScoreKPICard date={selectedDate} />
           </Grid>
           <Grid item lg={3} sm={6} xs={12}>
             <KpiPop
@@ -1115,16 +421,7 @@ const Insights = () => {
             />
           </Grid>
           <Grid item lg={3} sm={6} xs={12}>
-            <KpiCard
-              isLoaded={anomalies}
-              chart={anomaliesChartConfig}
-              title="Anomalies Found"
-              count={`${anomaliesPercentage}`}
-              percentage={Math.abs(anomaliesChipData)}
-              chipColor={!capStatus ? '#9CA3AF' : anomaliesChipData >= 0 ? '#FF6761' : '#10B981'}
-              isLoss={anomaliesChipData < 0}
-              color={theme.palette.error.main}
-            />
+            <AnomalyKPICard date={selectedDate} />
           </Grid>
         </Grid>
       </Grid>
@@ -1332,8 +629,7 @@ const Insights = () => {
                           <Grid item>
                             <Grid container spacing={1}>
                               <Typography paddingTop={1} className="self-end" variant="h5" color="inherit">
-                                {/* Brand Fullness */}
-                                Group PoP Score
+                                Exceptions Distribution
                               </Typography>
                             </Grid>
                           </Grid>
@@ -1351,7 +647,6 @@ const Insights = () => {
                                     paddingTop: 0.7,
                                     fontSize: '1rem',
                                     fontWeight: 600
-                                    // color: 'white'
                                   }
                                 }}
                               >
@@ -1412,142 +707,230 @@ const Insights = () => {
             </Grid>
           </Grid>
           <Grid item lg={3} xs={12}>
-            <Card>
-              <Grid container spacing={gridSpacing}>
-                <Grid item xs={6} sm={4} md={3} lg={7} xl={6}>
-                  <Chart
-                    options={progressChart.options}
-                    series={avgCapProgress ? [parseFloat(avgCapProgress)] : [0]}
-                    type={progressChart.options.chart.type}
-                    height={progressChart.options.chart.height}
-                  />
-                </Grid>
-                <Grid item alignContent={'center'} xs={6} sm={8} md={9} lg={5} xl={6}>
-                  <div className="flex flex-col gap-1">
-                    <Typography variant="h1" sx={{ color: accentColMain, paddingTop: 8 }}>
-                      {avgCapProgress ? (
-                        `${parseFloat(avgCapProgress).toFixed(1)}%`
-                      ) : avgCapProgress === 0 ? ( //edited as zero from ''
-                        '0%'
-                      ) : (
-                        <Stack spacing={0.5}>
-                          <Skeleton animation="wave" variant="rounded" width={60} height={10} />
-                          <Skeleton animation="wave" variant="rounded" width={75} height={10} />
-                          <Skeleton animation="wave" variant="rounded" width={90} height={10} />
-                        </Stack>
-                      )}
-                    </Typography>
-                    <Typography variant="h5" color="textSecondary">
-                      Capture Progress
-                    </Typography>
-                  </div>
-                </Grid>
-              </Grid>
-              <CardContent
-                sx={{
-                  height: 370,
-                  [theme.breakpoints.up('md')]: {
-                    height: 450 // Height for screens equal to or larger than 'md' breakpoint
-                  },
-                  [theme.breakpoints.up('lg')]: {
-                    height: 607 // Height for screens equal to or larger than 'lg' breakpoint
-                  }
+            <Stack spacing={gridSpacing}>
+              <Card
+                className="border border-gray-300 bg-[#ff413a]"
+                style={{
+                  padding: '10px'
                 }}
-                className="overflow-y-auto flex flex-col gap-1 scrollbar"
               >
+                <div className="flex w-full h-full">
+                  <div className="w-2/6 h-full flex flex-col">
+                    <span className="text-center text-white text-sm font-semibold">Missing</span>
+                    {!anomaliesLoading ? (
+                      <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
+                        {anomaliesCount[0].totalMissingPopCount}
+                      </span>
+                    ) : (
+                      <Skeleton variant="rectangular" height={45} className="rounded-md" />
+                    )}
+                  </div>
+                  <div className="w-2/6 h-full flex flex-col border-2 border-t-0 border-b-0 border-l-white border-r-white">
+                    <span className="text-center text-white  text-sm font-semibold">Alien</span>
+                    {!anomaliesLoading ? (
+                      <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
+                        {anomaliesCount[0].totalAlienPopCount}
+                      </span>
+                    ) : (
+                      <Skeleton variant="rectangular" height={45} className="rounded-md" />
+                    )}
+                  </div>
+                  <div className="w-2/6 h-full flex flex-col">
+                    <span className="text-center text-white  text-sm font-semibold">Incorrect</span>
+                    {!anomaliesLoading ? (
+                      <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
+                        {anomaliesCount[0].totalIncorrectPopCount}
+                      </span>
+                    ) : (
+                      <Skeleton variant="rectangular" height={45} className="rounded-md" />
+                    )}
+                  </div>
+                </div>
+              </Card>
+              <Card>
                 <Grid container spacing={gridSpacing}>
-                  {capProgress ? (
-                    // capProgress.map((item) => (
-                    <Grid item xs={12}>
-                      <Grid container justifyContent={'space-between'} alignItems="center" spacing={1}>
-                        <Grid item sm zeroMinWidth>
-                          {/* <Typography variant="body2">{item.store_id}</Typography> */}
-                        </Grid>
-                        <Grid item>
-                          <Typography variant="body2" align="right">
-                            {/* {Math.floor(item.capture_percentage)}% */}
-                            {parseFloat(avgCapProgress).toFixed(1)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12}>
-                          <div className="flex items-center justify-between">
-                            <div style={{ width: '88%' }}>
-                              <LinearProgress
-                                className="cursor-pointer"
-                                sx={{
-                                  borderRadius: 3,
-                                  height: 5,
-
-                                  [theme.breakpoints.up('xl')]: {
-                                    height: 5 // Height for screens equal to or larger than 'lg' breakpoint
-                                  }
-                                }}
-                                variant="determinate"
-                                aria-label="direct"
-                                // value={Math.floor(item.capture_percentage)}
-                                value={parseFloat(avgCapProgress)}
-                                color="primary"
-
-                                // onScroll={()=>setOpenZone(false)}
-                              />
-                            </div>
-                            {openZone ? (
-                              <FaEyeSlash className="cursor-pointer" onClick={() => setOpenZone(!openZone)} />
-                            ) : (
-                              <FaEye className="cursor-pointer" onClick={() => setOpenZone(!openZone)} />
-                            )}
-                          </div>
-                          {openZone && (
-                            <Paper className="mt-10 p-5" elevation={10}>
-                              <Typography variant="h4">Zone wise Capture Progress</Typography>
-                              {capProgress.length > 0 &&
-                                capProgress.map((item, index) => (
-                                  <>
-                                    <Typography key={index} className="m-2" variant="body1" color="initial">
-                                      {item.zone_id} - {parseFloat(item.capturePercentage).toFixed(2)}%
-                                    </Typography>
+                  <Grid item xs={6} sm={4} md={3} lg={7} xl={6}>
+                    <Chart
+                      options={progressChart.options}
+                      series={avgCapProgress ? [parseFloat(avgCapProgress)] : [0]}
+                      type={progressChart.options.chart.type}
+                      height={progressChart.options.chart.height}
+                    />
+                  </Grid>
+                  <Grid item alignContent={'center'} xs={6} sm={8} md={9} lg={5} xl={6}>
+                    <div className="flex flex-col gap-1">
+                      <Typography variant="h1" sx={{ color: accentColMain, paddingTop: 8 }}>
+                        {avgCapProgress ? (
+                          `${parseFloat(avgCapProgress).toFixed(1)}%`
+                        ) : avgCapProgress === 0 ? ( //edited as zero from ''
+                          '0%'
+                        ) : (
+                          <Stack spacing={0.5}>
+                            <Skeleton animation="wave" variant="rounded" width={60} height={10} />
+                            <Skeleton animation="wave" variant="rounded" width={75} height={10} />
+                            <Skeleton animation="wave" variant="rounded" width={90} height={10} />
+                          </Stack>
+                        )}
+                      </Typography>
+                      <Typography variant="h5" color="textSecondary">
+                        Capture Progress
+                      </Typography>
+                    </div>
+                  </Grid>
+                </Grid>
+                <CardContent
+                  sx={{
+                    height: 370,
+                    [theme.breakpoints.up('md')]: {
+                      height: 450 // Height for screens equal to or larger than 'md' breakpoint
+                    },
+                    [theme.breakpoints.up('lg')]: {
+                      height: 503 // Height for screens equal to or larger than 'lg' breakpoint
+                    }
+                  }}
+                  className="overflow-y-auto flex flex-col gap-1 scrollbar"
+                >
+                  <Grid container spacing={gridSpacing}>
+                    {capProgress ? (
+                      // capProgress.map((item) => (
+                      capProgress.map((item, key) => {
+                        return (
+                          <Grid key={key} item xs={12}>
+                            <Grid container justifyContent={'space-between'} alignItems="center" spacing={1}>
+                              <Grid item sm zeroMinWidth>
+                                <Typography variant="body2">{item.store_name}</Typography>
+                              </Grid>
+                              <Grid item>
+                                <Typography variant="body2" align="right">
+                                  {/* {Math.floor(item.capture_percentage)}% */}
+                                  {parseFloat(item.storeCapturePercentage).toFixed(1)}
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={12}>
+                                <div className="flex items-center justify-between">
+                                  <div style={{ width: '88%' }}>
                                     <LinearProgress
+                                      className="cursor-pointer"
                                       sx={{
                                         borderRadius: 3,
                                         height: 5,
+
                                         [theme.breakpoints.up('xl')]: {
                                           height: 5 // Height for screens equal to or larger than 'lg' breakpoint
                                         }
                                       }}
                                       variant="determinate"
                                       aria-label="direct"
-                                      value={parseFloat(item.capturePercentage)}
+                                      // value={Math.floor(item.capture_percentage)}
+                                      value={parseFloat(item.storeCapturePercentage)}
                                       color="primary"
-                                      // onClick={()=>(setOpenZone(!openZone))}
+
+                                      // onScroll={()=>setOpenZone(false)}
                                     />
-                                  </>
-                                ))}
-                            </Paper>
-                          )}
-                        </Grid>
-                        {/* <Grid item sm zeroMinWidth>
-                          <Typography variant="body2">1:00 PM</Typography>
-                        </Grid> */}
-                      </Grid>
-                    </Grid>
-                  ) : // ))
-                  capProgress.length === 0 ? (
-                    <div className="w-full h-full flex justify-center place-items-center">
-                      <img style={{ width: '100%' }} src={NoDataPng} alt="No data" />
-                    </div>
-                  ) : (
-                    // <>No data</>
-                    <Stack paddingLeft={gridSpacing} width={'100%'} spacing={gridSpacing}>
-                      <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
-                      <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
-                      <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
-                      <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
-                      <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
-                    </Stack>
-                  )}
-                </Grid>
-              </CardContent>
-            </Card>
+                                  </div>
+                                  {openZone[key] ? (
+                                    <FaEyeSlash className="cursor-pointer" onClick={() => handleZoneCaptureProgressMenuClose(key)} />
+                                  ) : (
+                                    <FaEye className="cursor-pointer" onClick={() => handleZoneCaptureProgressMenuOpen(key)} />
+                                  )}
+                                </div>
+                                {openZone[key] && (
+                                  <Paper className="mt-10 p-5 max-h-96 overflow-y-auto" elevation={10}>
+                                    <Typography variant="h4">Zone wise Capture Progress</Typography>
+                                    {/* {item.length > 0 && */}
+                                    {item.captureProgressZoneData.map((it, index) => {
+                                      return (
+                                        <div key={index}>
+                                          <Typography key={index} className="m-2" variant="body1" color="initial">
+                                            {it.zone_id} - {parseFloat(it.capturePercentage).toFixed(2)}%
+                                          </Typography>
+                                          <LinearProgress
+                                            sx={{
+                                              borderRadius: 3,
+                                              height: 5,
+                                              [theme.breakpoints.up('xl')]: {
+                                                height: 5 // Height for screens equal to or larger than 'lg' breakpoint
+                                              }
+                                            }}
+                                            variant="determinate"
+                                            aria-label="direct"
+                                            value={parseFloat(it.capturePercentage)}
+                                            color="primary"
+                                            // onClick={()=>(setOpenZone(!openZone))}
+                                          />
+                                        </div>
+                                      );
+                                    })}
+                                  </Paper>
+                                  //                                   <Menu
+                                  //   id="capture-progress-menu"
+                                  //   anchorEl={anchorEl}
+                                  //   open={openZone}
+                                  //   onClose={handleZoneCaptureProgressMenuClose}
+                                  //   anchorOrigin={{
+                                  //     vertical: 'bottom',
+                                  //     horizontal: 'right',
+                                  //   }}
+                                  //   transformOrigin={{
+                                  //     vertical: 'top',
+                                  //     horizontal: 'right',
+                                  //   }}
+                                  //   // PaperProps={{
+                                  //   //   style: {
+                                  //   //     maxHeight: ITEM_HEIGHT * 4.5,
+                                  //   //     width: '20ch',
+                                  //   //   },
+                                  //   // }}
+                                  // >
+                                  //   <MenuItem disabled>
+                                  //     <Typography variant="h6">Zone-wise Capture Progress</Typography>
+                                  //   </MenuItem>
+                                  //   {item.captureProgressZoneData.map((it, index) => (
+                                  //     <MenuItem key={index} disabled>
+                                  //       <Typography variant="body1" color="initial">
+                                  //         {it.zone_id} - {parseFloat(it.capturePercentage).toFixed(2)}%
+                                  //       </Typography>
+                                  //       <LinearProgress
+                                  //         sx={{
+                                  //           borderRadius: 3,
+                                  //           height: 5,
+                                  //           [theme.breakpoints.up('xl')]: {
+                                  //             height: 5,
+                                  //           },
+                                  //         }}
+                                  //         variant="determinate"
+                                  //         aria-label="direct"
+                                  //         value={parseFloat(it.capturePercentage)}
+                                  //         color="primary"
+                                  //       />
+                                  //     </MenuItem>
+                                  //   ))}
+                                  // </Menu>
+                                )}
+                              </Grid>
+                            </Grid>
+                          </Grid>
+                        );
+                      })
+                    ) : // ))
+                    capProgress.length === 0 ? (
+                      <div className="w-full h-full flex justify-center place-items-center">
+                        <img style={{ width: '100%' }} src={NoDataPng} alt="No data" />
+                      </div>
+                    ) : (
+                      // <>No data</>
+                      <Stack paddingLeft={gridSpacing} width={'100%'} spacing={gridSpacing}>
+                        <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
+                        <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
+                        <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
+                        <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
+                        <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
+                      </Stack>
+                    )}
+                  </Grid>
+                </CardContent>
+              </Card>
+            </Stack>
           </Grid>
         </Grid>
       </Grid>

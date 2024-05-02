@@ -2,7 +2,6 @@ import { React, useEffect, useState } from 'react';
 
 // APIs
 import { GetAnomalies } from 'api';
-// , GetAnomaliesBarChartData
 
 // material-ui
 // import { useTheme } from '@mui/material/styles';
@@ -115,13 +114,15 @@ const AnomaliesBarChart = ({ selectedDate }) => {
   const [chartData, setChartData] = useState(null);
 
   const todayDate = new Date().toString();
+  const user_id = JSON.parse(localStorage.getItem('userData')).data._id;
+  console.log('iooio', user_id);
 
   useEffect(() => {
     async function fetchBarChartData() {
       const finalDate = selectedDate ? selectedDate : todayDate;
       const body = {
         date: finalDate,
-        user_id: '660a457638e022104c155c06'
+        user_id: user_id
       };
 
       try {

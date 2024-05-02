@@ -1,113 +1,12 @@
 import axios from 'axios';
 import token from './authToken';
 
-const lambUrl = 'https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp';
-// const lambUrl = 'https://wfsajq7upd.execute-api.ap-south-1.amazonaws.com/prod/neodisha-fashion-webapp';
-
-export const GetCaptureProgress = async (data) => {
-  try {
-    const res = await axios.post(`${lambUrl}/dashboard_capture_progress`, data, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
-      }
-    });
-    return res;
-  } catch (error) {
-    console.log('Error Calling GetCaptureProgress API: ', error);
-  }
-};
-
-export const dates = async () => {
-  try {
-    const res = await axios.get(`${lambUrl}/store/calender`);
-    return res;
-  } catch (error) {
-    console.log('Error Calling Event dates API: ', error);
-  }
-};
-
-export const GetBrandDonutData = async (data) => {
-  try {
-    const res = await axios.post(`${lambUrl}/dashboard/doughtnut/brand_wise_fullness`, data, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
-      }
-    });
-    return res;
-  } catch (error) {
-    console.log('Error Calling GetBrandDonutData API: ', error);
-  }
-};
-
-export const GetFullnessKpi = async (data) => {
-  try {
-    const res = await axios.post(`${lambUrl}/dashboard_card_fullness`, data, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
-      }
-    });
-    //console.log('fullness res', res);
-    return res;
-  } catch (error) {
-    console.log('Error Calling GetFullnessKpi API: ', error);
-  }
-};
-
-export const GetAnomaliesCount = async (data) => {
-  try {
-    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/anomalies-group `, data, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
-      }
-    });
-    //console.log(res);
-    return res;
-  } catch (error) {
-    console.log('Error Calling GetCaptureProgress API: ', error);
-  }
-};
-
-export const GetAnomaliesKpi = async (data) => {
-  try {
-    const res = await axios.post(`${lambUrl}/dashboard/card_anomalies`, data, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
-      }
-    });
-    //console.log('anomaliesData', res);
-    return res;
-  } catch (error) {
-    console.log('Error Calling GetAnomaliesKpi API: ', error);
-  }
-};
-
-export const GetAnomaliesBarChartData = async (data) => {
-  try {
-    const res = await axios.post(
-      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/anomalies_barchart`,
-      data,
-      {
-        headers: {
-          Accept: 'application/json',
-          Authorization: await token()
-        }
-      }
-    );
-    return res;
-  } catch (error) {
-    console.log('Error Calling GetAnomaliesKpi API: ', error);
-  }
-};
+const lambUrlFashion = 'https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp';
 
 // API FOR THE LAYOUT OF THE STORE
 export const GetStoreLayout = async (data) => {
   try {
-    const res = await axios.post(`${lambUrl}/store/analysis`, data, {
+    const res = await axios.post(`${lambUrlFashion}/store/analysis`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -135,35 +34,51 @@ export const GetImagesFromSignedUrl = async (data) => {
   }
 };
 
-export const getUsers = async () => {
-  try {
-    const res = await axios.get(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/team/getalluser`, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
-      }
-    });
-    // //console.log("api image response", res);
-    return res;
-  } catch (error) {
-    console.log('Error while calling team API :', error);
-  }
-};
-
+//------------------------Team page API start ---------------------------
 export const getOneUser = async (id) => {
   try {
-    const res = await axios.get(`${lambUrl}/team/get_one_user?userID=${id}`, {
+    const res = await axios.get(`${lambUrlFashion}/team/get_one_user?userID=${id}`, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
       }
     });
-    // //console.log("api image response", res);
     return res;
   } catch (error) {
     console.log('Error while calling team api :', error);
   }
 };
+
+export const updateUser = async (id, user) => {
+  try {
+    const res = await axios.post(`${lambUrlFashion}/team/update_user?userID=${id}`, user, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res;
+  } catch (error) {
+    console.log('Error while calling team api :', error);
+  }
+};
+
+export const checkId = async (user_id) => {
+  try {
+    const res = await axios.get(`${lambUrlFashion}/team/check_users?user_id=${user_id}`, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res.data;
+  } catch (error) {
+    console.log('Error');
+    throw error;
+  }
+};
+
+//------------------------Team page API end ---------------------------
 
 export const deleteUser = async (id) => {
   try {
@@ -176,143 +91,9 @@ export const deleteUser = async (id) => {
         }
       }
     );
-    // //console.log("api image response", res);
     return res;
   } catch (error) {
     console.log('Error while calling team api :', error);
-  }
-};
-
-export const updateUser = async (id, user) => {
-  try {
-    const res = await axios.post(`${lambUrl}/team/update_user?userID=${id}`, user, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
-      }
-    });
-    // //console.log("api image response", res);
-    return res;
-  } catch (error) {
-    console.log('Error while calling team api :', error);
-  }
-};
-
-export const createUser = async (user) => {
-  try {
-    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/team/create`, user, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
-      }
-    });
-    // //console.log("api image response", res);
-    return res;
-  } catch (error) {
-    console.log('Error while calling team api :', error);
-  }
-};
-
-export const GetVerifiedUsers = async (phoneNumber) => {
-  try {
-    const res = await axios.get(
-      `https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/mob_api/check_userid?number=${phoneNumber}`,
-      {
-        headers: {
-          Accept: 'application/json'
-        }
-      }
-    );
-    console.log("auth", res);
-    return res;
-  } catch (error) {
-    console.log('Error Calling users API: ', error);
-  }
-};
-
-export const GetVMCompliance = async (data) => {
-  try {
-    const res = await axios.post(`${lambUrl}/dashboard/vmc_fullness`, data, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
-      }
-    });
-    return res;
-  } catch (error) {
-    console.log('Error Calling GetVMCompliance API: ', error);
-  }
-};
-
-export const GetVMComplianceForOneWeek = async (data) => {
-  try {
-    const res = await axios.post(`${lambUrl}/dashboard/timeseries_vmc`, data, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
-      }
-    });
-    //console.log('result', res);
-    return res;
-  } catch (error) {
-    console.log('Error calling vm compliance for a week api', error);
-  }
-};
-
-export const GetFullnessForOneWeek = async (data) => {
-  try {
-    const res = await axios.post(`${lambUrl}/dashboard/timeseries_fullness`, data, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
-      }
-    });
-    return res;
-  } catch (error) {
-    console.log('Error calling fullness for a week api', error);
-  }
-};
-
-export const GetAnomalyDetails = async (data) => {
-  try {
-    const res = await axios.get(`${lambUrl}/store/get_analysis_data?analysisID=${data}`, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
-      }
-    });
-    return res;
-  } catch (error) {
-    console.log('Error Calling GetAnomalyDetails API: ', error);
-  }
-};
-
-export const GetAnomaliesForOneWeek = async (data) => {
-  try {
-    const res = await axios.post(`${lambUrl}/dashboard/timeseries_anomalies`, data, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
-      }
-    });
-    return res;
-  } catch (error) {
-    console.log('Error calling anomalies for a week api', error);
-  }
-};
-
-export const checkId = async (user_id) => {
-  try {
-    const res = await axios.get(`${lambUrl}/team/check_users?user_id=${user_id}`, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
-      }
-    });
-    return res.data;
-  } catch (error) {
-    console.log('Error');
-    throw error;
   }
 };
 
@@ -334,61 +115,24 @@ export const allStoresId = async () => {
   }
 };
 
-export const GetBarChartData = async (data) => {
-  try {
-    const res = await axios.post(
-      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/bay_wise_fullness`,
-      data,
-      {
-        headers: {
-          Accept: 'application/json',
-          Authorization: await token()
-        }
-      }
-    );
-    //console.log('bar chart data', res);
-    return res;
-  } catch (error) {
-    console.log('Error calling bar chart api', error);
-  }
-};
-
-export const GetVMscoreBar = async (data) => {
-  try {
-    const res = await axios.post(
-      `https://folqp39skj.execute-api.eu-west-2.amazonaws.com/default/neodisha-fashion-webapp/dashboard/vmc-barchart`,
-      data,
-      {
-        headers: {
-          Accept: 'application/json',
-          Authorization: await token()
-        }
-      }
-    );
-    //console.log('vmc data', res);
-    return res;
-  } catch (error) {
-    console.log('Error calling bar chart api', error);
-  }
-};
-
 export const GetStoreWiseInfo = async (date, store_id) => {
   try {
-    const res = await axios.get(`${lambUrl}/store/stores_wise_config?date=${date}&store_id=${store_id}`, {
+    const res = await axios.get(`${lambUrlFashion}/store/stores_wise_config?date=${date}&store_id=${store_id}`, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
       }
     });
-    //console.log(res);
+    console.log('sad', res);
     return res;
   } catch (error) {
     console.log('Error calling store wise info', error);
   }
 };
-export const GetBayWiseDetails = async (date) => {
+
+export const GetBayWiseDetails = async (date, store_id) => {
   try {
-    const res = await axios.get(`${lambUrl}/store/bay_wise_config?date=${date}&store_id=6582be9ac5ed94d792a563b8`, {
+    const res = await axios.get(`${lambUrlFashion}/store/bay_wise_config?date=${date}&store_id=${store_id}`, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -402,7 +146,7 @@ export const GetBayWiseDetails = async (date) => {
 
 export const GetShelfWiseDetails = async (date, bay_id) => {
   try {
-    const res = await axios.get(`${lambUrl}/store/shelf_wise_config?date=${date}&bay_id=${bay_id}`, {
+    const res = await axios.get(`${lambUrlFashion}/store/shelf_wise_config?date=${date}&bay_id=${bay_id}`, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -416,7 +160,7 @@ export const GetShelfWiseDetails = async (date, bay_id) => {
 
 export const GetPartsWiseDetails = async (date, shelf_id) => {
   try {
-    const res = await axios.get(`${lambUrl}/store/parts_wise_config?date=${date}&shelf_id=${shelf_id}`, {
+    const res = await axios.get(`${lambUrlFashion}/store/parts_wise_config?date=${date}&shelf_id=${shelf_id}`, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -428,19 +172,19 @@ export const GetPartsWiseDetails = async (date, shelf_id) => {
   }
 };
 
+//--------------------------------- API for DISHA SMART ----------------------------------------------
+
+const lambUrl = 'https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/';
+// const lambUrl = 'https://m1xgkzhe9j.execute-api.ap-south-1.amazonaws.com/prod/web-app/';
+
 export const GetFullnessPop = async (data) => {
   try {
-    const res = await axios.post(
-      `https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/seven_day_pop_score`,
-      data,
-      {
-        headers: {
-          Accept: 'application/json',
-          Authorization: await token()
-        }
+    const res = await axios.post(`${lambUrl}store-view/seven_day_pop_score`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
       }
-    );
-    //console.log(res);
+    });
     return res;
   } catch (error) {
     console.log('Error Calling GetCaptureProgress API: ', error);
@@ -449,17 +193,12 @@ export const GetFullnessPop = async (data) => {
 
 export const GetSevenDayCapProgress = async (data) => {
   try {
-    const res = await axios.post(
-      `https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/seven_day_capture_progress`,
-      data,
-      {
-        headers: {
-          Accept: 'application/json',
-          Authorization: await token()
-        }
+    const res = await axios.post(`${lambUrl}store-view/seven_day_capture_progress`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
       }
-    );
-    //console.log(res);
+    });
     return res;
   } catch (error) {
     console.log('Error Calling GetCaptureProgress API: ', error);
@@ -468,28 +207,56 @@ export const GetSevenDayCapProgress = async (data) => {
 
 export const GetStoreData = async (data) => {
   try {
-    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/stores/get-stores-details`, data, {
+    const res = await axios.post(`${lambUrl}stores/get-stores-details`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
       }
     });
-    //console.log(res);
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetStoreData API: ', error);
+  }
+};
+
+export const UploadCSV = async (data) => {
+  try {
+    const res = await axios.post(`${lambUrl}store-view/upload_csv`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    // console.log("csvv",res);
+    return res;
+  } catch (error) {
+    console.log('Error Uploading CSV', error);
+  }
+};
+
+export const GetAnomalies = async (data) => {
+  try {
+    const res = await axios.post(`${lambUrl}dashboard/anomalie-bar-graph`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
     return res;
   } catch (error) {
     console.log('Error Calling GetCaptureProgress API: ', error);
   }
 };
 
-export const GetAnomalies = async (data) => {
+export const GetAnomaliesCount = async (data) => {
   try {
-    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/anomalie-bar-graph`, data, {
+    const res = await axios.post(`${lambUrl}store-view/anomalies-group `, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
       }
     });
-    //console.log(res);
+    console.log('lolo', res);
     return res;
   } catch (error) {
     console.log('Error Calling GetCaptureProgress API: ', error);
@@ -498,13 +265,12 @@ export const GetAnomalies = async (data) => {
 
 export const GetCapProg = async (data) => {
   try {
-    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/capture-progress-2`, data, {
+    const res = await axios.post(`${lambUrl}dashboard/capture-progress-2`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
       }
     });
-    //console.log(res);
     return res;
   } catch (error) {
     console.log('Error Calling GetCaptureProgress API: ', error);
@@ -513,13 +279,12 @@ export const GetCapProg = async (data) => {
 
 export const GetCapProgStoreView = async (data) => {
   try {
-    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/capture-progress`, data, {
+    const res = await axios.post(`${lambUrl}store-view/capture-progress`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
       }
     });
-    console.log('cap_res', res);
     return res;
   } catch (error) {
     console.log('Error Calling GetCaptureProgress API: ', error);
@@ -528,13 +293,12 @@ export const GetCapProgStoreView = async (data) => {
 
 export const GetDonutData = async (data) => {
   try {
-    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/doughnut-chart`, data, {
+    const res = await axios.post(`${lambUrl}dashboard/doughnut-chart`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
       }
     });
-    console.log(res);
     return res;
   } catch (error) {
     console.log('Error Calling GetCaptureProgress API: ', error);
@@ -543,13 +307,12 @@ export const GetDonutData = async (data) => {
 
 export const GetZonedetails = async (data) => {
   try {
-    const response = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/get-zones`, data, {
+    const response = await axios.post(`${lambUrl}store-view/get-zones`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
       }
     });
-    // console.log("ZoneNameAPI",response);
     const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.id }));
     return res;
   } catch (error) {
@@ -559,13 +322,12 @@ export const GetZonedetails = async (data) => {
 
 export const GetShelvesData = async (data) => {
   try {
-    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/get-shelves`, data, {
+    const res = await axios.post(`${lambUrl}store-view/get-shelves`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
       }
     });
-    //console.log(res);
     return res;
   } catch (error) {
     console.log('Error Calling GetCaptureProgress API: ', error);
@@ -574,13 +336,12 @@ export const GetShelvesData = async (data) => {
 
 export const GetShelfData = async (data) => {
   try {
-    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/get-one-shelf`, data, {
+    const res = await axios.post(`${lambUrl}store-view/get-one-shelf`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
       }
     });
-    console.log(res);
     return res;
   } catch (error) {
     console.log('Error Calling GetCaptureProgress API: ', error);
@@ -589,13 +350,12 @@ export const GetShelfData = async (data) => {
 
 export const GetPopPercentage = async (data) => {
   try {
-    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/pop-card', data, {
+    const res = await axios.post(`${lambUrl}store-view/pop-card`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
       }
     });
-    console.log('anomaly_data', res);
     return res;
   } catch (error) {
     console.log('Error Calling GetPopPercentage API: ', error);
@@ -605,7 +365,7 @@ export const GetPopPercentage = async (data) => {
 export const GetPopWeekLineData = async (data) => {
   try {
     console.log(data);
-    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/pop_score_linechart', data, {
+    const res = await axios.post(`${lambUrl}pop_score_linechart`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -619,12 +379,18 @@ export const GetPopWeekLineData = async (data) => {
 
 export const GetRadarChartData = async (data) => {
   try {
-    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/anomalies-group', data, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
+    const res = await axios.post(
+      `${lambUrl}store-view/anomalies-group
+    `,
+      data,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: await token()
+        }
       }
-    });
+    );
+    console.log("result", res);
     return res;
   } catch (error) {
     console.log('Error Calling GetRadarChartData API: ', error);
@@ -633,7 +399,7 @@ export const GetRadarChartData = async (data) => {
 
 export const GetDates = async (data) => {
   try {
-    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/calender', data, {
+    const res = await axios.post(`${lambUrl}calender`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -647,13 +413,12 @@ export const GetDates = async (data) => {
 
 export const GetPopHistogramData = async (data) => {
   try {
-    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/histogram', data, {
+    const res = await axios.post(`${lambUrl}dashboard/histogram`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
       }
     });
-    console.log('histogram data', res);
     return res;
   } catch (error) {
     console.log('Error Calling GetPopHistogramData API: ', error);
@@ -662,16 +427,12 @@ export const GetPopHistogramData = async (data) => {
 
 export const GetpopKPI = async (data) => {
   try {
-    const res = await axios.post(
-      'https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/zone-wise-pop-score',
-      data,
-      {
-        headers: {
-          Accept: 'application/json',
-          Authorization: await token()
-        }
+    const res = await axios.post(`${lambUrl}store-view/zone-wise-pop-score`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
       }
-    );
+    });
     return res;
   } catch (error) {
     console.log('Error Calling GetDates API: ', error);
@@ -696,7 +457,7 @@ export const SendAlert = async (data, apiKey, apiUrl) => {
 };
 export const getAnomalyForStore = async (data) => {
   try {
-    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/stores/get-anomalies', data, {
+    const res = await axios.post(`${lambUrl}stores/get-anomalies`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -710,7 +471,7 @@ export const getAnomalyForStore = async (data) => {
 
 export const getUpdatedStatus = async (data) => {
   try {
-    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/update-status', data, {
+    const res = await axios.post(`${lambUrl}store-view/update-status`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -724,7 +485,7 @@ export const getUpdatedStatus = async (data) => {
 
 export const getAssociateScoreData = async (data) => {
   try {
-    const res = await axios.post('https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/users-pop-score', data, {
+    const res = await axios.post(`${lambUrl}store-view/users-pop-score`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -733,5 +494,47 @@ export const getAssociateScoreData = async (data) => {
     return res;
   } catch (error) {
     console.log('Error Calling getAnomalyForStore API: ', error);
+  }
+};
+
+export const getUsers = async () => {
+  try {
+    const res = await axios.get(`${lambUrl}team/getalluser`, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res;
+  } catch (error) {
+    console.log('Error while calling team API :', error);
+  }
+};
+
+export const createUser = async (user) => {
+  try {
+    const res = await axios.post(`${lambUrl}team/create`, user, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res;
+  } catch (error) {
+    console.log('Error while calling team api :', error);
+  }
+};
+
+export const GetVerifiedUsers = async (phoneNumber) => {
+  try {
+    const res = await axios.get(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/mob_api/check_userid?number=${phoneNumber}`, {
+      headers: {
+        Accept: 'application/json'
+      }
+    });
+    console.log('auth', res);
+    return res;
+  } catch (error) {
+    console.log('Error Calling users API: ', error);
   }
 };
