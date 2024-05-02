@@ -178,7 +178,7 @@ const Insights = () => {
         setBarChartData(false);
         console.log('abc date', selectedDate);
         try {
-          const brandDonutData = await GetRadarChartData(donutBody);
+          const brandDonutData = await GetRadarChartData(anomlayBody);
           console.log('bebo', brandDonutData);
           const CapData = await GetCapProg(capBody);
           console.log('thala', CapData);
@@ -207,11 +207,11 @@ const Insights = () => {
             if (brandDonutData.data.length > 0) {
               console.log('Donut chart data', brandDonutData);
               const extractedFullness = brandDonutData.data.map((item) => [
-                item.total_zone_missing_pop,
-                item.total_zone_alien_pop,
-                item.total_zone_incorrect_pop
+                item.totalMissingPopCount,
+                item.totalAlienPopCount,
+                item.totalIncorrectPopCount
               ]);
-              const extractedBrandNames = ['alien_pop', 'incorrect_pop', 'missing_pop'];
+              const extractedBrandNames = ['Missing pop', 'Alien pop', 'Incorrect pop'];
               setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
               setBrandFullness(extractedFullness);
               console.log('Brand Fullness', extractedFullness);
@@ -798,7 +798,7 @@ const Insights = () => {
                           <Grid key={key} item xs={12}>
                             <Grid container justifyContent={'space-between'} alignItems="center" spacing={1}>
                               <Grid item sm zeroMinWidth>
-                                {/* <Typography variant="body2">{item.store_id}</Typography> */}
+                                <Typography variant="body2">{item.store_name}</Typography>
                               </Grid>
                               <Grid item>
                                 <Typography variant="body2" align="right">

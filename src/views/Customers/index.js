@@ -151,7 +151,7 @@ const Customers = () => {
     {
       label: 'Analysis',
       icon: <BarChartIcon />,
-      onClick: () => navigate('/main/stores/storeinsight/overview')
+      onClick: () => navigate(`/main/stores/storeinsight/overview/${item.store}`)
     },
     {
       label: 'View',
@@ -162,6 +162,7 @@ const Customers = () => {
     { label: 'Edit', icon: <EditIcon />, disabled: true },
     { label: 'Delete', icon: <DeleteIcon />, color: 'red', disabled: true }
   ];
+
   const [anchorEl, setAnchorEl] = useState(null);
   const ITEM_HEIGHT = 48;
 
@@ -728,14 +729,16 @@ const Customers = () => {
                               {options.map((option) => (
                                 <MenuItem
                                   key={option.label}
-                                  selected={option.label === 'View'}
+                                  selected={option.label === 'Analysis'}
                                   disabled={option.disabled} // Apply the disabled attribute conditionally
                                   onClick={() => {
                                     if (option.disabled != true) {
-                                      option.onClick();
+                                      // option.onClick();
+                                      navigate(`/main/stores/storeinsight/overview/${item.store}`);
                                       handleClose();
                                     }
                                   }}
+                                  // onClick={() => navigate(`/main/stores/storeinsight/overview/${item.store}`)}
                                 >
                                   {option.icon && <span style={{ marginRight: '8px', color: option.color }}>{option.icon}</span>}
                                   <span style={{ color: option.color }}>{option.label}</span>
