@@ -390,7 +390,7 @@ export const GetRadarChartData = async (data) => {
         }
       }
     );
-    console.log("result", res);
+    console.log('result', res);
     return res;
   } catch (error) {
     console.log('Error Calling GetRadarChartData API: ', error);

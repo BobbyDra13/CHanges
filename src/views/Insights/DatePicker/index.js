@@ -35,12 +35,14 @@ function DatePickerComp({ SetSelectedDate }) {
   const [events, setEvents] = useState([]);
   const [highlightedDays, setHighlightedDays] = useState([]);
 
+  const store_ids = JSON.parse(localStorage.getItem('userData')).data.stores;
+
   useEffect(() => {
     async function getEventsdata() {
       // setIsLoading(true);
       try {
         const body = {
-          store_id: '65c74d4112465588b7a4984c'
+          store_id: store_ids
         };
         const Edata = await GetDates(body);
 
@@ -55,6 +57,7 @@ function DatePickerComp({ SetSelectedDate }) {
       }
     }
     getEventsdata();
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
