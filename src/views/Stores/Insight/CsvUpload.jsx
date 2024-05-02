@@ -2,22 +2,36 @@ import { Button, LinearProgress } from '@mui/material';
 import { useDropzone } from 'react-dropzone';
 import React, { useState } from 'react';
 import { FaCloudUploadAlt } from 'react-icons/fa';
+import { UploadCSV } from 'api';
 
 function CsvModal() {
   const [loading, setLoading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: 'text/csv',
-    onDrop: (acceptedFiles) => {
+    onDrop: async (acceptedFiles) => {
       setLoading(true);
       const file = acceptedFiles[0];
       const reader = new FileReader();
 
-      reader.onload = () => {
+      reader.onload = async () => {
         // reader.result contains the contents of the file
-        // console.log(reader.result);
+        // console.log("csv file:",reader.result);
+        const base64EncodedString = reader.result.split(',')[1];
+        const fileName = file.name;
+        console.log('Base64 encoded string:', base64EncodedString);
+        console.log('file name:', fileName);
+
+        try {
+          // Pass keys as a single object to the UploadCSV API
+          const res = await UploadCSV({ base64EncodedString, fileName });
+          console.log('Response from API:', res);
+          setUploadSuccess(true);
+        } catch (error) {
+          console.log('Error Uploading CSV', error);
+        }
         setLoading(false);
-        setUploadSuccess(true);
+        // setUploadSuccess(true);
       };
 
       reader.onerror = () => {
@@ -25,7 +39,7 @@ function CsvModal() {
         setLoading(false);
       };
 
-      reader.readAsText(file);
+      reader.readAsDataURL(file);
     }
   });
 

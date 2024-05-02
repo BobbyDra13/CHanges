@@ -59,7 +59,22 @@ const Insights = () => {
   const [barChartData, setBarChartData] = useState(false);
   const [anomaliesCount, setAnomaliesCount] = useState([]);
   const [anomaliesLoading, setAnomaliesLoading] = useState(true);
-  const [openZone, setOpenZone] = useState(false);
+  const [openZone, setOpenZone] = useState({});
+  // const [anchorEl, setAnchorEl] = useState(null);
+  const handleZoneCaptureProgressMenuOpen = (key) => {
+    setOpenZone((prevState) => ({
+      ...prevState,
+      [key]: true
+    }));
+    // setAnchorEl(event.currentTarget);
+  };
+  const handleZoneCaptureProgressMenuClose = (key) => {
+    setOpenZone((prevState) => ({
+      ...prevState,
+      [key]: false
+    }));
+    // setAnchorEl(null);
+  };
 
   const progressChart = {
     options: {
@@ -132,22 +147,26 @@ const Insights = () => {
   }, []);
   // ------------------------
 
+  const user_id = JSON.parse(localStorage.getItem('userData')).data._id;
+  console.log('brooo', user_id);
   useEffect(() => {
     /* eslint-disable no-inner-declarations */
     if (isMounted) {
       async function fetchDashboardData() {
         const capBody = {
           date: selectedDate.toString(),
-          user_id: '660a457638e022104c155c06'
+          user_id: user_id
         };
         const popKpiCardBody = {
           date: selectedDate.toString(),
-          user_id: '660a457638e022104c155c06'
+          user_id: user_id
         };
         const donutBody = {
           date: selectedDate.toString(),
-          user_id: '660a457638e022104c155c06'
+          user_id: user_id
         };
+
+        console.log('donutBody', donutBody);
         const anomlayBody = {
           date: selectedDate.toString(),
           store_id: '65c74d4112465588b7a4984c'
@@ -159,8 +178,10 @@ const Insights = () => {
         setBarChartData(false);
         console.log('abc date', selectedDate);
         try {
-          const brandDonutData = await GetRadarChartData(donutBody);
+          const brandDonutData = await GetRadarChartData(anomlayBody);
+          console.log('bebo', brandDonutData);
           const CapData = await GetCapProg(capBody);
+          console.log('thala', CapData);
           const histogramData = await GetPopHistogramData(popKpiCardBody);
           const anomalies = await GetAnomaliesCount(anomlayBody);
           if (anomalies) {
@@ -170,21 +191,27 @@ const Insights = () => {
           }
           if (CapData) {
             if (CapData.data.length > 0) {
-              setAvgCapProgress(CapData.data[0].storeCapturePercentage);
+              let sum = 0;
+              for (let i = 0; i < CapData.data.length; i++) {
+                sum += CapData.data[i].storeCapturePercentage;
+              }
+              const average = sum / CapData.data.length;
+              setAvgCapProgress(average);
             } else {
               setAvgCapProgress('');
             }
-            setCapProgress(CapData.data[0].captureProgressZoneData);
+            console.log('thik', CapData.data);
+            setCapProgress(CapData.data);
           }
           if (brandDonutData) {
             if (brandDonutData.data.length > 0) {
               console.log('Donut chart data', brandDonutData);
               const extractedFullness = brandDonutData.data.map((item) => [
-                item.total_zone_missing_pop,
-                item.total_zone_alien_pop,
-                item.total_zone_incorrect_pop
+                item.totalMissingPopCount,
+                item.totalAlienPopCount,
+                item.totalIncorrectPopCount
               ]);
-              const extractedBrandNames = ['alien_pop', 'incorrect_pop', 'missing_pop'];
+              const extractedBrandNames = ['Missing pop', 'Alien pop', 'Incorrect pop'];
               setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
               setBrandFullness(extractedFullness);
               console.log('Brand Fullness', extractedFullness);
@@ -217,7 +244,8 @@ const Insights = () => {
   }, [selectedDate]);
 
   // console.log('Current anomaly', anomaliesPercentage);
-  const allZero = brandFullness && brandFullness[0].every((data) => data === 0);
+  console.log('jaii', brandFullness);
+  const allZero = brandFullness && brandFullness.length === 0;
 
   useEffect(
     () => {
@@ -765,78 +793,125 @@ const Insights = () => {
                   <Grid container spacing={gridSpacing}>
                     {capProgress ? (
                       // capProgress.map((item) => (
-                      <Grid item xs={12}>
-                        <Grid container justifyContent={'space-between'} alignItems="center" spacing={1}>
-                          <Grid item sm zeroMinWidth>
-                            {/* <Typography variant="body2">{item.store_id}</Typography> */}
-                          </Grid>
-                          <Grid item>
-                            <Typography variant="body2" align="right">
-                              {/* {Math.floor(item.capture_percentage)}% */}
-                              {parseFloat(avgCapProgress).toFixed(1)}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={12}>
-                            <div className="flex items-center justify-between">
-                              <div style={{ width: '88%' }}>
-                                <LinearProgress
-                                  className="cursor-pointer"
-                                  sx={{
-                                    borderRadius: 3,
-                                    height: 5,
+                      capProgress.map((item, key) => {
+                        return (
+                          <Grid key={key} item xs={12}>
+                            <Grid container justifyContent={'space-between'} alignItems="center" spacing={1}>
+                              <Grid item sm zeroMinWidth>
+                                <Typography variant="body2">{item.store_name}</Typography>
+                              </Grid>
+                              <Grid item>
+                                <Typography variant="body2" align="right">
+                                  {/* {Math.floor(item.capture_percentage)}% */}
+                                  {parseFloat(item.storeCapturePercentage).toFixed(1)}
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={12}>
+                                <div className="flex items-center justify-between">
+                                  <div style={{ width: '88%' }}>
+                                    <LinearProgress
+                                      className="cursor-pointer"
+                                      sx={{
+                                        borderRadius: 3,
+                                        height: 5,
 
-                                    [theme.breakpoints.up('xl')]: {
-                                      height: 5 // Height for screens equal to or larger than 'lg' breakpoint
-                                    }
-                                  }}
-                                  variant="determinate"
-                                  aria-label="direct"
-                                  // value={Math.floor(item.capture_percentage)}
-                                  value={parseFloat(avgCapProgress)}
-                                  color="primary"
+                                        [theme.breakpoints.up('xl')]: {
+                                          height: 5 // Height for screens equal to or larger than 'lg' breakpoint
+                                        }
+                                      }}
+                                      variant="determinate"
+                                      aria-label="direct"
+                                      // value={Math.floor(item.capture_percentage)}
+                                      value={parseFloat(item.storeCapturePercentage)}
+                                      color="primary"
 
-                                  // onScroll={()=>setOpenZone(false)}
-                                />
-                              </div>
-                              {openZone ? (
-                                <FaEyeSlash className="cursor-pointer" onClick={() => setOpenZone(!openZone)} />
-                              ) : (
-                                <FaEye className="cursor-pointer" onClick={() => setOpenZone(!openZone)} />
-                              )}
-                            </div>
-                            {openZone && (
-                              <Paper className="mt-10 p-5" elevation={10}>
-                                <Typography variant="h4">Zone wise Capture Progress</Typography>
-                                {capProgress.length > 0 &&
-                                  capProgress.map((item, index) => (
-                                    <div key={index}>
-                                      <Typography key={index} className="m-2" variant="body1" color="initial">
-                                        {item.zone_id} - {parseFloat(item.capturePercentage).toFixed(2)}%
-                                      </Typography>
-                                      <LinearProgress
-                                        sx={{
-                                          borderRadius: 3,
-                                          height: 5,
-                                          [theme.breakpoints.up('xl')]: {
-                                            height: 5 // Height for screens equal to or larger than 'lg' breakpoint
-                                          }
-                                        }}
-                                        variant="determinate"
-                                        aria-label="direct"
-                                        value={parseFloat(item.capturePercentage)}
-                                        color="primary"
-                                        // onClick={()=>(setOpenZone(!openZone))}
-                                      />
-                                    </div>
-                                  ))}
-                              </Paper>
-                            )}
+                                      // onScroll={()=>setOpenZone(false)}
+                                    />
+                                  </div>
+                                  {openZone[key] ? (
+                                    <FaEyeSlash className="cursor-pointer" onClick={() => handleZoneCaptureProgressMenuClose(key)} />
+                                  ) : (
+                                    <FaEye className="cursor-pointer" onClick={() => handleZoneCaptureProgressMenuOpen(key)} />
+                                  )}
+                                </div>
+                                {openZone[key] && (
+                                  <Paper className="mt-10 p-5 max-h-96 overflow-y-auto" elevation={10}>
+                                    <Typography variant="h4">Zone wise Capture Progress</Typography>
+                                    {/* {item.length > 0 && */}
+                                    {item.captureProgressZoneData.map((it, index) => {
+                                      return (
+                                        <div key={index}>
+                                          <Typography key={index} className="m-2" variant="body1" color="initial">
+                                            {it.zone_id} - {parseFloat(it.capturePercentage).toFixed(2)}%
+                                          </Typography>
+                                          <LinearProgress
+                                            sx={{
+                                              borderRadius: 3,
+                                              height: 5,
+                                              [theme.breakpoints.up('xl')]: {
+                                                height: 5 // Height for screens equal to or larger than 'lg' breakpoint
+                                              }
+                                            }}
+                                            variant="determinate"
+                                            aria-label="direct"
+                                            value={parseFloat(it.capturePercentage)}
+                                            color="primary"
+                                            // onClick={()=>(setOpenZone(!openZone))}
+                                          />
+                                        </div>
+                                      );
+                                    })}
+                                  </Paper>
+                                  //                                   <Menu
+                                  //   id="capture-progress-menu"
+                                  //   anchorEl={anchorEl}
+                                  //   open={openZone}
+                                  //   onClose={handleZoneCaptureProgressMenuClose}
+                                  //   anchorOrigin={{
+                                  //     vertical: 'bottom',
+                                  //     horizontal: 'right',
+                                  //   }}
+                                  //   transformOrigin={{
+                                  //     vertical: 'top',
+                                  //     horizontal: 'right',
+                                  //   }}
+                                  //   // PaperProps={{
+                                  //   //   style: {
+                                  //   //     maxHeight: ITEM_HEIGHT * 4.5,
+                                  //   //     width: '20ch',
+                                  //   //   },
+                                  //   // }}
+                                  // >
+                                  //   <MenuItem disabled>
+                                  //     <Typography variant="h6">Zone-wise Capture Progress</Typography>
+                                  //   </MenuItem>
+                                  //   {item.captureProgressZoneData.map((it, index) => (
+                                  //     <MenuItem key={index} disabled>
+                                  //       <Typography variant="body1" color="initial">
+                                  //         {it.zone_id} - {parseFloat(it.capturePercentage).toFixed(2)}%
+                                  //       </Typography>
+                                  //       <LinearProgress
+                                  //         sx={{
+                                  //           borderRadius: 3,
+                                  //           height: 5,
+                                  //           [theme.breakpoints.up('xl')]: {
+                                  //             height: 5,
+                                  //           },
+                                  //         }}
+                                  //         variant="determinate"
+                                  //         aria-label="direct"
+                                  //         value={parseFloat(it.capturePercentage)}
+                                  //         color="primary"
+                                  //       />
+                                  //     </MenuItem>
+                                  //   ))}
+                                  // </Menu>
+                                )}
+                              </Grid>
+                            </Grid>
                           </Grid>
-                          {/* <Grid item sm zeroMinWidth>
-                          <Typography variant="body2">1:00 PM</Typography>
-                        </Grid> */}
-                        </Grid>
-                      </Grid>
+                        );
+                      })
                     ) : // ))
                     capProgress.length === 0 ? (
                       <div className="w-full h-full flex justify-center place-items-center">

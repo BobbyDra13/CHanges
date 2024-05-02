@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import {
   Box,
@@ -26,6 +27,7 @@ import { RiErrorWarningLine } from 'react-icons/ri';
 import noData from '../../../assets/images/No_data-amico.svg';
 import { FaAngleDoubleRight } from 'react-icons/fa';
 import { FaAngleDoubleLeft } from 'react-icons/fa';
+import { BsSearch } from 'react-icons/bs';
 bouncy.register();
 
 // const imgURLs = {
@@ -35,6 +37,7 @@ bouncy.register();
 // };
 
 export default function ShelfView({ date }) {
+  const { store } = useParams();
   const [active, setActive] = useState(false);
   const [data, setData] = useState(false);
   const [shelves, setShelves] = useState(false);
@@ -45,6 +48,7 @@ export default function ShelfView({ date }) {
   const [imageLoading, setImageLoading] = useState(false);
   const [nextClickLoad, setNextClickLoad] = useState(false);
   const [nextBtn, setNextbtn] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const theme = useTheme();
   const success = theme.palette.success.main;
 
@@ -53,10 +57,10 @@ export default function ShelfView({ date }) {
     const body = {
       zone_id: id,
       date: date.toString(),
-      store_id: '65c74d4112465588b7a4984c'
+      store_id: store
     };
     const shelvesData = await GetShelvesData(body);
-    console.log(shelvesData.data);
+    console.log('qqaa', shelvesData.data);
     setShelves(shelvesData.data[0]);
     setloading(false);
   }
@@ -88,7 +92,7 @@ export default function ShelfView({ date }) {
     setloading(true);
     const body = {
       date: date.toString(),
-      store_id: '65c74d4112465588b7a4984c',
+      store_id: store,
       shelf_id: id
     };
     const data = await GetShelfData(body);
@@ -102,7 +106,7 @@ export default function ShelfView({ date }) {
     setloading(true);
     const body = {
       date: date.toString(),
-      store_id: '65c74d4112465588b7a4984c',
+      store_id: store,
       shelf_id: id
     };
     const data = await GetShelfData(body);
@@ -114,7 +118,7 @@ export default function ShelfView({ date }) {
   useEffect(() => {
     async function GetZone() {
       const body = {
-        store_id: '65c74d4112465588b7a4984c'
+        store_id: store
       };
       const Zonedata = await GetZonedetails(body);
       setData(Zonedata);
@@ -200,14 +204,32 @@ export default function ShelfView({ date }) {
     setNextClickLoad(false);
   };
 
+  const filteredData = Array.isArray(data) ? data.filter((d) => d.name.toLowerCase().includes(searchQuery.toLowerCase())) : [];
+
   return (
     <>
       {data ? (
         <div style={{ margin: '20px', overflowY: 'scroll' }} className="scrollbar">
           <Grid container spacing={4}>
+            <Grid item xs={12}>
+              <Grid container alignItems="center">
+                <Grid item>
+                  <BsSearch className="text-black text-lg cursor-pointer" />
+                </Grid>
+                <Grid item xs>
+                  <input
+                    type="search"
+                    placeholder="Search"
+                    className="text-base bg-transparent w-full text-black focus:outline-none ml-2"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
             <Grid item md={2.5} sm={2} style={{ height: '500px', marginBottom: '50px', overflowY: 'scroll' }} className="scrollbar">
               {data &&
-                data.map((d, ind) => (
+                filteredData.map((d, ind) => (
                   <Paper
                     key={ind}
                     elevation={4}

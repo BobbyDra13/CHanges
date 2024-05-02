@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { Grid, Stack, Typography, Card, Skeleton, LinearProgress, Modal, Box, Tooltip, IconButton, Divider } from '@mui/material';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { avgDwelTime } from '../../../api/sentinelAPI';
@@ -30,6 +31,8 @@ import pog from '../../../assets/images/pog.jpeg';
 import associate from '../../../assets/images/profile-user.png';
 
 function Overview() {
+  const { store } = useParams();
+  console.log('cmon man', store);
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const isMediumScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -167,11 +170,11 @@ function Overview() {
     if (isMounted) {
       const commonBody = {
         start_date: date,
-        storeId: '65c5e26a0b5be5dc7af327dc'
+        storeId: store
       };
       const popBody = {
         date: date,
-        store_id: '65c74d4112465588b7a4984c'
+        store_id: store
       };
       // eslint-disable-next-line
       async function getDataDwell() {
@@ -242,7 +245,7 @@ function Overview() {
       async function getRatioData() {
         const body = {
           date: '2024-03-21',
-          store_id: '65c74d4112465588b7a4984c'
+          store_id: store
         };
         try {
           const {
@@ -301,7 +304,7 @@ function Overview() {
       async function getAssociateScore() {
         const body = {
           date: date,
-          store_id: '65c74d4112465588b7a4984c'
+          store_id: store
         };
         try {
           const associateScore = await getAssociateScoreData(body);
