@@ -56,6 +56,21 @@ export const GetFullnessKpi = async (data) => {
   }
 };
 
+export const GetAnomaliesCount = async (data) => {
+  try {
+    const res = await axios.post(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/store-view/anomalies-group `, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    //console.log(res);
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetCaptureProgress API: ', error);
+  }
+};
+
 export const GetAnomaliesKpi = async (data) => {
   try {
     const res = await axios.post(`${lambUrl}/dashboard/card_anomalies`, data, {
