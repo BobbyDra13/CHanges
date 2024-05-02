@@ -50,7 +50,7 @@ const MainRoutes = {
       element: <NewStorePage />,
       children: [
         {
-          path: '/main/stores/storeinsight/overview',
+          path: '/main/stores/storeinsight/overview/:store',
           element: <Overview />
         },
         {

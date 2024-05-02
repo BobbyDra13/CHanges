@@ -123,16 +123,16 @@ export const GetStoreWiseInfo = async (date, store_id) => {
         Authorization: await token()
       }
     });
-    //console.log(res);
+    console.log('sad', res);
     return res;
   } catch (error) {
     console.log('Error calling store wise info', error);
   }
 };
 
-export const GetBayWiseDetails = async (date) => {
+export const GetBayWiseDetails = async (date, store_id) => {
   try {
-    const res = await axios.get(`${lambUrlFashion}/store/bay_wise_config?date=${date}&store_id=6582be9ac5ed94d792a563b8`, {
+    const res = await axios.get(`${lambUrlFashion}/store/bay_wise_config?date=${date}&store_id=${store_id}`, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -215,9 +215,24 @@ export const GetStoreData = async (data) => {
     });
     return res;
   } catch (error) {
-    console.log('Error Calling GetCaptureProgress API: ', error);
+    console.log('Error Calling GetStoreData API: ', error);
   }
 };
+
+export const UploadCSV = async(data) => {
+  try {
+    const res = await axios.post(`${lambUrl}store-view/upload_csv`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    })
+    // console.log("csvv",res);
+    return res;
+  } catch(error) {
+    console.log('Error Uploading CSV',error);
+  }
+}
 
 export const GetAnomalies = async (data) => {
   try {
@@ -241,6 +256,7 @@ export const GetAnomaliesCount = async (data) => {
         Authorization: await token()
       }
     });
+    console.log("lolo",res);
     return res;
   } catch (error) {
     console.log('Error Calling GetCaptureProgress API: ', error);
@@ -363,12 +379,17 @@ export const GetPopWeekLineData = async (data) => {
 
 export const GetRadarChartData = async (data) => {
   try {
-    const res = await axios.post(`${lambUrl}dashboard/anomalies-group`, data, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
+    const res = await axios.post(
+      `${lambUrl}store-view/anomalies-group
+    `,
+      data,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: await token()
+        }
       }
-    });
+    );
     return res;
   } catch (error) {
     console.log('Error Calling GetRadarChartData API: ', error);
