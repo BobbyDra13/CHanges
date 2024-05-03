@@ -6,7 +6,7 @@ import { Box, Paper } from '@mui/material';
 // import Timeline from './TimelineChart';
 // import FilterMenu from './FilterMenu';
 
-export default function TrendsChart({ date }) {
+export default function TrendsChart({ storeId, date }) {
   // const [chartvalue, setChartValue] = useState('Footfall');
   // function graphToSelect(ChartData) {
   // setChartValue(ChartData);
@@ -21,7 +21,7 @@ export default function TrendsChart({ date }) {
       </div>
       <Paper elevation={0} sx={{ width: '100%', position: 'relative', height: '400px' }}>
         {/* {chartvalue == 'Journey' ? <Sankey /> : chartvalue == 'Engagement' ? <Timeline date={date} /> : <Areachart date={date} />} */}
-        <Areachart date={date} />
+        <Areachart storeId={storeId} date={date} />
       </Paper>
     </Box>
   );

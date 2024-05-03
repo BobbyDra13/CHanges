@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import StoreView from './storeView';
 import TrendsChart from './TrendsViewCharts/Trendchart';
 
-const LineChartToggle = ({ date }) => {
+const LineChartToggle = ({ storeId, date }) => {
   // const theme = useTheme();
   const [activeButton, setActiveButton] = useState('Trends View');
   const handleButtonClick = (button) => {
@@ -183,7 +183,7 @@ const LineChartToggle = ({ date }) => {
         {activeButton == 'Trends View' ? (
           <div style={{ width: '100%', overflow: 'auto', height: '500px' }}>
             {/* <Chart options={chartOptions} series={series} type="line" height={500} width={isSmallScreen || isMediumScreen ? 720 : '100%'} /> */}
-            <TrendsChart date={date} />
+            <TrendsChart storeId={storeId} date={date} />
             {/* <Grid
               container
               spacing={1}

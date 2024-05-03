@@ -151,7 +151,8 @@ const Customers = () => {
     {
       label: 'Analysis',
       icon: <BarChartIcon />,
-      onClick: () => navigate(`/main/stores/storeinsight/overview/${item.store}`)
+      onClick: () => navigate(`/main/stores/storeinsight/overview/${item.store}`),
+      disabled: true
     },
     {
       label: 'View',
