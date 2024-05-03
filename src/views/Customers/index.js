@@ -1216,6 +1216,13 @@ const Customers = () => {
                         {/* / {details.bay_id} / {details.shelf_id} */}/ {cData.zone_id} / {cData.shelf_id}
                       </Typography>
                       <Typography width={'100%'} variant="h3">
+                        Date & Time of Capture
+                      </Typography>
+                      <Divider />
+                      <Typography paddingBottom={1.5} width={'100%'} variant="h5">
+                        {cData.timestamp}
+                      </Typography>
+                      <Typography width={'100%'} variant="h3">
                         Groups
                       </Typography>
                       <Divider />
