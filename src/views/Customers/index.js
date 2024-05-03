@@ -696,56 +696,65 @@ const Customers = () => {
                                 {item.store_id} - {item.store_name}
                               </Typography>
                             </Stack>
-                            <IconButton
-                              size="small"
-                              aria-label="more"
-                              id="long-button"
-                              aria-controls={open ? 'long-menu' : undefined}
-                              aria-expanded={open ? 'true' : undefined}
-                              aria-haspopup="true"
-                              onClick={handleClick}
+                            <div className="h-full w-fit"></div>
+                            <button
+                              onClick={() => navigate(`/main/stores/storeinsight/overview/${item.store}`)}
+                              className="w-20 h-6 text-sm border border-emerald-500 self-center shadow-md drop-shadow-md text-emerald-500 rounded-lg"
                             >
-                              <MoreVertIcon />
-                            </IconButton>
-                            <Menu
-                              id="long-menu"
-                              anchorEl={anchorEl}
-                              open={open}
-                              onClose={handleClose}
-                              anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'right'
-                              }}
-                              transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right'
-                              }}
-                              PaperProps={{
-                                style: {
-                                  maxHeight: ITEM_HEIGHT * 4.5,
-                                  width: '20ch'
-                                }
-                              }}
-                            >
-                              {options.map((option) => (
-                                <MenuItem
-                                  key={option.label}
-                                  selected={option.label === 'Analysis'}
-                                  disabled={option.disabled} // Apply the disabled attribute conditionally
-                                  onClick={() => {
-                                    if (option.disabled != true) {
-                                      // option.onClick();
-                                      navigate(`/main/stores/storeinsight/overview/${item.store}`);
-                                      handleClose();
-                                    }
-                                  }}
-                                  // onClick={() => navigate(`/main/stores/storeinsight/overview/${item.store}`)}
-                                >
-                                  {option.icon && <span style={{ marginRight: '8px', color: option.color }}>{option.icon}</span>}
-                                  <span style={{ color: option.color }}>{option.label}</span>
-                                </MenuItem>
-                              ))}
-                            </Menu>
+                              Analysis
+                            </button>
+                            <div className="hidden">
+                              <IconButton
+                                size="small"
+                                aria-label="more"
+                                id="long-button"
+                                aria-controls={open ? 'long-menu' : undefined}
+                                aria-expanded={open ? 'true' : undefined}
+                                aria-haspopup="true"
+                                onClick={handleClick}
+                              >
+                                <MoreVertIcon />
+                              </IconButton>
+                              <Menu
+                                id="long-menu"
+                                anchorEl={anchorEl}
+                                open={open}
+                                onClose={handleClose}
+                                anchorOrigin={{
+                                  vertical: 'bottom',
+                                  horizontal: 'right'
+                                }}
+                                transformOrigin={{
+                                  vertical: 'top',
+                                  horizontal: 'right'
+                                }}
+                                PaperProps={{
+                                  style: {
+                                    maxHeight: ITEM_HEIGHT * 4.5,
+                                    width: '20ch'
+                                  }
+                                }}
+                              >
+                                {options.map((option) => (
+                                  <MenuItem
+                                    key={option.label}
+                                    selected={option.label === 'Analysis'}
+                                    disabled={option.disabled} // Apply the disabled attribute conditionally
+                                    onClick={() => {
+                                      if (option.disabled != true) {
+                                        // option.onClick();
+                                        navigate(`/main/stores/storeinsight/overview/${item.store}`);
+                                        handleClose();
+                                      }
+                                    }}
+                                    // onClick={() => navigate(`/main/stores/storeinsight/overview/${item.store}`)}
+                                  >
+                                    {option.icon && <span style={{ marginRight: '8px', color: option.color }}>{option.icon}</span>}
+                                    <span style={{ color: option.color }}>{option.label}</span>
+                                  </MenuItem>
+                                ))}
+                              </Menu>
+                            </div>
                           </Box>
                           <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
                             {/* <Typography sx={{ width: 120 }} variant="h6">
