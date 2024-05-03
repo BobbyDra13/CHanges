@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from 'react';
 
 // API imports
-import { GetRadarChartData, GetCapProg, GetPopHistogramData, GetAnomaliesCount } from 'api';
+import { GetRadarChartData, GetCapProg, GetPopHistogramData } from 'api';
 
 // Apex chart import
 import Chart from 'react-apexcharts';
@@ -167,10 +167,12 @@ const Insights = () => {
         };
 
         console.log('donutBody', donutBody);
-        const anomlayBody = {
-          date: selectedDate.toString(),
-          store_id: '65c74d4112465588b7a4984c'
-        };
+        // const anomlayBody = {
+        //   date: selectedDate.toString(),
+        //   store_id: '65c74d4112465588b7a4984c'
+        //   // date: selectedDate.toString(),
+        //   // user_id: user_id
+        // };
 
         setAvgCapProgress(false);
         setCapProgress(false);
@@ -178,12 +180,12 @@ const Insights = () => {
         setBarChartData(false);
         console.log('abc date', selectedDate);
         try {
-          const brandDonutData = await GetRadarChartData(anomlayBody);
+          const brandDonutData = await GetRadarChartData(donutBody);
           console.log('bebo', brandDonutData);
           const CapData = await GetCapProg(capBody);
           console.log('thala', CapData);
           const histogramData = await GetPopHistogramData(popKpiCardBody);
-          const anomalies = await GetAnomaliesCount(anomlayBody);
+          const anomalies = await GetRadarChartData(donutBody);
           if (anomalies) {
             setAnomaliesLoading(false);
             setAnomaliesCount(anomalies.data);
