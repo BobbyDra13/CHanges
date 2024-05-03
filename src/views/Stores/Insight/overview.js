@@ -389,7 +389,7 @@ function Overview() {
                           // const percentage = (item.totalCustomerZone / ftfall[0].totalCustomerZone) * 100;
                           const percentage =
                             item.data.FullnessPopPercent != undefined ? Math.round(parseFloat(item.data.FullnessPopPercent)) : 0;
-                          const barcolor = percentage >= 80 ? '#00ac69' : percentage >= 50 ? '#f4a100' : '#ff413a';
+                          const barcolor = percentage >= 99 ? '#00ac69' : percentage >= 95 ? '#f4a100' : '#ff413a';
                           // console.log(percentage);
                           return (
                             <div className="mt-2" key={index}>
@@ -579,16 +579,25 @@ function Overview() {
                       <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
                         {associateScoreData.length > 0 ? (
                           associateScoreData.map((item, index) => {
-                            const percentage = Math.round(parseFloat(item.total_pop_percentage));
-                            const barcolor = percentage >= 80 ? '#00ac69' : percentage >= 50 ? '#f4a100' : '#ff413a';
+                            const percentage =
+                              Math.round(parseFloat(item.total_pop_percentage)) > 100
+                                ? 100
+                                : Math.round(parseFloat(item.total_pop_percentage));
+                            const barcolor = percentage >= 99 ? '#00ac69' : percentage >= 95 ? '#f4a100' : '#ff413a';
                             const capturedZone = item.zones.map((i) => {
                               return i._id.zone;
                             });
                             const capturedZoneString = capturedZone.join(', ');
                             const assignedZone = item.assigned_zones;
                             const assignedZoneString = assignedZone.join(', ');
-                            const firstScore = parseFloat(item.total_pop_percentage_first).toFixed(1);
-                            const secondScore = parseFloat(item.total_pop_percentage).toFixed(1);
+                            const firstScore =
+                              parseFloat(item.total_pop_percentage_first).toFixed(1) > 100
+                                ? 100
+                                : parseFloat(item.total_pop_percentage_first).toFixed(1);
+                            const secondScore =
+                              parseFloat(item.total_pop_percentage).toFixed(1) > 100
+                                ? 100
+                                : parseFloat(item.total_pop_percentage).toFixed(1);
                             return (
                               <div className="mt-2" key={index}>
                                 <div className="flex gap-1 items-center justify-between">
@@ -621,8 +630,8 @@ function Overview() {
                                           }}
                                         />
                                         <div className=" p-2">
-                                          <p className="text-xs">First Score :{' ' + firstScore} </p>
-                                          <p className="text-xs ">Second Score :{' ' + secondScore} </p>
+                                          <p className="text-xs">First Score :{' ' + firstScore} %</p>
+                                          <p className="text-xs ">Second Score :{' ' + secondScore} %</p>
                                         </div>
                                       </div>
                                     }
