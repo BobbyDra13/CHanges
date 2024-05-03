@@ -32,7 +32,7 @@ import associate from '../../../assets/images/profile-user.png';
 
 function Overview() {
   const { store } = useParams();
-  console.log("cmon man",store);
+  console.log('cmon man', store);
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const isMediumScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -690,7 +690,7 @@ function Overview() {
                 }}
                 style={{ height: '275px' }}
               >
-                <RadarChart date={date} />
+                <RadarChart storeId={store} date={date} />
               </Card>
             </Grid>
           </Grid>
@@ -699,7 +699,7 @@ function Overview() {
           <Grid container spacing={2}>
             <Grid className="mb-10" item xs={12} lg={9} xl={9.6}>
               <Card className="border border-gray-300" sx={{ height: '550px' }}>
-                <LineChartToggle date={date} />
+                <LineChartToggle storeId={store} date={date} />
               </Card>
             </Grid>
             <Grid item className="mb-10" xs={12} lg={3} xl={2.4}>

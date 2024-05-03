@@ -60,7 +60,7 @@ export default function ShelfView({ date }) {
       store_id: store
     };
     const shelvesData = await GetShelvesData(body);
-    console.log('qqaa',shelvesData.data);
+    console.log('qqaa', shelvesData.data);
     setShelves(shelvesData.data[0]);
     setloading(false);
   }
@@ -204,31 +204,29 @@ export default function ShelfView({ date }) {
     setNextClickLoad(false);
   };
 
-  const filteredData = Array.isArray(data)
-    ? data.filter((d) => d.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    : [];
+  const filteredData = Array.isArray(data) ? data.filter((d) => d.name.toLowerCase().includes(searchQuery.toLowerCase())) : [];
 
   return (
     <>
       {data ? (
-        <div style={{ margin: '20px', overflowY: 'scroll' }} className="scrollbar"> 
+        <div style={{ margin: '20px', overflowY: 'scroll' }} className="scrollbar">
           <Grid container spacing={4}>
-          <Grid item xs={12}>
-      <Grid container alignItems="center">
-        <Grid item>
-          <BsSearch className="text-black text-lg cursor-pointer" />
-        </Grid>
-        <Grid item xs>
-          <input
-            type="search"
-            placeholder="Search"
-            className="text-base bg-transparent w-full text-black focus:outline-none ml-2"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </Grid>
-      </Grid>
-    </Grid>
+            <Grid item xs={12}>
+              <Grid container alignItems="center">
+                <Grid item>
+                  <BsSearch className="text-black text-lg cursor-pointer" />
+                </Grid>
+                <Grid item xs>
+                  <input
+                    type="search"
+                    placeholder="Search"
+                    className="text-base bg-transparent w-full text-black focus:outline-none ml-2"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
             <Grid item md={2.5} sm={2} style={{ height: '500px', marginBottom: '50px', overflowY: 'scroll' }} className="scrollbar">
               {data &&
                 filteredData.map((d, ind) => (

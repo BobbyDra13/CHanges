@@ -7,7 +7,7 @@ import { GetFullnessPop, GetSevenDayCapProgress } from 'api';
 // import {footfallGraph} from "api/sentinelAPI";
 // const footfalldata=footfallGraph();
 
-const Areachart = ({ date }) => {
+const Areachart = ({ storeId, date }) => {
   const [category, setCategory] = useState([]);
   const [custCount, setCustCount] = useState([]);
   const [capProgress, setCapProgress] = useState([]);
@@ -19,7 +19,7 @@ const Areachart = ({ date }) => {
       console.log(date);
       const body = {
         date: date,
-        store_id: '65c74d4112465588b7a4984c'
+        store_id: storeId
       };
       try {
         setLoading(true);
@@ -44,7 +44,7 @@ const Areachart = ({ date }) => {
       console.log('date', date);
       const captureBody = {
         date: date,
-        store_id: '65c74d4112465588b7a4984c'
+        store_id: storeId
       };
       try {
         setLoading(true);
@@ -69,6 +69,7 @@ const Areachart = ({ date }) => {
     }
     getData();
     getCaptureData();
+    // eslint-disable-next-line
   }, [date]);
   // console.log("capturesss", capProgress);
   // console.log("pop", custCount);
