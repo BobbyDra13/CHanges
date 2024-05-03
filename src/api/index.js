@@ -380,7 +380,7 @@ export const GetPopWeekLineData = async (data) => {
 export const GetRadarChartData = async (data) => {
   try {
     const res = await axios.post(
-      `${lambUrl}store-view/anomalies-group
+      `${lambUrl}dashboard/anomalies-group
     `,
       data,
       {
