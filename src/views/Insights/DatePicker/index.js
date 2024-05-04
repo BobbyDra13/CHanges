@@ -8,6 +8,7 @@ import Badge from '@mui/material/Badge';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 // import dates from 'views/Stores/Table/dateSelect';
 import { GetDates } from 'api';
+import { useSelector } from 'react-redux';
 // import dayjs from 'dayjs';
 
 function ServerDay(props) {
@@ -35,14 +36,13 @@ function DatePickerComp({ SetSelectedDate }) {
   const [events, setEvents] = useState([]);
   const [highlightedDays, setHighlightedDays] = useState([]);
 
-  const store_ids = JSON.parse(localStorage.getItem('userData')).data.stores;
+  const storeId = useSelector((state) => state.customization.date);
 
   useEffect(() => {
     async function getEventsdata() {
-      // setIsLoading(true);
       try {
         const body = {
-          store_id: store_ids
+          store_id: storeId
         };
         const Edata = await GetDates(body);
 
@@ -58,7 +58,7 @@ function DatePickerComp({ SetSelectedDate }) {
     }
     getEventsdata();
     // eslint-disable-next-line
-  }, []);
+  }, [storeId]);
 
   useEffect(() => {
     setHighlightedDays([]);

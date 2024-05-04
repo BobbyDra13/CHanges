@@ -5,7 +5,13 @@ import * as actionTypes from './actions';
 
 export const initialState = {
   isOpen: 'insights', //for active default menu
-  navType: ''
+  navType: '',
+  date: [],
+  analysisStoreDetails: {
+    storeName: '',
+    lat: '',
+    lng: ''
+  }
 };
 
 const customizationReducer = (state = initialState, action) => {
@@ -19,6 +25,16 @@ const customizationReducer = (state = initialState, action) => {
       return {
         ...state,
         navType: action.navType
+      };
+    case 'DATE':
+      return {
+        ...state,
+        date: action.date
+      };
+    case 'ANALYSIS_STORE_DETAILS':
+      return {
+        ...state,
+        analysisStoreDetails: action.analysisStoreDetails
       };
     default:
       return state;

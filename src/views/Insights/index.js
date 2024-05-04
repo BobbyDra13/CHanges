@@ -25,6 +25,7 @@ import NoDataPng from '../../assets/images/No_data.png';
 import NoDataImg from '../../assets/images/No_data-amico.svg';
 import PoPScoreKPICard from './PoPScoreKPICard';
 import AnomalyKPICard from './AnomalyKPICard';
+// import { useDispatch } from 'react-redux';
 
 const histogramChartRequirements = {
   totalStores: 150,
@@ -44,6 +45,8 @@ const Insights = () => {
   const accentColDark = theme.palette.success.dark;
   const accentColLight = theme.palette.success.light;
   const accentColMain = theme.palette.success.main;
+
+  // const dispatch = useDispatch();
 
   const { selectOptions } = histogramChartRequirements;
   const [selected, setSelected] = useState(selectOptions[0].value);
@@ -150,6 +153,8 @@ const Insights = () => {
   const user_id = JSON.parse(localStorage.getItem('userData')).data._id;
   console.log('brooo', user_id);
   useEffect(() => {
+    // const storeIds = JSON.parse(localStorage.getItem('userData')).data.stores;
+    // dispatch({ type: 'DATE', date: storeIds });
     /* eslint-disable no-inner-declarations */
     if (isMounted) {
       async function fetchDashboardData() {

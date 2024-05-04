@@ -15,7 +15,6 @@ bouncy.register();
 // api imports
 import {
   GetStoreData,
-  GetStoreWiseInfo,
   SendAlert,
   getAnomalyForStore,
   getUpdatedStatus
@@ -169,10 +168,10 @@ const Customers = () => {
 
   const user_id = JSON.parse(localStorage.getItem('userData')).data._id;
   console.log('xx', user_id);
-  const store_id = JSON.parse(localStorage.getItem('userData')).data.storeID;
+  // const store_id = JSON.parse(localStorage.getItem('userData')).data.storeID;
 
-  const dateToday = new Date();
-  const today = dateToday.toISOString().split('T')[0];
+  // const dateToday = new Date();
+  // const today = dateToday.toISOString().split('T')[0];
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -355,9 +354,8 @@ const Customers = () => {
     console.log('id', user_id);
 
     // const store_id = '6582be9ac5ed94d792a563b8';
-    const date = today;
+    // const date = today;
     try {
-      const response = await GetStoreWiseInfo(date, store_id);
       const response2 = await GetStoreData(dt);
       // const storess = response2.data;
       // storess.map((st) => {
@@ -493,6 +491,11 @@ const Customers = () => {
   // };
 
   // const navigate = useNavigate()
+
+  const settingAnalysisStoreDetails = (storeName, lat, lng, store) => {
+    localStorage.setItem('analysisStoreDetails', JSON.stringify({ storeName, lat, lng, store }));
+  };
+
   useEffect(() => {
     async function sendAlertMsg() {
       if (alertData.zone_id) {
@@ -723,7 +726,10 @@ const Customers = () => {
                             </Stack>
                             <div className="h-full w-fit"></div>
                             <button
-                              onClick={() => navigate(`/main/stores/storeinsight/overview/${item.store}`)}
+                              onClick={() => {
+                                settingAnalysisStoreDetails(item.store_name, item.location.latitude, item.location.longitude, item.store);
+                                navigate(`/main/stores/storeinsight/overview/${item.store}`);
+                              }}
                               className="w-20 h-6 text-sm border border-emerald-500 self-center shadow-md drop-shadow-md text-emerald-500 rounded-lg"
                             >
                               Analysis
