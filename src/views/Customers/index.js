@@ -17,8 +17,8 @@ import {
   GetStoreData,
   GetStoreWiseInfo,
   SendAlert,
-  getAnomalyForStore
-  // getUpdatedStatus
+  getAnomalyForStore,
+  getUpdatedStatus
   // GetImagesFromSignedUrl,
   // GetAnolamayDetails
 } from 'api';
@@ -181,50 +181,6 @@ const Customers = () => {
     setAnchorEl(null);
   };
 
-  // const body = {
-  //   // metadata_id: ,
-  //   fieldToUpdate: 'solved'
-  // };
-  // const updateMetadataSolved = async () => {
-  //   // console.log('id:', id);
-  //   setSolvedLoading(true);
-  //   try {
-  //     const response = await getUpdatedStatus(body);
-  //     if (response) {
-  //       console.log('AnomalyDetails api', response);
-  //       // setAnonmalyDetails(response.data);
-  //       setSolvedLoading(false);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  const handleSolved = () => {
-    // console.log('required ID', id);
-    // setSolvedLoading(true);
-    setSolvedLoad(true);
-
-    setTimeout(() => {
-      setSolvedLoad(false);
-      setSnackbarMessage('Solved successfully!');
-      setSnackbarOpen(true);
-    }, 3000); // 3 seconds
-    // updateMetadataSolved(id);
-  };
-
-  const handleIgnored = () => {
-    // console.log('required ID', id);
-    // setSolvedLoading(true);
-    setIgnoreLoad(true);
-
-    setTimeout(() => {
-      setIgnoreLoad(false);
-      setSnackbarMessage('Ignored successfully!');
-      setSnackbarOpen(true);
-    }, 3000); // 3 seconds
-    // updateMetadataSolved(id);
-  };
   // const handleToggleImage = () => {
   //   setImageLoading(true);
   //   setLiveAnomalyImg(!liveAnomalyImg);
@@ -271,6 +227,7 @@ const Customers = () => {
 
   const handleImageClick = (url, id, anomaly, time) => {
     setMetadata(id);
+    console.log('tuty', id);
 
     if (antn) {
       setPos({ lft: false, tp: false, wdth: false, ht: false });
@@ -297,6 +254,72 @@ const Customers = () => {
     setIsImageDialogOpen(!isImageDialogOpen);
   };
 
+  const body = {
+    metadata_id: metadata,
+    fieldToUpdate: 'solved'
+  };
+  const handleSolved = async () => {
+    // console.log('id:', id);
+    setSolvedLoad(true);
+    try {
+      const response = await getUpdatedStatus(body);
+      if (response) {
+        console.log('AnomalyDetails api', response);
+        setAnonmalyDetails(response.data);
+        setSolvedLoad(false);
+        setSnackbarMessage('Solved successfully!');
+        setSnackbarOpen(true);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const body2 = {
+    metadata_id: metadata,
+    fieldToUpdate: 'ignored'
+  };
+  const handleIgnored = async () => {
+    // console.log('id:', id);
+    setIgnoreLoad(true);
+    try {
+      const response = await getUpdatedStatus(body2);
+      if (response) {
+        console.log('AnomalyDetails api', response);
+        setAnonmalyDetails(response.data);
+        setIgnoreLoad(false);
+        setSnackbarMessage('Ignored successfully!');
+        setSnackbarOpen(true);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  // const handleSolved = () => {
+  //   // console.log('required ID', id);
+  //   // setSolvedLoading(true);
+  //   setSolvedLoad(true);
+
+  //   setTimeout(() => {
+  //     setSolvedLoad(false);
+  //     setSnackbarMessage('Solved successfully!');
+  //     setSnackbarOpen(true);
+  //   }, 3000); // 3 seconds
+  //   // updateMetadataSolved(id);
+  // };
+
+  // const handleIgnored = () => {
+  //   // console.log('required ID', id);
+  //   // setSolvedLoading(true);
+  //   setIgnoreLoad(true);
+
+  //   setTimeout(() => {
+  //     setIgnoreLoad(false);
+  //     setSnackbarMessage('Ignored successfully!');
+  //     setSnackbarOpen(true);
+  //   }, 3000); // 3 seconds
+  //   // updateMetadataSolved(id);
+  // };
   const getStoresData = async () => {
     // const input = {
     //   Store_IDs: ['6582be9ac5ed94d792a563b8'],

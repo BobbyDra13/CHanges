@@ -1,12 +1,17 @@
 import { Button, LinearProgress } from '@mui/material';
 import { useDropzone } from 'react-dropzone';
+import { useParams } from 'react-router-dom';
 import React, { useState } from 'react';
 import { FaCloudUploadAlt } from 'react-icons/fa';
 import { UploadCSV } from 'api';
 
 function CsvModal() {
+  const { store } = useParams();
+  console.log('cmon man', store);
   const [loading, setLoading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  // const [updatedData, setUpdateddata] = useState(false);
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: 'text/csv',
     onDrop: async (acceptedFiles) => {
@@ -19,12 +24,13 @@ function CsvModal() {
         // console.log("csv file:",reader.result);
         const base64EncodedString = reader.result.split(',')[1];
         const fileName = file.name;
+        const store_id = store;
         console.log('Base64 encoded string:', base64EncodedString);
         console.log('file name:', fileName);
 
         try {
           // Pass keys as a single object to the UploadCSV API
-          const res = await UploadCSV({ base64EncodedString, fileName });
+          const res = await UploadCSV({ base64EncodedString, fileName, store_id });
           console.log('Response from API:', res);
           setUploadSuccess(true);
         } catch (error) {
@@ -43,6 +49,8 @@ function CsvModal() {
     }
   });
 
+
+  // console.log('dataaasss',updatedData);
   return (
     <div className=" flex flex-col items-center gap-3 h-5/6">
       <div
