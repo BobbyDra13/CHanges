@@ -169,6 +169,7 @@ const Customers = () => {
 
   const user_id = JSON.parse(localStorage.getItem('userData')).data._id;
   console.log('xx', user_id);
+  const store_id = JSON.parse(localStorage.getItem('userData')).data.storeID;
 
   const dateToday = new Date();
   const today = dateToday.toISOString().split('T')[0];
@@ -288,6 +289,7 @@ const Customers = () => {
     if (!isImageDialogOpen) {
       // setSelectedImage(url);
       setCdata(anomaly);
+      console.log('Dialog details', anomaly);
       // getAnomalyDetails(id);
       // setAnomalyType(type);
       setTimestamps({ date: formattedDate, time: formattedTime });
@@ -329,7 +331,7 @@ const Customers = () => {
     };
     console.log('id', user_id);
 
-    const store_id = '6582be9ac5ed94d792a563b8';
+    // const store_id = '6582be9ac5ed94d792a563b8';
     const date = today;
     try {
       const response = await GetStoreWiseInfo(date, store_id);
@@ -349,7 +351,7 @@ const Customers = () => {
         console.log('Store Data', response2.data);
 
         setStoresData(response.data.storeDetails);
-        setUpdateddata(response2.data);
+        // setUpdateddata(response2.data);
         console.log(updatedData);
         // console.log(updatedData[0].allAnomalies);
 
@@ -1214,7 +1216,7 @@ const Customers = () => {
                       <div className="w-full flex justify-between place-items-center">
                         <Typography variant="h3" className="">
                           {/* {details.store_id} - {details.store_name} */}
-                          {updatedData[0]?.store_id} - {updatedData[0]?.store_name}
+                          {cData.id} - {cData.name}
                         </Typography>
                         <button onClick={handleImageClick} className="md:static absolute top-5 right-5 ">
                           <IoIosClose className="md:text-4xl text-2xl" />
