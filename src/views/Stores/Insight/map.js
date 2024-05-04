@@ -18,8 +18,8 @@ let DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon;
 
 function MapComponentAnalysis() {
-  // console.log(lat, lng);
-  const position = [19.076, 72.8777]; // latitude and longitude
+  const storeDetails = JSON.parse(localStorage.getItem('analysisStoreDetails'));
+  const position = [storeDetails.lat, storeDetails.lng]; // latitude and longitude
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -43,7 +43,7 @@ function MapComponentAnalysis() {
         ></Marker>
       </MapContainer>
       {open && (
-        <Tooltip title="RCP Mall, 123 Main Street" open>
+        <Tooltip title={`${storeDetails.storeName}`} open>
           <div />
         </Tooltip>
       )}

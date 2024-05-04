@@ -8,8 +8,6 @@ import { MdTune } from 'react-icons/md';
 import { Tooltip } from '@mui/material';
 import storeLogo from '../../../assets/images/shop.png';
 import logo from '../../../assets/images/neophyte_logo_white.png';
-// import Overview from './overview';
-// import Videos from './videos';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { HiBarsArrowDown } from 'react-icons/hi2';
 import { IoClose } from 'react-icons/io5';
@@ -36,6 +34,9 @@ function NewStorePage() {
     { title: 'Team', icon: <RiTeamFill />, disabled: true },
     { title: 'Preferences', icon: <MdTune />, disabled: true }
   ];
+
+  const storeDetails = JSON.parse(localStorage.getItem('analysisStoreDetails'));
+  console.log('skl', storeDetails);
 
   useEffect(() => {
     // Get the current path from the location object
@@ -97,15 +98,15 @@ function NewStorePage() {
               }`}
             >
               <div>
-                <Tooltip arrow title={!open ? 'RD1234 Seawoods Nexus Mall' : ''}>
-                  <div className="inline-flex">
+                <Tooltip arrow title={!open ? `${storeDetails.storeName}` : ''}>
+                  <div className="flex items-center">
                     <img
                       src={storeLogo}
                       alt="store icon"
                       className={`w-10 h-10 p-1 inline-block float-left mr-[6px] ml-[6px] ${!open && 'cursor-pointer'}`}
                     />
                     {open && (
-                      <h1 className={`text-gray-200 origin-right font-medium -mt-1 text-lg  3xl:text-xl`}>RD1234 Seawoods Nexus Mall</h1>
+                      <h1 className={`text-gray-200 origin-right font-medium -mt-1 text-lg  3xl:text-xl`}>{storeDetails.storeName}</h1>
                     )}
                   </div>
                   {open && <MapComponentAnalysis />}

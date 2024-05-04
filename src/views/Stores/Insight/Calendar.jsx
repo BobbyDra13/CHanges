@@ -38,9 +38,10 @@ function DatePickerComp({ SetSelectedDate }) {
   useEffect(() => {
     async function getEventsdata() {
       // setIsLoading(true);
+      const storeDetails = JSON.parse(localStorage.getItem('analysisStoreDetails'));
       try {
         const body = {
-          store_id: '65c74d4112465588b7a4984c'
+          store_id: [`${storeDetails.store}`]
         };
         const Edata = await GetDates(body);
 
