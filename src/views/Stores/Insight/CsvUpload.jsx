@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { FaCloudUploadAlt } from 'react-icons/fa';
 import { UploadCSV } from 'api';
 
-function CsvModal() {
+function CsvModal({ onUploadComplete }) {
   const { store } = useParams();
   console.log('cmon man', store);
   const [loading, setLoading] = useState(false);
@@ -32,9 +32,11 @@ function CsvModal() {
           // Pass keys as a single object to the UploadCSV API
           const res = await UploadCSV({ base64EncodedString, fileName, store_id });
           console.log('Response from API:', res);
+          onUploadComplete(true);
           setUploadSuccess(true);
         } catch (error) {
           console.log('Error Uploading CSV', error);
+          onUploadComplete(false);
         }
         setLoading(false);
         // setUploadSuccess(true);
