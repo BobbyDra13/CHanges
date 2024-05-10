@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Grid, Stack, Typography, Card, Skeleton, LinearProgress, Modal, Box, Tooltip, IconButton, Divider,Snackbar, Alert } from '@mui/material';
+import {
+  Grid,
+  Stack,
+  Typography,
+  Card,
+  Skeleton,
+  LinearProgress,
+  Modal,
+  Box,
+  Tooltip,
+  IconButton,
+  Divider,
+  Snackbar,
+  Alert
+} from '@mui/material';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { avgDwelTime } from '../../../api/sentinelAPI';
 // import { footfallCard } from '../../../api/sentinelAPI';
@@ -68,7 +82,7 @@ function Overview() {
 
   const handleClickPopScoreModal = () => {
     setOpenPopScoreModal((prev) => !prev);
-    setIsSnackbarOpen(false); 
+    setIsSnackbarOpen(false);
     console.log(openPopScoreModal);
   };
 
@@ -89,7 +103,7 @@ function Overview() {
 
   const handleSnackBarClose = () => {
     setIsSnackbarOpen(false);
-  }
+  };
 
   const accentColLight = theme.palette.success.light;
   const accentColDark = theme.palette.success.dark;
@@ -396,7 +410,7 @@ function Overview() {
                           aria-describedby="modal-modal-description"
                         >
                           <Box sx={modalStyle}>
-                            <CsvModal onUploadComplete={handleUploadComplete}/>
+                            <CsvModal onUploadComplete={handleUploadComplete} />
                           </Box>
                         </Modal>
                       </>
@@ -465,7 +479,7 @@ function Overview() {
                           aria-describedby="modal-modal-description"
                         >
                           <Box sx={modalStyle}>
-                            <CsvModal onUploadComplete={handleUploadComplete}/>
+                            <CsvModal onUploadComplete={handleUploadComplete} />
                           </Box>
                         </Modal>
                       </>
@@ -589,7 +603,7 @@ function Overview() {
                             aria-describedby="modal-modal-description"
                           >
                             <Box sx={modalStyle}>
-                              <CsvModal onUploadComplete={handleUploadComplete}/>
+                              <CsvModal onUploadComplete={handleUploadComplete} />
                             </Box>
                           </Modal>
                         </>
@@ -696,7 +710,7 @@ function Overview() {
                             aria-describedby="modal-modal-description"
                           >
                             <Box sx={modalStyle}>
-                              <CsvModal onUploadComplete={handleUploadComplete}/>
+                              <CsvModal onUploadComplete={handleUploadComplete} />
                             </Box>
                           </Modal>
                         </>
@@ -808,7 +822,7 @@ function Overview() {
           {/* Alert store message sent successfully ! */}
           {snackbarMessage}
         </Alert>
-        </Snackbar>
+      </Snackbar>
     </div>
   );
 }
