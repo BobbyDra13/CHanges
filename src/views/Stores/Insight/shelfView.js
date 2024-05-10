@@ -70,7 +70,7 @@ export default function ShelfView({ date }) {
       setPos({ lft: false, tp: false, wdth: false, ht: false });
       setAntn(!antn);
     }
-
+setPosArr([]);
     if (!isImageDialogOpen) {
       setCdata(anomaly);
       // setSelectedImage(url);
@@ -142,6 +142,15 @@ export default function ShelfView({ date }) {
     setPos({ lft: lft, tp: top, wdth: width, hght: height });
     setAntn(true);
   };
+
+  const calculate2 = (xmin, ymin, xmax, ymax, type) => {
+    const lft = (xmin / natural.wdth) * 100;
+    const top = (ymin / natural.hght) * 100;
+    const width = ((xmax - xmin) / natural.wdth) * 100;
+    const height = ((ymax - ymin) / natural.hght) * 100;
+   return({ lft: lft, tp: top, wdth: width, hght: height, typ:type })
+  };
+  
   const highlightStyle = {
     position: 'absolute',
     left: `${pos.lft}%`,
@@ -154,8 +163,14 @@ export default function ShelfView({ date }) {
     backgroundColor: 'rgba(255, 0, 0, 0.6)',
     borderRadius: '5px'
   };
+  const [posArr, setPosArr]= useState([]);
   console.log('position= ', pos);
   const findDimensions = (event) => {
+    const parr= cData.anomalies.map(item=>(calculate2(item.xmin ,  item.ymin,  item.xmax,  item.ymax, item.anomaly_type)));
+    const parr2= cData.details_bboxes.map(item=>(calculate2(item.xmin ,  item.ymin,  item.xmax,  item.ymax, "green")));
+    const res= parr.concat(parr2);
+
+    setPosArr(res);
     setImageLoading(false);
     const { naturalWidth, naturalHeight } = event.target;
     // const imgDiv = imageRef.current;
@@ -169,14 +184,11 @@ export default function ShelfView({ date }) {
   const handleNextClick = async () => {
     setNextbtn(false);
     setNextClickLoad(true);
+    setPosArr([]);
     const series = shelves.map((itm) => itm.shelf_id);
-    console.log(series);
     const currentShelf = cData.shelf_id;
-    console.log(currentShelf);
     const index = series.indexOf(currentShelf);
-    console.log(index);
     const len = series.length;
-    console.log(len);
     const nextInd = (index + 1) % len;
     console.log(nextInd);
 
@@ -422,6 +434,22 @@ export default function ShelfView({ date }) {
                                   </IconButton>
                                 </>
                               )}
+                    {posArr && posArr.map((item, index)=>
+                              <div key={index} style={
+                                {
+                                  position: 'absolute',
+                                  left: `${item.lft}%`,
+                                  top: `${item.tp}%`,
+                                  width: `${item.wdth}%`,
+                                  height: `${item.hght}%`,
+                                  border: item.typ=== 'incorrect_pop'? '3px solid red':item.typ=== 'alien_pop'?'3px solid #ffbf00':'3px solid green', // Change border color as desired
+                                  boxSizing: 'border-box',
+                                  pointerEvents: 'none', // So clicks can still interact with the image
+                                  // backgroundColor: 'rgba(255, 0, 0, 0.6)',
+                                  borderRadius: '5px'
+                                }
+                              }></div>)}
+                              
 
                               {antn && <div style={highlightStyle}></div>}
                             </div>
@@ -470,7 +498,7 @@ export default function ShelfView({ date }) {
                           )}
 
                           {cData.anomalies.length > 0 &&
-                            cData.anomalies.map((itm, index) => (
+                            cData.anomalies.map((itm, index) => itm.anomaly_type!= 'no_read_pop' && (
                               <Tooltip
                                 key={index}
                                 title={
