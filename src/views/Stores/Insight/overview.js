@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Grid, Stack, Typography, Card, Skeleton, LinearProgress, Modal, Box, Tooltip, IconButton, Divider } from '@mui/material';
+import {
+  Grid,
+  Stack,
+  Typography,
+  Card,
+  Skeleton,
+  LinearProgress,
+  Modal,
+  Box,
+  Tooltip,
+  IconButton,
+  Divider,
+  Snackbar,
+  Alert
+} from '@mui/material';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { avgDwelTime } from '../../../api/sentinelAPI';
 // import { footfallCard } from '../../../api/sentinelAPI';
@@ -57,6 +71,8 @@ function Overview() {
   const [costcnt, setCostcnt] = useState('');
   // const [ratio, setRatio] = useState('');
   const [openPopScoreModal, setOpenPopScoreModal] = useState(false);
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
   //eslint-disable-next-line
   const [captureProg, setCaptureProg] = useState([]);
   const [capProgressValue, setCapProgressValue] = useState(0);
@@ -66,11 +82,27 @@ function Overview() {
 
   const handleClickPopScoreModal = () => {
     setOpenPopScoreModal((prev) => !prev);
+    setIsSnackbarOpen(false);
     console.log(openPopScoreModal);
   };
 
   const handleClose = () => {
-    setOpenPopScoreModal(false);
+    setOpenPopScoreModal(false); // Close the modal
+  };
+
+  const handleUploadComplete = (success) => {
+    setOpenPopScoreModal(false); // Close the modal
+    if (success) {
+      setIsSnackbarOpen(true); // Open the snackbar for success
+      setSnackbarMessage('File uploaded successfully!');
+    } else {
+      // Handle error scenario
+      setSnackbarMessage('Error uploading file!');
+    }
+  };
+
+  const handleSnackBarClose = () => {
+    setIsSnackbarOpen(false);
   };
 
   const accentColLight = theme.palette.success.light;
@@ -378,7 +410,7 @@ function Overview() {
                           aria-describedby="modal-modal-description"
                         >
                           <Box sx={modalStyle}>
-                            <CsvModal />
+                            <CsvModal onUploadComplete={handleUploadComplete} />
                           </Box>
                         </Modal>
                       </>
@@ -447,7 +479,7 @@ function Overview() {
                           aria-describedby="modal-modal-description"
                         >
                           <Box sx={modalStyle}>
-                            <CsvModal />
+                            <CsvModal onUploadComplete={handleUploadComplete} />
                           </Box>
                         </Modal>
                       </>
@@ -571,7 +603,7 @@ function Overview() {
                             aria-describedby="modal-modal-description"
                           >
                             <Box sx={modalStyle}>
-                              <CsvModal />
+                              <CsvModal onUploadComplete={handleUploadComplete} />
                             </Box>
                           </Modal>
                         </>
@@ -678,7 +710,7 @@ function Overview() {
                             aria-describedby="modal-modal-description"
                           >
                             <Box sx={modalStyle}>
-                              <CsvModal />
+                              <CsvModal onUploadComplete={handleUploadComplete} />
                             </Box>
                           </Modal>
                         </>
@@ -778,6 +810,19 @@ function Overview() {
           </Grid>
         </Grid>
       </Grid>
+
+      <Snackbar
+        open={isSnackbarOpen}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        key={'bottom' + 'right'}
+        autoHideDuration={6000}
+        onClose={handleSnackBarClose}
+      >
+        <Alert onClose={handleSnackBarClose} className="text-white" severity="success" sx={{ width: '100%', bgcolor: 'yellowgreen' }}>
+          {/* Alert store message sent successfully ! */}
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
