@@ -3,14 +3,18 @@ import { useEffect, useState } from 'react';
 // import Chart from 'react-apexcharts';
 import StoreView from './storeView';
 import TrendsChart from './TrendsViewCharts/Trendchart';
+import ShelfView from './shelfView';
 
-const LineChartToggle = ({ storeId, date }) => {
+const LineChartToggle = ({ storeId, date, groups, activeButton, handleButtonClick ,zoneid}) => {
   // const theme = useTheme();
-  const [activeButton, setActiveButton] = useState('Trends View');
-  const handleButtonClick = (button) => {
-    setActiveButton(button);
-  };
-
+  // const [activeButton, setActiveButton] = useState('Trends View');
+  const [isGroup, setIsGroup] = useState(null);
+  // const [isZoneid, setIsZoneid] = useState('');
+  
+  // const handleButtonClick = (button) => {
+  //   setActiveButton(button);
+  // };
+  console.log('okaybhai',groups);
   // const isSmallScreen = !useMediaQuery(theme.breakpoints.up('sm'));
   // const isMediumScreen = !useMediaQuery(theme.breakpoints.up('md'));
 
@@ -121,8 +125,13 @@ const LineChartToggle = ({ storeId, date }) => {
     // console.log(startOfWeek);
     // console.log(date);
     // eslint-disable-next-line
+    setIsGroup(groups);
   }, [date]);
 
+  // useEffect(() => {
+  //   setIsZoneid(zoneid);
+  // },[zoneid]);
+  
   return (
     <Grid item sx={{ maxWidth: '100%', maxHeight: '100%', height: 'auto' }}>
       <Paper
@@ -180,6 +189,7 @@ const LineChartToggle = ({ storeId, date }) => {
             Camera view
           </button>
         </div>
+        
         {activeButton == 'Trends View' ? (
           <div style={{ width: '100%', overflow: 'auto', height: '500px' }}>
             {/* <Chart options={chartOptions} series={series} type="line" height={500} width={isSmallScreen || isMediumScreen ? 720 : '100%'} /> */}
@@ -237,11 +247,20 @@ const LineChartToggle = ({ storeId, date }) => {
               ))}
             </Grid> */}
           </div>
-        ) : (
+        ) : activeButton == 'Store View' ?(
           <Grid>
-            <StoreView activeButton={activeButton} setActiveButton={setActiveButton} date={date} />
+            <StoreView activeButton={activeButton} setActiveButton={setActiveButton} date={date} groups={isGroup}/>
           </Grid>
-        )}
+        ): activeButton == 'Shelf View' ? (
+          <Grid>
+            {console.log("grpspr", groups )}
+            
+            {console.log('uio',zoneid)}
+            {console.log('ytt',activeButton)}
+            <ShelfView date={date} groups={groups} zoneid={zoneid}/>
+          </Grid>
+        ) : (null)
+      }
       </Paper>
     </Grid>
   );

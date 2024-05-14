@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   Grid,
@@ -56,8 +56,26 @@ function Overview() {
   const [dweltimeData, setDweltimedata] = useState(false);
   const [footfalldata, setFootfalldata] = useState(false);
   const [associateScoreData, setAssociateScoreData] = useState([]);
+  const [isGroup, setIsGroup] = useState([]);
+  const [activeButton, setActiveButton] = useState('Trends View');
+  // const [selectedZoneID, setSelectedZoneID] = useState(null);
+  const targetRef = useRef(null);
   //eslint-disable-next-line
   const [ftfall, setftfall] = useState([]);
+  const [isZoneID, setIsZoneID] = useState('');
+  const handleScrollToComponent = (zoneId) => {
+    // Scroll to the target component
+    localStorage.setItem('selectedZoneId', zoneId);
+    setIsZoneID(zoneId);
+    if (targetRef.current) {
+      targetRef.current.scrollIntoView({ behavior: 'smooth' });
+      // setSelectedZoneID(zoneID);
+    }
+    handleButtonClick('Shelf View');
+  };
+  const handleButtonClick = (button) => {
+    setActiveButton(button);
+  };
 
   function padTo2Digits(num) {
     return num.toString().padStart(2, '0');
@@ -197,7 +215,7 @@ function Overview() {
       setIsMounted(false);
     };
   }, []);
-
+  
   useEffect(() => {
     if (isMounted) {
       const commonBody = {
@@ -257,12 +275,16 @@ function Overview() {
             // const { totalCustomerStore } = data[0];
             // const { zones } = data[0];
             const group = data.data;
+            setIsGroup(group);
+            console.log('dfdf',group);
+            
             group.forEach((item) => {
               let percentageString = item.data.FullnessPopPercent.replace('%', '');
               item.data.FullnessPopPercent = parseFloat(percentageString);
+              console.log('3some',item.zone_id);
             });
             group.sort((a, b) => a.data.FullnessPopPercent - b.data.FullnessPopPercent);
-            console.log('pxs', group);
+            console.log('pxs', );
             setftfall(true);
             // console.log(zones);
             setFootfalldata(group);
@@ -360,7 +382,10 @@ function Overview() {
     // eslint-disable-next-line
   }, [date]);
   console.log('Anomalies ', anomaliesCount);
-
+  // const handleOpenCameraView = () => {
+  //   setIsCamOpen(true);
+  //   handleScrollToComponent();
+  // }
   // ftfall && ftfall.sort((a, b) => b.totalCustomerZone - a.totalCustomerZone);
   // dweltimeData && dweltimeData.sort((a, b) => b.avgDwellTime - a.avgDwellTime);
 
@@ -415,16 +440,26 @@ function Overview() {
                         </Modal>
                       </>
                     </div>
+                    {console.log('fxf',footfalldata)}
                     {footfalldata.length > 0 ? (
-                      <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
+                      <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar border border-black">
                         {footfalldata.map((item, index) => {
                           // const percentage = (item.totalCustomerZone / ftfall[0].totalCustomerZone) * 100;
                           const percentage =
                             item.data.FullnessPopPercent != undefined ? Math.round(parseFloat(item.data.FullnessPopPercent)) : 0;
                           const barcolor = percentage >= 99 ? '#00ac69' : percentage >= 95 ? '#f4a100' : '#ff413a';
+                          console.log('idss',item.zone_id);
+                          console.log('thik hai',isZoneID);
                           // console.log(percentage);
                           return (
-                            <div className="mt-2" key={index}>
+                            // <button 
+                            // key={index}
+                            // onClick={handleScrollToComponent}
+                            // className='flex w-full'
+                            
+                            // >
+
+                            <div onClick={() => handleScrollToComponent(item.zone_id)} className="mt-2 border border-black" key={index}>
                               <div className="flex gap-1 items-center">
                                 {/* <div
                                   className=" rounded-full h-4 w-4"
@@ -455,6 +490,7 @@ function Overview() {
                                 }}
                               />
                             </div>
+                            // </button>
                           );
                         })}
                       </div>
@@ -738,9 +774,9 @@ function Overview() {
         </Grid>
         <Grid item xs={12}>
           <Grid container spacing={2}>
-            <Grid className="mb-10" item xs={12} lg={9} xl={9.6}>
+            <Grid ref={targetRef} className="mb-10" item xs={12} lg={9} xl={9.6}>
               <Card className="border border-gray-300" sx={{ height: '550px' }}>
-                <LineChartToggle storeId={store} date={date} />
+                <LineChartToggle storeId={store} date={date} groups={isGroup} activeButton={activeButton} handleButtonClick={handleButtonClick} zoneid={isZoneID}/>
               </Card>
             </Grid>
             <Grid item className="mb-10" xs={12} lg={3} xl={2.4}>

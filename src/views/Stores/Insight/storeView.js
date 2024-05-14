@@ -22,10 +22,10 @@ const theme = createTheme({
     }
   }
 });
-const StoreView = ({ activeButton, setActiveButton, date: propDate }) => {
+const StoreView = ({ activeButton, setActiveButton, date: propDate, groups }) => {
   const [loading, setLoading] = useState(true);
   const [bayToOpen, setBayToOpen] = useState({});
-
+  const [isGroup, setIsGroup] = useState(null);
   const imageRef = useRef(null);
   const [scaleFactor, setScaleFactor] = useState(1);
   const isMdOrLarger = useMediaQuery((theme) => theme.breakpoints.up('md'));
@@ -44,7 +44,10 @@ const StoreView = ({ activeButton, setActiveButton, date: propDate }) => {
     setLayoutData(response.data[0]);
     setLoading(false);
   };
-
+useEffect(() => {
+  setIsGroup(groups);
+},[date]);
+console.log('waha',isGroup);
   useEffect(() => {
     getLayoutData();
   }, []);
@@ -147,6 +150,7 @@ const StoreView = ({ activeButton, setActiveButton, date: propDate }) => {
       ) : (
         <ShelfView
           date={propDate}
+          groups={isGroup}
           // bayToOpen={bayToOpen} layoutData={layoutData}
         />
       )}

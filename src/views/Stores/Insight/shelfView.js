@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import {
@@ -36,7 +36,7 @@ bouncy.register();
 
 // };
 
-export default function ShelfView({ date }) {
+export default function ShelfView({ date, groups, zoneid }) {
   const { store } = useParams();
   const [active, setActive] = useState(false);
   const [data, setData] = useState(false);
@@ -51,8 +51,27 @@ export default function ShelfView({ date }) {
   const [searchQuery, setSearchQuery] = useState('');
   const theme = useTheme();
   const success = theme.palette.success.main;
+  const [isGroup,setIsGroup] = useState(null);
+  const paperRefs = useRef([]);
+  // const [selectedZoneId, setSelectedZoneId] = useState('');
 
-  async function zoneDetails(id) {
+//   useEffect(() => {
+//     const storedZoneId = localStorage.getItem('selectedZoneId');
+//     setSelectedZoneId(storedZoneId || '');
+// }, []); // Run once on component mount
+
+// useEffect(() => {
+//     console.log('Selected Zone ID:', selectedZoneId);
+// }, [selectedZoneId]); // Log whenever selectedZoneId changes
+// useEffect(() => {
+//   // Trigger click on Paper component when zoneId changes
+//   if (zoneid) {
+//     paperRef.current.click();
+//   }
+// }, [zoneid]);
+
+console.log('ansh',zoneid);
+  async function  zoneDetails(id) {
     setloading(true);
     const body = {
       zone_id: id,
@@ -122,14 +141,15 @@ setPosArr([]);
       };
       const Zonedata = await GetZonedetails(body);
       setData(Zonedata);
-      console.log('Zonedata:', Zonedata);
-      setActive(Zonedata[0].name);
+      console.log('Zonedata:', Zonedata[0].name);
+      setActive(Zonedata[0].name);  
       zoneDetails(Zonedata[0].id);
     }
     GetZone();
+    setIsGroup(groups);
+    console.log('hatt',isGroup, date);
     // eslint-disable-next-line
-  }, [date]);
-
+  }, [date,groups,store]);
   const [antn, setAntn] = useState(false);
   const [pos, setPos] = useState({ lft: false, tp: false, wdth: false, ht: false });
   const [natural, setNaturel] = useState({ wdth: false, hght: false });
@@ -217,7 +237,7 @@ setPosArr([]);
   };
 
   const filteredData = Array.isArray(data) ? data.filter((d) => d.name.toLowerCase().includes(searchQuery.toLowerCase())) : [];
-
+  console.log('vb',filteredData);
   return (
     <>
       {data ? (
@@ -241,21 +261,60 @@ setPosArr([]);
                 </Grid>
               </Grid>
               {data &&
-                filteredData.map((d, ind) => (
+                filteredData
+                .sort((a, b) => {
+                  // Custom sorting function for alphanumeric sorting
+                  const nameA = a.name.toLowerCase();
+                  const nameB = b.name.toLowerCase();
+              
+                  if (nameA < nameB) return -1;
+                  if (nameA > nameB) return 1;
+                  return 0;
+                }).
+                map((d, ind) => {
+                  // Check if there is a matching zone_id in the groups data
+      const match = isGroup ? isGroup.find(group => group.zone_id === d.name) : [];
+      console.log('thu',match);
+      const style = {
+        backgroundColor:   match ? 'white' : 'gray',
+        color: active ? 'black' : 'white',
+        fontWeight: 'bolder',
+        opacity: match ? 1 : 0.5, // Reduce opacity if no match
+        cursor: match ? 'pointer' : 'not-allowed' // Change cursor if no match
+      };
+      // Determine the style based on the match
+      // const style = {
+      //   backgroundColor: match ? 'black' : 'gray', // Change background color based on match
+      //   color: match ? 'white' : 'gray', // Change text color based on match
+      //   fontWeight: 'bolder'
+      // };
+console.log("whyme",d.name);
+              return (
+
+             
                   <Paper
+                  ref={(ref) => {
+                    paperRefs.current[ind] = ref
+                    console.log(`Ref assigned for index ${ind}:`, ref);
+                  }}
                     key={ind}
                     elevation={4}
                     className="flex items-center mb-4 cursor-pointer p-5  "
-                    onClick={() => {
-                      // setUrl(imgURLs.camera1);
+                    // onClick={() => {
+                    //   // setUrl(imgURLs.camera1);
+                    //   setActive(d.name);
+                    //   zoneDetails(d.id);
+                    // }}
+                    onClick={match ? () => {
                       setActive(d.name);
                       zoneDetails(d.id);
-                    }}
-                    style={{
-                      backgroundColor: active === d.name ? 'black' : 'white',
-                      color: active === d.name ? 'white' : 'black',
-                      fontWeight: 'bolder'
-                    }}
+                    } : undefined} 
+                    // style={{
+                    //   backgroundColor: active === d.name ? 'black' : 'white',
+                    //   color: active === d.name ? 'white' : 'black',
+                    //   fontWeight: 'bolder'
+                    // }}
+                    style={style}
                   >
                     {/* <div  className='bg-gray-200 m-2  rounded' style={{height:"100px", width:"100px"}}></div> */}
                     <div
@@ -276,7 +335,7 @@ setPosArr([]);
                     </div>
                     <h6>{d.name}</h6>
                   </Paper>
-                ))}
+                  )} )}
             </Grid>
 
             <Grid
@@ -612,6 +671,19 @@ setPosArr([]);
           )}
         </Dialog>
       )}
+      {useEffect(() => {
+  console.log('zoneid:', zoneid);
+  console.log('filteredData:', filteredData);
+  if (zoneid && Array.isArray(filteredData) && filteredData.length > 0) {
+    const index = filteredData.findIndex((d) => d.name === zoneid);
+    console.log('Found index:', index);
+    // console.log('yyy', paperRefs.current[index]);
+    if (index !== -1 && paperRefs.current[index]?.current) {
+      console.log('ttt');
+      paperRefs.current[index].current.click();
+    }
+  }
+}, [zoneid, filteredData])}
     </>
   );
 }
