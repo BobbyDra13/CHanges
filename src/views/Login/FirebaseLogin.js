@@ -74,6 +74,7 @@ const FirebaseLogin = () => {
         onSignup();
       } else {
         console.log('entered else');
+        setLoading(false);
         toast.error('You are not authorized to access');
       }
     } catch (error) {
@@ -132,6 +133,7 @@ const FirebaseLogin = () => {
       })
       .catch((error) => {
         console.error('Error verifying OTP:', error);
+        toast.error('Wrong OTP. Please try again.');
       })
       .finally(() => {
         setLoading(false);
