@@ -45,19 +45,17 @@ import pog from '../../../assets/images/pog.jpeg';
 import associate from '../../../assets/images/profile-user.png';
 
 function Overview() {
-
   const urlParams = new URLSearchParams(window.location.search);
   const data = Object.fromEntries(urlParams.entries());
-  const value = (JSON.stringify(data).substring(2,12));
-  const storeID= JSON.stringify(data).substring(16, 20);
- console.log(storeID);
+  const value = JSON.stringify(data).substring(2, 12);
+  const storeID = JSON.stringify(data).substring(16, 20);
+  console.log(storeID);
   // console.log(JSON.stringify(data));
   // const [storeID, setStoreID]=useState("");
   // if(data){
   //   setStoreID(JSON.stringify(data).substring(17, 20))
   // }
   // console.log(storeID);
-
 
   const { store } = useParams();
   console.log('cmon man', store);
@@ -77,7 +75,9 @@ function Overview() {
     return num.toString().padStart(2, '0');
   }
   const customDate = new Date();
-  const finalCustomDate = data?value:[customDate.getFullYear(), padTo2Digits(customDate.getMonth() + 1), padTo2Digits(customDate.getDate())].join('-');
+  const finalCustomDate = data
+    ? value
+    : [customDate.getFullYear(), padTo2Digits(customDate.getMonth() + 1), padTo2Digits(customDate.getDate())].join('-');
   const [date, setSelectedDate] = useState(finalCustomDate);
   //eslint-disable-next-line
   const [empCount, setEmpCount] = useState('');
@@ -105,7 +105,6 @@ function Overview() {
   };
 
   const handleUploadComplete = (success) => {
-
     //here changes are made, change it such that success is given as o/p only when both the API's give the response
     setOpenPopScoreModal(false); // Close the modal
     if (success) {
@@ -380,16 +379,16 @@ function Overview() {
   // ftfall && ftfall.sort((a, b) => b.totalCustomerZone - a.totalCustomerZone);
   // dweltimeData && dweltimeData.sort((a, b) => b.avgDwellTime - a.avgDwellTime);
 
-
-
   return (
     <div className="w-full ">
-\      <Grid container spacing={2}>
+      \{' '}
+      <Grid container spacing={2}>
         <Grid item xs={12}>
           <Stack direction={isSmallScreen ? 'column' : 'row'} justifyContent={'space-between'}>
-            <Typography variant="h3">Overview </Typography>{storeID?<Typography variant='h6'>Store ID: {storeID}</Typography>:<></>}
+            <Typography variant="h3">Overview </Typography>
+            {storeID ? <Typography variant="h6">Store ID: {storeID}</Typography> : <></>}
 
-            <div className='sm:mt-2'>
+            <div className="sm:mt-2">
               <DatePickerStore SetSelectedDate={setSelectedDate} style={{ borderRadius: '15px' }} />
             </div>
           </Stack>
@@ -830,7 +829,6 @@ function Overview() {
           </Grid>
         </Grid>
       </Grid>
-
       <Snackbar
         open={isSnackbarOpen}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}

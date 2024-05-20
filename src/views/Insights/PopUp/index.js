@@ -56,6 +56,7 @@ const PopUp = ({ open, onClose, value, selectedDate }) => {
 
     // Call the function
     makeApiCall();
+    // eslint-disable-next-line
   }, [selectedDate, value]);
 
   const navigate = (id, data, store_id) => {

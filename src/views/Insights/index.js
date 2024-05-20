@@ -487,13 +487,7 @@ const Insights = () => {
 
           {/* </div> */}
 
-          <Grid
-            item
-            lg={3}
-            sm={6}
-            xs={12}
-            
-          >
+          <Grid item lg={3} sm={6} xs={12}>
             {/* KPI VIEW */}
             {/* OSA */}
             <KpiPop
@@ -510,11 +504,15 @@ const Insights = () => {
           </Grid>
 
           {showPopUp && (
-            <Grid item lg={3} sm={6} xs={12}
-            onClick={() => {
-              handleOpenPopup();
-              setVal('1');
-            }}
+            <Grid
+              item
+              lg={3}
+              sm={6}
+              xs={12}
+              onClick={() => {
+                handleOpenPopup();
+                setVal('1');
+              }}
             >
               <KpiPop
                 isLoaded={fullness}
@@ -531,7 +529,6 @@ const Insights = () => {
               />
             </Grid>
           )}
-
 
           {showPopUp && <PopUp open={popupOpen} onClose={handleClosePopup} value={val} selectedDate={selectedDate} />}
 

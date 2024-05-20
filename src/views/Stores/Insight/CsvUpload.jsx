@@ -69,7 +69,7 @@ function CsvModal({ onUploadComplete }) {
             },
             body: JSON.stringify(input)
           });
-          console.log(response)
+          console.log(response);
           if (response.ok) {
             setBaySuccess(true);
           } else {
@@ -166,15 +166,31 @@ function CsvModal({ onUploadComplete }) {
       <div className="flex gap-2">
         <Button variant="contained" component="label" disabled={loading || uploadSuccess}>
           <input {...getInputProps()} style={{ display: 'none' }} />
-          {loading ? <CircularProgress size={24} /> : uploadSuccess ? <CheckCircleIcon /> : uploadError ? <ErrorIcon /> : 'Upload Excel/CSV'}
+          {loading ? (
+            <CircularProgress size={24} />
+          ) : uploadSuccess ? (
+            <CheckCircleIcon />
+          ) : uploadError ? (
+            <ErrorIcon />
+          ) : (
+            'Upload Excel/CSV'
+          )}
         </Button>
 
         <Button variant="contained" disabled={!uploadSuccess || bayLoading || baySuccess}>
-          {bayLoading ? <CircularProgress size={24} /> : baySuccess ? <CheckCircleIcon /> : bayError ? <ErrorIcon /> : 'Start Bay Group Mapping'}
+          {bayLoading ? (
+            <CircularProgress size={24} />
+          ) : baySuccess ? (
+            <CheckCircleIcon />
+          ) : bayError ? (
+            <ErrorIcon />
+          ) : (
+            'Start Bay Group Mapping'
+          )}
         </Button>
       </div>
 
-      { (confirmationVisible && 
+      {confirmationVisible && (
         <div className="fixed bottom-0 left-0 right-0 bg-gray-100 p-4 flex justify-center items-center rounded-lg">
           <p className="mr-4">Do you want to upload user sheet?</p>
           <Button variant="contained" color="primary" onClick={() => handleConfirmation('upload')}>
@@ -186,13 +202,7 @@ function CsvModal({ onUploadComplete }) {
         </div>
       )}
 
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".csv, .xlsx"
-        style={{ display: 'none' }}
-        onChange={handleUserSheetUpload}
-      />
+      <input ref={fileInputRef} type="file" accept=".csv, .xlsx" style={{ display: 'none' }} onChange={handleUserSheetUpload} />
     </div>
   );
 }
