@@ -512,7 +512,7 @@ export default function ShelfView({ date, groups }) {
           <l-bouncy size="45" speed="1" color="black"></l-bouncy>
         </div>
       ) : (
-        <Dialog maxWidth={600} fullScreen open={isImageDialogOpen} onClose={handleImageClick}>
+        <Dialog maxWidth={600} fullScreen={isSmallScreen ? true : false} open={isImageDialogOpen} onClose={handleImageClick}>
           {nextClickLoad ? (
             <DialogContent
               style={{
@@ -537,14 +537,13 @@ export default function ShelfView({ date, groups }) {
             </DialogContent>
           ) : (
             <DialogContent>
-              {/* {anomalyDetails.length > 0 && */}
               {
                 isImageDialogOpen && (
                   // updatedData[0].allAnomalies.map((details, index) => (
                   <div className="zoom-container">
                     <div className="image-container flex justify-center items-center lg:mb-0 mb-10 relative">
                       <TransformWrapper>
-                        <div className="image-wrapper rounded-md md:w-full w-full mt-[200px]">
+                        <div className="image-wrapper rounded-md md:w-full w-full" style={{ marginTop: isSmallScreen ? '200px' : '0' }}>
                           <TransformComponent>
                             {imageLoading && (
                               <div className="flex justify-center items-center absolute top-0 left-0 z-10  overflow-x-hidden bg-white w-full h-full">
