@@ -284,8 +284,8 @@ export default function ShelfView({ date, groups }) {
                     const match = isGroup ? isGroup.find((group) => group.zone_id === d.name) : [];
                     console.log('thu', match);
                     const style = {
-                      backgroundColor: match ? 'white' : 'gray',
-                      color: active ? 'black' : 'white',
+                      backgroundColor: match && active === d.name ? 'black' : match ? 'white' : 'gray',
+                      color: active === d.name ? 'white' : 'black',
                       fontWeight: 'bolder',
                       opacity: match ? 1 : 0.5, // Reduce opacity if no match
                       cursor: match ? 'pointer' : 'not-allowed' // Change cursor if no match
