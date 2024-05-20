@@ -60,6 +60,11 @@ export default function ShelfView({ date, groups }) {
   const isSmallScreen = !useMediaQuery(theme.breakpoints.up('sm'));
   const [isGroup, setIsGroup] = useState(null);
   const paperRefs = useRef([]);
+
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   // const [selectedZoneId, setSelectedZoneId] = useState('');
 
   //   useEffect(() => {
@@ -321,6 +326,7 @@ export default function ShelfView({ date, groups }) {
                             ? () => {
                                 setActive(d.name);
                                 zoneDetails(d.id);
+                                handleOpen();
                               }
                             : undefined
                         }
@@ -376,7 +382,7 @@ export default function ShelfView({ date, groups }) {
                     }}
                   >
                     <Box sx={{ bgcolor: 'background.paper' }}>
-                      <div>
+                      <div style={{ position: 'sticky', top: '0', backgroundColor: 'white' }}>
                         <div className="flex justify-between items-center px-3">
                           <h3 className="text-xl font-bold">{active}</h3>
                           <Button variant="contained" style={{ margin: '10px', backgroundColor: 'red' }} onClick={handleClose}>
@@ -534,7 +540,7 @@ export default function ShelfView({ date, groups }) {
                   <div className="zoom-container">
                     <div className="image-container flex justify-center items-center lg:mb-0 mb-10 relative">
                       <TransformWrapper>
-                        <div className="image-wrapper rounded-md md:w-full w-4/5">
+                        <div className="image-wrapper rounded-md md:w-full w-full mt-[200px]">
                           <TransformComponent>
                             {imageLoading && (
                               <div className="flex justify-center items-center absolute top-0 left-0 z-10  overflow-x-hidden bg-white w-full h-full">
@@ -556,7 +562,6 @@ export default function ShelfView({ date, groups }) {
                                 src={cData.img_url}
                                 alt="No img found"
                                 onLoad={findDimensions}
-
                                 //   () => {
                                 //   setImageLoading(false);
                                 // }}

@@ -44,10 +44,10 @@ const StoreView = ({ activeButton, setActiveButton, date: propDate, groups }) =>
     setLayoutData(response.data[0]);
     setLoading(false);
   };
-useEffect(() => {
-  setIsGroup(groups);
-},[date]);
-console.log('waha',isGroup);
+  useEffect(() => {
+    setIsGroup(groups);
+  }, [date]);
+  console.log('waha', isGroup);
   useEffect(() => {
     getLayoutData();
   }, []);
