@@ -143,11 +143,12 @@ export default function ShelfView({ date }) {
     setAntn(true);
   };
 
-  const calculate2 = (xmin, ymin, xmax, ymax, type) => {
-    const lft = (xmin / natural.wdth) * 100;
-    const top = (ymin / natural.hght) * 100;
-    const width = ((xmax - xmin) / natural.wdth) * 100;
-    const height = ((ymax - ymin) / natural.hght) * 100;
+  const calculate2 = (xmin, ymin, xmax, ymax, type, naturalWidth, naturalHeight) => {
+    console.log('natural width is', naturalWidth, naturalHeight);
+    const lft = (xmin / naturalWidth) * 100;
+    const top = (ymin / naturalHeight) * 100;
+    const width = ((xmax - xmin) / naturalWidth) * 100;
+    const height = ((ymax - ymin) / naturalHeight) * 100;
     return { lft: lft, tp: top, wdth: width, hght: height, typ: type };
   };
 
@@ -163,20 +164,23 @@ export default function ShelfView({ date }) {
     backgroundColor: 'rgba(255, 0, 0, 0.6)',
     borderRadius: '5px'
   };
-  const [posArr, setPosArr] = useState([]);
-  console.log('position= ', pos);
+  const [posArr, setPosArr] = useState(false);
   const findDimensions = (event) => {
-    const parr = cData.anomalies.map((item) => calculate2(item.xmin, item.ymin, item.xmax, item.ymax, item.anomaly_type));
-    const parr2 = cData.details_bboxes.map((item) => calculate2(item.xmin, item.ymin, item.xmax, item.ymax, 'green'));
-    const res = parr.concat(parr2);
-
-    setPosArr(res);
     setImageLoading(false);
     const { naturalWidth, naturalHeight } = event.target;
     // const imgDiv = imageRef.current;
     // const { width, height } = imgDiv.getBoundingClientRect();
 
     setNaturel({ wdth: naturalWidth, hght: naturalHeight });
+    const parr = cData.anomalies.map((item) =>
+      calculate2(item.xmin, item.ymin, item.xmax, item.ymax, item.anomaly_type, naturalWidth, naturalHeight)
+    );
+    const parr2 = cData.details_bboxes.map((item) =>
+      calculate2(item.xmin, item.ymin, item.xmax, item.ymax, 'green', naturalWidth, naturalHeight)
+    );
+    const res = parr.concat(parr2);
+
+    setPosArr(res);
     setNextClickLoad(false);
     // setScaleFactor(width / naturalWidth);
   };
