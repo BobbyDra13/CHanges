@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import OtpInput from 'react-otp-input';
 import { COUNTRYCODE } from './countryCode';
@@ -35,7 +35,7 @@ const FirebaseLogin = () => {
   const [otpEntered, setOtpEntered] = useState(false);
   // const [fullPageLoading, setFullPageLoading] = useState(true);
   const [verifyData, setVerifyData] = useState(false);
-  const [token, setToken] = useState('');
+  const [accessToken, setAccessToken] = useState('');
   const [showOTPInput, setShowOTPInput] = useState(false);
   const [loading, setLoading] = useState(false);
   const onCaptchVerify = () => {
@@ -70,6 +70,7 @@ const FirebaseLogin = () => {
       console.log('data', response.data.data.number);
       setVerifyData(response.data);
       if (response.data.data.number === phoneNumber) {
+        console.log('entered if');
         onSignup();
       } else {
         console.log('entered else');
@@ -80,10 +81,13 @@ const FirebaseLogin = () => {
       console.log('Error Calling userss API: ', error);
     }
   };
-  // console.log('verify', verifyData);
+  console.log('verify', verifyData);
 
+  // console.log(verifyData);
   function onSignup() {
+    console.log('works');
     onCaptchVerify();
+    console.log('still works');
     let appVerifier = window.recaptchaVerifier;
     setLoading(true);
 
@@ -122,14 +126,10 @@ const FirebaseLogin = () => {
     confirmationResult
       .confirm(otp)
       .then((userCredential) => {
-        console.log('userCredential', userCredential);
         const user = userCredential.user;
-        console.log('user', user);
         localStorage.setItem('userData', JSON.stringify(verifyData));
         navigate('/main/insights');
-        localStorage.setItem('Token', JSON.stringify(user.accessToken));
-        setToken(user.accessToken);
-        console.log('token', token);
+        setAccessToken(user.accessToken);
       })
       .catch((error) => {
         console.error('Error verifying OTP:', error);
@@ -139,9 +139,9 @@ const FirebaseLogin = () => {
         setLoading(false);
       });
   }
-  // useEffect(() => {
-  //   localStorage.setItem('Token', JSON.stringify(token));
-  // }, [token]);
+  useEffect(() => {
+    localStorage.setItem('Token', JSON.stringify(accessToken));
+  }, [accessToken]);
 
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
