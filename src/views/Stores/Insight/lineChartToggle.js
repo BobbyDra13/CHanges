@@ -148,7 +148,10 @@ const LineChartToggle = ({ storeId, date, groups, activeButton, handleButtonClic
           borderRadius: '15px'
         }}
       >
-        <div style={{ padding: '2px', display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom: '1%' }}>
+        <div
+          style={{ padding: '2px', display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom: '1%' }}
+          className="sm:w-full"
+        >
           <button
             onClick={() => handleButtonClick('Trends View')}
             style={{

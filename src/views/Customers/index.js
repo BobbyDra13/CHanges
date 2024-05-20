@@ -719,7 +719,10 @@ const Customers = () => {
                               <Typography
                                 className="drop-shadow-md self-center cursor-pointer"
                                 variant="h5"
-                                onClick={() => navigate(`/main/stores/storeinsight/overview/${item.store}`)}
+                                onClick={() => {
+                                  settingAnalysisStoreDetails(item.store_name, item.location.latitude, item.location.longitude, item.store);
+                                  navigate(`/main/stores/storeinsight/overview/${item.store}`);
+                                }}
                               >
                                 {item.store_id} - {item.store_name}
                               </Typography>
