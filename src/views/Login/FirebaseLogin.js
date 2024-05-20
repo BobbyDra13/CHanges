@@ -72,6 +72,8 @@ const FirebaseLogin = () => {
       if (response.data.data.number === phoneNumber) {
         onSignup();
       } else {
+        console.log('entered else');
+        setLoading(false);
         toast.error('You are not authorized to access');
       }
     } catch (error) {
@@ -120,17 +122,18 @@ const FirebaseLogin = () => {
     confirmationResult
       .confirm(otp)
       .then((userCredential) => {
-        console.log("userCredential", userCredential);
+        console.log('userCredential', userCredential);
         const user = userCredential.user;
-        console.log("user", user);
+        console.log('user', user);
         localStorage.setItem('userData', JSON.stringify(verifyData));
         navigate('/main/insights');
         localStorage.setItem('Token', JSON.stringify(user.accessToken));
         setToken(user.accessToken);
-        console.log("token", token);
+        console.log('token', token);
       })
       .catch((error) => {
         console.error('Error verifying OTP:', error);
+        toast.error('Wrong OTP. Please try again.');
       })
       .finally(() => {
         setLoading(false);

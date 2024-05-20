@@ -70,7 +70,7 @@ export default function ShelfView({ date }) {
       setPos({ lft: false, tp: false, wdth: false, ht: false });
       setAntn(!antn);
     }
-setPosArr([]);
+    setPosArr([]);
     if (!isImageDialogOpen) {
       setCdata(anomaly);
       // setSelectedImage(url);
@@ -143,14 +143,15 @@ setPosArr([]);
     setAntn(true);
   };
 
-  const calculate2 = (xmin, ymin, xmax, ymax, type) => {
-    const lft = (xmin / natural.wdth) * 100;
-    const top = (ymin / natural.hght) * 100;
-    const width = ((xmax - xmin) / natural.wdth) * 100;
-    const height = ((ymax - ymin) / natural.hght) * 100;
-   return({ lft: lft, tp: top, wdth: width, hght: height, typ:type })
+  const calculate2 = (xmin, ymin, xmax, ymax, type, naturalWidth, naturalHeight) => {
+    console.log('natural width is', naturalWidth, naturalHeight);
+    const lft = (xmin / naturalWidth) * 100;
+    const top = (ymin / naturalHeight) * 100;
+    const width = ((xmax - xmin) / naturalWidth) * 100;
+    const height = ((ymax - ymin) / naturalHeight) * 100;
+    return { lft: lft, tp: top, wdth: width, hght: height, typ: type };
   };
-  
+
   const highlightStyle = {
     position: 'absolute',
     left: `${pos.lft}%`,
@@ -163,20 +164,23 @@ setPosArr([]);
     backgroundColor: 'rgba(255, 0, 0, 0.6)',
     borderRadius: '5px'
   };
-  const [posArr, setPosArr]= useState([]);
-  console.log('position= ', pos);
+  const [posArr, setPosArr] = useState(false);
   const findDimensions = (event) => {
-    const parr= cData.anomalies.map(item=>(calculate2(item.xmin ,  item.ymin,  item.xmax,  item.ymax, item.anomaly_type)));
-    const parr2= cData.details_bboxes.map(item=>(calculate2(item.xmin ,  item.ymin,  item.xmax,  item.ymax, "green")));
-    const res= parr.concat(parr2);
-
-    setPosArr(res);
     setImageLoading(false);
     const { naturalWidth, naturalHeight } = event.target;
     // const imgDiv = imageRef.current;
     // const { width, height } = imgDiv.getBoundingClientRect();
 
     setNaturel({ wdth: naturalWidth, hght: naturalHeight });
+    const parr = cData.anomalies.map((item) =>
+      calculate2(item.xmin, item.ymin, item.xmax, item.ymax, item.anomaly_type, naturalWidth, naturalHeight)
+    );
+    const parr2 = cData.details_bboxes.map((item) =>
+      calculate2(item.xmin, item.ymin, item.xmax, item.ymax, 'green', naturalWidth, naturalHeight)
+    );
+    const res = parr.concat(parr2);
+
+    setPosArr(res);
     setNextClickLoad(false);
     // setScaleFactor(width / naturalWidth);
   };
@@ -434,22 +438,29 @@ setPosArr([]);
                                   </IconButton>
                                 </>
                               )}
-                    {posArr && posArr.map((item, index)=>
-                              <div key={index} style={
-                                {
-                                  position: 'absolute',
-                                  left: `${item.lft}%`,
-                                  top: `${item.tp}%`,
-                                  width: `${item.wdth}%`,
-                                  height: `${item.hght}%`,
-                                  border: item.typ=== 'incorrect_pop'? '3px solid red':item.typ=== 'alien_pop'?'3px solid #ffbf00':'3px solid green', // Change border color as desired
-                                  boxSizing: 'border-box',
-                                  pointerEvents: 'none', // So clicks can still interact with the image
-                                  // backgroundColor: 'rgba(255, 0, 0, 0.6)',
-                                  borderRadius: '5px'
-                                }
-                              }></div>)}
-                              
+                              {posArr &&
+                                posArr.map((item, index) => (
+                                  <div
+                                    key={index}
+                                    style={{
+                                      position: 'absolute',
+                                      left: `${item.lft}%`,
+                                      top: `${item.tp}%`,
+                                      width: `${item.wdth}%`,
+                                      height: `${item.hght}%`,
+                                      border:
+                                        item.typ === 'incorrect_pop'
+                                          ? '3px solid red'
+                                          : item.typ === 'alien_pop'
+                                          ? '3px solid #ffbf00'
+                                          : '3px solid green', // Change border color as desired
+                                      boxSizing: 'border-box',
+                                      pointerEvents: 'none', // So clicks can still interact with the image
+                                      // backgroundColor: 'rgba(255, 0, 0, 0.6)',
+                                      borderRadius: '5px'
+                                    }}
+                                  ></div>
+                                ))}
 
                               {antn && <div style={highlightStyle}></div>}
                             </div>
@@ -498,50 +509,53 @@ setPosArr([]);
                           )}
 
                           {cData.anomalies.length > 0 &&
-                            cData.anomalies.map((itm, index) => itm.anomaly_type!= 'no_read_pop' && (
-                              <Tooltip
-                                key={index}
-                                title={
-                                  <div>
-                                    <Typography variant="body1">
-                                      Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
-                                    </Typography>
-                                    <Typography variant="body1">
-                                      <span>Description :</span>
-                                      {itm.anomaly_type === 'alien_pop'
-                                        ? itm.print_tag
-                                          ? itm.print_tag
-                                          : 'No Data Found'
-                                        : itm.article_description
-                                        ? itm.article_description
-                                        : 'No Data Found'}
-                                    </Typography>
-                                    <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
-                                  </div>
-                                }
-                              >
-                                <Box
-                                  key={index}
-                                  paddingX={0.2}
-                                  paddingY={0.04}
-                                  className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                  onMouseOver={() => {
-                                    calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
-                                  }}
-                                  onMouseOut={() => {
-                                    if (antn) {
-                                      setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                      setAntn(!antn);
+                            cData.anomalies.map(
+                              (itm, index) =>
+                                itm.anomaly_type != 'no_read_pop' && (
+                                  <Tooltip
+                                    key={index}
+                                    title={
+                                      <div>
+                                        <Typography variant="body1">
+                                          Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                          <span>Description :</span>
+                                          {itm.anomaly_type === 'alien_pop'
+                                            ? itm.print_tag
+                                              ? itm.print_tag
+                                              : 'No Data Found'
+                                            : itm.article_description
+                                            ? itm.article_description
+                                            : 'No Data Found'}
+                                        </Typography>
+                                        <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
+                                      </div>
                                     }
-                                  }}
-                                >
-                                  <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: 'red' }} />
-                                  <Typography paddingRight={2} variant="h6">
-                                    {itm.anomaly_type}
-                                  </Typography>
-                                </Box>
-                              </Tooltip>
-                            ))}
+                                  >
+                                    <Box
+                                      key={index}
+                                      paddingX={0.2}
+                                      paddingY={0.04}
+                                      className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                      onMouseOver={() => {
+                                        calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
+                                      }}
+                                      onMouseOut={() => {
+                                        if (antn) {
+                                          setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                          setAntn(!antn);
+                                        }
+                                      }}
+                                    >
+                                      <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: 'red' }} />
+                                      <Typography paddingRight={2} variant="h6">
+                                        {itm.anomaly_type}
+                                      </Typography>
+                                    </Box>
+                                  </Tooltip>
+                                )
+                            )}
                         </div>
                         <Typography width={'100%'} variant="h3">
                           Team

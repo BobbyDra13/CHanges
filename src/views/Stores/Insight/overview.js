@@ -45,6 +45,18 @@ import pog from '../../../assets/images/pog.jpeg';
 import associate from '../../../assets/images/profile-user.png';
 
 function Overview() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const data = Object.fromEntries(urlParams.entries());
+  const value = JSON.stringify(data).substring(2, 12);
+  const storeID = JSON.stringify(data).substring(16, 20);
+  console.log(storeID);
+  // console.log(JSON.stringify(data));
+  // const [storeID, setStoreID]=useState("");
+  // if(data){
+  //   setStoreID(JSON.stringify(data).substring(17, 20))
+  // }
+  // console.log(storeID);
+
   const { store } = useParams();
   console.log('cmon man', store);
   const theme = useTheme();
@@ -63,7 +75,9 @@ function Overview() {
     return num.toString().padStart(2, '0');
   }
   const customDate = new Date();
-  const finalCustomDate = [customDate.getFullYear(), padTo2Digits(customDate.getMonth() + 1), padTo2Digits(customDate.getDate())].join('-');
+  const finalCustomDate = data
+    ? value
+    : [customDate.getFullYear(), padTo2Digits(customDate.getMonth() + 1), padTo2Digits(customDate.getDate())].join('-');
   const [date, setSelectedDate] = useState(finalCustomDate);
   //eslint-disable-next-line
   const [empCount, setEmpCount] = useState('');
@@ -91,6 +105,7 @@ function Overview() {
   };
 
   const handleUploadComplete = (success) => {
+    //here changes are made, change it such that success is given as o/p only when both the API's give the response
     setOpenPopScoreModal(false); // Close the modal
     if (success) {
       setIsSnackbarOpen(true); // Open the snackbar for success
@@ -365,12 +380,15 @@ function Overview() {
   // dweltimeData && dweltimeData.sort((a, b) => b.avgDwellTime - a.avgDwellTime);
 
   return (
-    <div className="  w-full ">
+    <div className="w-full ">
+      \{' '}
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Stack direction={isSmallScreen ? 'column' : 'row'} justifyContent={'space-between'}>
-            <Typography variant="h3">Overview</Typography>
-            <div>
+            <Typography variant="h3">Overview </Typography>
+            {storeID ? <Typography variant="h6">Store ID: {storeID}</Typography> : <></>}
+
+            <div className="sm:mt-2">
               <DatePickerStore SetSelectedDate={setSelectedDate} style={{ borderRadius: '15px' }} />
             </div>
           </Stack>
@@ -384,6 +402,7 @@ function Overview() {
                     <div className="flex items-center justify-center gap-2 w-full">
                       {footfalldata.length > 0 ? (
                         // <DirectionsWalkIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" />
+                        // icon here
                         <img src={popIcon} alt="pop" className="h-14 w-14" />
                       ) : (
                         <Skeleton variant="circular" width={60} height={45} />
@@ -810,7 +829,6 @@ function Overview() {
           </Grid>
         </Grid>
       </Grid>
-
       <Snackbar
         open={isSnackbarOpen}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
