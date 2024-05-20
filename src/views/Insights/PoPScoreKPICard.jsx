@@ -95,7 +95,7 @@ function PoPScoreKPICard({ date }) {
     height: 100,
     series: [
       {
-        name: 'PoP Score %',
+        name: 'PoP Compliance %',
         data: popData
       }
     ],
@@ -245,7 +245,7 @@ function PoPScoreKPICard({ date }) {
               <Skeleton sx={{ marginTop: 1.75 }} animation="wave" variant="rounded" width={55} height={26} />
             </Grid>
             <Typography sx={{ paddingLeft: 2.25, paddingRight: 2.25 }} variant="h5" color="textSecondary">
-              PoP Score
+              PoP Compliance
             </Typography>
           </Stack>
         </Card>
@@ -253,7 +253,7 @@ function PoPScoreKPICard({ date }) {
         <KpiCard
           isLoaded={true}
           chart={chartConfig}
-          title="PoP Score"
+          title="PoP Compliance"
           count={`${!isDataAvailable ? 'NA' : parseFloat(popPercentage) === 0 ? '0' : popPercentage}`}
           percentage={`${isDataAvailable ? Math.abs(popChipData) : 'NA'}%`}
           chipColor={!capStatus ? '#9CA3AF' : +popChipData < 0 ? '#FF6761' : '#10B981'}
