@@ -537,7 +537,6 @@ export default function ShelfView({ date, groups }) {
             </DialogContent>
           ) : (
             <DialogContent>
-              {/* {anomalyDetails.length > 0 && */}
               {
                 isImageDialogOpen && (
                   // updatedData[0].allAnomalies.map((details, index) => (
