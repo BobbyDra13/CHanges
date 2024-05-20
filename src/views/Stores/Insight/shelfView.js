@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import {
@@ -31,6 +31,7 @@ import noData from '../../../assets/images/No_data-amico.svg';
 import { FaAngleDoubleRight } from 'react-icons/fa';
 import { FaAngleDoubleLeft } from 'react-icons/fa';
 import { BsSearch } from 'react-icons/bs';
+import { useSelector } from 'react-redux';
 bouncy.register();
 
 // const imgURLs = {
@@ -39,8 +40,9 @@ bouncy.register();
 
 // };
 
-export default function ShelfView({ date }) {
+export default function ShelfView({ date, groups }) {
   const { store } = useParams();
+  const zoneIds = useSelector((state) => state.zone);
   const [active, setActive] = useState(false);
   const [data, setData] = useState(false);
   const [shelves, setShelves] = useState(false);
@@ -56,7 +58,26 @@ export default function ShelfView({ date }) {
   const theme = useTheme();
   const success = theme.palette.success.main;
   const isSmallScreen = !useMediaQuery(theme.breakpoints.up('sm'));
+  const [isGroup, setIsGroup] = useState(null);
+  const paperRefs = useRef([]);
+  // const [selectedZoneId, setSelectedZoneId] = useState('');
 
+  //   useEffect(() => {
+  //     const storedZoneId = localStorage.getItem('selectedZoneId');
+  //     setSelectedZoneId(storedZoneId || '');
+  // }, []); // Run once on component mount
+
+  // useEffect(() => {
+  //     console.log('Selected Zone ID:', selectedZoneId);
+  // }, [selectedZoneId]); // Log whenever selectedZoneId changes
+  // useEffect(() => {
+  //   // Trigger click on Paper component when zoneId changes
+  //   if (zoneid) {
+  //     paperRef.current.click();
+  //   }
+  // }, [zoneid]);
+
+  console.log('ansh', zoneIds);
   async function zoneDetails(id) {
     setloading(true);
     const body = {
@@ -120,21 +141,26 @@ export default function ShelfView({ date }) {
     return data.data[0];
   }
 
+  const latestZoneId = zoneIds.length > 0 ? zoneIds[zoneIds.length - 1] : '';
+
   useEffect(() => {
+    console.log('latestZoneId fetched from store in shelfView:', latestZoneId);
+    setSearchQuery(latestZoneId.toString());
     async function GetZone() {
       const body = {
         store_id: store
       };
       const Zonedata = await GetZonedetails(body);
       setData(Zonedata);
-      console.log('Zonedata:', Zonedata);
+      console.log('Zonedata:', Zonedata[0].name);
       setActive(Zonedata[0].name);
       zoneDetails(Zonedata[0].id);
     }
     GetZone();
+    setIsGroup(groups);
+    console.log('hatt', isGroup, date);
     // eslint-disable-next-line
-  }, [date]);
-
+  }, [date, groups, store, zoneIds]);
   const [antn, setAntn] = useState(false);
   const [pos, setPos] = useState({ lft: false, tp: false, wdth: false, ht: false });
   const [natural, setNaturel] = useState({ wdth: false, hght: false });
@@ -221,23 +247,10 @@ export default function ShelfView({ date }) {
     setNextClickLoad(false);
   };
 
-  const filteredData = Array.isArray(data) ? data.filter((d) => d.name.toLowerCase().includes(searchQuery.toLowerCase())) : [];
-
-  //modal
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  // const style = {
-  //   position: 'absolute',
-  //   top: '50%',
-  //   left: '50%',
-  //   transform: 'translate(-50%, -50%)',
-  //   width: 400,
-  //   bgcolor: 'background.paper',
-  //   border: '2px solid #000',
-  //   boxShadow: 24,
-  //   p: 4,
-  // };
+  const filteredData = useMemo(() => {
+    return Array.isArray(data) ? data.filter((d) => d.name.toLowerCase().includes(searchQuery.toLowerCase())) : [];
+  }, [data, searchQuery]);
+  console.log('vb', filteredData);
   return (
     <>
       {data ? (
@@ -261,43 +274,84 @@ export default function ShelfView({ date }) {
                 </Grid>
               </Grid>
               {data &&
-                filteredData.map((d, ind) => (
-                  <Paper
-                    key={ind}
-                    elevation={4}
-                    className="flex items-center mb-4 cursor-pointer p-5  "
-                    onClick={() => {
-                      // setUrl(imgURLs.camera1);
-                      setActive(d.name);
-                      zoneDetails(d.id);
-                      handleOpen();
-                    }}
-                    style={{
-                      backgroundColor: active === d.name ? 'black' : 'white',
-                      color: active === d.name ? 'white' : 'black',
-                      fontWeight: 'bolder'
-                    }}
-                  >
-                    {/* <div  className='bg-gray-200 m-2  rounded' style={{height:"100px", width:"100px"}}></div> */}
-                    <div
-                      style={{
-                        height: '30px',
-                        width: '30px',
-                        borderRadius: '50%',
-                        background: 'black',
-                        color: 'white',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginRight: '8px'
-                      }}
-                    >
-                      {' '}
-                      <FaCamera />{' '}
-                    </div>
-                    <h6>{d.name}</h6>
-                  </Paper>
-                ))}
+                filteredData
+                  .sort((a, b) => {
+                    // Custom sorting function for alphanumeric sorting
+                    const nameA = a.name.toLowerCase();
+                    const nameB = b.name.toLowerCase();
+
+                    if (nameA < nameB) return -1;
+                    if (nameA > nameB) return 1;
+                    return 0;
+                  })
+                  .map((d, ind) => {
+                    // Check if there is a matching zone_id in the groups data
+                    const match = isGroup ? isGroup.find((group) => group.zone_id === d.name) : [];
+                    console.log('thu', match);
+                    const style = {
+                      backgroundColor: match ? 'white' : 'gray',
+                      color: active ? 'black' : 'white',
+                      fontWeight: 'bolder',
+                      opacity: match ? 1 : 0.5, // Reduce opacity if no match
+                      cursor: match ? 'pointer' : 'not-allowed' // Change cursor if no match
+                    };
+                    // Determine the style based on the match
+                    // const style = {
+                    //   backgroundColor: match ? 'black' : 'gray', // Change background color based on match
+                    //   color: match ? 'white' : 'gray', // Change text color based on match
+                    //   fontWeight: 'bolder'
+                    // };
+                    console.log('whyme', d.name);
+                    return (
+                      <Paper
+                        ref={(ref) => {
+                          paperRefs.current[ind] = ref;
+                          console.log(`Ref assigned for index ${ind}:`, ref);
+                        }}
+                        key={ind}
+                        elevation={4}
+                        className="flex items-center mb-4 cursor-pointer p-5  "
+                        // onClick={() => {
+                        //   // setUrl(imgURLs.camera1);
+                        //   setActive(d.name);
+                        //   zoneDetails(d.id);
+                        // }}
+                        onClick={
+                          match
+                            ? () => {
+                                setActive(d.name);
+                                zoneDetails(d.id);
+                              }
+                            : undefined
+                        }
+                        // style={{
+                        //   backgroundColor: active === d.name ? 'black' : 'white',
+                        //   color: active === d.name ? 'white' : 'black',
+                        //   fontWeight: 'bolder'
+                        // }}
+                        style={style}
+                      >
+                        {/* <div  className='bg-gray-200 m-2  rounded' style={{height:"100px", width:"100px"}}></div> */}
+                        <div
+                          style={{
+                            height: '30px',
+                            width: '30px',
+                            borderRadius: '50%',
+                            background: 'black',
+                            color: 'white',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginRight: '8px'
+                          }}
+                        >
+                          {' '}
+                          <FaCamera />{' '}
+                        </div>
+                        <h6>{d.name}</h6>
+                      </Paper>
+                    );
+                  })}
             </Grid>
             <Grid
               item
