@@ -193,7 +193,7 @@ function CsvModal({ onUploadComplete }) {
       {confirmationVisible && (
         <div className="fixed bottom-0 left-0 right-0 bg-gray-100 p-4 flex justify-center items-center rounded-lg">
           <p className="mr-4">Do you want to upload user sheet?</p>
-          <Button variant="contained" color="primary" onClick={() => handleConfirmation('upload')}>
+          <Button variant="contained" color="primary" onClick={() => handleConfirmation('upload')} disabled={true}>
             UPLOAD
           </Button>
           <Button variant="contained" color="primary" onClick={() => handleConfirmation('skip')}>
