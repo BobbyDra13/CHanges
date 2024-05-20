@@ -508,7 +508,7 @@ export default function ShelfView({ date, groups }) {
           <l-bouncy size="45" speed="1" color="black"></l-bouncy>
         </div>
       ) : (
-        <Dialog maxWidth={600} fullScreen open={isImageDialogOpen} onClose={handleImageClick}>
+        <Dialog maxWidth={600} fullScreen={isSmallScreen ? true : false} open={isImageDialogOpen} onClose={handleImageClick}>
           {nextClickLoad ? (
             <DialogContent
               style={{
