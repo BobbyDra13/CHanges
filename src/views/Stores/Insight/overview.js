@@ -84,11 +84,12 @@ function Overview() {
     dispatch(addZone(zoneId)); //Add the zone id to store
     console.log('zoneId in overview page:', zoneId);
     setIsZoneID(zoneId);
-    if (targetRef.current) {
-      targetRef.current.scrollIntoView({ behavior: 'smooth' });
-      // setSelectedZoneID(zoneID);
-    }
-    handleButtonClick('Shelf View');
+    setTimeout(() => {
+      if (targetRef.current) {
+        targetRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+      handleButtonClick('Shelf View');
+    }, 100);
   };
   const handleButtonClick = (button) => {
     setActiveButton(button);
