@@ -163,7 +163,7 @@ const LineChartToggle = ({ storeId, date, groups, activeButton, handleButtonClic
               padding: '4px',
               borderRadius: '17px 0 0 17px',
               marginRight: '3px',
-              width: isSmallScreen ? '30%' : '15%',
+              width: isSmallScreen ? '33%' : '15%',
               fontSize: '1rem'
             }}
           >
@@ -176,7 +176,7 @@ const LineChartToggle = ({ storeId, date, groups, activeButton, handleButtonClic
               color: '#fff',
               padding: '4px',
               marginRight: '3px',
-              width: isSmallScreen ? '30%' : '15%',
+              width: isSmallScreen ? '33%' : '15%',
               fontSize: '1rem',
               cursor: 'not-allowed'
             }}
@@ -190,7 +190,7 @@ const LineChartToggle = ({ storeId, date, groups, activeButton, handleButtonClic
               color: '#fff',
               padding: '4px',
               borderRadius: '0 17px 17px 0',
-              width: isSmallScreen ? '30%' : '15%',
+              width: isSmallScreen ? '33%' : '15%',
               fontSize: '1rem'
             }}
           >
