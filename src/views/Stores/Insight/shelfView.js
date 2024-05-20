@@ -37,9 +37,9 @@ bouncy.register();
 
 // };
 
-export default function ShelfView({ date, groups, zoneid }) {
+export default function ShelfView({ date, groups }) {
   const { store } = useParams();
-  const zoneId = useSelector((state) => state.zone);
+  const zoneIds = useSelector((state) => state.zone);
   const [active, setActive] = useState(false);
   const [data, setData] = useState(false);
   const [shelves, setShelves] = useState(false);
@@ -72,7 +72,7 @@ export default function ShelfView({ date, groups, zoneid }) {
   //   }
   // }, [zoneid]);
 
-  console.log('ansh', zoneid);
+  console.log('ansh', zoneIds);
   async function zoneDetails(id) {
     setloading(true);
     const body = {
@@ -136,9 +136,10 @@ export default function ShelfView({ date, groups, zoneid }) {
     return data.data[0];
   }
 
-  const latestZoneId = zoneId.length > 0 ? zoneId[zoneId.length - 1] : '';
+  const latestZoneId = zoneIds.length > 0 ? zoneIds[zoneIds.length - 1] : '';
 
   useEffect(() => {
+    console.log('latestZoneId fetched from store in shelfView:', latestZoneId);
     setSearchQuery(latestZoneId.toString());
     async function GetZone() {
       const body = {
@@ -154,7 +155,7 @@ export default function ShelfView({ date, groups, zoneid }) {
     setIsGroup(groups);
     console.log('hatt', isGroup, date);
     // eslint-disable-next-line
-  }, [date, groups, store, zoneId]);
+  }, [date, groups, store, zoneIds]);
   const [antn, setAntn] = useState(false);
   const [pos, setPos] = useState({ lft: false, tp: false, wdth: false, ht: false });
   const [natural, setNaturel] = useState({ wdth: false, hght: false });
@@ -691,19 +692,6 @@ export default function ShelfView({ date, groups, zoneid }) {
           )}
         </Dialog>
       )}
-      {useEffect(() => {
-        console.log('zoneid:', zoneid);
-        console.log('filteredData:', filteredData);
-        if (zoneid && Array.isArray(filteredData) && filteredData.length > 0) {
-          const index = filteredData.findIndex((d) => d.name === zoneid);
-          console.log('Found index:', index);
-          // console.log('yyy', paperRefs.current[index]);
-          if (index !== -1 && paperRefs.current[index]?.current) {
-            console.log('ttt');
-            paperRefs.current[index].current.click();
-          }
-        }
-      }, [zoneid, filteredData])}
     </>
   );
 }

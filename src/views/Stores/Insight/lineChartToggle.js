@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import StoreView from './storeView';
 import TrendsChart from './TrendsViewCharts/Trendchart';
 import ShelfView from './shelfView';
+import { useSelector } from 'react-redux';
 
-const LineChartToggle = ({ storeId, date, groups, activeButton, handleButtonClick, zoneid }) => {
+const LineChartToggle = ({ storeId, date, groups, activeButton, handleButtonClick }) => {
   // const theme = useTheme();
   // const [activeButton, setActiveButton] = useState('Trends View');
   const [isGroup, setIsGroup] = useState(null);
@@ -113,6 +114,7 @@ const LineChartToggle = ({ storeId, date, groups, activeButton, handleButtonClic
   //     ]
   //   }
   // };
+  const zoneid = useSelector((state) => state.zone);
   const currentDate = new Date();
   const currentDay = currentDate.getDay();
   const startOfWeek = new Date(currentDate.setUTCHours(0, 0, 0, 0));
@@ -257,7 +259,7 @@ const LineChartToggle = ({ storeId, date, groups, activeButton, handleButtonClic
 
             {console.log('uio', zoneid)}
             {console.log('ytt', activeButton)}
-            <ShelfView date={date} groups={groups} zoneid={zoneid} />
+            <ShelfView date={date} groups={groups} />
           </Grid>
         ) : null}
       </Paper>

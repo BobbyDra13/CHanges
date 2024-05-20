@@ -447,7 +447,7 @@ function Overview() {
                     </div>
                     {console.log('fxf', footfalldata)}
                     {footfalldata.length > 0 ? (
-                      <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar border border-black">
+                      <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar border">
                         {footfalldata.map((item, index) => {
                           // const percentage = (item.totalCustomerZone / ftfall[0].totalCustomerZone) * 100;
                           const percentage =
@@ -464,7 +464,7 @@ function Overview() {
 
                             // >
 
-                            <div onClick={() => handleScrollToComponent(item.zone_id)} className="mt-2 border border-black" key={index}>
+                            <div onClick={() => handleScrollToComponent(item.zone_id)} className="mt-2 border" key={index}>
                               <div className="flex gap-1 items-center">
                                 {/* <div
                                   className=" rounded-full h-4 w-4"
@@ -787,7 +787,6 @@ function Overview() {
                   groups={isGroup}
                   activeButton={activeButton}
                   handleButtonClick={handleButtonClick}
-                  zoneid={isZoneID}
                 />
               </Card>
             </Grid>
