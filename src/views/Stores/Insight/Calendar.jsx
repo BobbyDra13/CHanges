@@ -114,7 +114,7 @@ function DatePickerComp({ SetSelectedDate }) {
     setHighlightedDays(daysToHighlight);
   }
   return (
-    <div>
+    <div className="mt-3">
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <DatePicker
           className="cursor-pointer"

@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import {
@@ -28,6 +28,7 @@ import noData from '../../../assets/images/No_data-amico.svg';
 import { FaAngleDoubleRight } from 'react-icons/fa';
 import { FaAngleDoubleLeft } from 'react-icons/fa';
 import { BsSearch } from 'react-icons/bs';
+import { useSelector } from 'react-redux';
 bouncy.register();
 
 // const imgURLs = {
@@ -36,8 +37,9 @@ bouncy.register();
 
 // };
 
-export default function ShelfView({ date, groups, zoneid }) {
+export default function ShelfView({ date, groups }) {
   const { store } = useParams();
+  const zoneIds = useSelector((state) => state.zone);
   const [active, setActive] = useState(false);
   const [data, setData] = useState(false);
   const [shelves, setShelves] = useState(false);
@@ -51,27 +53,27 @@ export default function ShelfView({ date, groups, zoneid }) {
   const [searchQuery, setSearchQuery] = useState('');
   const theme = useTheme();
   const success = theme.palette.success.main;
-  const [isGroup,setIsGroup] = useState(null);
+  const [isGroup, setIsGroup] = useState(null);
   const paperRefs = useRef([]);
   // const [selectedZoneId, setSelectedZoneId] = useState('');
 
-//   useEffect(() => {
-//     const storedZoneId = localStorage.getItem('selectedZoneId');
-//     setSelectedZoneId(storedZoneId || '');
-// }, []); // Run once on component mount
+  //   useEffect(() => {
+  //     const storedZoneId = localStorage.getItem('selectedZoneId');
+  //     setSelectedZoneId(storedZoneId || '');
+  // }, []); // Run once on component mount
 
-// useEffect(() => {
-//     console.log('Selected Zone ID:', selectedZoneId);
-// }, [selectedZoneId]); // Log whenever selectedZoneId changes
-// useEffect(() => {
-//   // Trigger click on Paper component when zoneId changes
-//   if (zoneid) {
-//     paperRef.current.click();
-//   }
-// }, [zoneid]);
+  // useEffect(() => {
+  //     console.log('Selected Zone ID:', selectedZoneId);
+  // }, [selectedZoneId]); // Log whenever selectedZoneId changes
+  // useEffect(() => {
+  //   // Trigger click on Paper component when zoneId changes
+  //   if (zoneid) {
+  //     paperRef.current.click();
+  //   }
+  // }, [zoneid]);
 
-console.log('ansh',zoneid);
-  async function  zoneDetails(id) {
+  console.log('ansh', zoneIds);
+  async function zoneDetails(id) {
     setloading(true);
     const body = {
       zone_id: id,
@@ -89,7 +91,7 @@ console.log('ansh',zoneid);
       setPos({ lft: false, tp: false, wdth: false, ht: false });
       setAntn(!antn);
     }
-setPosArr([]);
+    setPosArr([]);
     if (!isImageDialogOpen) {
       setCdata(anomaly);
       // setSelectedImage(url);
@@ -134,7 +136,11 @@ setPosArr([]);
     return data.data[0];
   }
 
+  const latestZoneId = zoneIds.length > 0 ? zoneIds[zoneIds.length - 1] : '';
+
   useEffect(() => {
+    console.log('latestZoneId fetched from store in shelfView:', latestZoneId);
+    setSearchQuery(latestZoneId.toString());
     async function GetZone() {
       const body = {
         store_id: store
@@ -142,14 +148,14 @@ setPosArr([]);
       const Zonedata = await GetZonedetails(body);
       setData(Zonedata);
       console.log('Zonedata:', Zonedata[0].name);
-      setActive(Zonedata[0].name);  
+      setActive(Zonedata[0].name);
       zoneDetails(Zonedata[0].id);
     }
     GetZone();
     setIsGroup(groups);
-    console.log('hatt',isGroup, date);
+    console.log('hatt', isGroup, date);
     // eslint-disable-next-line
-  }, [date,groups,store]);
+  }, [date, groups, store, zoneIds]);
   const [antn, setAntn] = useState(false);
   const [pos, setPos] = useState({ lft: false, tp: false, wdth: false, ht: false });
   const [natural, setNaturel] = useState({ wdth: false, hght: false });
@@ -168,9 +174,9 @@ setPosArr([]);
     const top = (ymin / natural.hght) * 100;
     const width = ((xmax - xmin) / natural.wdth) * 100;
     const height = ((ymax - ymin) / natural.hght) * 100;
-   return({ lft: lft, tp: top, wdth: width, hght: height, typ:type })
+    return { lft: lft, tp: top, wdth: width, hght: height, typ: type };
   };
-  
+
   const highlightStyle = {
     position: 'absolute',
     left: `${pos.lft}%`,
@@ -183,12 +189,12 @@ setPosArr([]);
     backgroundColor: 'rgba(255, 0, 0, 0.6)',
     borderRadius: '5px'
   };
-  const [posArr, setPosArr]= useState([]);
+  const [posArr, setPosArr] = useState([]);
   console.log('position= ', pos);
   const findDimensions = (event) => {
-    const parr= cData.anomalies.map(item=>(calculate2(item.xmin ,  item.ymin,  item.xmax,  item.ymax, item.anomaly_type)));
-    const parr2= cData.details_bboxes.map(item=>(calculate2(item.xmin ,  item.ymin,  item.xmax,  item.ymax, "green")));
-    const res= parr.concat(parr2);
+    const parr = cData.anomalies.map((item) => calculate2(item.xmin, item.ymin, item.xmax, item.ymax, item.anomaly_type));
+    const parr2 = cData.details_bboxes.map((item) => calculate2(item.xmin, item.ymin, item.xmax, item.ymax, 'green'));
+    const res = parr.concat(parr2);
 
     setPosArr(res);
     setImageLoading(false);
@@ -236,8 +242,10 @@ setPosArr([]);
     setNextClickLoad(false);
   };
 
-  const filteredData = Array.isArray(data) ? data.filter((d) => d.name.toLowerCase().includes(searchQuery.toLowerCase())) : [];
-  console.log('vb',filteredData);
+  const filteredData = useMemo(() => {
+    return Array.isArray(data) ? data.filter((d) => d.name.toLowerCase().includes(searchQuery.toLowerCase())) : [];
+  }, [data, searchQuery]);
+  console.log('vb', filteredData);
   return (
     <>
       {data ? (
@@ -262,80 +270,83 @@ setPosArr([]);
               </Grid>
               {data &&
                 filteredData
-                .sort((a, b) => {
-                  // Custom sorting function for alphanumeric sorting
-                  const nameA = a.name.toLowerCase();
-                  const nameB = b.name.toLowerCase();
-              
-                  if (nameA < nameB) return -1;
-                  if (nameA > nameB) return 1;
-                  return 0;
-                }).
-                map((d, ind) => {
-                  // Check if there is a matching zone_id in the groups data
-      const match = isGroup ? isGroup.find(group => group.zone_id === d.name) : [];
-      console.log('thu',match);
-      const style = {
-        backgroundColor:   match ? 'white' : 'gray',
-        color: active ? 'black' : 'white',
-        fontWeight: 'bolder',
-        opacity: match ? 1 : 0.5, // Reduce opacity if no match
-        cursor: match ? 'pointer' : 'not-allowed' // Change cursor if no match
-      };
-      // Determine the style based on the match
-      // const style = {
-      //   backgroundColor: match ? 'black' : 'gray', // Change background color based on match
-      //   color: match ? 'white' : 'gray', // Change text color based on match
-      //   fontWeight: 'bolder'
-      // };
-console.log("whyme",d.name);
-              return (
+                  .sort((a, b) => {
+                    // Custom sorting function for alphanumeric sorting
+                    const nameA = a.name.toLowerCase();
+                    const nameB = b.name.toLowerCase();
 
-             
-                  <Paper
-                  ref={(ref) => {
-                    paperRefs.current[ind] = ref
-                    console.log(`Ref assigned for index ${ind}:`, ref);
-                  }}
-                    key={ind}
-                    elevation={4}
-                    className="flex items-center mb-4 cursor-pointer p-5  "
-                    // onClick={() => {
-                    //   // setUrl(imgURLs.camera1);
-                    //   setActive(d.name);
-                    //   zoneDetails(d.id);
-                    // }}
-                    onClick={match ? () => {
-                      setActive(d.name);
-                      zoneDetails(d.id);
-                    } : undefined} 
-                    // style={{
-                    //   backgroundColor: active === d.name ? 'black' : 'white',
-                    //   color: active === d.name ? 'white' : 'black',
+                    if (nameA < nameB) return -1;
+                    if (nameA > nameB) return 1;
+                    return 0;
+                  })
+                  .map((d, ind) => {
+                    // Check if there is a matching zone_id in the groups data
+                    const match = isGroup ? isGroup.find((group) => group.zone_id === d.name) : [];
+                    console.log('thu', match);
+                    const style = {
+                      backgroundColor: match ? 'white' : 'gray',
+                      color: active ? 'black' : 'white',
+                      fontWeight: 'bolder',
+                      opacity: match ? 1 : 0.5, // Reduce opacity if no match
+                      cursor: match ? 'pointer' : 'not-allowed' // Change cursor if no match
+                    };
+                    // Determine the style based on the match
+                    // const style = {
+                    //   backgroundColor: match ? 'black' : 'gray', // Change background color based on match
+                    //   color: match ? 'white' : 'gray', // Change text color based on match
                     //   fontWeight: 'bolder'
-                    // }}
-                    style={style}
-                  >
-                    {/* <div  className='bg-gray-200 m-2  rounded' style={{height:"100px", width:"100px"}}></div> */}
-                    <div
-                      style={{
-                        height: '30px',
-                        width: '30px',
-                        borderRadius: '50%',
-                        background: 'black',
-                        color: 'white',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginRight: '8px'
-                      }}
-                    >
-                      {' '}
-                      <FaCamera />{' '}
-                    </div>
-                    <h6>{d.name}</h6>
-                  </Paper>
-                  )} )}
+                    // };
+                    console.log('whyme', d.name);
+                    return (
+                      <Paper
+                        ref={(ref) => {
+                          paperRefs.current[ind] = ref;
+                          console.log(`Ref assigned for index ${ind}:`, ref);
+                        }}
+                        key={ind}
+                        elevation={4}
+                        className="flex items-center mb-4 cursor-pointer p-5  "
+                        // onClick={() => {
+                        //   // setUrl(imgURLs.camera1);
+                        //   setActive(d.name);
+                        //   zoneDetails(d.id);
+                        // }}
+                        onClick={
+                          match
+                            ? () => {
+                                setActive(d.name);
+                                zoneDetails(d.id);
+                              }
+                            : undefined
+                        }
+                        // style={{
+                        //   backgroundColor: active === d.name ? 'black' : 'white',
+                        //   color: active === d.name ? 'white' : 'black',
+                        //   fontWeight: 'bolder'
+                        // }}
+                        style={style}
+                      >
+                        {/* <div  className='bg-gray-200 m-2  rounded' style={{height:"100px", width:"100px"}}></div> */}
+                        <div
+                          style={{
+                            height: '30px',
+                            width: '30px',
+                            borderRadius: '50%',
+                            background: 'black',
+                            color: 'white',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginRight: '8px'
+                          }}
+                        >
+                          {' '}
+                          <FaCamera />{' '}
+                        </div>
+                        <h6>{d.name}</h6>
+                      </Paper>
+                    );
+                  })}
             </Grid>
 
             <Grid
@@ -493,22 +504,29 @@ console.log("whyme",d.name);
                                   </IconButton>
                                 </>
                               )}
-                    {posArr && posArr.map((item, index)=>
-                              <div key={index} style={
-                                {
-                                  position: 'absolute',
-                                  left: `${item.lft}%`,
-                                  top: `${item.tp}%`,
-                                  width: `${item.wdth}%`,
-                                  height: `${item.hght}%`,
-                                  border: item.typ=== 'incorrect_pop'? '3px solid red':item.typ=== 'alien_pop'?'3px solid #ffbf00':'3px solid green', // Change border color as desired
-                                  boxSizing: 'border-box',
-                                  pointerEvents: 'none', // So clicks can still interact with the image
-                                  // backgroundColor: 'rgba(255, 0, 0, 0.6)',
-                                  borderRadius: '5px'
-                                }
-                              }></div>)}
-                              
+                              {posArr &&
+                                posArr.map((item, index) => (
+                                  <div
+                                    key={index}
+                                    style={{
+                                      position: 'absolute',
+                                      left: `${item.lft}%`,
+                                      top: `${item.tp}%`,
+                                      width: `${item.wdth}%`,
+                                      height: `${item.hght}%`,
+                                      border:
+                                        item.typ === 'incorrect_pop'
+                                          ? '3px solid red'
+                                          : item.typ === 'alien_pop'
+                                          ? '3px solid #ffbf00'
+                                          : '3px solid green', // Change border color as desired
+                                      boxSizing: 'border-box',
+                                      pointerEvents: 'none', // So clicks can still interact with the image
+                                      // backgroundColor: 'rgba(255, 0, 0, 0.6)',
+                                      borderRadius: '5px'
+                                    }}
+                                  ></div>
+                                ))}
 
                               {antn && <div style={highlightStyle}></div>}
                             </div>
@@ -557,50 +575,53 @@ console.log("whyme",d.name);
                           )}
 
                           {cData.anomalies.length > 0 &&
-                            cData.anomalies.map((itm, index) => itm.anomaly_type!= 'no_read_pop' && (
-                              <Tooltip
-                                key={index}
-                                title={
-                                  <div>
-                                    <Typography variant="body1">
-                                      Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
-                                    </Typography>
-                                    <Typography variant="body1">
-                                      <span>Description :</span>
-                                      {itm.anomaly_type === 'alien_pop'
-                                        ? itm.print_tag
-                                          ? itm.print_tag
-                                          : 'No Data Found'
-                                        : itm.article_description
-                                        ? itm.article_description
-                                        : 'No Data Found'}
-                                    </Typography>
-                                    <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
-                                  </div>
-                                }
-                              >
-                                <Box
-                                  key={index}
-                                  paddingX={0.2}
-                                  paddingY={0.04}
-                                  className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                  onMouseOver={() => {
-                                    calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
-                                  }}
-                                  onMouseOut={() => {
-                                    if (antn) {
-                                      setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                      setAntn(!antn);
+                            cData.anomalies.map(
+                              (itm, index) =>
+                                itm.anomaly_type != 'no_read_pop' && (
+                                  <Tooltip
+                                    key={index}
+                                    title={
+                                      <div>
+                                        <Typography variant="body1">
+                                          Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                          <span>Description :</span>
+                                          {itm.anomaly_type === 'alien_pop'
+                                            ? itm.print_tag
+                                              ? itm.print_tag
+                                              : 'No Data Found'
+                                            : itm.article_description
+                                            ? itm.article_description
+                                            : 'No Data Found'}
+                                        </Typography>
+                                        <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
+                                      </div>
                                     }
-                                  }}
-                                >
-                                  <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: 'red' }} />
-                                  <Typography paddingRight={2} variant="h6">
-                                    {itm.anomaly_type}
-                                  </Typography>
-                                </Box>
-                              </Tooltip>
-                            ))}
+                                  >
+                                    <Box
+                                      key={index}
+                                      paddingX={0.2}
+                                      paddingY={0.04}
+                                      className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                      onMouseOver={() => {
+                                        calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
+                                      }}
+                                      onMouseOut={() => {
+                                        if (antn) {
+                                          setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                          setAntn(!antn);
+                                        }
+                                      }}
+                                    >
+                                      <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: 'red' }} />
+                                      <Typography paddingRight={2} variant="h6">
+                                        {itm.anomaly_type}
+                                      </Typography>
+                                    </Box>
+                                  </Tooltip>
+                                )
+                            )}
                         </div>
                         <Typography width={'100%'} variant="h3">
                           Team
@@ -671,19 +692,6 @@ console.log("whyme",d.name);
           )}
         </Dialog>
       )}
-      {useEffect(() => {
-  console.log('zoneid:', zoneid);
-  console.log('filteredData:', filteredData);
-  if (zoneid && Array.isArray(filteredData) && filteredData.length > 0) {
-    const index = filteredData.findIndex((d) => d.name === zoneid);
-    console.log('Found index:', index);
-    // console.log('yyy', paperRefs.current[index]);
-    if (index !== -1 && paperRefs.current[index]?.current) {
-      console.log('ttt');
-      paperRefs.current[index].current.click();
-    }
-  }
-}, [zoneid, filteredData])}
     </>
   );
 }

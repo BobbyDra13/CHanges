@@ -1,4 +1,6 @@
-import React, { useState, useEffect,useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+import { addZone } from '../../../store/slices/zoneSlice';
 import { useParams } from 'react-router-dom';
 import {
   Grid,
@@ -45,8 +47,21 @@ import pog from '../../../assets/images/pog.jpeg';
 import associate from '../../../assets/images/profile-user.png';
 
 function Overview() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const data = Object.fromEntries(urlParams.entries());
+  const value = JSON.stringify(data).substring(2, 12);
+  const storeID = JSON.stringify(data).substring(16, 20);
+  console.log(storeID);
+  // console.log(JSON.stringify(data));
+  // const [storeID, setStoreID]=useState("");
+  // if(data){
+  //   setStoreID(JSON.stringify(data).substring(17, 20))
+  // }
+  // console.log(storeID);
+
   const { store } = useParams();
   console.log('cmon man', store);
+  const dispatch = useDispatch();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const isMediumScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -65,7 +80,9 @@ function Overview() {
   const [isZoneID, setIsZoneID] = useState('');
   const handleScrollToComponent = (zoneId) => {
     // Scroll to the target component
-    localStorage.setItem('selectedZoneId', zoneId);
+    // localStorage.setItem('selectedZoneId', zoneId);
+    dispatch(addZone(zoneId)); //Add the zone id to store
+    console.log('zoneId in overview page:', zoneId);
     setIsZoneID(zoneId);
     if (targetRef.current) {
       targetRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -81,7 +98,9 @@ function Overview() {
     return num.toString().padStart(2, '0');
   }
   const customDate = new Date();
-  const finalCustomDate = [customDate.getFullYear(), padTo2Digits(customDate.getMonth() + 1), padTo2Digits(customDate.getDate())].join('-');
+  const finalCustomDate = data
+    ? value
+    : [customDate.getFullYear(), padTo2Digits(customDate.getMonth() + 1), padTo2Digits(customDate.getDate())].join('-');
   const [date, setSelectedDate] = useState(finalCustomDate);
   //eslint-disable-next-line
   const [empCount, setEmpCount] = useState('');
@@ -109,6 +128,7 @@ function Overview() {
   };
 
   const handleUploadComplete = (success) => {
+    //here changes are made, change it such that success is given as o/p only when both the API's give the response
     setOpenPopScoreModal(false); // Close the modal
     if (success) {
       setIsSnackbarOpen(true); // Open the snackbar for success
@@ -215,7 +235,7 @@ function Overview() {
       setIsMounted(false);
     };
   }, []);
-  
+
   useEffect(() => {
     if (isMounted) {
       const commonBody = {
@@ -276,15 +296,15 @@ function Overview() {
             // const { zones } = data[0];
             const group = data.data;
             setIsGroup(group);
-            console.log('dfdf',group);
-            
+            console.log('dfdf', group);
+
             group.forEach((item) => {
               let percentageString = item.data.FullnessPopPercent.replace('%', '');
               item.data.FullnessPopPercent = parseFloat(percentageString);
-              console.log('3some',item.zone_id);
+              console.log('3some', item.zone_id);
             });
             group.sort((a, b) => a.data.FullnessPopPercent - b.data.FullnessPopPercent);
-            console.log('pxs', );
+            console.log('pxs');
             setftfall(true);
             // console.log(zones);
             setFootfalldata(group);
@@ -390,12 +410,15 @@ function Overview() {
   // dweltimeData && dweltimeData.sort((a, b) => b.avgDwellTime - a.avgDwellTime);
 
   return (
-    <div className="  w-full ">
+    <div className="w-full ">
+      \{' '}
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Stack direction={isSmallScreen ? 'column' : 'row'} justifyContent={'space-between'}>
-            <Typography variant="h3">Overview</Typography>
-            <div>
+            <Typography variant="h3">Overview </Typography>
+            {storeID ? <Typography variant="h6">Store ID: {storeID}</Typography> : <></>}
+
+            <div className="sm:mt-2">
               <DatePickerStore SetSelectedDate={setSelectedDate} style={{ borderRadius: '15px' }} />
             </div>
           </Stack>
@@ -409,6 +432,7 @@ function Overview() {
                     <div className="flex items-center justify-center gap-2 w-full">
                       {footfalldata.length > 0 ? (
                         // <DirectionsWalkIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" />
+                        // icon here
                         <img src={popIcon} alt="pop" className="h-14 w-14" />
                       ) : (
                         <Skeleton variant="circular" width={60} height={45} />
@@ -440,26 +464,26 @@ function Overview() {
                         </Modal>
                       </>
                     </div>
-                    {console.log('fxf',footfalldata)}
+                    {console.log('fxf', footfalldata)}
                     {footfalldata.length > 0 ? (
-                      <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar border border-black">
+                      <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar border">
                         {footfalldata.map((item, index) => {
                           // const percentage = (item.totalCustomerZone / ftfall[0].totalCustomerZone) * 100;
                           const percentage =
                             item.data.FullnessPopPercent != undefined ? Math.round(parseFloat(item.data.FullnessPopPercent)) : 0;
                           const barcolor = percentage >= 99 ? '#00ac69' : percentage >= 95 ? '#f4a100' : '#ff413a';
-                          console.log('idss',item.zone_id);
-                          console.log('thik hai',isZoneID);
+                          console.log('idss', item.zone_id);
+                          console.log('thik hai', isZoneID);
                           // console.log(percentage);
                           return (
-                            // <button 
+                            // <button
                             // key={index}
                             // onClick={handleScrollToComponent}
                             // className='flex w-full'
-                            
+
                             // >
 
-                            <div onClick={() => handleScrollToComponent(item.zone_id)} className="mt-2 border border-black" key={index}>
+                            <div onClick={() => handleScrollToComponent(item.zone_id)} className="mt-2 border" key={index}>
                               <div className="flex gap-1 items-center">
                                 {/* <div
                                   className=" rounded-full h-4 w-4"
@@ -776,7 +800,13 @@ function Overview() {
           <Grid container spacing={2}>
             <Grid ref={targetRef} className="mb-10" item xs={12} lg={9} xl={9.6}>
               <Card className="border border-gray-300" sx={{ height: '550px' }}>
-                <LineChartToggle storeId={store} date={date} groups={isGroup} activeButton={activeButton} handleButtonClick={handleButtonClick} zoneid={isZoneID}/>
+                <LineChartToggle
+                  storeId={store}
+                  date={date}
+                  groups={isGroup}
+                  activeButton={activeButton}
+                  handleButtonClick={handleButtonClick}
+                />
               </Card>
             </Grid>
             <Grid item className="mb-10" xs={12} lg={3} xl={2.4}>
@@ -846,7 +876,6 @@ function Overview() {
           </Grid>
         </Grid>
       </Grid>
-
       <Snackbar
         open={isSnackbarOpen}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
