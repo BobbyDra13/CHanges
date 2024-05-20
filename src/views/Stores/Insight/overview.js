@@ -61,6 +61,7 @@ function Overview() {
 
   const { store } = useParams();
   console.log('cmon man', store);
+  const dispatch = useDispatch();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const isMediumScreen = useMediaQuery(theme.breakpoints.down('md'));

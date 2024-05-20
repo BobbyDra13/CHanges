@@ -128,6 +128,7 @@ const LineChartToggle = ({ storeId, date, groups, activeButton, handleButtonClic
     // console.log(date);
     // eslint-disable-next-line
     setIsGroup(groups);
+    // eslint-disable-next-line
   }, [date]);
 
   // useEffect(() => {
