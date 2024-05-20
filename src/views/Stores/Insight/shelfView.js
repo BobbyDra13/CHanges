@@ -540,7 +540,7 @@ export default function ShelfView({ date, groups }) {
                   <div className="zoom-container">
                     <div className="image-container flex justify-center items-center lg:mb-0 mb-10 relative">
                       <TransformWrapper>
-                        <div className="image-wrapper rounded-md md:w-full w-full mt-[200px]">
+                        <div className="image-wrapper rounded-md md:w-full w-full" style={{ marginTop: isSmallScreen ? '200px' : '0' }}>
                           <TransformComponent>
                             {imageLoading && (
                               <div className="flex justify-center items-center absolute top-0 left-0 z-10  overflow-x-hidden bg-white w-full h-full">
