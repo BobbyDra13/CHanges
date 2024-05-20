@@ -1,4 +1,4 @@
-import { Grid, Paper } from '@mui/material';
+import { Grid, Paper, useMediaQuery, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
 // import Chart from 'react-apexcharts';
 import StoreView from './storeView';
@@ -12,6 +12,8 @@ const LineChartToggle = ({ storeId, date, groups, activeButton, handleButtonClic
   const [isGroup, setIsGroup] = useState(null);
   // const [isZoneid, setIsZoneid] = useState('');
 
+  const theme = useTheme();
+  const isSmallScreen = !useMediaQuery(theme.breakpoints.up('sm'));
   // const handleButtonClick = (button) => {
   //   setActiveButton(button);
   // };
@@ -150,7 +152,7 @@ const LineChartToggle = ({ storeId, date, groups, activeButton, handleButtonClic
         }}
       >
         <div
-          style={{ padding: '2px', display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom: '1%' }}
+          style={{ padding: '2px', display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom: '1%', width: 'full' }}
           className="sm:w-full"
         >
           <button
@@ -161,7 +163,7 @@ const LineChartToggle = ({ storeId, date, groups, activeButton, handleButtonClic
               padding: '4px',
               borderRadius: '17px 0 0 17px',
               marginRight: '3px',
-              width: '15%',
+              width: isSmallScreen ? '30%' : '15%',
               fontSize: '1rem'
             }}
           >
@@ -174,7 +176,7 @@ const LineChartToggle = ({ storeId, date, groups, activeButton, handleButtonClic
               color: '#fff',
               padding: '4px',
               marginRight: '3px',
-              width: '15%',
+              width: isSmallScreen ? '30%' : '15%',
               fontSize: '1rem',
               cursor: 'not-allowed'
             }}
@@ -188,7 +190,7 @@ const LineChartToggle = ({ storeId, date, groups, activeButton, handleButtonClic
               color: '#fff',
               padding: '4px',
               borderRadius: '0 17px 17px 0',
-              width: '15%',
+              width: isSmallScreen ? '30%' : '15%',
               fontSize: '1rem'
             }}
           >
@@ -199,7 +201,7 @@ const LineChartToggle = ({ storeId, date, groups, activeButton, handleButtonClic
         {activeButton == 'Trends View' ? (
           <div style={{ width: '100%', overflow: 'auto', height: '500px' }}>
             {/* <Chart options={chartOptions} series={series} type="line" height={500} width={isSmallScreen || isMediumScreen ? 720 : '100%'} /> */}
-            <TrendsChart storeId={storeId} date={date} />
+            <TrendsChart storeId={storeId} date={date} isSmallScreen={isSmallScreen} />
             {/* <Grid
               container
               spacing={1}
