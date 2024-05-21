@@ -6,14 +6,18 @@ import { Box, Paper } from '@mui/material';
 // import Timeline from './TimelineChart';
 // import FilterMenu from './FilterMenu';
 
-export default function TrendsChart({ storeId, date }) {
+export default function TrendsChart({ storeId, date, isSmallScreen }) {
   // const [chartvalue, setChartValue] = useState('Footfall');
   // function graphToSelect(ChartData) {
   // setChartValue(ChartData);
   // }
   return (
     <Box
-    // sx={{width: "100vw", height:"100vh", display:"flex", justifyContent:"center", alignItems:"center"}}
+      sx={{
+        width: isSmallScreen ? '500px' : 'full',
+        overflow: isSmallScreen ? 'scroll' : 'hidden'
+      }}
+      // sx={{width: "100vw", height:"100vh", display:"flex", justifyContent:"center", alignItems:"center"}}
     >
       <div className="flex w-full justify-between">
         {/* <MultipleSelectCheckmarks graphToSelect={graphToSelect} /> */}

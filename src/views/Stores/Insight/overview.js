@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+import { addZone } from '../../../store/slices/zoneSlice';
 import { useParams } from 'react-router-dom';
 import {
   Grid,
@@ -31,7 +33,8 @@ import Uniquejourney from './KPICards/Uniquejourney';
 // import Diversity3Icon from '@mui/icons-material/Diversity3';
 import LineChartToggle from './lineChartToggle';
 // import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
-import { IoMdSettings } from 'react-icons/io';
+import { IoMdSettings, IoMdDownload } from 'react-icons/io';
+import { CgSpinner } from 'react-icons/cg';
 import CsvModal from './CsvUpload';
 import RadarChart from './RadarChart';
 import { GetPopPercentage, GetpopKPI, GetCapProgStoreView, GetAnomaliesCount, getAssociateScoreData } from 'api';
@@ -59,6 +62,7 @@ function Overview() {
 
   const { store } = useParams();
   console.log('cmon man', store);
+  const dispatch = useDispatch();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const isMediumScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -68,8 +72,64 @@ function Overview() {
   const [dweltimeData, setDweltimedata] = useState(false);
   const [footfalldata, setFootfalldata] = useState(false);
   const [associateScoreData, setAssociateScoreData] = useState([]);
+  const [isGroup, setIsGroup] = useState([]);
+  const [activeButton, setActiveButton] = useState('Trends View');
+  const [isDownloading, setIsDownloading] = useState(false);
+  // const [selectedZoneID, setSelectedZoneID] = useState(null);
+  const targetRef = useRef(null);
   //eslint-disable-next-line
   const [ftfall, setftfall] = useState([]);
+  const [isZoneID, setIsZoneID] = useState('');
+  const handleScrollToComponent = (zoneId) => {
+    // Scroll to the target component
+    // localStorage.setItem('selectedZoneId', zoneId);
+    dispatch(addZone(zoneId)); //Add the zone id to store
+    console.log('zoneId in overview page:', zoneId);
+    setIsZoneID(zoneId);
+    setTimeout(() => {
+      if (targetRef.current) {
+        targetRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+      handleButtonClick('Shelf View');
+    }, 100);
+  };
+  const handleDownload = () => {
+    const url = 'https://github.com/Pareshkr/excel_download/raw/main/Store%20Details%20Format%20for%20Blushlace.xlsx';
+    setIsDownloading(true);
+    // setTimeout(() => {
+    //   setIsDownloading(false);
+    // }, 3000);
+    fetch(url, { mode: 'no-cors' })
+      .then((response) => response.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(new Blob([blob]));
+        const link = document.createElement('a');
+        link.href = url;
+
+        // Get current date and time
+        const now = new Date();
+        const ist = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+        const date = ist.toLocaleDateString('en-GB').replace(/\//g, '-');
+        const time = ist.toTimeString().split(' ')[0];
+
+        // Set file name
+        link.download = `Disha_PoP_Analysis_${date}_${time}`;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+
+        setIsDownloading(false);
+      })
+      .catch((error) => {
+        console.error('Error fetching the file:', error);
+        setIsDownloading(false);
+      });
+  };
+  const handleButtonClick = (button) => {
+    setActiveButton(button);
+  };
 
   function padTo2Digits(num) {
     return num.toString().padStart(2, '0');
@@ -272,12 +332,16 @@ function Overview() {
             // const { totalCustomerStore } = data[0];
             // const { zones } = data[0];
             const group = data.data;
+            setIsGroup(group);
+            console.log('dfdf', group);
+
             group.forEach((item) => {
               let percentageString = item.data.FullnessPopPercent.replace('%', '');
               item.data.FullnessPopPercent = parseFloat(percentageString);
+              console.log('3some', item.zone_id);
             });
             group.sort((a, b) => a.data.FullnessPopPercent - b.data.FullnessPopPercent);
-            console.log('pxs', group);
+            console.log('pxs');
             setftfall(true);
             // console.log(zones);
             setFootfalldata(group);
@@ -375,21 +439,37 @@ function Overview() {
     // eslint-disable-next-line
   }, [date]);
   console.log('Anomalies ', anomaliesCount);
-
+  // const handleOpenCameraView = () => {
+  //   setIsCamOpen(true);
+  //   handleScrollToComponent();
+  // }
   // ftfall && ftfall.sort((a, b) => b.totalCustomerZone - a.totalCustomerZone);
   // dweltimeData && dweltimeData.sort((a, b) => b.avgDwellTime - a.avgDwellTime);
 
   return (
-    <div className="w-full ">
-      \{' '}
+    <div className="w-full">
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Stack direction={isSmallScreen ? 'column' : 'row'} justifyContent={'space-between'}>
             <Typography variant="h3">Overview </Typography>
             {storeID ? <Typography variant="h6">Store ID: {storeID}</Typography> : <></>}
-
-            <div className="sm:mt-2">
+            <div className="flex space-x-2 sm:mt-2">
               <DatePickerStore SetSelectedDate={setSelectedDate} style={{ borderRadius: '15px' }} />
+              <div className="hidden">
+                <button
+                  onClick={isDownloading ? null : handleDownload}
+                  className="w-28 h-10 mt-5 md:mt-0 rounded-md shadow-md border border-white bg-cyan-500 hover:bg-cyan-600 active:bg-cyan-400 text-white flex place-items-center"
+                >
+                  {isDownloading ? (
+                    <CgSpinner className="w-full text-xl animate-spin" />
+                  ) : (
+                    <div className="w-full h-full flex justify-center space-x-2">
+                      <IoMdDownload className="h-full text-lg" />
+                      <span className="mt-2 text-base">Report</span>
+                    </div>
+                  )}
+                </button>
+              </div>
             </div>
           </Stack>
         </Grid>
@@ -434,6 +514,7 @@ function Overview() {
                         </Modal>
                       </>
                     </div>
+                    {console.log('fxf', footfalldata)}
                     {footfalldata.length > 0 ? (
                       <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
                         {footfalldata.map((item, index) => {
@@ -441,9 +522,18 @@ function Overview() {
                           const percentage =
                             item.data.FullnessPopPercent != undefined ? Math.round(parseFloat(item.data.FullnessPopPercent)) : 0;
                           const barcolor = percentage >= 99 ? '#00ac69' : percentage >= 95 ? '#f4a100' : '#ff413a';
+                          console.log('idss', item.zone_id);
+                          console.log('thik hai', isZoneID);
                           // console.log(percentage);
                           return (
-                            <div className="mt-2" key={index}>
+                            // <button
+                            // key={index}
+                            // onClick={handleScrollToComponent}
+                            // className='flex w-full'
+
+                            // >
+
+                            <div onClick={() => handleScrollToComponent(item.zone_id)} className="mt-2 hover:cursor-pointer" key={index}>
                               <div className="flex gap-1 items-center">
                                 {/* <div
                                   className=" rounded-full h-4 w-4"
@@ -474,6 +564,7 @@ function Overview() {
                                 }}
                               />
                             </div>
+                            // </button>
                           );
                         })}
                       </div>
@@ -757,9 +848,15 @@ function Overview() {
         </Grid>
         <Grid item xs={12}>
           <Grid container spacing={2}>
-            <Grid className="mb-10" item xs={12} lg={9} xl={9.6}>
+            <Grid ref={targetRef} className="mb-10" item xs={12} lg={9} xl={9.6}>
               <Card className="border border-gray-300" sx={{ height: '550px' }}>
-                <LineChartToggle storeId={store} date={date} />
+                <LineChartToggle
+                  storeId={store}
+                  date={date}
+                  groups={isGroup}
+                  activeButton={activeButton}
+                  handleButtonClick={handleButtonClick}
+                />
               </Card>
             </Grid>
             <Grid item className="mb-10" xs={12} lg={3} xl={2.4}>

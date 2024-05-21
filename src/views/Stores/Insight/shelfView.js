@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import {
@@ -6,6 +6,7 @@ import {
   Dialog,
   DialogContent,
   Divider,
+  Button,
   IconButton,
   Paper,
   TextField,
@@ -13,7 +14,9 @@ import {
   Typography,
   Avatar,
   AvatarGroup,
-  useTheme
+  useTheme,
+  useMediaQuery,
+  Modal
 } from '@mui/material';
 import { FaCamera } from 'react-icons/fa';
 // import src1 from '../../../assets/images/heatmap.jpg';
@@ -28,6 +31,7 @@ import noData from '../../../assets/images/No_data-amico.svg';
 import { FaAngleDoubleRight } from 'react-icons/fa';
 import { FaAngleDoubleLeft } from 'react-icons/fa';
 import { BsSearch } from 'react-icons/bs';
+import { useSelector } from 'react-redux';
 bouncy.register();
 
 // const imgURLs = {
@@ -36,8 +40,9 @@ bouncy.register();
 
 // };
 
-export default function ShelfView({ date }) {
+export default function ShelfView({ date, groups }) {
   const { store } = useParams();
+  const zoneIds = useSelector((state) => state.zone);
   const [active, setActive] = useState(false);
   const [data, setData] = useState(false);
   const [shelves, setShelves] = useState(false);
@@ -49,9 +54,35 @@ export default function ShelfView({ date }) {
   const [nextClickLoad, setNextClickLoad] = useState(false);
   const [nextBtn, setNextbtn] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
   const theme = useTheme();
   const success = theme.palette.success.main;
+  const isSmallScreen = !useMediaQuery(theme.breakpoints.up('sm'));
+  const [isGroup, setIsGroup] = useState(null);
+  const paperRefs = useRef([]);
 
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  // const [selectedZoneId, setSelectedZoneId] = useState('');
+
+  //   useEffect(() => {
+  //     const storedZoneId = localStorage.getItem('selectedZoneId');
+  //     setSelectedZoneId(storedZoneId || '');
+  // }, []); // Run once on component mount
+
+  // useEffect(() => {
+  //     console.log('Selected Zone ID:', selectedZoneId);
+  // }, [selectedZoneId]); // Log whenever selectedZoneId changes
+  // useEffect(() => {
+  //   // Trigger click on Paper component when zoneId changes
+  //   if (zoneid) {
+  //     paperRef.current.click();
+  //   }
+  // }, [zoneid]);
+
+  console.log('ansh', zoneIds);
   async function zoneDetails(id) {
     setloading(true);
     const body = {
@@ -115,21 +146,26 @@ export default function ShelfView({ date }) {
     return data.data[0];
   }
 
+  const latestZoneId = zoneIds.length > 0 ? zoneIds[zoneIds.length - 1] : '';
+
   useEffect(() => {
+    console.log('latestZoneId fetched from store in shelfView:', latestZoneId);
+    setSearchQuery(latestZoneId.toString());
     async function GetZone() {
       const body = {
         store_id: store
       };
       const Zonedata = await GetZonedetails(body);
       setData(Zonedata);
-      console.log('Zonedata:', Zonedata);
+      console.log('Zonedata:', Zonedata[0].name);
       setActive(Zonedata[0].name);
       zoneDetails(Zonedata[0].id);
     }
     GetZone();
+    setIsGroup(groups);
+    console.log('hatt', isGroup, date);
     // eslint-disable-next-line
-  }, [date]);
-
+  }, [date, groups, store, zoneIds]);
   const [antn, setAntn] = useState(false);
   const [pos, setPos] = useState({ lft: false, tp: false, wdth: false, ht: false });
   const [natural, setNaturel] = useState({ wdth: false, hght: false });
@@ -220,8 +256,10 @@ export default function ShelfView({ date }) {
     setNextClickLoad(false);
   };
 
-  const filteredData = Array.isArray(data) ? data.filter((d) => d.name.toLowerCase().includes(searchQuery.toLowerCase())) : [];
-
+  const filteredData = useMemo(() => {
+    return Array.isArray(data) ? data.filter((d) => d.name.toLowerCase().includes(searchQuery.toLowerCase())) : [];
+  }, [data, searchQuery]);
+  console.log('vb', filteredData);
   return (
     <>
       {data ? (
@@ -245,44 +283,86 @@ export default function ShelfView({ date }) {
                 </Grid>
               </Grid>
               {data &&
-                filteredData.map((d, ind) => (
-                  <Paper
-                    key={ind}
-                    elevation={4}
-                    className="flex items-center mb-4 cursor-pointer p-5  "
-                    onClick={() => {
-                      // setUrl(imgURLs.camera1);
-                      setActive(d.name);
-                      zoneDetails(d.id);
-                    }}
-                    style={{
-                      backgroundColor: active === d.name ? 'black' : 'white',
-                      color: active === d.name ? 'white' : 'black',
-                      fontWeight: 'bolder'
-                    }}
-                  >
-                    {/* <div  className='bg-gray-200 m-2  rounded' style={{height:"100px", width:"100px"}}></div> */}
-                    <div
-                      style={{
-                        height: '30px',
-                        width: '30px',
-                        borderRadius: '50%',
-                        background: 'black',
-                        color: 'white',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginRight: '8px'
-                      }}
-                    >
-                      {' '}
-                      <FaCamera />{' '}
-                    </div>
-                    <h6>{d.name}</h6>
-                  </Paper>
-                ))}
-            </Grid>
+                filteredData
+                  .sort((a, b) => {
+                    // Custom sorting function for alphanumeric sorting
+                    const nameA = a.name.toLowerCase();
+                    const nameB = b.name.toLowerCase();
 
+                    if (nameA < nameB) return -1;
+                    if (nameA > nameB) return 1;
+                    return 0;
+                  })
+                  .map((d, ind) => {
+                    // Check if there is a matching zone_id in the groups data
+                    const match = isGroup ? isGroup.find((group) => group.zone_id === d.name) : [];
+                    console.log('thu', match);
+                    const style = {
+                      backgroundColor: match && active === d.name ? 'black' : match ? 'white' : 'gray',
+                      color: active === d.name ? 'white' : 'black',
+                      fontWeight: 'bolder',
+                      opacity: match ? 1 : 0.5, // Reduce opacity if no match
+                      cursor: match ? 'pointer' : 'not-allowed' // Change cursor if no match
+                    };
+                    // Determine the style based on the match
+                    // const style = {
+                    //   backgroundColor: match ? 'black' : 'gray', // Change background color based on match
+                    //   color: match ? 'white' : 'gray', // Change text color based on match
+                    //   fontWeight: 'bolder'
+                    // };
+                    console.log('whyme', d.name);
+                    return (
+                      <Paper
+                        ref={(ref) => {
+                          paperRefs.current[ind] = ref;
+                          console.log(`Ref assigned for index ${ind}:`, ref);
+                        }}
+                        key={ind}
+                        elevation={4}
+                        className="flex items-center mb-4 cursor-pointer p-5  "
+                        // onClick={() => {
+                        //   // setUrl(imgURLs.camera1);
+                        //   setActive(d.name);
+                        //   zoneDetails(d.id);
+                        // }}
+                        onClick={
+                          match
+                            ? () => {
+                                setActive(d.name);
+                                zoneDetails(d.id);
+                                handleOpen();
+                              }
+                            : undefined
+                        }
+                        // style={{
+                        //   backgroundColor: active === d.name ? 'black' : 'white',
+                        //   color: active === d.name ? 'white' : 'black',
+                        //   fontWeight: 'bolder'
+                        // }}
+                        style={style}
+                      >
+                        {/* <div  className='bg-gray-200 m-2  rounded' style={{height:"100px", width:"100px"}}></div> */}
+                        <div
+                          style={{
+                            height: '30px',
+                            width: '30px',
+                            borderRadius: '50%',
+                            background: 'black',
+                            color: 'white',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginRight: '8px'
+                          }}
+                        >
+                          {' '}
+                          <FaCamera />{' '}
+                        </div>
+                        <h6>{d.name}</h6>
+                      </Paper>
+                    );
+                  })}
+            </Grid>
             <Grid
               item
               md={9.5}
@@ -291,56 +371,133 @@ export default function ShelfView({ date }) {
               className="scrollbar inline-block "
             >
               {/* {!url ? <div>please select one camera</div> : <img src={url} alt="img" style={{ height: '400px', width: '100%' }} />} */}
-              <Grid container>
-                {loading ? (
-                  <Grid item md={12} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '500px' }}>
-                    <l-bouncy size="45" speed="1" color="black"></l-bouncy>
-                  </Grid>
-                ) : (
-                  shelves &&
-                  shelves.map((item, index) => (
-                    <Grid item md={12} sm={12} key={index}>
-                      {item.img_url ? (
-                        <div className="flex w-full h-full justify-around">
-                          <div style={{ width: '70%', height: '100%' }}>
+              {isSmallScreen ? (
+                <div>
+                  <Modal
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                    style={{
+                      margin: 'auto',
+                      width: '100%',
+                      overflow: 'scroll',
+                      height: '100%'
+                    }}
+                  >
+                    <Box sx={{ bgcolor: 'background.paper' }}>
+                      <div style={{ position: 'sticky', top: '0', backgroundColor: 'white' }}>
+                        <div className="flex justify-between items-center px-3">
+                          <h3 className="text-xl font-bold">{active}</h3>
+                          <Button variant="contained" style={{ margin: '10px', backgroundColor: 'red' }} onClick={handleClose}>
+                            close
+                          </Button>
+                        </div>
+                      </div>
+                      <Typography id="modal-modal-title" variant="h6" component="h2">
+                        {loading ? (
+                          <Grid item md={12} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '500px' }}>
+                            <l-bouncy size="45" speed="1" color="black"></l-bouncy>
+                          </Grid>
+                        ) : (
+                          shelves &&
+                          shelves.map((item, index) => (
+                            <Grid item md={12} sm={12} key={index}>
+                              {item.img_url ? (
+                                <div className="w-full h-full flex flex-col items-center justify-center mb-4">
+                                  <div style={{ width: '90%', padding: '7px', display: 'flex' }}>
+                                    {/* <div className='text-black text-sm font-bold'>Name : {item.shelf_name}</div> */}
+                                    <div>
+                                      <span className="text-black text-md font-bold">Shelf Id: {item.id}, </span>
+                                      {/* <span className='text-black text-lg font-bold'>55 </span>  */}
+                                    </div>
+                                    <div>
+                                      <span className="text-black text-md font-bold">PoP Score : {item.fullnessPopPercent}% </span>
+                                      {/* <span className='text-black text-lg font-bold'>60% </span>  */}
+                                    </div>
+                                    <div>
+                                      {/* <span className="text-black text-sm font-bold">Anomaly : {item.total_anomalies_detected} </span> */}
+                                      {/* <span className='text-black text-lg font-bold'>60% </span>  */}
+                                    </div>
+                                  </div>
+                                  <div style={{ width: '90%', height: '100%' }}>
+                                    <img
+                                      src={item.img_url}
+                                      alt="img"
+                                      style={{ height: '100%', width: '100%', borderRadius: '7px', cursor: 'pointer' }}
+                                      onClick={() => GetShelfWiseDetails(item.shelf_id)}
+                                    />
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="flex w-full h-full">
+                                  <img
+                                    src={noData}
+                                    alt="img"
+                                    style={{ height: '50%', width: '100%', borderRadius: '7px', cursor: 'pointer' }}
+                                    // onClick={() => GetShelfWiseDetails(item.shelf_id)}
+                                  />
+                                </div>
+                              )}
+                            </Grid>
+                          ))
+                        )}
+                      </Typography>
+                    </Box>
+                  </Modal>
+                </div>
+              ) : (
+                <Grid container>
+                  {loading ? (
+                    <Grid item md={12} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '500px' }}>
+                      <l-bouncy size="45" speed="1" color="black"></l-bouncy>
+                    </Grid>
+                  ) : (
+                    shelves &&
+                    shelves.map((item, index) => (
+                      <Grid item md={12} sm={12} key={index}>
+                        {item.img_url ? (
+                          <div className="flex w-full h-full justify-around">
+                            <div style={{ width: '70%', height: '100%' }}>
+                              <img
+                                src={item.img_url}
+                                alt="img"
+                                style={{ height: '80%', width: '100%', borderRadius: '7px', cursor: 'pointer' }}
+                                onClick={() => GetShelfWiseDetails(item.shelf_id)}
+                              />
+                            </div>
+                            <div style={{ width: '25%', padding: '7px' }}>
+                              {/* <div className='text-black text-sm font-bold'>Name : {item.shelf_name}</div> */}
+
+                              <div>
+                                <span className="text-black text-sm font-bold">Shelf Id: {item.id} </span>
+                                {/* <span className='text-black text-lg font-bold'>55 </span>  */}
+                              </div>
+                              <div>
+                                <span className="text-black text-sm font-bold">PoP Score : {item.fullnessPopPercent}% </span>
+                                {/* <span className='text-black text-lg font-bold'>60% </span>  */}
+                              </div>
+                              <div>
+                                {/* <span className="text-black text-sm font-bold">Anomaly : {item.total_anomalies_detected} </span> */}
+                                {/* <span className='text-black text-lg font-bold'>60% </span>  */}
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex w-full h-full">
                             <img
-                              src={item.img_url}
+                              src={noData}
                               alt="img"
-                              style={{ height: '80%', width: '100%', borderRadius: '7px', cursor: 'pointer' }}
-                              onClick={() => GetShelfWiseDetails(item.shelf_id)}
+                              style={{ height: '50%', width: '100%', borderRadius: '7px', cursor: 'pointer' }}
+                              // onClick={() => GetShelfWiseDetails(item.shelf_id)}
                             />
                           </div>
-                          <div style={{ width: '25%', padding: '7px' }}>
-                            {/* <div className='text-black text-sm font-bold'>Name : {item.shelf_name}</div> */}
-
-                            <div>
-                              <span className="text-black text-sm font-bold">Shelf Id: {item.id} </span>
-                              {/* <span className='text-black text-lg font-bold'>55 </span>  */}
-                            </div>
-                            <div>
-                              <span className="text-black text-sm font-bold">PoP Score : {item.fullnessPopPercent}% </span>
-                              {/* <span className='text-black text-lg font-bold'>60% </span>  */}
-                            </div>
-                            <div>
-                              {/* <span className="text-black text-sm font-bold">Anomaly : {item.total_anomalies_detected} </span> */}
-                              {/* <span className='text-black text-lg font-bold'>60% </span>  */}
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex w-full h-full">
-                          <img
-                            src={noData}
-                            alt="img"
-                            style={{ height: '50%', width: '100%', borderRadius: '7px', cursor: 'pointer' }}
-                            // onClick={() => GetShelfWiseDetails(item.shelf_id)}
-                          />
-                        </div>
-                      )}
-                    </Grid>
-                  ))
-                )}
-              </Grid>
+                        )}
+                      </Grid>
+                    ))
+                  )}
+                </Grid>
+              )}
             </Grid>
           </Grid>
         </div>
@@ -355,13 +512,20 @@ export default function ShelfView({ date }) {
           <l-bouncy size="45" speed="1" color="black"></l-bouncy>
         </div>
       ) : (
-        <Dialog maxWidth={600} open={isImageDialogOpen} onClose={handleImageClick}>
+        <Dialog maxWidth={600} fullScreen={isSmallScreen ? true : false} open={isImageDialogOpen} onClose={handleImageClick}>
           {nextClickLoad ? (
-            <DialogContent style={{ minheight: '500px' }}>
+            <DialogContent
+              style={{
+                minHeight: '500px',
+                width: 'full',
+                height: 'full'
+              }}
+            >
               <div
                 style={{
                   width: '90vw',
                   height: '80vh',
+                  backgroundColor: 'red',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -373,14 +537,13 @@ export default function ShelfView({ date }) {
             </DialogContent>
           ) : (
             <DialogContent>
-              {/* {anomalyDetails.length > 0 && */}
               {
                 isImageDialogOpen && (
                   // updatedData[0].allAnomalies.map((details, index) => (
-                  <div className="zoom-container ">
+                  <div className="zoom-container">
                     <div className="image-container flex justify-center items-center lg:mb-0 mb-10 relative">
                       <TransformWrapper>
-                        <div className="image-wrapper rounded-md md:w-full w-4/5">
+                        <div className="image-wrapper rounded-md md:w-full w-full" style={{ marginTop: isSmallScreen ? '200px' : '0' }}>
                           <TransformComponent>
                             {imageLoading && (
                               <div className="flex justify-center items-center absolute top-0 left-0 z-10  overflow-x-hidden bg-white w-full h-full">
@@ -397,12 +560,11 @@ export default function ShelfView({ date }) {
                               }}
                             >
                               <img
-                                className="image rounded-md "
+                                className="image rounded-md"
                                 // src={liveAnomalyImg ? selectedImage : anomalyDetails[0]?.reference_img}
                                 src={cData.img_url}
                                 alt="No img found"
                                 onLoad={findDimensions}
-
                                 //   () => {
                                 //   setImageLoading(false);
                                 // }}
