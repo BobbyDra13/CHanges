@@ -31,6 +31,7 @@ import {
   LinearProgress,
   Box,
   useTheme,
+  useMediaQuery,
   Tooltip,
   Avatar,
   AvatarGroup,
@@ -139,6 +140,7 @@ const Customers = () => {
   const [ignoreLoad, setIgnoreLoad] = useState(false);
   const [nextBtn, setNextbtn] = useState(false);
   const theme = useTheme();
+  const isSmallScreen = !useMediaQuery(theme.breakpoints.up('sm'));
   const success = theme.palette.success.main;
   const successDark = theme.palette.success.dark;
   const warning = theme.palette.warning.main;
@@ -1139,7 +1141,7 @@ const Customers = () => {
           <l-bouncy size="45" speed="1" color="black"></l-bouncy>
         </div>
       ) : (
-        <Dialog maxWidth={600} open={isImageDialogOpen} onClose={handleImageClick}>
+        <Dialog fullScreen={isSmallScreen ? true : false} maxWidth={600} open={isImageDialogOpen} onClose={handleImageClick}>
           <DialogContent>
             {/* {anomalyDetails.length > 0 && */}
             {
@@ -1148,7 +1150,7 @@ const Customers = () => {
                 <div className="zoom-container">
                   <div className="image-container flex justify-center items-center lg:mb-0 mb-10 relative">
                     <TransformWrapper>
-                      <div className="image-wrapper rounded-md md:w-full w-4/5">
+                      <div className="image-wrapper rounded-md md:w-full w-full" style={{ marginTop: isSmallScreen ? '300px' : '0' }}>
                         <TransformComponent>
                           {imageLoading && (
                             <div className="flex justify-center items-center absolute top-0 left-0 z-10  overflow-x-hidden bg-white w-full h-full">
