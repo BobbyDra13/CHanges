@@ -33,7 +33,12 @@ function NewStorePage() {
       disabled: false
       // path: '/main/stores/storeinsight/overview'
     },
-    { title: 'Videos', icon: <BiSolidVideos />, disabled: true, path: '/main/stores/storeinsight/video' },
+    {
+      title: 'Videos',
+      icon: <BiSolidVideos />,
+      disabled: true
+      // path: '/main/stores/storeinsight/video'
+    },
     { title: 'Brands', icon: <FaTags />, disabled: true },
     { title: 'Customers', icon: <IoIosPerson />, disabled: true },
     { title: 'Team', icon: <RiTeamFill />, disabled: true },

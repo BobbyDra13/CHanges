@@ -33,7 +33,8 @@ import Uniquejourney from './KPICards/Uniquejourney';
 // import Diversity3Icon from '@mui/icons-material/Diversity3';
 import LineChartToggle from './lineChartToggle';
 // import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
-import { IoMdSettings } from 'react-icons/io';
+import { IoMdSettings, IoMdDownload } from 'react-icons/io';
+import { CgSpinner } from 'react-icons/cg';
 import CsvModal from './CsvUpload';
 import RadarChart from './RadarChart';
 import { GetPopPercentage, GetpopKPI, GetCapProgStoreView, GetAnomaliesCount, getAssociateScoreData } from 'api';
@@ -73,6 +74,7 @@ function Overview() {
   const [associateScoreData, setAssociateScoreData] = useState([]);
   const [isGroup, setIsGroup] = useState([]);
   const [activeButton, setActiveButton] = useState('Trends View');
+  const [isDownloading, setIsDownloading] = useState(false);
   // const [selectedZoneID, setSelectedZoneID] = useState(null);
   const targetRef = useRef(null);
   //eslint-disable-next-line
@@ -90,6 +92,40 @@ function Overview() {
       }
       handleButtonClick('Shelf View');
     }, 100);
+  };
+  const handleDownload = () => {
+    const url = 'https://github.com/Pareshkr/excel_download/raw/main/Store%20Details%20Format%20for%20Blushlace.xlsx';
+    setIsDownloading(true);
+    // setTimeout(() => {
+    //   setIsDownloading(false);
+    // }, 3000);
+    fetch(url, { mode: 'no-cors' })
+      .then((response) => response.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(new Blob([blob]));
+        const link = document.createElement('a');
+        link.href = url;
+
+        // Get current date and time
+        const now = new Date();
+        const ist = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+        const date = ist.toLocaleDateString('en-GB').replace(/\//g, '-');
+        const time = ist.toTimeString().split(' ')[0];
+
+        // Set file name
+        link.download = `Disha_PoP_Analysis_${date}_${time}`;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+
+        setIsDownloading(false);
+      })
+      .catch((error) => {
+        console.error('Error fetching the file:', error);
+        setIsDownloading(false);
+      });
   };
   const handleButtonClick = (button) => {
     setActiveButton(button);
@@ -411,16 +447,29 @@ function Overview() {
   // dweltimeData && dweltimeData.sort((a, b) => b.avgDwellTime - a.avgDwellTime);
 
   return (
-    <div className="w-full ">
-      \{' '}
+    <div className="w-full">
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Stack direction={isSmallScreen ? 'column' : 'row'} justifyContent={'space-between'}>
             <Typography variant="h3">Overview </Typography>
             {storeID ? <Typography variant="h6">Store ID: {storeID}</Typography> : <></>}
-
-            <div className="sm:mt-2">
+            <div className="flex space-x-2 sm:mt-2">
               <DatePickerStore SetSelectedDate={setSelectedDate} style={{ borderRadius: '15px' }} />
+              <div className="hidden">
+                <button
+                  onClick={isDownloading ? null : handleDownload}
+                  className="w-28 h-10 mt-5 md:mt-0 rounded-md shadow-md border border-white bg-cyan-500 hover:bg-cyan-600 active:bg-cyan-400 text-white flex place-items-center"
+                >
+                  {isDownloading ? (
+                    <CgSpinner className="w-full text-xl animate-spin" />
+                  ) : (
+                    <div className="w-full h-full flex justify-center space-x-2">
+                      <IoMdDownload className="h-full text-lg" />
+                      <span className="mt-2 text-base">Report</span>
+                    </div>
+                  )}
+                </button>
+              </div>
             </div>
           </Stack>
         </Grid>
