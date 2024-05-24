@@ -377,6 +377,21 @@ export const GetPopWeekLineData = async (data) => {
   }
 };
 
+export const GetCaptureProgress = async (data) => {
+  try {
+    console.log(data);
+    const res = await axios.post(`${lambUrl}dashboard/sevenD-capture-progress`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetPopWeekLineData API: ', error);
+  }
+};
+
 export const GetRadarChartData = async (data) => {
   try {
     const res = await axios.post(
