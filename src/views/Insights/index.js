@@ -20,6 +20,7 @@ import KpiPop from './KpiCard/kpiPop';
 import { gridSpacing } from 'config.js';
 import AnomaliesBarChart from './AnomaliesBarChart';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import CaptureProgressCard from './CaptureProgressCard';
 
 // assets
 import NoDataPng from '../../assets/images/No_data.png';
@@ -514,19 +515,7 @@ const Insights = () => {
                 setVal('1');
               }}
             >
-              <KpiPop
-                isLoaded={fullness}
-                chart={statisticsChartsData[3].chart}
-                title="Capture Progress"
-                count="NA"
-                percentage="NA"
-                // chipColor={
-                //   vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0 ? 'error' : 'success'
-                // }
-                // isLoss={vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0}
-                color={'#9CA3AF'}
-                // color={theme.palette.success.main}
-              />
+              <CaptureProgressCard date={selectedDate} />
             </Grid>
           )}
 
