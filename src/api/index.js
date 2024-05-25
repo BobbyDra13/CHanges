@@ -233,6 +233,35 @@ export const UploadCSV = async (data) => {
     console.log('Error Uploading CSV', error);
   }
 };
+export const UploadBayGrouping = async (data) => {
+  try {
+    const res = await axios.post(`${lambUrl}store-view/bay_group_mapping`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    // console.log("csvv",res);
+    return res;
+  } catch (error) {
+    console.log('Error Uploading CSV', error);
+  }
+};
+
+export const UploadUserSheet = async (data) => {
+  try {
+    const res = await axios.post(`${lambUrl}store-view/csa_to_bay_mapping`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    // console.log("csvv",res);
+    return res;
+  } catch (error) {
+    console.log('Error Uploading CSV', error);
+  }
+};
 
 export const GetAnomalies = async (data) => {
   try {
