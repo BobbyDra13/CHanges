@@ -230,7 +230,6 @@ export default function ShelfView({ date, groups }) {
     const index = series.indexOf(currentShelf);
     const len = series.length;
     const nextInd = (index + 1) % len;
-    console.log(nextInd);
 
     const current = await GetShelf(series[nextInd]);
     console.log(current);
@@ -525,7 +524,7 @@ export default function ShelfView({ date, groups }) {
                 style={{
                   width: '90vw',
                   height: '80vh',
-                  backgroundColor: 'red',
+                  // backgroundColor: 'red',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
