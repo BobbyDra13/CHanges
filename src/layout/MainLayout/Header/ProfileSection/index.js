@@ -40,7 +40,7 @@ const ProfileSection = () => {
       });
   };
 
-  const [selectedIndex, setSelectedIndex] = React.useState();
+  // const [selectedIndex, setSelectedIndex] = React.useState();
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
 
@@ -140,12 +140,16 @@ const ProfileSection = () => {
                       </ListItemIcon>
                       <ListItemText primary={number} />
                     </ListItemButton>
-                    {email?  <ListItemButton>
-                      <ListItemIcon>
-                        <EmailIcon />
-                      </ListItemIcon>
-                      <ListItemText primary={email} />
-                    </ListItemButton>:<></>}
+                    {email ? (
+                      <ListItemButton>
+                        <ListItemIcon>
+                          <EmailIcon />
+                        </ListItemIcon>
+                        <ListItemText primary={email} />
+                      </ListItemButton>
+                    ) : (
+                      <></>
+                    )}
                     {/* <ListItemButton disabled selected={selectedIndex === 0} onClick={(event) => handleListItemClick(event, 0)}>
                       <ListItemIcon>
                         <SettingsTwoToneIcon />
@@ -172,7 +176,10 @@ const ProfileSection = () => {
                     <ListItemText primary="Lock Screen" />
                   </ListItemButton> */}
                     {/* <Link to={'/login'}> */}
-                    <ListItemButton selected={selectedIndex === 4} onClick={handleLogout}>
+                    <ListItemButton
+                      // selected={selectedIndex === 4}
+                      onClick={handleLogout}
+                    >
                       <ListItemIcon>
                         <MeetingRoomTwoToneIcon />
                       </ListItemIcon>

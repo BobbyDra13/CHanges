@@ -38,7 +38,7 @@ import { CgSpinner } from 'react-icons/cg';
 import CsvModal from './CsvUpload';
 import CsvModalNew from './CSV_Associate';
 import RadarChart from './RadarChart';
-import { GetPopPercentage, GetpopKPI, GetCapProgStoreView, GetAnomaliesCount, getAssociateScoreData } from 'api';
+import { GetPopPercentage, GetpopKPI, GetCapProgStoreView, GetAnomaliesCount, getAssociateScoreData, GetReport } from 'api';
 // import { IoIosWarning } from 'react-icons/io';
 // import { get } from 'react-hook-form';
 import Chart from 'react-apexcharts';
@@ -94,40 +94,9 @@ function Overview() {
       handleButtonClick('Shelf View');
     }, 100);
   };
-  const handleDownload = () => {
-    const url = 'https://github.com/Pareshkr/excel_download/raw/main/Store%20Details%20Format%20for%20Blushlace.xlsx';
-    setIsDownloading(true);
-    // setTimeout(() => {
-    //   setIsDownloading(false);
-    // }, 3000);
-    fetch(url, { mode: 'no-cors' })
-      .then((response) => response.blob())
-      .then((blob) => {
-        const url = window.URL.createObjectURL(new Blob([blob]));
-        const link = document.createElement('a');
-        link.href = url;
 
-        // Get current date and time
-        const now = new Date();
-        const ist = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-        const date = ist.toLocaleDateString('en-GB').replace(/\//g, '-');
-        const time = ist.toTimeString().split(' ')[0];
+  const storeDetails = JSON.parse(localStorage.getItem('analysisStoreDetails'));
 
-        // Set file name
-        link.download = `Disha_PoP_Analysis_${date}_${time}`;
-
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-
-        setIsDownloading(false);
-      })
-      .catch((error) => {
-        console.error('Error fetching the file:', error);
-        setIsDownloading(false);
-      });
-  };
   const handleButtonClick = (button) => {
     setActiveButton(button);
   };
@@ -146,8 +115,7 @@ function Overview() {
   const [costcnt, setCostcnt] = useState('');
   // const [ratio, setRatio] = useState('');
   const [openPopScoreModal, setOpenPopScoreModal] = useState(false);
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarConfig, setSnackbarConfig] = useState({ open: false, message: '', severity: 'success' });
   //eslint-disable-next-line
   const [captureProg, setCaptureProg] = useState([]);
   const [capProgressValue, setCapProgressValue] = useState(0);
@@ -157,7 +125,7 @@ function Overview() {
 
   const handleClickPopScoreModal = () => {
     setOpenPopScoreModal((prev) => !prev);
-    setIsSnackbarOpen(false);
+    setSnackbarConfig({ open: false, message: '', severity: 'success' });
     console.log(openPopScoreModal);
   };
 
@@ -169,16 +137,52 @@ function Overview() {
     //here changes are made, change it such that success is given as o/p only when both the API's give the response
     setOpenPopScoreModal(false); // Close the modal
     if (success) {
-      setIsSnackbarOpen(true); // Open the snackbar for success
-      setSnackbarMessage('File uploaded successfully!');
+      setSnackbarConfig({ open: true, message: 'File uploaded successfully!', severity: 'success' });
     } else {
-      // Handle error scenario
-      setSnackbarMessage('Error uploading file!');
+      setSnackbarConfig({ open: true, message: 'Error uploading file!', severity: 'error' });
     }
   };
 
   const handleSnackBarClose = () => {
-    setIsSnackbarOpen(false);
+    setSnackbarConfig({ open: false, message: '', severity: 'success' });
+  };
+
+  const handleDownload = async () => {
+    setIsDownloading(true);
+
+    const selectedDate = new Date(date);
+    selectedDate.setDate(selectedDate.getDate() + 1);
+    const tomorrow = selectedDate.toISOString().split('T')[0];
+
+    const startDate = date + 'T00:00:00';
+    const endDate = tomorrow + 'T00:00:00';
+
+    const body = {
+      start_date: startDate,
+      end_date: endDate,
+      store_name: storeDetails.id
+    };
+    try {
+      const response = await GetReport(body);
+      console.log('Report Response:', response);
+
+      if (response.data.presigned_url !== null) {
+        const url = response.data.presigned_url;
+        const link = document.createElement('a');
+        link.href = url;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setSnackbarConfig({ open: true, message: 'File Downloaded Successfully', severity: 'success' });
+      } else {
+        setSnackbarConfig({ open: true, message: 'No data found !', severity: 'warning' });
+      }
+    } catch (error) {
+      setSnackbarConfig({ open: true, message: 'Something went wrong !', severity: 'error' });
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const accentColLight = theme.palette.success.light;
@@ -418,6 +422,7 @@ function Overview() {
           date: date,
           store_id: store
         };
+        console.log('Body', body);
         try {
           const associateScore = await getAssociateScoreData(body);
           if (associateScore) {
@@ -456,7 +461,7 @@ function Overview() {
             {storeID ? <Typography variant="h6">Store ID: {storeID}</Typography> : <></>}
             <div className="flex space-x-2 sm:mt-2">
               <DatePickerStore SetSelectedDate={setSelectedDate} style={{ borderRadius: '15px' }} />
-              <div className="hidden">
+              <div>
                 <button
                   onClick={isDownloading ? null : handleDownload}
                   className="w-28 h-10 mt-5 md:mt-0 rounded-md shadow-md border border-white bg-cyan-500 hover:bg-cyan-600 active:bg-cyan-400 text-white flex place-items-center"
@@ -930,15 +935,14 @@ function Overview() {
         </Grid>
       </Grid>
       <Snackbar
-        open={isSnackbarOpen}
+        open={snackbarConfig.open}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         key={'bottom' + 'right'}
         autoHideDuration={6000}
         onClose={handleSnackBarClose}
       >
-        <Alert onClose={handleSnackBarClose} className="text-white" severity="success" sx={{ width: '100%', bgcolor: 'yellowgreen' }}>
-          {/* Alert store message sent successfully ! */}
-          {snackbarMessage}
+        <Alert onClose={handleSnackBarClose} severity={snackbarConfig.severity} sx={{ width: '100%' }}>
+          {snackbarConfig.message}
         </Alert>
       </Snackbar>
     </div>

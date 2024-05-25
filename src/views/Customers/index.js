@@ -367,6 +367,7 @@ const Customers = () => {
       if (response2) {
         setUpdateddata(response2.data);
         // console.log(updatedData[0].store_name);
+        console.log('Stores Data:', updatedData);
         console.log('dop', response2.data);
       }
       if (response) {
@@ -375,7 +376,6 @@ const Customers = () => {
 
         setStoresData(response.data.storeDetails);
         // setUpdateddata(response2.data);
-        console.log(updatedData);
         // console.log(updatedData[0].allAnomalies);
 
         const anomalies_details = response.data.anomalies_details;
@@ -494,8 +494,8 @@ const Customers = () => {
 
   // const navigate = useNavigate()
 
-  const settingAnalysisStoreDetails = (storeName, lat, lng, store) => {
-    localStorage.setItem('analysisStoreDetails', JSON.stringify({ storeName, lat, lng, store }));
+  const settingAnalysisStoreDetails = (storeName, lat, lng, store, id) => {
+    localStorage.setItem('analysisStoreDetails', JSON.stringify({ storeName, lat, lng, store, id }));
   };
 
   useEffect(() => {
@@ -732,7 +732,13 @@ const Customers = () => {
                             <div className="h-full w-fit"></div>
                             <button
                               onClick={() => {
-                                settingAnalysisStoreDetails(item.store_name, item.location.latitude, item.location.longitude, item.store);
+                                settingAnalysisStoreDetails(
+                                  item.store_name,
+                                  item.location.latitude,
+                                  item.location.longitude,
+                                  item.store,
+                                  item.store_id
+                                );
                                 navigate(`/main/stores/storeinsight/overview/${item.store}`);
                               }}
                               className="w-20 h-6 text-sm border border-emerald-500 self-center shadow-md drop-shadow-md text-emerald-500 rounded-lg"

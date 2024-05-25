@@ -582,3 +582,17 @@ export const GetVerifiedUsers = async (phoneNumber) => {
     console.log('Error Calling users API: ', error);
   }
 };
+
+export const GetReport = async (data) => {
+  try {
+    const res = await axios.post(`http://216.48.183.210:9998/process-data/`, data, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetReport API: ', error);
+  }
+};

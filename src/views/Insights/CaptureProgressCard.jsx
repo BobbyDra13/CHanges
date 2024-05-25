@@ -88,12 +88,14 @@ function CaptureProgressCard({ date }) {
         setPopData(dummyData.data);
         setPopChipData('NA%');
         setPopPercentage('NA');
+        f;
         setCapStatus(false);
         setLoading(false);
       }
     }
 
     getData();
+    // eslint-disable-next-line
   }, [date, userId]);
 
   const chartConfig = {
