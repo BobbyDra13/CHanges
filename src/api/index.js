@@ -585,10 +585,10 @@ export const GetVerifiedUsers = async (phoneNumber) => {
 
 export const GetReport = async (data) => {
   try {
-    const res = await axios.post(`http://216.48.183.210:9998/process-data/`, data, {
+    const res = await axios.post(`https://wjs4lkkxe1.execute-api.ap-south-1.amazonaws.com/process-data`, data, {
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
+        Accept: 'application/json'
+        // 'Content-Type': 'application/json'
       }
     });
     return res;

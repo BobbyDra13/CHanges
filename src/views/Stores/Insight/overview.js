@@ -711,8 +711,8 @@ function Overview() {
                           <p className="text-lg font-semibold">Associate Score</p>
                         </div>
                         <>
-                        {/* this */}
-                          <IoMdSettings className="text-5xl cursor-pointer" onClick={handleClickPopScoreModal}/>
+                          {/* this */}
+                          <IoMdSettings className="text-5xl cursor-pointer" onClick={handleClickPopScoreModal} />
                           <Modal
                             open={openPopScoreModal}
                             onClose={handleClose}
@@ -819,8 +819,8 @@ function Overview() {
                           <p className="text-lg font-semibold">Associate Score</p>
                         </div>
                         <>
-                        {/* this */}
-                          <IoMdSettings className="text-5xl cursor-pointer" onClick={handleClickPopScoreModal}/>
+                          {/* this */}
+                          <IoMdSettings className="text-5xl cursor-pointer" onClick={handleClickPopScoreModal} />
                           <Modal
                             open={openPopScoreModal}
                             onClose={handleClose}
