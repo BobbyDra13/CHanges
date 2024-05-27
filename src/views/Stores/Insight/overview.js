@@ -36,7 +36,7 @@ import LineChartToggle from './lineChartToggle';
 import { IoMdSettings, IoMdDownload } from 'react-icons/io';
 import { CgSpinner } from 'react-icons/cg';
 import CsvModal from './CsvUpload';
-import CsvModalNew from './CSV_Associate';
+import CsvModalAssociate from './CSV_Associate';
 import RadarChart from './RadarChart';
 import { GetPopPercentage, GetpopKPI, GetCapProgStoreView, GetAnomaliesCount, getAssociateScoreData, GetReport } from 'api';
 // import { IoIosWarning } from 'react-icons/io';
@@ -62,7 +62,6 @@ function Overview() {
   // console.log(storeID);
 
   const { store } = useParams();
-  console.log('cmon man', store);
   const dispatch = useDispatch();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -80,13 +79,13 @@ function Overview() {
   const targetRef = useRef(null);
   //eslint-disable-next-line
   const [ftfall, setftfall] = useState([]);
-  const [isZoneID, setIsZoneID] = useState('');
+  // const [isZoneID, setIsZoneID] = useState('');
   const handleScrollToComponent = (zoneId) => {
     // Scroll to the target component
     // localStorage.setItem('selectedZoneId', zoneId);
     dispatch(addZone(zoneId)); //Add the zone id to store
     console.log('zoneId in overview page:', zoneId);
-    setIsZoneID(zoneId);
+    // setIsZoneID(zoneId);
     setTimeout(() => {
       if (targetRef.current) {
         targetRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -115,6 +114,7 @@ function Overview() {
   const [costcnt, setCostcnt] = useState('');
   // const [ratio, setRatio] = useState('');
   const [openPopScoreModal, setOpenPopScoreModal] = useState(false);
+  const [openAssociateScoreModal, setOpenAssociateScoreModal] = useState(false);
   const [snackbarConfig, setSnackbarConfig] = useState({ open: false, message: '', severity: 'success' });
   //eslint-disable-next-line
   const [captureProg, setCaptureProg] = useState([]);
@@ -136,6 +136,25 @@ function Overview() {
   const handleUploadComplete = (success) => {
     //here changes are made, change it such that success is given as o/p only when both the API's give the response
     setOpenPopScoreModal(false); // Close the modal
+    if (success) {
+      setSnackbarConfig({ open: true, message: 'File uploaded successfully!', severity: 'success' });
+    } else {
+      setSnackbarConfig({ open: true, message: 'Error uploading file!', severity: 'error' });
+    }
+  };
+
+  const handleClickAssociateScoreModal = () => {
+    setOpenAssociateScoreModal((prev) => !prev);
+    setSnackbarConfig({ open: false, message: '', severity: 'success' });
+  };
+
+  const handleCloseAssociateScoreModal = () => {
+    setOpenAssociateScoreModal(false); // Close the modal
+  };
+
+  const handleAssociateUploadComplete = (success) => {
+    //here changes are made, change it such that success is given as o/p only when both the API's give the response
+    setOpenAssociateScoreModal(false); // Close the modal
     if (success) {
       setSnackbarConfig({ open: true, message: 'File uploaded successfully!', severity: 'success' });
     } else {
@@ -338,12 +357,10 @@ function Overview() {
             // const { zones } = data[0];
             const group = data.data;
             setIsGroup(group);
-            console.log('dfdf', group);
 
             group.forEach((item) => {
               let percentageString = item.data.FullnessPopPercent.replace('%', '');
               item.data.FullnessPopPercent = parseFloat(percentageString);
-              console.log('3some', item.zone_id);
             });
             group.sort((a, b) => a.data.FullnessPopPercent - b.data.FullnessPopPercent);
             console.log('pxs');
@@ -396,7 +413,6 @@ function Overview() {
           // });
           // setCaptureProg(capProg);
           setCapProgressValue(capProgress.data[0].capture_percentage);
-          console.log('capture progress', capProgressValue);
         } catch (error) {
           console.log(error);
         }
@@ -520,7 +536,6 @@ function Overview() {
                         </Modal>
                       </>
                     </div>
-                    {console.log('fxf', footfalldata)}
                     {footfalldata.length > 0 ? (
                       <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
                         {footfalldata.map((item, index) => {
@@ -528,8 +543,6 @@ function Overview() {
                           const percentage =
                             item.data.FullnessPopPercent != undefined ? Math.round(parseFloat(item.data.FullnessPopPercent)) : 0;
                           const barcolor = percentage >= 99 ? '#00ac69' : percentage >= 95 ? '#f4a100' : '#ff413a';
-                          console.log('idss', item.zone_id);
-                          console.log('thik hai', isZoneID);
                           // console.log(percentage);
                           return (
                             // <button
@@ -712,15 +725,15 @@ function Overview() {
                         </div>
                         <>
                           {/* this */}
-                          <IoMdSettings className="text-5xl cursor-pointer" onClick={handleClickPopScoreModal} />
+                          <IoMdSettings className="text-5xl cursor-pointer" onClick={handleClickAssociateScoreModal} />
                           <Modal
-                            open={openPopScoreModal}
-                            onClose={handleClose}
+                            open={openAssociateScoreModal}
+                            onClose={handleCloseAssociateScoreModal}
                             aria-labelledby="modal-modal-title"
                             aria-describedby="modal-modal-description"
                           >
                             <Box sx={modalStyle}>
-                              <CsvModalNew onUploadComplete={handleUploadComplete} />
+                              <CsvModalAssociate onUploadComplete={handleAssociateUploadComplete} />
                             </Box>
                           </Modal>
                         </>
@@ -820,15 +833,15 @@ function Overview() {
                         </div>
                         <>
                           {/* this */}
-                          <IoMdSettings className="text-5xl cursor-pointer" onClick={handleClickPopScoreModal} />
+                          <IoMdSettings className="text-5xl cursor-pointer" onClick={handleClickAssociateScoreModal} />
                           <Modal
-                            open={openPopScoreModal}
-                            onClose={handleClose}
+                            open={openAssociateScoreModal}
+                            onClose={handleCloseAssociateScoreModal}
                             aria-labelledby="modal-modal-title"
                             aria-describedby="modal-modal-description"
                           >
                             <Box sx={modalStyle}>
-                              <CsvModalNew onUploadComplete={handleUploadComplete} />
+                              <CsvModalAssociate onUploadComplete={handleAssociateUploadComplete} />
                             </Box>
                           </Modal>
                         </>

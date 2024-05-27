@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { FaCloudUploadAlt } from 'react-icons/fa';
 import { UploadBayGrouping } from 'api';
 
-function CsvModal({ onUploadComplete }) {
+function CsvModalAssociate({ onUploadComplete }) {
   const { store } = useParams();
   console.log('cmon man', store);
   const [loading, setLoading] = useState(false);
@@ -94,4 +94,4 @@ function CsvModal({ onUploadComplete }) {
   );
 }
 
-export default CsvModal;
+export default CsvModalAssociate;

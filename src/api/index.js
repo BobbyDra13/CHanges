@@ -175,7 +175,7 @@ export const GetPartsWiseDetails = async (date, shelf_id) => {
 //--------------------------------- API for DISHA SMART ----------------------------------------------
 
 const lambUrl = 'https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/';
-// const lambUrl = 'https://m1xgkzhe9j.execute-api.ap-south-1.amazonaws.com/prod/web-app/';
+// const lambUrl = 'https://m1xgkzhe9j.execute-api.ap-south-1.amazonaws.com/prod/web-app/';f
 
 export const GetFullnessPop = async (data) => {
   try {
@@ -585,10 +585,10 @@ export const GetVerifiedUsers = async (phoneNumber) => {
 
 export const GetReport = async (data) => {
   try {
-    const res = await axios.post(`https://wjs4lkkxe1.execute-api.ap-south-1.amazonaws.com/process-data`, data, {
+    const res = await axios.post(`https://4574gqg3k0.execute-api.ap-south-1.amazonaws.com/process-data`, data, {
       headers: {
-        Accept: 'application/json'
-        // 'Content-Type': 'application/json'
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
       }
     });
     return res;

@@ -17,7 +17,6 @@ const LineChartToggle = ({ storeId, date, groups, activeButton, handleButtonClic
   // const handleButtonClick = (button) => {
   //   setActiveButton(button);
   // };
-  console.log('okaybhai', groups);
   // const isSmallScreen = !useMediaQuery(theme.breakpoints.up('sm'));
   // const isMediumScreen = !useMediaQuery(theme.breakpoints.up('md'));
 
