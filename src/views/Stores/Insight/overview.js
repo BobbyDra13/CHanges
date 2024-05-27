@@ -36,6 +36,7 @@ import LineChartToggle from './lineChartToggle';
 import { IoMdSettings, IoMdDownload } from 'react-icons/io';
 import { CgSpinner } from 'react-icons/cg';
 import CsvModal from './CsvUpload';
+import CsvModalNew from './CSV_Associate';
 import RadarChart from './RadarChart';
 import { GetPopPercentage, GetpopKPI, GetCapProgStoreView, GetAnomaliesCount, getAssociateScoreData, GetReport } from 'api';
 // import { IoIosWarning } from 'react-icons/io';
@@ -710,7 +711,8 @@ function Overview() {
                           <p className="text-lg font-semibold">Associate Score</p>
                         </div>
                         <>
-                          <IoMdSettings className="text-5xl cursor-not-allowed" />
+                        {/* this */}
+                          <IoMdSettings className="text-5xl cursor-pointer" onClick={handleClickPopScoreModal}/>
                           <Modal
                             open={openPopScoreModal}
                             onClose={handleClose}
@@ -718,7 +720,7 @@ function Overview() {
                             aria-describedby="modal-modal-description"
                           >
                             <Box sx={modalStyle}>
-                              <CsvModal onUploadComplete={handleUploadComplete} />
+                              <CsvModalNew onUploadComplete={handleUploadComplete} />
                             </Box>
                           </Modal>
                         </>
@@ -817,7 +819,8 @@ function Overview() {
                           <p className="text-lg font-semibold">Associate Score</p>
                         </div>
                         <>
-                          <IoMdSettings className="text-5xl cursor-not-allowed" />
+                        {/* this */}
+                          <IoMdSettings className="text-5xl cursor-pointer" onClick={handleClickPopScoreModal}/>
                           <Modal
                             open={openPopScoreModal}
                             onClose={handleClose}
@@ -825,7 +828,7 @@ function Overview() {
                             aria-describedby="modal-modal-description"
                           >
                             <Box sx={modalStyle}>
-                              <CsvModal onUploadComplete={handleUploadComplete} />
+                              <CsvModalNew onUploadComplete={handleUploadComplete} />
                             </Box>
                           </Modal>
                         </>
