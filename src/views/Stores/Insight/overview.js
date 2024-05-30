@@ -179,7 +179,8 @@ function Overview() {
     const body = {
       start_date: startDate,
       end_date: endDate,
-      store_name: storeDetails.id
+      store_name: storeDetails.id,
+      file_type: 'excel'
     };
     try {
       const response = await GetReport(body);
