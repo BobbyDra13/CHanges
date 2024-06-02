@@ -79,15 +79,22 @@ function Overview() {
   //eslint-disable-next-line
   const [anomaliesCount, setAnomaliesCount] = useState([]);
   const [anomaliesLoading, setAnomaliesLoading] = useState(true);
+  const [openAssociateScoreModal, setOpenAssociateScoreModal] = useState(false);
 
+  const handleClickAssociateScoreModal = () => {
+    setOpenAssociateScoreModal((prev) => !prev);
+    setIsSnackbarOpen(false);
+    // console.log(openPopScoreModal);
+  };
   const handleClickPopScoreModal = () => {
     setOpenPopScoreModal((prev) => !prev);
     setIsSnackbarOpen(false);
-    console.log(openPopScoreModal);
+    // console.log(openPopScoreModal);
   };
 
   const handleClose = () => {
     setOpenPopScoreModal(false); // Close the modal
+    setOpenAssociateScoreModal(false);
   };
 
   const handleUploadComplete = (success) => {
@@ -410,7 +417,7 @@ function Overview() {
                           aria-describedby="modal-modal-description"
                         >
                           <Box sx={modalStyle}>
-                            <CsvModal onUploadComplete={handleUploadComplete} />
+                            <CsvModal onUploadComplete={handleUploadComplete} type={"popScore"}/>
                           </Box>
                         </Modal>
                       </>
@@ -471,7 +478,7 @@ function Overview() {
                         <p className="text-lg font-semibold">PoP</p>
                       </div>
                       <>
-                        <IoMdSettings className="text-5xl cursor-pointer" onClick={handleClickPopScoreModal} />
+                        <IoMdSettings className="text-5xl cursor-pointer" onClick={handleClickPopScoreModal}  />
                         <Modal
                           open={openPopScoreModal}
                           onClose={handleClose}
@@ -479,7 +486,7 @@ function Overview() {
                           aria-describedby="modal-modal-description"
                         >
                           <Box sx={modalStyle}>
-                            <CsvModal onUploadComplete={handleUploadComplete} />
+                            <CsvModal onUploadComplete={handleUploadComplete} type={"popScore"}/>
                           </Box>
                         </Modal>
                       </>
@@ -595,15 +602,15 @@ function Overview() {
                           <p className="text-lg font-semibold">Associate Score</p>
                         </div>
                         <>
-                          <IoMdSettings className="text-5xl cursor-not-allowed" />
+                          <IoMdSettings className="text-5xl" onClick={handleClickAssociateScoreModal}/>
                           <Modal
-                            open={openPopScoreModal}
+                            open={openAssociateScoreModal}
                             onClose={handleClose}
                             aria-labelledby="modal-modal-title"
                             aria-describedby="modal-modal-description"
                           >
                             <Box sx={modalStyle}>
-                              <CsvModal onUploadComplete={handleUploadComplete} />
+                              <CsvModal onUploadComplete={handleUploadComplete}  type='associateStore'/>
                             </Box>
                           </Modal>
                         </>
@@ -702,15 +709,15 @@ function Overview() {
                           <p className="text-lg font-semibold">Associate Score</p>
                         </div>
                         <>
-                          <IoMdSettings className="text-5xl cursor-not-allowed" />
+                          <IoMdSettings className="text-5xl" onClick={handleClickAssociateScoreModal} />
                           <Modal
-                            open={openPopScoreModal}
+                            open={openAssociateScoreModal}
                             onClose={handleClose}
                             aria-labelledby="modal-modal-title"
                             aria-describedby="modal-modal-description"
                           >
                             <Box sx={modalStyle}>
-                              <CsvModal onUploadComplete={handleUploadComplete} />
+                              <CsvModal onUploadComplete={handleUploadComplete}  type='associateStore'/>
                             </Box>
                           </Modal>
                         </>
