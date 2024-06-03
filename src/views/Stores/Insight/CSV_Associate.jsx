@@ -3,7 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import { useParams } from 'react-router-dom';
 import React, { useState } from 'react';
 import { FaCloudUploadAlt } from 'react-icons/fa';
-import { UploadBayGrouping } from 'api';
+import { UploadUserSheet } from 'api';
 
 function CsvModalAssociate({ onUploadComplete }) {
   const { store } = useParams();
@@ -30,10 +30,12 @@ function CsvModalAssociate({ onUploadComplete }) {
 
         try {
           // Pass keys as a single object to the UploadCSV API
-          const res = await UploadBayGrouping({ base64EncodedString, fileName, store_id });
+          const res = await UploadUserSheet({ base64EncodedString, fileName, store_id });
           console.log('Response from API:', res);
-          onUploadComplete(true);
-          setUploadSuccess(true);
+          if (res.status === 200) {
+            onUploadComplete(true);
+            setUploadSuccess(true);
+          }
         } catch (error) {
           console.log('Error Uploading CSV', error);
           onUploadComplete(false);
