@@ -41,7 +41,7 @@ function CsvModalAssociate({ onUploadComplete }) {
     try {
       // Pass keys as a single object to the UploadCSV API
       console.log('selectedFile', selectedFile);
-      await UploadBayGrouping(selectedFile);
+      await UploadUserSheet(selectedFile);
 
       onUploadComplete(true);
       setSelectedFile(false);
