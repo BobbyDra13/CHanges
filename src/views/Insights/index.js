@@ -2,6 +2,7 @@ import { React, useState, useEffect } from 'react';
 
 // API imports
 import { GetRadarChartData, GetCapProg, GetPopHistogramData } from 'api';
+// import { useHistory } from 'react-router-dom';
 
 // Apex chart import
 import Chart from 'react-apexcharts';
@@ -19,12 +20,14 @@ import KpiPop from './KpiCard/kpiPop';
 import { gridSpacing } from 'config.js';
 import AnomaliesBarChart from './AnomaliesBarChart';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import CaptureProgressCard from './CaptureProgressCard';
 
 // assets
 import NoDataPng from '../../assets/images/No_data.png';
 import NoDataImg from '../../assets/images/No_data-amico.svg';
 import PoPScoreKPICard from './PoPScoreKPICard';
 import AnomalyKPICard from './AnomalyKPICard';
+import PopUp from './PopUp';
 // import { useDispatch } from 'react-redux';
 
 const histogramChartRequirements = {
@@ -369,6 +372,59 @@ const Insights = () => {
   const allZerHistogram = series && series[0].data.every((data) => data.y === 0);
   console.log('checki', allZerHistogram);
 
+  const [popupOpen, setPopupOpen] = useState(false);
+  const [showPopUp, setShowPopUp] = useState(true);
+  const [val, setVal] = useState('0');
+  // const [score,setScore]=useState(0);
+  const handleOpenPopup = () => {
+    if (showPopUp) {
+      setPopupOpen(true);
+    }
+  };
+
+  const handleClosePopup = () => {
+    console.log(' close popup ');
+    setPopupOpen(false);
+  };
+  console.log('popup open-->', popupOpen);
+  // const history = useHistory();
+
+  // const navigateToStoreInsight = (id) => {
+  //   history.push(`/main/stores/storeinsight/overview/${id}`);
+  // };
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 640px)'); // Tailwind's sm breakpoint
+
+    const handleMediaQueryChange = (event) => {
+      if (event.matches) {
+        console.log('yes');
+        setShowPopUp(true);
+      } else {
+        console.log('no');
+        setShowPopUp(false);
+      }
+    };
+
+    // Initial check
+    if (mediaQuery.matches) {
+      console.log('yes');
+      setShowPopUp(true);
+    } else {
+      console.log('no');
+      setShowPopUp(false);
+    }
+
+    // Add listener
+    mediaQuery.addEventListener('change', handleMediaQueryChange);
+
+    // Clean up listener on unmount
+    return () => {
+      mediaQuery.removeEventListener('change', handleMediaQueryChange);
+    };
+  }, [showPopUp]);
+  console.log(selectedDate);
+
   return (
     <Grid container spacing={gridSpacing}>
       <Grid
@@ -396,25 +452,45 @@ const Insights = () => {
       </Grid>
       <Grid item xs={12}>
         <Grid container spacing={gridSpacing}>
-          <Grid item lg={3} sm={6} xs={12}>
+          {/* shows pop score */}
+          <Grid
+            item
+            lg={3}
+            sm={6}
+            xs={12}
+            onClick={() => {
+              handleOpenPopup();
+              setVal('0');
+            }}
+          >
             <PoPScoreKPICard date={selectedDate} />
           </Grid>
+
+          {/* <div className="w-full"> */}
+
+          {!showPopUp && (
+            <Grid item lg={3} sm={6} xs={12}>
+              <KpiPop
+                isLoaded={fullness}
+                chart={statisticsChartsData[3].chart}
+                title="VM Score"
+                count="NA"
+                percentage="NA"
+                // chipColor={
+                //   vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0 ? 'error' : 'success'
+                // }
+                // isLoss={vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0}
+                color={'#9CA3AF'}
+                // color={theme.palette.success.main}
+              />
+            </Grid>
+          )}
+
+          {/* </div> */}
+
           <Grid item lg={3} sm={6} xs={12}>
-            <KpiPop
-              isLoaded={fullness}
-              chart={statisticsChartsData[3].chart}
-              title="VM Score"
-              count="NA"
-              percentage="NA"
-              // chipColor={
-              //   vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0 ? 'error' : 'success'
-              // }
-              // isLoss={vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0}
-              color={'#9CA3AF'}
-              // color={theme.palette.success.main}
-            />
-          </Grid>
-          <Grid item lg={3} sm={6} xs={12}>
+            {/* KPI VIEW */}
+            {/* OSA */}
             <KpiPop
               isLoaded={fullness}
               chart={statisticsChartsData[2].chart}
@@ -427,6 +503,24 @@ const Insights = () => {
               // color={theme.palette.success.main}
             />
           </Grid>
+
+          {showPopUp && (
+            <Grid
+              item
+              lg={3}
+              sm={6}
+              xs={12}
+              onClick={() => {
+                handleOpenPopup();
+                setVal('1');
+              }}
+            >
+              <CaptureProgressCard date={selectedDate} />
+            </Grid>
+          )}
+
+          {showPopUp && <PopUp open={popupOpen} onClose={handleClosePopup} value={val} selectedDate={selectedDate} />}
+
           <Grid item lg={3} sm={6} xs={12}>
             <AnomalyKPICard date={selectedDate} />
           </Grid>
@@ -706,6 +800,7 @@ const Insights = () => {
                 <Grid item xs={12}>
                   <Card>
                     <CardContent>
+                      {/* content */}
                       <AnomaliesBarChart selectedDate={selectedDate} />
                     </CardContent>
                   </Card>
@@ -713,7 +808,8 @@ const Insights = () => {
               </Grid>
             </Grid>
           </Grid>
-          <Grid item lg={3} xs={12}>
+
+          <Grid item lg={3} xs={12} className="invisible lg:visible">
             <Stack spacing={gridSpacing}>
               <Card
                 className="border border-gray-300 bg-[#ff413a]"
@@ -755,6 +851,7 @@ const Insights = () => {
                 </div>
               </Card>
               <Card>
+                {/* progress */}
                 <Grid container spacing={gridSpacing}>
                   <Grid item xs={6} sm={4} md={3} lg={7} xl={6}>
                     <Chart
@@ -813,6 +910,7 @@ const Insights = () => {
                                   {parseFloat(item.storeCapturePercentage).toFixed(1)}
                                 </Typography>
                               </Grid>
+
                               <Grid item xs={12}>
                                 <div className="flex items-center justify-between">
                                   <div style={{ width: '88%' }}>

@@ -233,6 +233,35 @@ export const UploadCSV = async (data) => {
     console.log('Error Uploading CSV', error);
   }
 };
+export const UploadBayGrouping = async (data) => {
+  try {
+    const res = await axios.post(`${lambUrl}store-view/bay_group_mapping`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    // console.log("csvv",res);
+    return res;
+  } catch (error) {
+    console.log('Error Uploading CSV', error);
+  }
+};
+
+export const UploadUserSheet = async (data) => {
+  try {
+    const res = await axios.post(`${lambUrl}store-view/csa_to_bay_mapping`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    // console.log("csvv",res);
+    return res;
+  } catch (error) {
+    console.log('Error Uploading CSV', error);
+  }
+};
 
 export const GetAnomalies = async (data) => {
   try {
@@ -366,6 +395,21 @@ export const GetPopWeekLineData = async (data) => {
   try {
     console.log(data);
     const res = await axios.post(`${lambUrl}pop_score_linechart`, data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetPopWeekLineData API: ', error);
+  }
+};
+
+export const GetCaptureProgress = async (data) => {
+  try {
+    console.log(data);
+    const res = await axios.post(`${lambUrl}dashboard/sevenD-capture-progress`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -536,5 +580,19 @@ export const GetVerifiedUsers = async (phoneNumber) => {
     return res;
   } catch (error) {
     console.log('Error Calling users API: ', error);
+  }
+};
+
+export const GetReport = async (data) => {
+  try {
+    const res = await axios.post(`https://4574gqg3k0.execute-api.ap-south-1.amazonaws.com/process-data`, data, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetReport API: ', error);
   }
 };

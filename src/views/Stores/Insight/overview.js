@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+import { addZone } from '../../../store/slices/zoneSlice';
 import { useParams } from 'react-router-dom';
 import {
   Grid,
@@ -31,10 +33,12 @@ import Uniquejourney from './KPICards/Uniquejourney';
 // import Diversity3Icon from '@mui/icons-material/Diversity3';
 import LineChartToggle from './lineChartToggle';
 // import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
-import { IoMdSettings } from 'react-icons/io';
+import { IoMdSettings, IoMdDownload } from 'react-icons/io';
+import { CgSpinner } from 'react-icons/cg';
 import CsvModal from './CsvUpload';
+import CsvModalAssociate from './CSV_Associate';
 import RadarChart from './RadarChart';
-import { GetPopPercentage, GetpopKPI, GetCapProgStoreView, GetAnomaliesCount, getAssociateScoreData } from 'api';
+import { GetPopPercentage, GetpopKPI, GetCapProgStoreView, GetAnomaliesCount, getAssociateScoreData, GetReport } from 'api';
 // import { IoIosWarning } from 'react-icons/io';
 // import { get } from 'react-hook-form';
 import Chart from 'react-apexcharts';
@@ -45,8 +49,20 @@ import pog from '../../../assets/images/pog.jpeg';
 import associate from '../../../assets/images/profile-user.png';
 
 function Overview() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const data = Object.fromEntries(urlParams.entries());
+  const value = JSON.stringify(data).substring(2, 12);
+  const storeID = JSON.stringify(data).substring(16, 20);
+  console.log(storeID);
+  // console.log(JSON.stringify(data));
+  // const [storeID, setStoreID]=useState("");
+  // if(data){
+  //   setStoreID(JSON.stringify(data).substring(17, 20))
+  // }
+  // console.log(storeID);
+
   const { store } = useParams();
-  console.log('cmon man', store);
+  const dispatch = useDispatch();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const isMediumScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -56,14 +72,41 @@ function Overview() {
   const [dweltimeData, setDweltimedata] = useState(false);
   const [footfalldata, setFootfalldata] = useState(false);
   const [associateScoreData, setAssociateScoreData] = useState([]);
+  const [isGroup, setIsGroup] = useState([]);
+  const [activeButton, setActiveButton] = useState('Trends View');
+  const [isDownloading, setIsDownloading] = useState(false);
+  // const [selectedZoneID, setSelectedZoneID] = useState(null);
+  const targetRef = useRef(null);
   //eslint-disable-next-line
   const [ftfall, setftfall] = useState([]);
+  // const [isZoneID, setIsZoneID] = useState('');
+  const handleScrollToComponent = (zoneId) => {
+    // Scroll to the target component
+    // localStorage.setItem('selectedZoneId', zoneId);
+    dispatch(addZone(zoneId)); //Add the zone id to store
+    console.log('zoneId in overview page:', zoneId);
+    // setIsZoneID(zoneId);
+    setTimeout(() => {
+      if (targetRef.current) {
+        targetRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+      handleButtonClick('Shelf View');
+    }, 100);
+  };
+
+  const storeDetails = JSON.parse(localStorage.getItem('analysisStoreDetails'));
+
+  const handleButtonClick = (button) => {
+    setActiveButton(button);
+  };
 
   function padTo2Digits(num) {
     return num.toString().padStart(2, '0');
   }
   const customDate = new Date();
-  const finalCustomDate = [customDate.getFullYear(), padTo2Digits(customDate.getMonth() + 1), padTo2Digits(customDate.getDate())].join('-');
+  const finalCustomDate = data
+    ? value
+    : [customDate.getFullYear(), padTo2Digits(customDate.getMonth() + 1), padTo2Digits(customDate.getDate())].join('-');
   const [date, setSelectedDate] = useState(finalCustomDate);
   //eslint-disable-next-line
   const [empCount, setEmpCount] = useState('');
@@ -71,15 +114,14 @@ function Overview() {
   const [costcnt, setCostcnt] = useState('');
   // const [ratio, setRatio] = useState('');
   const [openPopScoreModal, setOpenPopScoreModal] = useState(false);
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [openAssociateScoreModal, setOpenAssociateScoreModal] = useState(false);
+  const [snackbarConfig, setSnackbarConfig] = useState({ open: false, message: '', severity: 'success' });
   //eslint-disable-next-line
   const [captureProg, setCaptureProg] = useState([]);
   const [capProgressValue, setCapProgressValue] = useState(0);
   //eslint-disable-next-line
   const [anomaliesCount, setAnomaliesCount] = useState([]);
   const [anomaliesLoading, setAnomaliesLoading] = useState(true);
-  const [openAssociateScoreModal, setOpenAssociateScoreModal] = useState(false);
 
   const handleClickAssociateScoreModal = () => {
     setOpenAssociateScoreModal((prev) => !prev);
@@ -88,8 +130,8 @@ function Overview() {
   };
   const handleClickPopScoreModal = () => {
     setOpenPopScoreModal((prev) => !prev);
-    setIsSnackbarOpen(false);
-    // console.log(openPopScoreModal);
+    setSnackbarConfig({ open: false, message: '', severity: 'success' });
+    console.log(openPopScoreModal);
   };
 
   const handleClose = () => {
@@ -98,18 +140,72 @@ function Overview() {
   };
 
   const handleUploadComplete = (success) => {
+    //here changes are made, change it such that success is given as o/p only when both the API's give the response
     setOpenPopScoreModal(false); // Close the modal
     if (success) {
-      setIsSnackbarOpen(true); // Open the snackbar for success
-      setSnackbarMessage('File uploaded successfully!');
+      setSnackbarConfig({ open: true, message: 'File uploaded successfully!', severity: 'success' });
     } else {
-      // Handle error scenario
-      setSnackbarMessage('Error uploading file!');
+      setSnackbarConfig({ open: true, message: 'Error uploading file!', severity: 'error' });
+    }
+  };
+
+
+
+  const handleCloseAssociateScoreModal = () => {
+    setOpenAssociateScoreModal(false); // Close the modal
+  };
+
+  const handleAssociateUploadComplete = (success) => {
+    //here changes are made, change it such that success is given as o/p only when both the API's give the response
+    setOpenAssociateScoreModal(false); // Close the modal
+    if (success) {
+      setSnackbarConfig({ open: true, message: 'File uploaded successfully!', severity: 'success' });
+    } else {
+      setSnackbarConfig({ open: true, message: 'Error uploading file!', severity: 'error' });
     }
   };
 
   const handleSnackBarClose = () => {
-    setIsSnackbarOpen(false);
+    setSnackbarConfig({ open: false, message: '', severity: 'success' });
+  };
+
+  const handleDownload = async () => {
+    setIsDownloading(true);
+
+    const selectedDate = new Date(date);
+    selectedDate.setDate(selectedDate.getDate() + 1);
+    const tomorrow = selectedDate.toISOString().split('T')[0];
+
+    const startDate = date + 'T00:00:00';
+    const endDate = tomorrow + 'T00:00:00';
+
+    const body = {
+      start_date: startDate,
+      end_date: endDate,
+      store_name: storeDetails.id,
+      file_type: 'excel'
+    };
+    try {
+      const response = await GetReport(body);
+      console.log('Report Response:', response);
+
+      if (response.data.presigned_url !== null) {
+        const url = response.data.presigned_url;
+        const link = document.createElement('a');
+        link.href = url;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setSnackbarConfig({ open: true, message: 'File Downloaded Successfully', severity: 'success' });
+      } else {
+        setSnackbarConfig({ open: true, message: 'No data found !', severity: 'warning' });
+      }
+    } catch (error) {
+      setSnackbarConfig({ open: true, message: 'Something went wrong !', severity: 'error' });
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const accentColLight = theme.palette.success.light;
@@ -264,12 +360,14 @@ function Overview() {
             // const { totalCustomerStore } = data[0];
             // const { zones } = data[0];
             const group = data.data;
+            setIsGroup(group);
+
             group.forEach((item) => {
               let percentageString = item.data.FullnessPopPercent.replace('%', '');
               item.data.FullnessPopPercent = parseFloat(percentageString);
             });
             group.sort((a, b) => a.data.FullnessPopPercent - b.data.FullnessPopPercent);
-            console.log('pxs', group);
+            console.log('pxs');
             setftfall(true);
             // console.log(zones);
             setFootfalldata(group);
@@ -319,7 +417,6 @@ function Overview() {
           // });
           // setCaptureProg(capProg);
           setCapProgressValue(capProgress.data[0].capture_percentage);
-          console.log('capture progress', capProgressValue);
         } catch (error) {
           console.log(error);
         }
@@ -345,6 +442,7 @@ function Overview() {
           date: date,
           store_id: store
         };
+        console.log('Body', body);
         try {
           const associateScore = await getAssociateScoreData(body);
           if (associateScore) {
@@ -366,19 +464,38 @@ function Overview() {
 
     // eslint-disable-next-line
   }, [date]);
-  console.log('Anomalies ', anomaliesCount);
-
+  // console.log('Anomalies ', anomaliesCount);
+  // const handleOpenCameraView = () => {
+  //   setIsCamOpen(true);
+  //   handleScrollToComponent();
+  // }
   // ftfall && ftfall.sort((a, b) => b.totalCustomerZone - a.totalCustomerZone);
   // dweltimeData && dweltimeData.sort((a, b) => b.avgDwellTime - a.avgDwellTime);
 
   return (
-    <div className="  w-full ">
+    <div className="w-full">
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Stack direction={isSmallScreen ? 'column' : 'row'} justifyContent={'space-between'}>
-            <Typography variant="h3">Overview</Typography>
-            <div>
+            <Typography variant="h3">Overview </Typography>
+            {storeID ? <Typography variant="h6">Store ID: {storeID}</Typography> : <></>}
+            <div className="flex space-x-2 sm:mt-2">
               <DatePickerStore SetSelectedDate={setSelectedDate} style={{ borderRadius: '15px' }} />
+              <div>
+                <button
+                  onClick={isDownloading ? null : handleDownload}
+                  className="w-28 h-10 mt-5 md:mt-0 rounded-md shadow-md border border-white bg-cyan-500 hover:bg-cyan-600 active:bg-cyan-400 text-white flex place-items-center"
+                >
+                  {isDownloading ? (
+                    <CgSpinner className="w-full text-xl animate-spin" />
+                  ) : (
+                    <div className="w-full h-full flex justify-center space-x-2">
+                      <IoMdDownload className="h-full text-lg" />
+                      <span className="mt-2 text-base">Report</span>
+                    </div>
+                  )}
+                </button>
+              </div>
             </div>
           </Stack>
         </Grid>
@@ -391,6 +508,7 @@ function Overview() {
                     <div className="flex items-center justify-center gap-2 w-full">
                       {footfalldata.length > 0 ? (
                         // <DirectionsWalkIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" />
+                        // icon here
                         <img src={popIcon} alt="pop" className="h-14 w-14" />
                       ) : (
                         <Skeleton variant="circular" width={60} height={45} />
@@ -431,7 +549,14 @@ function Overview() {
                           const barcolor = percentage >= 99 ? '#00ac69' : percentage >= 95 ? '#f4a100' : '#ff413a';
                           // console.log(percentage);
                           return (
-                            <div className="mt-2" key={index}>
+                            // <button
+                            // key={index}
+                            // onClick={handleScrollToComponent}
+                            // className='flex w-full'
+
+                            // >
+
+                            <div onClick={() => handleScrollToComponent(item.zone_id)} className="mt-2 hover:cursor-pointer" key={index}>
                               <div className="flex gap-1 items-center">
                                 {/* <div
                                   className=" rounded-full h-4 w-4"
@@ -462,6 +587,7 @@ function Overview() {
                                 }}
                               />
                             </div>
+                            // </button>
                           );
                         })}
                       </div>
@@ -605,12 +731,12 @@ function Overview() {
                           <IoMdSettings className="text-5xl" onClick={handleClickAssociateScoreModal}/>
                           <Modal
                             open={openAssociateScoreModal}
-                            onClose={handleClose}
+                            onClose={handleCloseAssociateScoreModal}
                             aria-labelledby="modal-modal-title"
                             aria-describedby="modal-modal-description"
                           >
                             <Box sx={modalStyle}>
-                              <CsvModal onUploadComplete={handleUploadComplete}  type='associateStore'/>
+                              <CsvModalAssociate onUploadComplete={handleAssociateUploadComplete} />
                             </Box>
                           </Modal>
                         </>
@@ -712,12 +838,12 @@ function Overview() {
                           <IoMdSettings className="text-5xl" onClick={handleClickAssociateScoreModal} />
                           <Modal
                             open={openAssociateScoreModal}
-                            onClose={handleClose}
+                            onClose={handleCloseAssociateScoreModal}
                             aria-labelledby="modal-modal-title"
                             aria-describedby="modal-modal-description"
                           >
                             <Box sx={modalStyle}>
-                              <CsvModal onUploadComplete={handleUploadComplete}  type='associateStore'/>
+                              <CsvModalAssociate onUploadComplete={handleAssociateUploadComplete}  type='associateStore'/>
                             </Box>
                           </Modal>
                         </>
@@ -745,9 +871,15 @@ function Overview() {
         </Grid>
         <Grid item xs={12}>
           <Grid container spacing={2}>
-            <Grid className="mb-10" item xs={12} lg={9} xl={9.6}>
+            <Grid ref={targetRef} className="mb-10" item xs={12} lg={9} xl={9.6}>
               <Card className="border border-gray-300" sx={{ height: '550px' }}>
-                <LineChartToggle storeId={store} date={date} />
+                <LineChartToggle
+                  storeId={store}
+                  date={date}
+                  groups={isGroup}
+                  activeButton={activeButton}
+                  handleButtonClick={handleButtonClick}
+                />
               </Card>
             </Grid>
             <Grid item className="mb-10" xs={12} lg={3} xl={2.4}>
@@ -817,17 +949,15 @@ function Overview() {
           </Grid>
         </Grid>
       </Grid>
-
       <Snackbar
-        open={isSnackbarOpen}
+        open={snackbarConfig.open}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         key={'bottom' + 'right'}
         autoHideDuration={6000}
         onClose={handleSnackBarClose}
       >
-        <Alert onClose={handleSnackBarClose} className="text-white" severity="success" sx={{ width: '100%', bgcolor: 'yellowgreen' }}>
-          {/* Alert store message sent successfully ! */}
-          {snackbarMessage}
+        <Alert onClose={handleSnackBarClose} severity={snackbarConfig.severity} sx={{ width: '100%' }}>
+          {snackbarConfig.message}
         </Alert>
       </Snackbar>
     </div>

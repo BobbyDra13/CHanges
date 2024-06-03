@@ -11,9 +11,12 @@ import { Fade, Button, ClickAwayListener, Paper, Popper, List, ListItemText, Lis
 import PersonTwoToneIcon from '@mui/icons-material/PersonTwoTone';
 // import DraftsTwoToneIcon from '@mui/icons-material/DraftsTwoTone';
 // import LockOpenTwoTone from '@mui/icons-material/LockOpenTwoTone';
-import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone';
+// import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone';
+import EmailIcon from '@mui/icons-material/Email';
+import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import AccountCircleTwoToneIcon from '@mui/icons-material/AccountCircleTwoTone';
 import MeetingRoomTwoToneIcon from '@mui/icons-material/MeetingRoomTwoTone';
+// import { Email } from '@mui/icons-material';
 
 // ==============================|| PROFILE SECTION ||============================== //
 
@@ -37,13 +40,13 @@ const ProfileSection = () => {
       });
   };
 
-  const [selectedIndex, setSelectedIndex] = React.useState();
+  // const [selectedIndex, setSelectedIndex] = React.useState();
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
 
-  const handleListItemClick = (event, index) => {
-    setSelectedIndex(index);
-  };
+  // const handleListItemClick = (event, index) => {
+  //   setSelectedIndex(index);
+  // };
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -69,6 +72,11 @@ const ProfileSection = () => {
   if (!auth) {
     return null; // or render a loading/error message
   }
+
+  const name = users.data.name;
+  const number = users.data.number;
+  const email = users.data.email;
+  // console.log(name, number, email);
 
   return (
     <>
@@ -120,18 +128,41 @@ const ProfileSection = () => {
                       borderRadius: '10px'
                     }}
                   >
-                    <ListItemButton disabled selected={selectedIndex === 0} onClick={(event) => handleListItemClick(event, 0)}>
+                    <ListItemButton>
+                      <ListItemIcon>
+                        <PersonTwoToneIcon />
+                      </ListItemIcon>
+                      <ListItemText primary={name} />
+                    </ListItemButton>
+                    <ListItemButton>
+                      <ListItemIcon>
+                        <LocalPhoneIcon />{' '}
+                      </ListItemIcon>
+                      <ListItemText primary={number} />
+                    </ListItemButton>
+                    {email ? (
+                      <ListItemButton>
+                        <ListItemIcon>
+                          <EmailIcon />
+                        </ListItemIcon>
+                        <ListItemText primary={email} />
+                      </ListItemButton>
+                    ) : (
+                      <></>
+                    )}
+                    {/* <ListItemButton disabled selected={selectedIndex === 0} onClick={(event) => handleListItemClick(event, 0)}>
                       <ListItemIcon>
                         <SettingsTwoToneIcon />
                       </ListItemIcon>
                       <ListItemText primary="Settings" />
-                    </ListItemButton>
-                    <ListItemButton disabled selected={selectedIndex === 1} onClick={(event) => handleListItemClick(event, 1)}>
+                    </ListItemButton> */}
+                    {/* <ListItemButton disabled selected={selectedIndex === 1} onClick={(event) => handleListItemClick(event, 1)}>
                       <ListItemIcon>
                         <PersonTwoToneIcon />
                       </ListItemIcon>
                       <ListItemText primary="Profile" />
-                    </ListItemButton>
+                    </ListItemButton> */}
+
                     {/* <ListItemButton selected={selectedIndex === 2} onClick={(event) => handleListItemClick(event, 2)}>
                     <ListItemIcon>
                       <DraftsTwoToneIcon />
@@ -145,7 +176,10 @@ const ProfileSection = () => {
                     <ListItemText primary="Lock Screen" />
                   </ListItemButton> */}
                     {/* <Link to={'/login'}> */}
-                    <ListItemButton selected={selectedIndex === 4} onClick={handleLogout}>
+                    <ListItemButton
+                      // selected={selectedIndex === 4}
+                      onClick={handleLogout}
+                    >
                       <ListItemIcon>
                         <MeetingRoomTwoToneIcon />
                       </ListItemIcon>

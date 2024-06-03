@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import KpiCard from './KpiCard/index';
-import { GetPopWeekLineData } from 'api';
+import { GetCaptureProgress } from 'api';
 import { useTheme, Skeleton, Card, Stack, Grid, Typography } from '@mui/material';
 
-function PoPScoreKPICard({ date }) {
+function CaptureProgressCard({ date }) {
   const theme = useTheme();
-
   const [popData, setPopData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [popChipData, setPopChipData] = useState('');
@@ -14,12 +13,13 @@ function PoPScoreKPICard({ date }) {
   const [status, setStatus] = useState([]);
   const [dates, setDates] = useState([]);
   const [isDataAvailable, setIsDataAvailable] = useState(false);
-  const user_id = JSON.parse(localStorage.getItem('userData')).data._id;
-  console.log('yyaa', user_id);
+
+  const userId = JSON.parse(localStorage.getItem('userData')).data._id;
+  console.log('User ID:', userId);
 
   const dummyData = {
     data: [0, 0, 0, 0, 0, 0, 0],
-    capture_status: [false, false, false, false, false, false, false],
+    captureStatus: [true, true, true, true, true, true, true],
     categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
   };
 
@@ -27,75 +27,83 @@ function PoPScoreKPICard({ date }) {
     async function getData() {
       const body = {
         date: date.toString(),
-        user_id: user_id
+        user_id: userId
       };
 
       try {
         setLoading(true);
-        const data = await GetPopWeekLineData(body);
-        console.log('fhk', data);
-        if (data === undefined) {
+        const data = await GetCaptureProgress(body);
+        console.log('Capture Progress:', data);
+
+        if (!data) {
           setIsDataAvailable(false);
-          setStatus(dummyData.capture_status);
+          setStatus(dummyData.captureStatus);
           setDates(dummyData.categories);
           setPopData(dummyData.data);
           setPopChipData('NA%');
           setPopPercentage('NA');
           setCapStatus(false);
           setLoading(false);
+          return;
         }
+
         const popScoreFullnessLine = data.data;
         setIsDataAvailable(true);
+
         const popScoreFullness = popScoreFullnessLine.map((item) => {
-          if (item && item.averagePopScore != 'No data found') {
-            const percentage = parseFloat(item.averagePopScore.replace('%', ''));
-            return `${percentage.toFixed(2)}%`;
-          } else {
-            return '0%';
-          }
+          return item && item.average_CP !== 'No data found' ? `${parseFloat(item.average_CP).toFixed(2)}%` : '0%';
         });
         setPopData(popScoreFullness);
-        const lastElement = parseFloat(popScoreFullness[popScoreFullness.length - 1].replace('%', '')) || 0;
-        const secondLastElement = parseFloat(popScoreFullness[popScoreFullness.length - 2].replace('%', '')) || 0;
+
+        const lastElement = parseFloat(popScoreFullness[popScoreFullness.length - 1]) || 0;
+        const secondLastElement = parseFloat(popScoreFullness[popScoreFullness.length - 2]) || 0;
         const difference = `${(lastElement - secondLastElement).toFixed(1)}`;
+        console.log('Difference:', difference);
+
         setPopChipData(difference);
 
-        const Dates = popScoreFullnessLine.map((item) => {
-          let date = item.capture_status ? item.date : `${item.date} (Data not captured)`;
-          return date;
+        const formattedDates = popScoreFullnessLine.map((item) => {
+          return item.average_CP ? item.timestamp : `${item.timestamp} (Data not captured)`;
         });
-        console.log('Dates', Dates);
-        setDates(Dates);
+        console.log('Dates:', formattedDates);
+        setDates(formattedDates);
 
-        const CaptureStatus = popScoreFullnessLine.map((i) => {
-          return i.capture_status;
-        });
-        setStatus(CaptureStatus);
+        const captureStatus = popScoreFullnessLine.map(() => true);
+        setStatus(captureStatus);
 
-        if (data.data === null) {
+        if (!data.data) {
           setPopPercentage('0');
         } else {
-          let percentage = `${parseFloat(data.data[6].averagePopScore).toFixed(1)}%`;
+          const percentage = `${parseFloat(data.data[6].average_CP).toFixed(1)}%`;
           setPopPercentage(percentage);
-          setCapStatus(data.data[6].capture_status);
+          setCapStatus(true);
         }
 
         setLoading(false);
       } catch (error) {
-        console.log(error);
+        console.error('Error fetching capture progress:', error);
+        setIsDataAvailable(false);
+        setStatus(dummyData.captureStatus);
+        setDates(dummyData.categories);
+        setPopData(dummyData.data);
+        setPopChipData('NA%');
+        setPopPercentage('NA');
+        f;
+        setCapStatus(false);
+        setLoading(false);
       }
     }
 
     getData();
-    //eslint-disable-next-line
-  }, [date]);
+    // eslint-disable-next-line
+  }, [date, userId]);
 
   const chartConfig = {
     type: 'line',
     height: 100,
     series: [
       {
-        name: 'PoP Compliance %',
+        name: 'Capture Progress %',
         data: popData
       }
     ],
@@ -107,61 +115,16 @@ function PoPScoreKPICard({ date }) {
       },
       colors: [isDataAvailable ? '#10b981' : '#dadada'],
       markers: {
-        discrete: [
-          {
-            seriesIndex: 0,
-            dataPointIndex: 0,
-            fillColor: !isDataAvailable ? '#dadada' : status[0] ? '#10b981' : '#dadada',
-            strokeColor: 'white',
-            size: 7
-          },
-          {
-            seriesIndex: 0,
-            dataPointIndex: 1,
-            fillColor: !isDataAvailable ? '#dadada' : status[1] ? '#10b981' : '#dadada',
-            strokeColor: 'white',
-            size: 7
-          },
-          {
-            seriesIndex: 0,
-            dataPointIndex: 2,
-            fillColor: !isDataAvailable ? '#dadada' : status[2] ? '#10b981' : '#dadada',
-            strokeColor: 'white',
-            size: 7
-          },
-          {
-            seriesIndex: 0,
-            dataPointIndex: 3,
-            fillColor: !isDataAvailable ? '#dadada' : status[3] ? '#10b981' : '#dadada',
-            strokeColor: 'white',
-            size: 7
-          },
-          {
-            seriesIndex: 0,
-            dataPointIndex: 4,
-            fillColor: !isDataAvailable ? '#dadada' : status[4] ? '#10b981' : '#dadada',
-            strokeColor: 'white',
-            size: 7
-          },
-          {
-            seriesIndex: 0,
-            dataPointIndex: 5,
-            fillColor: !isDataAvailable ? '#dadada' : status[5] ? '#10b981' : '#dadada',
-            strokeColor: 'white',
-            size: 7
-          },
-          {
-            seriesIndex: 0,
-            dataPointIndex: 6,
-            fillColor: !isDataAvailable ? '#dadada' : status[6] ? '#10b981' : '#dadada',
-            strokeColor: 'white',
-            size: 7
-          }
-        ]
+        discrete: status.map((stat, index) => ({
+          seriesIndex: 0,
+          dataPointIndex: index,
+          fillColor: !isDataAvailable ? '#dadada' : stat ? '#10b981' : '#dadada',
+          strokeColor: 'white',
+          size: 7
+        }))
       },
-
       title: {
-        show: ''
+        show: false
       },
       dataLabels: {
         enabled: false
@@ -199,7 +162,6 @@ function PoPScoreKPICard({ date }) {
         curve: 'smooth',
         width: 5
       },
-
       grid: {
         show: false,
         borderColor: '#ffffff40',
@@ -231,7 +193,7 @@ function PoPScoreKPICard({ date }) {
       {loading ? (
         <Card sx={{ paddingTop: 0, paddingBottom: 2.25 }}>
           <Stack spacing={0.5}>
-            <Skeleton animation="wave" variant="rectangular" width={'100%'} height={133} />
+            <Skeleton animation="wave" variant="rectangular" width="100%" height={133} />
             <Grid container alignItems="center">
               <Grid item>
                 <Skeleton
@@ -245,15 +207,15 @@ function PoPScoreKPICard({ date }) {
               <Skeleton sx={{ marginTop: 1.75 }} animation="wave" variant="rounded" width={55} height={26} />
             </Grid>
             <Typography sx={{ paddingLeft: 2.25, paddingRight: 2.25 }} variant="h5" color="textSecondary">
-              PoP Compliance
+              Capture Progress
             </Typography>
           </Stack>
         </Card>
       ) : (
         <KpiCard
-          isLoaded={true}
+          isLoaded
           chart={chartConfig}
-          title="PoP Compliance"
+          title="Capture Progress"
           count={`${!isDataAvailable ? 'NA' : parseFloat(popPercentage) === 0 ? '0' : popPercentage}`}
           percentage={`${isDataAvailable ? Math.abs(popChipData) : 'NA'}%`}
           chipColor={!capStatus ? '#9CA3AF' : +popChipData < 0 ? '#FF6761' : '#10B981'}
@@ -265,4 +227,4 @@ function PoPScoreKPICard({ date }) {
   );
 }
 
-export default PoPScoreKPICard;
+export default CaptureProgressCard;

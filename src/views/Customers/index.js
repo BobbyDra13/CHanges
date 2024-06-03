@@ -31,6 +31,7 @@ import {
   LinearProgress,
   Box,
   useTheme,
+  useMediaQuery,
   Tooltip,
   Avatar,
   AvatarGroup,
@@ -139,6 +140,7 @@ const Customers = () => {
   const [ignoreLoad, setIgnoreLoad] = useState(false);
   const [nextBtn, setNextbtn] = useState(false);
   const theme = useTheme();
+  const isSmallScreen = !useMediaQuery(theme.breakpoints.up('sm'));
   const success = theme.palette.success.main;
   const successDark = theme.palette.success.dark;
   const warning = theme.palette.warning.main;
@@ -365,6 +367,7 @@ const Customers = () => {
       if (response2) {
         setUpdateddata(response2.data);
         // console.log(updatedData[0].store_name);
+        console.log('Stores Data:', updatedData);
         console.log('dop', response2.data);
       }
       if (response) {
@@ -373,7 +376,6 @@ const Customers = () => {
 
         setStoresData(response.data.storeDetails);
         // setUpdateddata(response2.data);
-        console.log(updatedData);
         // console.log(updatedData[0].allAnomalies);
 
         const anomalies_details = response.data.anomalies_details;
@@ -492,8 +494,8 @@ const Customers = () => {
 
   // const navigate = useNavigate()
 
-  const settingAnalysisStoreDetails = (storeName, lat, lng, store) => {
-    localStorage.setItem('analysisStoreDetails', JSON.stringify({ storeName, lat, lng, store }));
+  const settingAnalysisStoreDetails = (storeName, lat, lng, store, id) => {
+    localStorage.setItem('analysisStoreDetails', JSON.stringify({ storeName, lat, lng, store, id }));
   };
 
   useEffect(() => {
@@ -719,7 +721,10 @@ const Customers = () => {
                               <Typography
                                 className="drop-shadow-md self-center cursor-pointer"
                                 variant="h5"
-                                onClick={() => navigate(`/main/stores/storeinsight/overview/${item.store}`)}
+                                onClick={() => {
+                                  settingAnalysisStoreDetails(item.store_name, item.location.latitude, item.location.longitude, item.store);
+                                  navigate(`/main/stores/storeinsight/overview/${item.store}`);
+                                }}
                               >
                                 {item.store_id} - {item.store_name}
                               </Typography>
@@ -727,7 +732,13 @@ const Customers = () => {
                             <div className="h-full w-fit"></div>
                             <button
                               onClick={() => {
-                                settingAnalysisStoreDetails(item.store_name, item.location.latitude, item.location.longitude, item.store);
+                                settingAnalysisStoreDetails(
+                                  item.store_name,
+                                  item.location.latitude,
+                                  item.location.longitude,
+                                  item.store,
+                                  item.store_id
+                                );
                                 navigate(`/main/stores/storeinsight/overview/${item.store}`);
                               }}
                               className="w-20 h-6 text-sm border border-emerald-500 self-center shadow-md drop-shadow-md text-emerald-500 rounded-lg"
@@ -1136,7 +1147,7 @@ const Customers = () => {
           <l-bouncy size="45" speed="1" color="black"></l-bouncy>
         </div>
       ) : (
-        <Dialog maxWidth={600} open={isImageDialogOpen} onClose={handleImageClick}>
+        <Dialog fullScreen={isSmallScreen ? true : false} maxWidth={600} open={isImageDialogOpen} onClose={handleImageClick}>
           <DialogContent>
             {/* {anomalyDetails.length > 0 && */}
             {
@@ -1145,7 +1156,7 @@ const Customers = () => {
                 <div className="zoom-container">
                   <div className="image-container flex justify-center items-center lg:mb-0 mb-10 relative">
                     <TransformWrapper>
-                      <div className="image-wrapper rounded-md md:w-full w-4/5">
+                      <div className="image-wrapper rounded-md md:w-full w-full" style={{ marginTop: isSmallScreen ? '300px' : '0' }}>
                         <TransformComponent>
                           {imageLoading && (
                             <div className="flex justify-center items-center absolute top-0 left-0 z-10  overflow-x-hidden bg-white w-full h-full">
