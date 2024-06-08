@@ -1,17 +1,3 @@
-// import React from 'react';
-// import { bouncy } from 'ldrs';
-// import OverlappingCards from './CustomerTrial';
-// bouncy.register();
-
-// const Customers = () => {
-//   return <div>
-//     SOME TEXT HAHA
-//     <OverlappingCards/>
-//   </div>;
-// };
-
-// export default Customers;
-
 /* eslint-disable react-hooks/exhaustive-deps */
 import { React, useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
@@ -24,6 +10,17 @@ import './zoom-card-item.css';
 import { bouncy } from 'ldrs';
 import MapComponent from './map';
 bouncy.register();
+// import whatsappApiService from '../../api/whatsAppService';
+// import MuiAlert from '@mui/material/Alert';
+// api imports
+import {
+  GetStoreData,
+  SendAlert,
+  getAnomalyForStore,
+  getUpdatedStatus
+  // GetImagesFromSignedUrl,
+  // GetAnolamayDetails
+} from 'api';
 
 // material-ui
 import {
@@ -45,6 +42,9 @@ import {
   DialogContent,
   Skeleton,
   Divider,
+  // ImageListItemBar,
+  // ToggleButton,
+  // ToggleButtonGroup,
   TextField,
   Snackbar,
   Alert
@@ -56,6 +56,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
 // react icons import
+// import { ImCross } from 'react-icons/im';
 import { RiErrorWarningLine } from 'react-icons/ri';
 import { IoIosClose } from 'react-icons/io';
 
@@ -63,107 +64,47 @@ import { IoIosClose } from 'react-icons/io';
 import Breadcrumb from 'component/Breadcrumb';
 import { gridSpacing } from 'config.js';
 import settings from '../../configs/react-slick-config';
+// import { ZoomCardItem } from 'component/ZoomCardItem';
+// import { ZoomCardItem } from 'component/ZoomCardItem';
+// import dummyStoresData from 'data/stores-data';
+// import Map from './map';
+
+// assets
+// import OrionImg from '../../assets/images/MapImages/orion.png';
 import CheckMarkImg from '../../assets/images/checkmark.png';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import { CgSpinner } from 'react-icons/cg';
 import { FaAngleDoubleRight } from 'react-icons/fa';
 import { FaAngleDoubleLeft } from 'react-icons/fa';
+// import { current } from '@reduxjs/toolkit';
+// import MapImg from '../../assets/images/mapImg.png';
+// import OrionImg from '../../assets/images/MapImages/orion.png';
+
+// const location = {
+//   address: '1600 Amphitheatre Parkway, Mountain View, california.',
+//   lat: 37.42216,
+//   lng: -122.08427
+// };
 
 const totalParts = 142;
 
-// Dummy Data
-const dummyStoreData = [
-  {
-    store: 'Store123',
-    store_id: 'S123',
-    store_name: 'Example Store 1',
-    address: '123 Main St, Anytown, USA',
-    location: {
-      latitude: 34.0522,
-      longitude: -118.2437
-    },
-    capture_percentage: 85.2,
-    pop_percentage: 92.5,
-    anomaliesFound: 15,
-    store_anomalies: [
-      {
-        _id: 'anomaly1',
-        raw_img_url: 'https://example.com/image1.jpg',
-        metadata_id: 'metadata123',
-        zone_id: 'Zone A',
-        shelf_id: 'Shelf 1',
-        group_id: 'Group X',
-        timestamp: '2024-03-08T10:30:00Z',
-        id: 'P123',
-        name: 'Product 123',
-        anomalies: [
-          [
-            {
-              xmin: 100,
-              ymin: 50,
-              xmax: 200,
-              ymax: 150,
-              anomaly_type: 'empty_shelf',
-              article_code: 'ART123',
-              article_description: 'Missing Product',
-              ean_code: 'EAN12345'
-            }
-          ]
-        ],
-        user_name: 'John Doe',
-        user_number: '123-456-7890'
-      },
-      {
-        _id: 'anomaly2',
-        raw_img_url: 'https://example.com/image2.jpg',
-        metadata_id: 'metadata456',
-        zone_id: 'Zone B',
-        shelf_id: 'Shelf 2',
-        group_id: 'Group Y',
-        timestamp: '2024-03-08T12:45:00Z',
-        id: 'P456',
-        name: 'Product 456',
-        anomalies: [
-          [
-            {
-              xmin: 300,
-              ymin: 200,
-              xmax: 400,
-              ymax: 300,
-              anomaly_type: 'misplaced_item',
-              article_code: 'ART456',
-              article_description: 'Incorrect Placement',
-              ean_code: 'EAN67890'
-            }
-          ]
-        ],
-        user_name: 'Jane Smith',
-        user_number: '987-654-3210'
-      }
-    ]
-  }
-  // Add more dummy store data as needed
-];
-
-const dummyAnomaliesData = {
-  Store123: {
-    anomalies_detected: 15,
-    allAnomalies: [
-      // ... (Populate with dummy anomaly data similar to store_anomalies)
-    ]
-  }
-  // Add data for other stores in a similar format
-};
+// ==============================|| CUSTOMERS PAGE ||============================== //
 
 const Customers = () => {
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
-  const [storesData, setStoresData] = useState([]);
+  const [storesData, setStoresData] = useState(false);
   const [colorArray, setColorArray] = useState([]);
-  const [anomalies_count, setAnomalies_count] = useState(0);
+  // const [promoArray, setPromoArray] = useState([]);
+  const [anomalies_count, setAnomalies_count] = useState(false);
   const [fullnessArray, setFullnessArray] = useState([]);
+  // const [solvedLoading, setSolvedLoading] = useState(null);
+  // eslint-disable-next-line
   const [anomalyDetails, setAnonmalyDetails] = useState([]);
+  // eslint-disable-next-line
   const [timestamps, setTimestamps] = useState({ date: '', time: '' });
+  // eslint-disable-next-line
   const [anomalyType, setAnomalyType] = useState('');
+  // eslint-disable-next-line
   const [loading, setLoading] = useState(false);
   const [clickedBar, setClickedBar] = useState({
     isUpKeep: false,
@@ -171,11 +112,13 @@ const Customers = () => {
     isPop: false
   });
 
+  // const [liveAnomalyImg, setLiveAnomalyImg] = useState(true);
   const [imageLoading, setImageLoading] = useState(false);
-  const [updatedData, setUpdateddata] = useState([]);
-  const [cData, setCdata] = useState(null);
+  // const [openTooltipIndex, setOpenTooltipIndex] = useState(null);
+  const [updatedData, setUpdateddata] = useState(false);
+  const [cData, setCdata] = useState(false);
   const [lcData, setLCdata] = useState(false);
-  const [storeAnomalies, setStoreAnomalies] = useState(dummyAnomaliesData);
+  const [storeAnomalies, setStoreAnomalies] = useState([]);
   const [metadata, setMetadata] = useState('');
   const [alertData, setAlertData] = useState({
     zone_id: false,
@@ -225,7 +168,12 @@ const Customers = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const ITEM_HEIGHT = 48;
 
-  const user_id = 'dummyUserId';
+  const user_id = JSON.parse(localStorage.getItem('userData')).data._id;
+  console.log('xx', user_id);
+  // const store_id = JSON.parse(localStorage.getItem('userData')).data.storeID;
+
+  // const dateToday = new Date();
+  // const today = dateToday.toISOString().split('T')[0];
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -234,11 +182,11 @@ const Customers = () => {
     setAnchorEl(null);
   };
 
-  // console.log(storeAnomalies['Store123']);
-  // const upKeepClicked = () => {
-  //   setClickedBar((prevState) => ({ ...prevState, isUpKeep: !prevState.isUpKeep }));
+  // const handleToggleImage = () => {
+  //   setImageLoading(true);
+  //   setLiveAnomalyImg(!liveAnomalyImg);
   // };
-
+  // eslint-disable-next-line
   const upKeepClicked = () => {
     if (!clickedBar.isUpKeep) {
       setClickedBar({ isUpKeep: true, isVm: false, isPop: false });
@@ -246,7 +194,7 @@ const Customers = () => {
       setClickedBar({ isUpKeep: false, isVm: false, isPop: false });
     }
   };
-
+  // eslint-disable-next-line
   const vMClicked = () => {
     if (!clickedBar.isVm) {
       setClickedBar({ isUpKeep: false, isVm: true, isPop: false });
@@ -254,45 +202,39 @@ const Customers = () => {
       setClickedBar({ isUpKeep: false, isVm: false, isPop: false });
     }
   };
-  // const vMClicked = () => {
-  //   setClickedBar((prevState) => ({ ...prevState, isVm: !prevState.isVm }));
+  // eslint-disable-next-line
+  const popClicked = () => {
+    // if (!clickedBar.isPop) {
+    //   setClickedBar({ isUpKeep: false, isVm: false, isPop: true });
+    // } else {
+    //   setClickedBar({ isUpKeep: false, isVm: false, isPop: false });
+    // }
+  };
+
+  // const getAnomalyDetails = async (id) => {
+  //   console.log('id:', id);
+  //   setLoading(true);
+  //   try {
+  //     const response = await GetAnomalyDetails(id);
+  //     if (response) {
+  //       console.log('AnomalyDetails api', response);
+  //       setAnonmalyDetails(response.data);
+  //       setLoading(false);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
   // };
 
-  const handleImageClick = async (url, id, anomaly, time) => {
-    const link = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/getanomlie-detail';
-    const data = {
-      metadata_id: id
-    };
-
-    try {
-      const response = await fetch(link, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log('For each Image ', result);
-      setCdata(result);
-      setLCdata(!lcData);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-
-    console.log(id);
+  const handleImageClick = (url, id, anomaly, time) => {
     setMetadata(id);
+    console.log('tuty', id);
 
     if (antn) {
       setPos({ lft: false, tp: false, wdth: false, ht: false });
       setAntn(!antn);
     }
-
+    //(url, id, type, time)
     const dateTime = new Date(time);
     const day = dateTime.toLocaleDateString(undefined, { day: '2-digit' });
     const month = dateTime.toLocaleDateString(undefined, { month: '2-digit' });
@@ -300,74 +242,165 @@ const Customers = () => {
 
     const formattedDate = `${day}/${month}/${year}`;
     const formattedTime = dateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
-
+    console.log('time', time);
+    setLCdata(!lcData);
     if (!isImageDialogOpen) {
-      console.log('C data value', anomaly);
+      // setSelectedImage(url);
+      setCdata(anomaly);
+      console.log('Dialog details', anomaly);
+      // getAnomalyDetails(id);
+      // setAnomalyType(type);
       setTimestamps({ date: formattedDate, time: formattedTime });
     }
     setIsImageDialogOpen(!isImageDialogOpen);
   };
 
-  //here make a body
-  //make the first API CALL
-
+  const body = {
+    metadata_id: metadata,
+    fieldToUpdate: 'solved'
+  };
   const handleSolved = async () => {
+    // console.log('id:', id);
     setSolvedLoad(true);
-    // Simulate API call delay
-    setTimeout(() => {
-      setSolvedLoad(false);
-      setSnackbarMessage('Solved successfully!');
-      setSnackbarOpen(true);
-      // Update anomalyDetails state if needed
-    }, 1000);
-  };
-
-  //here the 2nd body call
-  //some api's called
-  const handleIgnored = async () => {
-    setIgnoreLoad(true);
-    // Simulate API call delay
-    setTimeout(() => {
-      setIgnoreLoad(false);
-      setSnackbarMessage('Ignored successfully!');
-      setSnackbarOpen(true);
-      // Update anomalyDetails state if needed
-    }, 1000);
-  };
-
-  const getStoresData = async () => {
-    setLoading(true);
-    // Simulate API call delay
-    const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/get-store-details';
-    const data = {
-      user_id: '66238a99c40c738627f33735',
-      date: '2024-06-08'
-    };
-
     try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const response = await getUpdatedStatus(body);
+      if (response) {
+        console.log('AnomalyDetails api', response);
+        setAnonmalyDetails(response.data);
+        setSolvedLoad(false);
+        setSnackbarMessage('Solved successfully!');
+        setSnackbarOpen(true);
       }
-
-      const result = await response.json();
-      console.log('the result is ', result);
-      setStoresData(result);
-      setUpdateddata(result);
-      setLoading(false);
     } catch (error) {
-      console.error('Error loading tira API :', error);
-      setLoading(false);
+      console.log(error);
     }
   };
 
+  const body2 = {
+    metadata_id: metadata,
+    fieldToUpdate: 'ignored'
+  };
+  const handleIgnored = async () => {
+    // console.log('id:', id);
+    setIgnoreLoad(true);
+    try {
+      const response = await getUpdatedStatus(body2);
+      if (response) {
+        console.log('AnomalyDetails api', response);
+        setAnonmalyDetails(response.data);
+        setIgnoreLoad(false);
+        setSnackbarMessage('Ignored successfully!');
+        setSnackbarOpen(true);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  // const handleSolved = () => {
+  //   // console.log('required ID', id);
+  //   // setSolvedLoading(true);
+  //   setSolvedLoad(true);
+
+  //   setTimeout(() => {
+  //     setSolvedLoad(false);
+  //     setSnackbarMessage('Solved successfully!');
+  //     setSnackbarOpen(true);
+  //   }, 3000); // 3 seconds
+  //   // updateMetadataSolved(id);
+  // };
+
+  // const handleIgnored = () => {
+  //   // console.log('required ID', id);
+  //   // setSolvedLoading(true);
+  //   setIgnoreLoad(true);
+
+  //   setTimeout(() => {
+  //     setIgnoreLoad(false);
+  //     setSnackbarMessage('Ignored successfully!');
+  //     setSnackbarOpen(true);
+  //   }, 3000); // 3 seconds
+  //   // updateMetadataSolved(id);
+  // };
+  const getStoresData = async () => {
+    // const input = {
+    //   Store_IDs: ['6582be9ac5ed94d792a563b8'],
+    //   start_date: today
+    // };
+    setStoresData(false);
+    // try {
+    //   const response = await GetStoreLayout(input);
+    //   if (response) {
+    //     console.log('Store Data', response.data);
+    //     setStoresData(response.data);
+    //     const anomaliesByType = new Map();
+    //     response.data[0]?.store_anomalies.forEach((anomaly) => {
+    //       const type = anomaly?.store_anomalies?.anomalies_found[0]?.type;
+    //       anomaliesByType.set(type, anomaliesByType.get(type) || []);
+    //       anomaliesByType.get(type).push(anomaly);
+    //     });
+
+    //     // Set the state values based on the Map
+    //     setColorArray(anomaliesByType.get('color_assortment') || []);
+    //     // setPromoArray(anomaliesByType.get('promo_assortment') || []);
+    //     setFullnessArray(anomaliesByType.get('empty_bin') || []);
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    // }
+    console.log('metadata', metadata);
+    console.log('id', user_id);
+    const dt = {
+      date: new Date(),
+      user_id: user_id
+    };
+    console.log('id', user_id);
+
+    // const store_id = '6582be9ac5ed94d792a563b8';
+    // const date = today;
+    try {
+      const response2 = await GetStoreData(dt);
+      // const storess = response2.data;
+      // storess.map((st) => {
+      //   console.log("somestores",st.store);
+      // })
+      // console.log('nono',response2);
+      if (response2) {
+        setUpdateddata(response2.data);
+        // console.log(updatedData[0].store_name);
+        console.log('Stores Data:', updatedData);
+        console.log('dop', response2.data);
+      }
+      if (response) {
+        console.log('Store Data', response.data.storeDetails);
+        console.log('Store Data', response2.data);
+
+        setStoresData(response.data.storeDetails);
+        // setUpdateddata(response2.data);
+        // console.log(updatedData[0].allAnomalies);
+
+        const anomalies_details = response.data.anomalies_details;
+        setAnomalies_count(anomalies_details.length);
+        const anomaliesByType = new Map();
+        response.data?.anomalies_details.forEach((anomaly) => {
+          const type = anomaly[0]?.anomalies_found[0]?.type;
+          anomaliesByType.set(type, anomaliesByType.get(type) || []);
+          anomaliesByType.get(type).push(anomaly[0]);
+        });
+
+        // console.log('anomaliesByType ',anomaliesByType )
+
+        // Set the state values based on the Map
+        setColorArray(anomaliesByType.get('color_assortment') || []);
+        setColorArray((prevArray) => [...prevArray, ...(anomaliesByType.get('category_assortment') || [])]);
+        // setPromoArray(anomaliesByType.get('promo_assortment') || []);
+        setFullnessArray(anomaliesByType.get('empty_bin') || []);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  console.log('anomalyesCOunt', anomalies_count);
   const imageRef = useRef(null);
   const [antn, setAntn] = useState(false);
   const [pos, setPos] = useState({ lft: false, tp: false, wdth: false, ht: false });
@@ -381,29 +414,85 @@ const Customers = () => {
     setPos({ lft: lft, tp: top, wdth: width, hght: height });
     setAntn(true);
   };
-
   const highlightStyle = {
     position: 'absolute',
     left: `${pos.lft}%`,
     top: `${pos.tp}%`,
     width: `${pos.wdth}%`,
     height: `${pos.hght}%`,
-    border: '1px solid red',
+    border: '1px solid red', // Change border color as desired
     boxSizing: 'border-box',
-    pointerEvents: 'none',
+    pointerEvents: 'none', // So clicks can still interact with the image
     backgroundColor: 'rgba(255, 0, 0, 0.6)',
     borderRadius: '5px'
   };
-
+  console.log('position= ', pos);
   const findDimensions = (event) => {
     setImageLoading(false);
     const { naturalWidth, naturalHeight } = event.target;
+    // const imgDiv = imageRef.current;
+    // const { width, height } = imgDiv.getBoundingClientRect();
+
     setNaturel({ wdth: naturalWidth, hght: naturalHeight });
+
+    // setScaleFactor(width / naturalWidth);
   };
-  //calling the getStoresData() function
+
+  // const getSignedImg = async (input) => {
+  //   try {
+  //     const final_dict = input.map((item) => item.store_anomalies);
+  //     const response = await GetImagesFromSignedUrl(final_dict);
+
+  //     if (response && response.data) {
+  //       // console.log('Signed Img', response.data);
+  //       // return response.data; // Return the correct data property
+  //       setAnomalyImgs(response.data);
+  //     } else {
+  //       // Handle the case where response is not successful or data is missing
+  //       // return []; // Or return a default value
+  //       setAnomalyImgs([]);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching signed images:', error);
+  //     // return []; // Or handle the error differently
+  //     setAnomalyImgs([]);
+  //   }
+  // };
+
   useEffect(() => {
     getStoresData();
   }, []);
+  // useEffect(() => {
+  //   if (storesData) {
+  //     getSignedImg(Object.values(storesData[0].store_anomalies));
+  //   }
+  // }, [storesData]);
+
+  // console.log('Stores Data', storesData && storesData.map((item) => item.store_id));
+  console.log('Stores Data', storesData);
+  console.log('Anomaly Type', anomalyType);
+  console.log('Stores Data', storesData);
+  console.log('Anomaly Type', anomalyType);
+  console.log('Anomaly Type', cData.length);
+  // console.log('Anomaly Type', updatedData[0]?.allAnomalies[0]);
+  // console.log('Color Data', colorArray);
+  // console.log('Promo Data', promoArray);
+  // console.log('Fullness Data', fullnessArray);
+  // console.log('Fullness Data', fullnessArray);
+  // console.log('Anomaly Data', anomalyImgs);
+  // console.log('Clicked', clickedBar);
+  // console.log('Analysis Id', analysisId);
+  console.log('AnomalyDetails', anomalyDetails[0]?.reference_img);
+
+  // const handleTooltipOpen = (index) => {
+  //   setOpenTooltipIndex(index);
+  // };
+
+  // const handleTooltipClose = () => {
+  //   setOpenTooltipIndex(null);
+  // };
+
+  // const navigate = useNavigate()
 
   const settingAnalysisStoreDetails = (storeName, lat, lng, store, id) => {
     localStorage.setItem('analysisStoreDetails', JSON.stringify({ storeName, lat, lng, store, id }));
@@ -412,23 +501,71 @@ const Customers = () => {
   useEffect(() => {
     async function sendAlertMsg() {
       if (alertData.zone_id) {
-        // (You can simulate a successful response here)
+        console.log(alertData);
+        console.log('Number:', alertData.user_number);
+        const API_KEY =
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NWY2MmE5Yzk4Nzk3MGFlZWM1ZTg0MCIsIm5hbWUiOiJOZW9QaHl0ZSIsImFwcE5hbWUiOiJBaVNlbnN5IiwiY2xpZW50SWQiOiI2NTVmNjJhOGM5ODc5NzBhZWVjNWU4M2IiLCJhY3RpdmVQbGFuIjoiQkFTSUNfTU9OVEhMWSIsImlhdCI6MTcwMDc0OTk5M30.8-SugzKOaRlF3BFhgTn944znZnsydeoUPudFEIZdNWs'; // Replace with your actual API key
+        const API_URL = 'https://backend.aisensy.com/campaign/t1/api/v2';
+        const formatDataForAPI = (data) => {
+          return {
+            apiKey: API_KEY,
+            campaignName: 'disha_smart_alert_message_API_Campaign',
+            destination: '91' + '8085503475',
+            userName: 'Mayur Pawar',
+            templateParams: ['$AgentName', '$BayId', '$ShelfId', '$AnomaliesTypes', '$BayId', '$ShelfId', '$CustomMessage'],
+            tags: ['AgentName', 'BayId', 'ShelfId', 'AnomaliesTypes', 'BayId', 'ShelfId', 'CustomMessage'],
+            attributes: {
+              AgentName: 'Mayur',
+              BayId: data.zone_id,
+              ShelfId: data.shelf_id,
+              AnomaliesTypes: data.anomaly_type,
+              //eslint-disable-next-line
+              BayId: data.zone_id,
+              //eslint-disable-next-line
+              ShelfId: 'Shelf- 4',
+              CustomMessage: 'Please the Anomalie'
+            }
+          };
+        };
+
+        const formattedData = formatDataForAPI(alertData);
+        const status = await SendAlert(formattedData, API_KEY, API_URL);
+        console.log('status', status);
+
+        // const status = await SendAlert(alertData);
+        // console.log(status);
+        // if (status.status === 200) {
         setLoadsend(false);
         setSnackbarOpen(true);
         setSnackbarMessage('Alert store message sent successfully!');
+        //  console.log('hello');
+        // }
       }
     }
     sendAlertMsg();
+    // return () => {
+    //   setAlertData({
+    //     zone_id: false,
+    //     shelf_id: false,
+    //     group_id: false,
+    //     user_name: false,
+    //     user_id: false,
+    //     user_number: false,
+    //     user_email: false,
+    //     user_role: false,
+    //     anomaly_type: false,
+    //     message: false
+    //   });
+    // };
   }, [alertData]);
 
   const handelAlertClick = () => {
     setLoadsend(true);
-
     const array = cData.anomalies[0][0].map((item) => item.anomaly_type);
     const uniqueSet = new Set(array);
     const uniqueArray = Array.from(uniqueSet);
-    let result;
 
+    let result;
     if (uniqueArray.length === 1) {
       result = array[0].split('_')[0].charAt(0).toUpperCase() + array[0].split('_')[0].slice(1);
     } else {
@@ -439,8 +576,10 @@ const Customers = () => {
     }
 
     const string = cData.shelf_id;
+    console.log(string);
     const substring = string.substring(string.indexOf('S') + 1);
     const shelf = 'Shelf ' + substring;
+    console.log(shelf);
 
     setAlertData({
       zone_id: cData.zone_id,
@@ -455,31 +594,40 @@ const Customers = () => {
       message: msg
     });
   };
+  console.log(alertData);
+  console.log('fullness araya', fullnessArray);
 
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
+    // setButtonLabel('Submit');
   };
 
   const handleNextClick = () => {
-    if (!cData || !storeAnomalies[cData._id]) return;
-
     const series = storeAnomalies[cData._id].allAnomalies.map((itm) => itm.shelf_id);
+    // console.log(series);
     const currentShelf = cData.shelf_id;
+    // console.log(currentShelf)
     const index = series.indexOf(currentShelf);
+    // console.log(index)
     const len = series.length;
+    // console.log(len);
     const nextInd = (index + 1) % len;
+    //  console.log(nextInd);
     const current = storeAnomalies[cData._id].allAnomalies[nextInd];
+    // console.log(current);
     setCdata(current);
   };
 
   const handlePrevClick = () => {
-    if (!cData || !storeAnomalies[cData._id]) return;
-
     const series = storeAnomalies[cData._id].allAnomalies.map((itm) => itm.shelf_id);
     const currentShelf = cData.shelf_id;
+
     const index = series.indexOf(currentShelf);
+
     const len = series.length;
+
     const nextInd = (index - 1 + len) % len;
+
     const current = storeAnomalies[cData._id].allAnomalies[nextInd];
     setCdata(current);
   };
@@ -512,7 +660,6 @@ const Customers = () => {
   };
 
   console.log('storeAnomalies', storeAnomalies);
-  console.log('cdata', cData);
 
   return (
     <>
@@ -536,7 +683,26 @@ const Customers = () => {
                   <Grid item lg={5} md={6} sm={9} xs={12}>
                     <Grid container spacing={0}>
                       <Grid sx={{ paddingRight: 1 }} item>
-                        <MapComponent lat={item.lat} lng={item.long} address={item.address} name={item.store_name} />
+                        {/* <Tooltip
+                          title={'Plot no: 311, Orion Mall, near ST Bus Depot, Forest Colony, Panvel, Navi Mumbai, Maharashtra 410206'}
+                        > */}
+                        {/* <img
+                            style={{ display: 'block', objectFit: 'cover' }}
+                            className="rounded-md border border-gray-300 max-[600px]:w-24 w-36 h-[153px] drop-shadow-md hover:cursor-pointer"
+                            src={OrionImg}
+                            alt="noImg"
+                            onClick={() => navigate('/main/stores/layout')}
+                          /> */}
+                        <MapComponent
+                          lat={item.location.latitude}
+                          lng={item.location.longitude}
+                          address={item.address}
+                          name={item.store_name}
+                        />
+                        {/* </Tooltip> */}
+                        {/* <div className="rounded-md border border-gray-300 w-20 h-[105px] drop-shadow-md">
+                      <Map location={location} zoomLevel={3} />
+                    </div> */}
                       </Grid>
                       <Grid item sx={{ display: 'flex', flex: 1 }}>
                         <Stack sx={{ width: '100%' }} direction={'column'} spacing={1}>
@@ -544,30 +710,41 @@ const Customers = () => {
                             <Stack direction={'row'} spacing={1}>
                               <div className="h-full flex flex-col justify-center">
                                 <Tooltip title={'Active'}>
-                                  <div className="shadow-md mb-0.5 rounded-full hover:cursor-pointer w-3 h-3 bg-emerald-500"></div>
+                                  <div
+                                    className="shadow-md mb-0.5 rounded-full hover:cursor-pointer w-3 h-3 bg-emerald-500"
+                                    // className={`shadow-md mb-0.5 rounded-full hover:cursor-pointer w-3 h-3 ${
+                                    //   item.active ? 'bg-emerald-500' : 'bg-gray-400'
+                                    // }`}
+                                  ></div>
                                 </Tooltip>
                               </div>
                               <Typography
                                 className="drop-shadow-md self-center cursor-pointer"
                                 variant="h5"
                                 onClick={() => {
-                                  settingAnalysisStoreDetails(item.store_name, item.lat, item.long, item._id);
-                                  navigate(`/main/stores/storeinsight/overview/${item._id}`);
+                                  settingAnalysisStoreDetails(item.store_name, item.location.latitude, item.location.longitude, item.store);
+                                  navigate(`/main/stores/storeinsight/overview/${item.store}`);
                                 }}
                               >
-                                {item.id} - {item.store_name}
+                                {item.store_id} - {item.store_name}
                               </Typography>
                             </Stack>
-                            {/* <div className="h-full w-fit"></div> */}
-                            {/* <button
+                            <div className="h-full w-fit"></div>
+                            <button
                               onClick={() => {
-                                settingAnalysisStoreDetails(item.store_name, item.lat, item.long, item._id, item.id);
+                                settingAnalysisStoreDetails(
+                                  item.store_name,
+                                  item.location.latitude,
+                                  item.location.longitude,
+                                  item.store,
+                                  item.store_id
+                                );
                                 navigate(`/main/stores/storeinsight/overview/${item.store}`);
                               }}
                               className="w-20 h-6 text-sm border border-emerald-500 self-center shadow-md drop-shadow-md text-emerald-500 rounded-lg"
                             >
                               Analysis
-                            </button> */}
+                            </button>
                             <div className="hidden">
                               <IconButton
                                 size="small"
@@ -626,9 +803,6 @@ const Customers = () => {
                               Capture %
                             </Typography> */}
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'start' }}>
-                              {/* here we have linearProgress showing the PoP */}
-                              {/* item.capture_percentage */}
-                              {/* marker 1 */}
                               <LinearProgress
                                 sx={{
                                   width: '100%',
@@ -641,13 +815,13 @@ const Customers = () => {
                                 }}
                                 variant="determinate"
                                 // value={item.capture_count ? Math.min(Math.floor((item.capture_count / totalParts) * 100), 100) : 0}
-                                value={item.fullness_score ? parseFloat(item.fullness_score) : 0}
+                                value={item.capture_percentage ? parseFloat(item.capture_percentage) : 0}
                                 // color="secondary"
                               />
                               <button className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center">
                                 <Typography sx={{ color: 'black' }} variant="subtitle1">
                                   {/* {item.capture_count ? Math.min(Math.floor((item.capture_count / totalParts) * 100), 100) : 0} % */}
-                                  Fullness : {item.fullness_score ? parseFloat(item.fullness_score).toFixed(1) : '0'}%
+                                  Capture: {item.capture_percentage ? parseFloat(item.capture_percentage).toFixed(1) : '0'}%
                                 </Typography>
                               </button>
                             </Box>
@@ -656,10 +830,7 @@ const Customers = () => {
                             {/* <Typography sx={{ width: 120 }} variant={clickedBar.isUpKeep ? 'h5' : 'h6'}>
                               Up-Keep Score
                             </Typography> */}
-                            {/* <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
-                              {/* marker 2 */}
-                            {/* Store Fullness */}
-                            {/* We don't need to relace this  
+                            <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
                               <LinearProgress
                                 sx={{
                                   width: '100%',
@@ -695,18 +866,17 @@ const Customers = () => {
                                 className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center"
                               >
                                 <Typography sx={{ color: 'black' }} variant="subtitle1">
+                                  {/* {Math.floor(item.store_fullness) || 0} % */}
                                   Up-Keep Score: NA
                                 </Typography>
                               </button>
-                            </Box> */}
+                            </Box>
                           </Stack>
-                          {/* <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}> */}
-                          {/* <Typography sx={{ width: 120 }} variant={clickedBar.isVm ? 'h5' : 'h6'}>
+                          <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
+                            {/* <Typography sx={{ width: 120 }} variant={clickedBar.isVm ? 'h5' : 'h6'}>
                               VM Score
                             </Typography> */}
-                          {/* <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}> */}
-                          {/* marker 3 */}
-                          {/* anomalies count 
+                            <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
                               <LinearProgress
                                 sx={{
                                   width: '100%',
@@ -745,16 +915,16 @@ const Customers = () => {
                                   {/* {Math.floor((anomalies_count / totalParts) * 100) > 100
                                     ? 100
                                     : Math.floor((anomalies_count / totalParts) * 100)}{' '}
-                                  % 
+                                  % */}
                                   VM Score: NA
                                 </Typography>
                               </button>
-                            </Box>*/}
-                          {/* </Stack> */}
-                          {/* <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}> */}
-                          {/* <Typography sx={{ width: 120 }} variant={clickedBar.isPop ? 'h5' : 'h6'}>
+                            </Box>
+                          </Stack>
+                          <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
+                            {/* <Typography sx={{ width: 120 }} variant={clickedBar.isPop ? 'h5' : 'h6'}>
                               PoP Score
-                            </Typography> 
+                            </Typography> */}
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
                               <LinearProgress
                                 sx={{
@@ -779,12 +949,11 @@ const Customers = () => {
                                 className="absolute hover:cursor-pointer w-full h-full flex justify-center place-items-center"
                               >
                                 <Typography sx={{ color: 'black' }} variant="subtitle1">
-                                  {/* pop percentage is being shown  
                                   PoP Score: {item.pop_percentage ? parseFloat(item.pop_percentage).toFixed(2) : '0'}%
                                 </Typography>
                               </button>
                             </Box>
-                           </Stack> */}
+                          </Stack>
                         </Stack>
                       </Grid>
                     </Grid>
@@ -792,51 +961,81 @@ const Customers = () => {
                   <Grid item lg={1.5} md={2} sm={3} xs={5}>
                     <div className="w-full flex flex-col justify-center place-items-center min-[600px]:border-l border-r border-gray-300 h-full">
                       <Stack direction={'column'}>
-                        {/* marker */}
-                        {/* section showing anomalies detected  */}
-                        {/* anomalies_detected */}
                         <Typography className="drop-shadow-md" align="center" variant="h2">
                           0/
-                          {item.anomalies_details.length > 0 ? item.anomalies_details.length : '...'}
-                          {/* { console.log(storeAnomalies)} */}
+                          {/* {!clickedBar.isUpKeep && !clickedBar.isVm && !clickedBar.isPop
+                            ? anomalies_count
+                            : clickedBar.isUpKeep
+                            ? fullnessArray.length
+                            : colorArray.length} */}
+                          {storeAnomalies[item.store] ? storeAnomalies[item.store].anomalies_detected : '...'}
                         </Typography>
                         <Typography className="drop-shadow-md" align="center" variant="h6">
                           Anomalies solved
                         </Typography>
-
-                        <Typography className="drop-shadow-md" align="center" variant="h2">
-                          {/* 0/ */}
-                          {/* {item.anomalies_details.length > 0 ? item.anomalies_details.length : '...'} */}
-                          {item.no_of_brands_captured_today}
-                          {/* { console.log(storeAnomalies)} */}
-                        </Typography>
-                        <Typography className="drop-shadow-md" align="center" variant="h6">
-                          Brands Captured
-                        </Typography>
+                        {/* <div className="w-full mt-2 flex justify-center">
+                          <AvatarGroup
+                            sx={{
+                              '& .MuiAvatar-root': { width: 24, height: 24, fontSize: 15 }
+                            }}
+                            // max={2} for //for showing only 2 user agents
+                          >
+                            {item.agentsDetails.map((agent, index) => (
+                              <Tooltip
+                                key={index}
+                                title={
+                                  <div className="w-[200px] p-2 flex flex-col space-y-2">
+                                    <Typography sx={{ width: '100%', color: 'white' }} variant="h6">
+                                      Agent Details
+                                    </Typography>
+                                    <Typography variant="subtitle2">Name: {agent.agentsDetails.user_name}</Typography>
+                                    <Typography variant="subtitle2">Number: {agent.agentsDetails.number}</Typography>
+                                  </div>
+                                }
+                                enterTouchDelay={1}
+                                leaveTouchDelay={100000}
+                              >
+                                <Avatar
+                                  className="hover:cursor-pointer"
+                                  sx={{ bgcolor: success }}
+                                  alt={agent.agentsDetails.user_name}
+                                  src="/example.jpg"
+                                />
+                              </Tooltip>
+                            ))}
+                          </AvatarGroup>
+                        </div> */}
                       </Stack>
                     </div>
                   </Grid>
                   <Grid item lg={5.5} md={4} sm={12} xs={7}>
                     <div className="w-full px-4 flex flex-col justify-center h-full">
-                      {console.log(item.store_anomalies)}
                       {!clickedBar.isUpKeep && !clickedBar.isVm && !clickedBar.isPop ? (
                         <Slider {...settings}>
                           {/* {item.store_anomalies.map((anomaly, index) => (  */}
-                          {item.anomalies_details.length ? (
-                            // marker
-                            // all anomalies
-                            item.anomalies_details.map((anomaly, index) => (
+                          {storeAnomalies[item.store] ? (
+                            storeAnomalies[item.store].allAnomalies.map((anomaly, index) => (
                               <div
-                                onClick={() => handleImageClick(anomaly.bay_img_urls, anomaly.metadata_id, anomaly)}
+                                onClick={() =>
+                                  handleImageClick(
+                                    anomaly.raw_img_url,
+                                    anomaly.metadata_id,
+                                    // anomaly.store_anomalies.analysis_id,
+                                    // anomaly.zone_id,
+                                    // anomaly.store_anomalies.anomalies_found[0].type,
+                                    anomaly
+                                    // anomaly.store_anomalies.timestamps
+                                    // '2024-01-01'
+                                  )
+                                }
                                 key={index}
                                 className="rounded-md border shadow-md h-[147px]"
                               >
-                                {/* {console.log(anomaly.raw_img_url, anomaly.metadata_id, anomaly)} */}
                                 <img
                                   style={{ width: '100%', objectFit: 'cover' }}
                                   className="rounded-md shadow-md h-full hover:cursor-pointer"
                                   // src={anomaly.img_url}
-                                  src={anomaly.bay_img_urls}
+                                  src={anomaly.raw_img_url}
                                   alt="no Img"
                                   loading="lazy"
                                 />
@@ -849,7 +1048,18 @@ const Customers = () => {
                       ) : clickedBar.isUpKeep && !clickedBar.isVm && !clickedBar.isPop && fullnessArray.length > 0 ? (
                         <Slider {...settings}>
                           {fullnessArray.map((anomaly, index) => (
-                            <div key={index} className="rounded-md border shadow-md h-[147px]">
+                            <div
+                              // onClick={() =>
+                              //   handleImageClick(
+                              //     anomaly.image_url,
+                              //     anomaly.analysis_id,
+                              //     anomaly.anomalies_found[0].type,
+                              //     anomaly.timestamps
+                              //   )
+                              // }
+                              key={index}
+                              className="rounded-md border shadow-md h-[147px]"
+                            >
                               <img
                                 style={{ width: '100%', objectFit: 'cover' }}
                                 className="rounded-md shadow-md h-full hover:cursor-pointer"
@@ -863,7 +1073,18 @@ const Customers = () => {
                       ) : !clickedBar.isUpKeep && clickedBar.isVm && !clickedBar.isPop && colorArray.length > 0 ? (
                         <Slider {...settings}>
                           {colorArray.map((anomaly, index) => (
-                            <div key={index} className="rounded-md border shadow-md h-[147px]">
+                            <div
+                              // onClick={() =>
+                              //   handleImageClick(
+                              //     anomaly.image_url,
+                              //     anomaly.analysis_id,
+                              //     anomaly.anomalies_found[0].type,
+                              //     anomaly.timestamps
+                              //   )
+                              // }
+                              key={index}
+                              className="rounded-md border shadow-md h-[147px]"
+                            >
                               <img
                                 style={{ width: '100%', objectFit: 'cover' }}
                                 className="rounded-md shadow-md h-full hover:cursor-pointer"
@@ -926,7 +1147,7 @@ const Customers = () => {
           <l-bouncy size="45" speed="1" color="black"></l-bouncy>
         </div>
       ) : (
-        <Dialog fullScreen={isSmallScreen ? true : false} maxWidth={200} open={isImageDialogOpen} onClose={handleImageClick}>
+        <Dialog fullScreen={isSmallScreen ? true : false} maxWidth={600} open={isImageDialogOpen} onClose={handleImageClick}>
           <DialogContent>
             {/* {anomalyDetails.length > 0 && */}
             {
@@ -954,7 +1175,7 @@ const Customers = () => {
                             <img
                               className="image rounded-md"
                               // src={liveAnomalyImg ? selectedImage : anomalyDetails[0]?.reference_img}
-                              src={cData[0].img_url}
+                              src={cData.raw_img_url}
                               alt="No img found"
                               onLoad={findDimensions}
                               ref={imageRef}
@@ -995,6 +1216,36 @@ const Customers = () => {
                             )}
                             {antn && <div style={highlightStyle}></div>}
                           </div>
+                          {/* <div className="toggle-button-container absolute top-1 right-2">
+                            <ToggleButtonGroup
+                              color="primary"
+                              value={liveAnomalyImg}
+                              exclusive
+                              onChange={handleToggleImage}
+                              aria-label="Platform"
+                              className="text-white bg-white"
+                            >
+                              <ToggleButton
+                                value={true}
+                                style={{
+                                  backgroundColor: liveAnomalyImg ? 'rgb(16, 185, 129)' : '',
+                                  color: liveAnomalyImg ? 'white' : '#10b981'
+                                }}
+                              >
+                                Live
+                              </ToggleButton>
+                              <ToggleButton
+                                value={false}
+                                style={{
+                                  backgroundColor: !liveAnomalyImg ? 'rgb(16, 185, 129)' : '',
+                                  color: !liveAnomalyImg ? 'white' : '#10b981'
+                                }}
+                              >
+                                Reference
+                              </ToggleButton>
+                            </ToggleButtonGroup>
+                          </div> */}
+                          {/* <ImageListItemBar title={`Date: ${timestamps?.date}`} subtitle={`Time: ${timestamps?.time}`} /> */}
                         </TransformComponent>
                       </div>
                     </TransformWrapper>
@@ -1005,7 +1256,7 @@ const Customers = () => {
                       <div className="w-full flex justify-between place-items-center">
                         <Typography variant="h3" className="">
                           {/* {details.store_id} - {details.store_name} */}
-                          {cData[0].brand_id} - {cData[0].brand_name}
+                          {cData.id} - {cData.name}
                         </Typography>
                         <button onClick={handleImageClick} className="md:static absolute top-5 right-5 ">
                           <IoIosClose className="md:text-4xl text-2xl" />
@@ -1013,16 +1264,16 @@ const Customers = () => {
                       </div>
                       <Divider />
                       <Typography paddingBottom={1.5} width={'100%'} variant="h5">
-                        {/* / {details.bay_id} / {details.shelf_id} */} Bay ID : {cData[0].bay_id}
+                        {/* / {details.bay_id} / {details.shelf_id} */}/ {cData.zone_id} / {cData.shelf_id}
                       </Typography>
                       <Typography width={'100%'} variant="h3">
                         Date & Time of Capture
                       </Typography>
                       <Divider />
                       <Typography paddingBottom={1.5} width={'100%'} variant="h5">
-                        {cData[0].timestamp}
+                        {cData.timestamp}
                       </Typography>
-                      {/* <Typography width={'100%'} variant="h3">
+                      <Typography width={'100%'} variant="h3">
                         Groups
                       </Typography>
                       <Divider />
@@ -1032,16 +1283,11 @@ const Customers = () => {
                             {cData.group_id}
                           </Typography>
                         </div>
-                      </div> */}
+                      </div>
                       <Typography width={'100%'} variant="h3">
                         Anomalies
                       </Typography>
-
                       <Divider />
-                      <Typography width={'100%'} variant="h6">
-                        {cData[0].unique_anomaly_array.map((anomaly) => anomaly)}
-                      </Typography>
-
                       <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
                         {anomalyType === 'color_assortment' ? (
                           <Box
@@ -1055,54 +1301,52 @@ const Customers = () => {
                             </Typography>
                           </Box>
                         ) : (
-                          // cData.anomaly_details.map((item, index) =>
-
-                          cData.map((itm, ind) => (
-                            <Tooltip
-                              key={0 + ind}
-                              title={
-                                <div>
-                                  {console.log(itm, ind)}
-                                  <Typography variant="body1">
-                                    Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
-                                  </Typography>
-                                  <Typography variant="body1">
-                                    <span>Description :</span>
-                                    {itm.anomaly_type === 'alien_pop'
-                                      ? itm.print_tag
+                          cData.anomalies[0].map((item, index) =>
+                            item.map((itm, ind) => (
+                              <Tooltip
+                                key={index + ind}
+                                title={
+                                  <div>
+                                    <Typography variant="body1">
+                                      Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
+                                    </Typography>
+                                    <Typography variant="body1">
+                                      <span>Description :</span>
+                                      {itm.anomaly_type === 'alien_pop'
                                         ? itm.print_tag
-                                        : 'No Data Found'
-                                      : itm.article_description
-                                      ? itm.article_description
-                                      : 'No Data Found'}
-                                  </Typography>
-                                  <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
-                                </div>
-                              }
-                            >
-                              <Box
-                                key={ind}
-                                paddingX={0.2}
-                                paddingY={0.04}
-                                className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                onMouseOver={() => {
-                                  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
-                                }}
-                                onMouseOut={() => {
-                                  if (antn) {
-                                    setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                    setAntn(!antn);
-                                  }
-                                }}
+                                          ? itm.print_tag
+                                          : 'No Data Found'
+                                        : itm.article_description
+                                        ? itm.article_description
+                                        : 'No Data Found'}
+                                    </Typography>
+                                    <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
+                                  </div>
+                                }
                               >
-                                <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
-                                <Typography paddingRight={2} variant="h6">
-                                  {itm.anomaly_type}
-                                </Typography>
-                              </Box>
-                            </Tooltip>
-                          ))
-                          // )
+                                <Box
+                                  key={index}
+                                  paddingX={0.2}
+                                  paddingY={0.04}
+                                  className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                  onMouseOver={() => {
+                                    calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
+                                  }}
+                                  onMouseOut={() => {
+                                    if (antn) {
+                                      setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                      setAntn(!antn);
+                                    }
+                                  }}
+                                >
+                                  <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
+                                  <Typography paddingRight={2} variant="h6">
+                                    {itm.anomaly_type}
+                                  </Typography>
+                                </Box>
+                              </Tooltip>
+                            ))
+                          )
                         )}
                       </div>
                       <Typography width={'100%'} variant="h3">
@@ -1122,14 +1366,14 @@ const Customers = () => {
                                 <Typography sx={{ width: '100%', color: 'white' }} variant="h6">
                                   Agent Details
                                 </Typography>
-                                <Typography variant="subtitle2">Name: {cData[0].name}</Typography>
-                                <Typography variant="subtitle2">Number: {cData[0].number}</Typography>
+                                <Typography variant="subtitle2">Name: {cData.user_name}</Typography>
+                                <Typography variant="subtitle2">Number: {cData.user_number}</Typography>
                               </div>
                             }
                             enterTouchDelay={1}
                             leaveTouchDelay={100000}
                           >
-                            <Avatar className="hover:cursor-pointer" sx={{ bgcolor: success }} alt={cData[0].name} src="/example.jpg" />
+                            <Avatar className="hover:cursor-pointer" sx={{ bgcolor: success }} alt={cData.user_name} src="/example.jpg" />
                           </Tooltip>
                         </AvatarGroup>
                       </div>
@@ -1164,7 +1408,16 @@ const Customers = () => {
                         {solvedLoad && <CgSpinner className="animate-spin" />}
                         <Typography color={'white'}>{solvedLoad ? ' Solving...' : 'Solved'}</Typography>
                       </button>
-
+                      {/* <button
+                        onClick={() => handleSolved()}
+                        className="lg:rounded-full rounded-xl md:w-[125px] flex hover:cursor-pointer text-lg lg:text-2xl p-2.5"
+                        style={{ backgroundColor: success }}
+                      >
+                        {solvedLoading && <CgSpinner className="animate-spin" />}
+                        <Typography className="w-full" color={'white'}>
+                          Solved
+                        </Typography>
+                      </button> */}
                       <button
                         className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 flex align-middle justify-center"
                         style={{ backgroundColor: error }}
