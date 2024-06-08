@@ -65,7 +65,7 @@ const Login = () => {
                     <RouterLink to="/main/insights">
                       {/* <img alt="Auth method" src={Logo} /> */}
                       <Typography sx={{ paddingTop: 1 }} color="textPrimary" gutterBottom variant="h3">
-                        Disha
+                        Disha - Tira
                       </Typography>
                     </RouterLink>
                   </Grid>
@@ -89,7 +89,7 @@ const Login = () => {
       </Grid>
       {/* </Grid> */}
       <Typography sx={{ position: 'absolute', left: 3, bottom: 2 }} color="black" variant="subtitle">
-        Version: 1.1.2
+        Version: 1.0.0
       </Typography>
     </div>
   );
