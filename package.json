@@ -60,6 +60,7 @@
     "slick-carousel": "^1.8.1",
     "stream-browserify": "^3.0.0",
     "util": "^0.12.5",
+    "xlsx": "^0.18.5",
     "yup": "^0.32.11"
   },
   "scripts": {

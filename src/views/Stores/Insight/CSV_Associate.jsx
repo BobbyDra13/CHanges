@@ -4,55 +4,53 @@ import { useParams } from 'react-router-dom';
 import React, { useState } from 'react';
 import { FaCloudUploadAlt } from 'react-icons/fa';
 import { UploadUserSheet } from 'api';
+import ClearIcon from '@mui/icons-material/Clear';
 
 function CsvModalAssociate({ onUploadComplete }) {
   const { store } = useParams();
   console.log('cmon man', store);
   const [loading, setLoading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(false);
   // const [updatedData, setUpdateddata] = useState(false);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, isDragActive, getInputProps } = useDropzone({
     accept: 'text/csv',
     onDrop: async (acceptedFiles) => {
       setLoading(true);
       const file = acceptedFiles[0];
+      // setSelectedFile(file);
       const reader = new FileReader();
 
       reader.onload = async () => {
-        // reader.result contains the contents of the file
-        // console.log("csv file:",reader.result);
-        const base64EncodedString = reader.result.split(',')[1];
-        const fileName = file.name;
-        const store_id = store;
-        console.log('Base64 encoded string:', base64EncodedString);
-        console.log('file name:', fileName);
-
-        try {
-          // Pass keys as a single object to the UploadCSV API
-          const res = await UploadUserSheet({ base64EncodedString, fileName, store_id });
-          console.log('Response from API:', res);
-          if (res.status === 200) {
-            onUploadComplete(true);
-            setUploadSuccess(true);
-          }
-        } catch (error) {
-          console.log('Error Uploading CSV', error);
-          onUploadComplete(false);
-        }
+        // const base64EncodedString = reader.result.split(',')[1];
+        setSelectedFile({ fileName: file.name, base64EncodedString: reader.result.split(',')[1], store_id: store });
         setLoading(false);
-        // setUploadSuccess(true);
       };
 
       reader.onerror = () => {
         console.error('An error occurred while reading the file');
+        setSelectedFile(false);
         setLoading(false);
       };
 
       reader.readAsDataURL(file);
     }
   });
+  const handleUpload = async () => {
+    try {
+      // Pass keys as a single object to the UploadCSV API
+      console.log('selectedFile', selectedFile);
+      await UploadUserSheet(selectedFile);
 
+      onUploadComplete(true);
+      setSelectedFile(false);
+      setUploadSuccess(true);
+    } catch (error) {
+      console.log('Error Uploading CSV', error);
+      onUploadComplete(false);
+    }
+  };
   // console.log('dataaasss',updatedData);
   return (
     <div className=" flex flex-col items-center gap-3 h-5/6">
@@ -82,14 +80,21 @@ function CsvModalAssociate({ onUploadComplete }) {
               <div className=" flex flex-col gap-3 items-center justify-center h-72">
                 <p className="text-xl font-semibold text-slate-500">Drag and Drop files here</p>
                 <FaCloudUploadAlt className="text-7xl" />
+                <input {...getInputProps()} />
               </div>
             )}
           </div>
         </div>
       </div>
-      <Button variant="contained" component="label" disabled={loading}>
+      {selectedFile && (
+        <span className="w-full py-2 px-4 rounded-md bg-gray-300  flex justify-between items-center">
+          {selectedFile && selectedFile.fileName}
+          <ClearIcon onClick={() => setSelectedFile(false)} className="ml-4 text-sm" />
+        </span>
+      )}
+      <Button variant="contained" component="label" disabled={loading} onClick={handleUpload}>
         Upload File
-        <input {...getInputProps()} />
+        {/* <input {...getInputProps()} /> */}
       </Button>
       {uploadSuccess ? <p>File uploaded successfully!</p> : loading && <LinearProgress />}
     </div>

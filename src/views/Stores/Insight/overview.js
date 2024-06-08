@@ -123,6 +123,11 @@ function Overview() {
   const [anomaliesCount, setAnomaliesCount] = useState([]);
   const [anomaliesLoading, setAnomaliesLoading] = useState(true);
 
+  const handleClickAssociateScoreModal = () => {
+    setOpenAssociateScoreModal((prev) => !prev);
+    setIsSnackbarOpen(false);
+    // console.log(openPopScoreModal);
+  };
   const handleClickPopScoreModal = () => {
     setOpenPopScoreModal((prev) => !prev);
     setSnackbarConfig({ open: false, message: '', severity: 'success' });
@@ -131,6 +136,7 @@ function Overview() {
 
   const handleClose = () => {
     setOpenPopScoreModal(false); // Close the modal
+    setOpenAssociateScoreModal(false);
   };
 
   const handleUploadComplete = (success) => {
@@ -143,10 +149,7 @@ function Overview() {
     }
   };
 
-  const handleClickAssociateScoreModal = () => {
-    setOpenAssociateScoreModal((prev) => !prev);
-    setSnackbarConfig({ open: false, message: '', severity: 'success' });
-  };
+
 
   const handleCloseAssociateScoreModal = () => {
     setOpenAssociateScoreModal(false); // Close the modal
@@ -461,7 +464,7 @@ function Overview() {
 
     // eslint-disable-next-line
   }, [date]);
-  console.log('Anomalies ', anomaliesCount);
+  // console.log('Anomalies ', anomaliesCount);
   // const handleOpenCameraView = () => {
   //   setIsCamOpen(true);
   //   handleScrollToComponent();
@@ -532,7 +535,7 @@ function Overview() {
                           aria-describedby="modal-modal-description"
                         >
                           <Box sx={modalStyle}>
-                            <CsvModal onUploadComplete={handleUploadComplete} />
+                            <CsvModal onUploadComplete={handleUploadComplete} type={"popScore"}/>
                           </Box>
                         </Modal>
                       </>
@@ -601,7 +604,7 @@ function Overview() {
                         <p className="text-lg font-semibold">PoP</p>
                       </div>
                       <>
-                        <IoMdSettings className="text-5xl cursor-pointer" onClick={handleClickPopScoreModal} />
+                        <IoMdSettings className="text-5xl cursor-pointer" onClick={handleClickPopScoreModal}  />
                         <Modal
                           open={openPopScoreModal}
                           onClose={handleClose}
@@ -609,7 +612,7 @@ function Overview() {
                           aria-describedby="modal-modal-description"
                         >
                           <Box sx={modalStyle}>
-                            <CsvModal onUploadComplete={handleUploadComplete} />
+                            <CsvModal onUploadComplete={handleUploadComplete} type={"popScore"}/>
                           </Box>
                         </Modal>
                       </>
@@ -725,8 +728,7 @@ function Overview() {
                           <p className="text-lg font-semibold">Associate Score</p>
                         </div>
                         <>
-                          {/* this */}
-                          <IoMdSettings className="text-5xl cursor-pointer" onClick={handleClickAssociateScoreModal} />
+                          <IoMdSettings className="text-5xl" onClick={handleClickAssociateScoreModal}/>
                           <Modal
                             open={openAssociateScoreModal}
                             onClose={handleCloseAssociateScoreModal}
@@ -833,8 +835,7 @@ function Overview() {
                           <p className="text-lg font-semibold">Associate Score</p>
                         </div>
                         <>
-                          {/* this */}
-                          <IoMdSettings className="text-5xl cursor-pointer" onClick={handleClickAssociateScoreModal} />
+                          <IoMdSettings className="text-5xl" onClick={handleClickAssociateScoreModal} />
                           <Modal
                             open={openAssociateScoreModal}
                             onClose={handleCloseAssociateScoreModal}
@@ -842,7 +843,7 @@ function Overview() {
                             aria-describedby="modal-modal-description"
                           >
                             <Box sx={modalStyle}>
-                              <CsvModalAssociate onUploadComplete={handleAssociateUploadComplete} />
+                              <CsvModalAssociate onUploadComplete={handleAssociateUploadComplete}  type='associateStore'/>
                             </Box>
                           </Modal>
                         </>
