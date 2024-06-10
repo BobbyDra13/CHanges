@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
-import { GetpopKPI } from 'api';
+// import { GetpopKPI } from 'api';
 
 const RadarChart = ({ storeId, date }) => {
   const [radarData, setRadarData] = useState([]);
@@ -27,7 +27,8 @@ const RadarChart = ({ storeId, date }) => {
         date: date.toString(),
         store_id: storeId
       };
-      const response = await GetpopKPI(body);
+      // const response = await GetpopKPI(body);
+      const response = { data: [] };
       setRadarData(response.data);
       console.log('RadarData', response.data);
       const labels = response.data.length !== 0 ? response.data.map((item) => item.zone_id) : [];
