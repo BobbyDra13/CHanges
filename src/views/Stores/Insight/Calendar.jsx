@@ -7,7 +7,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Badge from '@mui/material/Badge';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 // import dates from 'views/Stores/Table/dateSelect';
-import { GetDates } from 'api';
+// import { GetDates } from 'api';
 // import dayjs from 'dayjs';
 
 function ServerDay(props) {
@@ -43,12 +43,20 @@ function DatePickerComp({ SetSelectedDate }) {
         const body = {
           store_id: [`${storeDetails.store}`]
         };
-        const Edata = await GetDates(body);
+        // const Edata = await GetDates(body);
 
-        const daysOnly = Edata.data.map((item) => {
-          const eventdate = new Date(item);
-          return eventdate;
-        });
+        // const daysOnly = Edata.data.map((item) => {
+        //   const eventdate = new Date(item);
+        //   return eventdate;
+        // });
+        const Edata = { data: [] };
+
+const daysOnly = Edata && Edata.data
+  ? Edata.data.map((item) => {
+      const eventdate = new Date(item);
+      return eventdate;
+    })
+  : [];
         setEvents(daysOnly);
         // setIsLoading(false)
       } catch (error) {

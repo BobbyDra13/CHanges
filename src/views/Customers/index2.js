@@ -638,7 +638,8 @@ const Customers = () => {
     if (updatedData.length > 0) {
       const promises = updatedData.map(async (s) => {
         try {
-          const data = await getAnomalyForStore({ store_id: s.store });
+          // const data = await getAnomalyForStore({ store_id: s.store });
+          const data = { data: [] };
           console.log('anomaly', data);
           return { storeId: s.store, data };
         } catch (error) {

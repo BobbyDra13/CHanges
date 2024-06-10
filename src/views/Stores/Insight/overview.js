@@ -38,7 +38,14 @@ import { CgSpinner } from 'react-icons/cg';
 import CsvModal from './CsvUpload';
 import CsvModalAssociate from './CSV_Associate';
 import RadarChart from './RadarChart';
-import { GetPopPercentage, GetpopKPI, GetCapProgStoreView, GetAnomaliesCount, getAssociateScoreData, GetReport } from 'api';
+import {
+   GetPopPercentage,
+  //  GetpopKPI,
+   GetCapProgStoreView,
+   GetAnomaliesCount,
+   getAssociateScoreData,
+   GetReport
+   } from 'api';
 // import { IoIosWarning } from 'react-icons/io';
 // import { get } from 'react-hook-form';
 import Chart from 'react-apexcharts';
@@ -341,41 +348,41 @@ function Overview() {
       }
       // console.log(commonBody);
       // eslint-disable-next-line
-      async function getFootfalldata() {
-        try {
-          // const data = await footfallCard(commonBody);
-          const data = await GetpopKPI(popBody);
-          const data2 = await GetPopPercentage(popBody);
-          // console.log(data2.data);
-          data2.data !== null ? setTotalPop(parseFloat(data2.data.average_pop_score).toFixed(1)) : setTotalPop(false);
+      // async function getFootfalldata() {
+      //   try {
+      //     // const data = await footfallCard(commonBody);
+      //     // const data = await GetpopKPI(popBody);
+      //     // const data2 = await GetPopPercentage(popBody);
+      //     // console.log(data2.data);
+      //     data2.data !== null ? setTotalPop(parseFloat(data2.data.average_pop_score).toFixed(1)) : setTotalPop(false);
 
-          console.log('pop data', data2.data);
-          if (data.data.length === 0) {
-            // console.log('hello')
-            setFootfalldata(false);
-            setftfall(false);
-          } else if (data.data.length > 0) {
-            // const { totalCustomerStore } = data[0];
-            // const { zones } = data[0];
-            const group = data.data;
-            setIsGroup(group);
+      //     console.log('pop data', data2.data);
+      //     // if (data.data.length === 0) {
+      //     //   // console.log('hello')
+      //     //   setFootfalldata(false);
+      //     //   setftfall(false);
+      //     // } else if (data.data.length > 0) {
+      //     //   // const { totalCustomerStore } = data[0];
+      //     //   // const { zones } = data[0];
+      //     //   const group = data.data;
+      //     //   setIsGroup(group);
 
-            group.forEach((item) => {
-              let percentageString = item.data.FullnessPopPercent.replace('%', '');
-              item.data.FullnessPopPercent = parseFloat(percentageString);
-            });
-            group.sort((a, b) => a.data.FullnessPopPercent - b.data.FullnessPopPercent);
-            console.log('pxs');
-            setftfall(true);
-            // console.log(zones);
-            setFootfalldata(group);
-          }
+      //     //   group.forEach((item) => {
+      //     //     let percentageString = item.data.FullnessPopPercent.replace('%', '');
+      //     //     item.data.FullnessPopPercent = parseFloat(percentageString);
+      //     //   });
+      //     //   group.sort((a, b) => a.data.FullnessPopPercent - b.data.FullnessPopPercent);
+      //     //   console.log('pxs');
+      //     //   setftfall(true);
+      //     //   // console.log(zones);
+      //     //   setFootfalldata(group);
+      //     // }
 
-          return data;
-        } catch (error) {
-          console.log(error);
-        }
-      }
+      //     // return data;
+      //   } catch (error) {
+      //     console.log(error);
+      //   }
+      // }
       // eslint-disable-next-line
       async function getRatioData() {
         const body = {
@@ -404,7 +411,8 @@ function Overview() {
       //eslint-disable-next-line
       async function getCaptureProg() {
         try {
-          const capProgress = await GetCapProgStoreView(popBody);
+          // const capProgress = await GetCapProgStoreView(popBody);
+          const capProgress = { data: [] };
           // console.log('capTop ', capProgress);
 
           // const capProg = capProgress.data.captureProgressZoneData.map((item) => {
@@ -414,7 +422,7 @@ function Overview() {
           //   };
           // });
           // setCaptureProg(capProg);
-          setCapProgressValue(capProgress.data[0].capture_percentage);
+          // setCapProgressValue(capProgress.data[0].capture_percentage);
         } catch (error) {
           console.log(error);
         }
@@ -422,7 +430,8 @@ function Overview() {
       //eslint-disable-next-line
       async function getAnomalies() {
         try {
-          const anomalies = await GetAnomaliesCount(popBody);
+          // const anomalies = await GetAnomaliesCount(popBody);
+          const anomalies = { data: [] };
           if (anomalies) {
             setAnomaliesLoading(false);
             setAnomaliesCount(anomalies.data);
@@ -442,7 +451,8 @@ function Overview() {
         };
         console.log('Body', body);
         try {
-          const associateScore = await getAssociateScoreData(body);
+          // const associateScore = await getAssociateScoreData(body);
+          const associateScore = { data: [] };
           if (associateScore) {
             setAssociateScoreData(associateScore.data);
             console.log('Associate Score', associateScore.data);
@@ -453,7 +463,7 @@ function Overview() {
       }
 
       getAnomalies();
-      getFootfalldata();
+      // getFootfalldata();
       getDataDwell();
       getRatioData();
       getCaptureProg();
@@ -914,7 +924,7 @@ function Overview() {
                       <span className="text-center text-white text-sm font-semibold">Missing</span>
                       {!anomaliesLoading ? (
                         <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                          {anomaliesCount[0].totalMissingPopCount}
+                          {/* {anomaliesCount[0].totalMissingPopCount} */}
                         </span>
                       ) : (
                         <Skeleton variant="rectangular" height={184} className="rounded-md" />
@@ -924,7 +934,7 @@ function Overview() {
                       <span className="text-center text-white  text-sm font-semibold">Alien</span>
                       {!anomaliesLoading ? (
                         <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                          {anomaliesCount[0].totalAlienPopCount}
+                          {/* {anomaliesCount[0].totalAlienPopCount} */}
                         </span>
                       ) : (
                         <Skeleton variant="rectangular" height={184} className="rounded-md" />
@@ -934,7 +944,7 @@ function Overview() {
                       <span className="text-center text-white  text-sm font-semibold">Incorrect</span>
                       {!anomaliesLoading ? (
                         <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                          {anomaliesCount[0].totalIncorrectPopCount}
+                          {/* {anomaliesCount[0].totalIncorrectPopCount} */}
                         </span>
                       ) : (
                         <Skeleton variant="rectangular" height={184} className="rounded-md" />
