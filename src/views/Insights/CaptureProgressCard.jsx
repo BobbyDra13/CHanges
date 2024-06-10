@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import KpiCard from './KpiCard/index';
-import { GetCaptureProgress } from 'api';
+// import { GetCaptureProgress } from 'api';
 import { useTheme, Skeleton, Card, Stack, Grid, Typography } from '@mui/material';
 
 function CaptureProgressCard({ date }) {

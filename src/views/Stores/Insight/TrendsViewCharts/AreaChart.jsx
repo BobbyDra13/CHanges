@@ -2,7 +2,7 @@ import { Box, CircularProgress } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 // import { footfallGraph } from 'api/sentinelAPI';
-import { GetFullnessPop, GetSevenDayCapProgress } from 'api';
+// import { GetFullnessPop, GetSevenDayCapProgress } from 'api';
 // import Bubbledxaxis from './Bubbledx-axis';
 // import {footfallGraph} from "api/sentinelAPI";
 // const footfalldata=footfallGraph();
@@ -23,7 +23,8 @@ const Areachart = ({ storeId, date }) => {
       };
       try {
         setLoading(true);
-        const data = await GetFullnessPop(body);
+        // const data = await GetFullnessPop(body);
+        const data = { data: [] };
         // console.log("data", data);
         if (data) {
           const catagorydata = data.data.map((d) => d.date);
@@ -48,7 +49,8 @@ const Areachart = ({ storeId, date }) => {
       };
       try {
         setLoading(true);
-        const capData = await GetSevenDayCapProgress(captureBody);
+        // const capData = await GetSevenDayCapProgress(captureBody);
+        const capData = { data: [] };
         console.log('capture_data', capData);
         if (capData) {
           const capturedata = capData.data.map((d) => d.date);
