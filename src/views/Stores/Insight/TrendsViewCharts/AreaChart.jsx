@@ -1,4 +1,6 @@
 import { Box, CircularProgress } from '@mui/material';
+import { getsevendaydata } from 'api';
+
 import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 // import { footfallGraph } from 'api/sentinelAPI';
@@ -13,7 +15,62 @@ const Areachart = ({ storeId, date }) => {
   const [capProgress, setCapProgress] = useState([]);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState([]);
+  const [capture7days, setcapture7days] = useState(null);
+  const [fullness7days, setfullness7days] = useState(null);
+  function getLastSevenDaysDates() {
+    const today = new Date();
+    const dates = [];
 
+    // Loop through the last seven days
+    for (let i = 0; i < 7; i++) {
+      const day = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
+      const formattedDate = day.toLocaleDateString('en-US'); // Format as YYYY-MM-DD
+      dates.push(formattedDate);
+    }
+
+    return dates.reverse(); // Reverse to show most recent day first
+  }
+
+  // const getsevendaydata = async () => {
+  //   try {
+  //     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/line-chart';
+  //     const data = {
+  //       date: '2024-06-11',
+  //       store_id: '6623a893c40c738627f3373f',
+  //       category: 'fragrances'
+  //     };
+
+  //     const response = await fetch(url, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json'
+  //       },
+  //       body: JSON.stringify(data)
+  //     });
+  //     console.log('here from getsevendaydata');
+  //     if (response) {
+  //       console.log('response from getsevenday data :  ', response);
+  //       const result = await response.json();
+  //       console.log('RESULT IS :', result);
+  //       result && setcapture7days(result.capture7days);
+  //       result && setfullness7days(result.fullness7days);
+  //     }
+  //   } catch (error) {
+  //     console.log('error in getsevendaydata : ', error);
+  //   }
+  // };
+  const get7daysdata = async () => {
+    try {
+      const result = await getsevendaydata();
+      result && setcapture7days(result.capture7days);
+      result && setfullness7days(result.fullness7days);
+    } catch (error) {
+      console.log('error in get7daysdata', error);
+    }
+  };
+  useEffect(() => {
+    get7daysdata();
+  }, []);
   useEffect(() => {
     async function getData() {
       console.log(date);
@@ -24,13 +81,15 @@ const Areachart = ({ storeId, date }) => {
       try {
         setLoading(true);
         // const data = await GetFullnessPop(body);
-        const data = { data: [] };
+        const data = { data: [fullness7days] };
         // console.log("data", data);
         if (data) {
-          const catagorydata = data.data.map((d) => d.date);
+          const catagorydata = data.data.map((d) => d);
+          console.log(catagorydata);
           // console.log("catagorydata", catagorydata);
-          const custdata = data.data.map((d) => (d.data != 'Data not found' ? parseFloat(d.pop_percentage).toFixed(1) : 0));
-          // console.log("custdata", custdata);
+          const custdata = data.data.map((d) => (d != 'Data not found' ? parseFloat(d).toFixed(1) : 0));
+          console.log('custdata', custdata);
+
           setCategory(catagorydata);
           setCustCount(custdata);
           setLoading(false);
@@ -50,19 +109,19 @@ const Areachart = ({ storeId, date }) => {
       try {
         setLoading(true);
         // const capData = await GetSevenDayCapProgress(captureBody);
-        const capData = { data: [] };
+        const capData = { data: [capture7days] };
         console.log('capture_data', capData);
         if (capData) {
-          const capturedata = capData.data.map((d) => d.date);
+          const capturedata = capData.data.map((d) => d);
           // console.log("capturedata", capturedata);
-          const capture = capData.data.map((d) => (d.data != 'Data not found' ? parseFloat(d.capture_percentage).toFixed(1) : 0));
-          // console.log("capture", capture);
-          const statusArray = capData.data.map((d) => d.capture_status);
+          const capture = capData.data.map((d) => (d != 'Data not found' ? parseFloat(d).toFixed(1) : 0));
+          console.log('capture', capture);
+          // const statusArray = capData.data.map((d) => d.capture_status);
           // console.log('statusArray', statusArray);
           setCategory(capturedata);
           setCapProgress(capture);
           setLoading(false);
-          setStatus(statusArray);
+          // setStatus(statusArray);
         }
         // return data;
       } catch (error) {
@@ -72,7 +131,7 @@ const Areachart = ({ storeId, date }) => {
     getData();
     getCaptureData();
     // eslint-disable-next-line
-  }, [date]);
+  }, [date, capture7days, fullness7days]);
   // console.log("capturesss", capProgress);
   // console.log("pop", custCount);
   //graph options start
@@ -81,12 +140,14 @@ const Areachart = ({ storeId, date }) => {
     series: [
       {
         name: 'Capture Progress',
-        data: capProgress
+        data: capture7days
+        //  data: [90, 7, 4, 20, 18, 80, 100, 40, 60, 30, 20]
+        //data: [90, 7, 4, 20, 18, 80, 100, 40, 60, 30, 20, 33, 15, 9, 4]
       },
       {
         name: 'Pop Score',
-        data: custCount
-        // [4, 7, 4, 20, 18, 80, 100,40, 60,30, 20, 33, 15,9, 4 ]
+        data: fullness7days
+        //data: [480, 7, 4, 20, 18, 80, 100, 40, 60, 30, 20]
       }
       // {
 
@@ -219,9 +280,22 @@ const Areachart = ({ storeId, date }) => {
         // ... other legend options
       },
       xaxis: {
-        type: 'datetime',
-        tickAmount: 15,
-        categories: category,
+        //  type: 'day',
+        //  tickAmount: 15,
+
+        // categories : [
+        //   'mon' , 'tue' , 'wed' , 'thur', 'fri', 'sat' , 'sun'
+        // ],
+        categories: getLastSevenDaysDates(),
+        // categories: [
+        //   '2018-09-19T15:30:00.000Z',
+        //   '2018-09-19T16:00:00.000Z',
+        //   '2018-09-19T16:30:00.000Z',
+        //   '2018-09-19T17:00:00.000Z',
+        //   '2018-09-19T17:30:00.000Z',
+        //   '2018-09-19T18:00:00.000Z',
+        //   '2018-09-19T18:30:00.000Z'
+        // ],
         // ["2018-09-19T15:30:00.000Z", "2018-09-19T16:00:00.000Z", "2018-09-19T16:30:00.000Z", "2018-09-19T17:00:00.000Z", "2018-09-19T17:30:00.000Z", "2018-09-19T18:00:00.000Z", "2018-09-19T18:30:00.000Z",  "2018-09-19T19:00:00.000Z",  "2018-09-19T19:30:00.000Z",  "2018-09-19T20:00:00.000Z",  "2018-09-19T20:30:00.000Z",  "2018-09-19T21:00:00.000Z",  "2018-09-19T21:30:00.000Z",  "2018-09-19T22:00:00.000Z",  "2018-09-19T22:30:00.000Z"],
         labels: {
           show: true // Display all labels on the X-axis
@@ -232,7 +306,7 @@ const Areachart = ({ storeId, date }) => {
       tooltip: {
         // enabled:false,
         x: {
-          format: 'dd/MM/yy HH:mm'
+          // format: 'dd/MM/yy HH:mm'
         }
       },
       // toolbar: {

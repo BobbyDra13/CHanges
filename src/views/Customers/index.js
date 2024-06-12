@@ -156,6 +156,7 @@ const dummyAnomaliesData = {
 };
 
 const Customers = () => {
+  const [cord, setcord] = useState(null);
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const [storesData, setStoresData] = useState([]);
   const [colorArray, setColorArray] = useState([]);
@@ -281,6 +282,7 @@ const Customers = () => {
       console.log('For each Image ', result);
       setCdata(result);
       setLCdata(!lcData);
+      cData && console.log(cData[0]);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -341,7 +343,7 @@ const Customers = () => {
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/get-store-details';
     const data = {
       user_id: '66238a99c40c738627f33735',
-      date: '2024-06-08'
+      date: '2024-06-11'
     };
 
     try {
@@ -380,6 +382,7 @@ const Customers = () => {
     const height = ((ymax - ymin) / natural.hght) * 100;
     setPos({ lft: lft, tp: top, wdth: width, hght: height });
     setAntn(true);
+    console.log(pos);
   };
 
   const highlightStyle = {
@@ -425,6 +428,7 @@ const Customers = () => {
     setLoadsend(true);
 
     const array = cData.anomalies[0][0].map((item) => item.anomaly_type);
+
     const uniqueSet = new Set(array);
     const uniqueArray = Array.from(uniqueSet);
     let result;
@@ -512,8 +516,13 @@ const Customers = () => {
   };
 
   console.log('storeAnomalies', storeAnomalies);
-  console.log('cdata', cData);
+  cData && console.log('cdata', cData);
+  // cData && cData[0].anomaly_details && console.log(cData[0].anomaly_details[0].coords);
+  //cData &&  calculate(cData[0].anomaly_details[0].coords[0], cData[0].anomaly_details[0].coords[1],cData[0].anomaly_details[0].coords[2],cData[0].anomaly_details[0].coords[3])
 
+  useEffect(() => {
+    //   cData && console.log(cData[0].anomaly_details);
+  }, [cData]);
   return (
     <>
       <Breadcrumb title="Stores">
@@ -963,6 +972,7 @@ const Customers = () => {
                               //   setImageLoading(false);
                               // }}
                             />
+
                             {nextBtn && (
                               <>
                                 <IconButton
@@ -1086,12 +1096,19 @@ const Customers = () => {
                                 paddingY={0.04}
                                 className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
                                 onMouseOver={() => {
-                                  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
+                                  calculate(
+                                    cData[0].anomaly_details[0].coords[0],
+                                    cData[0].anomaly_details[0].coords[1],
+                                    cData[0].anomaly_details[0].coords[2],
+                                    cData[0].anomaly_details[0].coords[3]
+                                  );
+                                  //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
+                                  setAntn(true);
                                 }}
                                 onMouseOut={() => {
                                   if (antn) {
                                     setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                    setAntn(!antn);
+                                    setAntn(false);
                                   }
                                 }}
                               >

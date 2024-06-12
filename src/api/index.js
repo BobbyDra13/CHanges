@@ -596,3 +596,33 @@ export const GetReport = async (data) => {
     console.log('Error Calling GetReport API: ', error);
   }
 };
+
+///////////////////////////////////////API for getting last seven days data that is fulness7days and capture7days////////////////////////////
+export const getsevendaydata = async () => {
+  try {
+    const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/line-chart';
+    const data = {
+      date: '2024-06-11',
+      store_id: '6623a893c40c738627f3373f',
+      category: 'fragrances'
+    };
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response) {
+      console.log('response from getsevenday data :  ', response);
+      const result = await response.json();
+      return result;
+    } else {
+      return 'NOT FOUND';
+    }
+  } catch (error) {
+    console.log('error in getsevendaydata : ', error);
+  }
+};
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

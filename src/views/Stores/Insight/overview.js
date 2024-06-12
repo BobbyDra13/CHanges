@@ -39,13 +39,14 @@ import CsvModal from './CsvUpload';
 import CsvModalAssociate from './CSV_Associate';
 import RadarChart from './RadarChart';
 import {
-   GetPopPercentage,
+  GetPopPercentage,
   //  GetpopKPI,
-   GetCapProgStoreView,
-   GetAnomaliesCount,
-   getAssociateScoreData,
-   GetReport
-   } from 'api';
+  GetCapProgStoreView,
+  GetAnomaliesCount,
+  getAssociateScoreData,
+  GetReport,
+  getsevendaydata
+} from 'api';
 // import { IoIosWarning } from 'react-icons/io';
 // import { get } from 'react-hook-form';
 import Chart from 'react-apexcharts';
@@ -129,7 +130,23 @@ function Overview() {
   //eslint-disable-next-line
   const [anomaliesCount, setAnomaliesCount] = useState([]);
   const [anomaliesLoading, setAnomaliesLoading] = useState(true);
+  const [sevendaydata, setsevendaydata] = useState(null);
+  const [capture7days, setcapture7days] = useState(null);
+  const [fullness7days, setfullness7days] = useState(null);
 
+  const get7daysdata = async () => {
+    try {
+      const result = await getsevendaydata();
+      result && setcapture7days(result.capture7days);
+      result && setfullness7days(result.fullness7days);
+    } catch (error) {
+      console.log('error in get7daysdata', error);
+    }
+  };
+
+  useEffect(() => {
+    get7daysdata();
+  }, []);
   const handleClickAssociateScoreModal = () => {
     setOpenAssociateScoreModal((prev) => !prev);
     setIsSnackbarOpen(false);
@@ -271,7 +288,8 @@ function Overview() {
       }
       // labels: ['Progress']
     },
-    series: [68]
+    series: [capture7days ? capture7days[capture7days.length - 1] : 0],
+    labels: ['A']
   };
 
   const modalStyle = {
@@ -902,13 +920,15 @@ function Overview() {
                     <div>
                       <Chart
                         options={progressChart.options}
-                        series={capProgressValue ? [parseFloat(capProgressValue).toFixed(1)] : [0]}
+                        // series={capProgressValue ? [parseFloat(capProgressValue).toFixed(1)] : [0]}
+                        series={progressChart.series}
                         type={progressChart.options.chart.type}
                         height={progressChart.options.chart.height}
                       />
                     </div>
                     <div className="flex gap-1 flex-col">
-                      <div className="text-4xl font-semibold">{capProgressValue ? parseFloat(capProgressValue).toFixed(1) : 0}%</div>
+                      {/* <div className="text-4xl font-semibold">{capProgressValue ? parseFloat(capProgressValue).toFixed(1) : 0}%</div> */}
+                      <div className="text-4xl font-semibold">{capture7days ? capture7days[capture7days.length - 1] : 0}%</div>
                       <div className="text-sm font-semibold">Capture Progress</div>
                     </div>
                   </div>
