@@ -23,6 +23,7 @@ import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import './zoom-card-item.css';
 import { bouncy } from 'ldrs';
 import MapComponent from './map';
+
 bouncy.register();
 
 // material-ui
@@ -258,6 +259,23 @@ const Customers = () => {
   // const vMClicked = () => {
   //   setClickedBar((prevState) => ({ ...prevState, isVm: !prevState.isVm }));
   // };
+  const [map, setmap] = useState(null);
+  const [mapindex, setmapindex] = useState(0);
+
+  useEffect(() => {
+    console.log('here is storesData', storesData);
+
+    const ids = storesData && storesData.length > 0 && storesData[0].anomalies_details;
+    console.log(ids);
+    const map = new Map();
+    if (ids.length > 0) {
+      for (var i = 0; i < ids.length; i++) {
+        map.set(ids[i], i);
+      }
+    }
+    console.log('map', map);
+    setmap(map);
+  }, [storesData]);
 
   const handleImageClick = async (url, id, anomaly, time) => {
     const link = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/getanomlie-detail';
@@ -310,6 +328,57 @@ const Customers = () => {
     setIsImageDialogOpen(!isImageDialogOpen);
   };
 
+  const handleImageClickfromnext = async (url, id, anomaly, time) => {
+    const link = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/getanomlie-detail';
+    const data = {
+      metadata_id: id
+    };
+
+    try {
+      const response = await fetch(link, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('For each Image ', result);
+      setCdata(result);
+      // setLCdata(!lcData);
+      cData && console.log(cData[0]);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+
+    console.log(id);
+    setMetadata(id);
+
+    if (antn) {
+      setPos({ lft: false, tp: false, wdth: false, ht: false });
+      setAntn(!antn);
+    }
+
+    const dateTime = new Date(time);
+    const day = dateTime.toLocaleDateString(undefined, { day: '2-digit' });
+    const month = dateTime.toLocaleDateString(undefined, { month: '2-digit' });
+    const year = dateTime.toLocaleDateString(undefined, { year: 'numeric' });
+
+    const formattedDate = `${day}/${month}/${year}`;
+    const formattedTime = dateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+
+    if (!isImageDialogOpen) {
+      console.log('C data value', anomaly);
+      setTimestamps({ date: formattedDate, time: formattedTime });
+    }
+    //  setIsImageDialogOpen(!isImageDialogOpen);
+  };
+
   //here make a body
   //make the first API CALL
 
@@ -336,6 +405,18 @@ const Customers = () => {
       // Update anomalyDetails state if needed
     }, 1000);
   };
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Pad month with leading zero
+    const day = String(date.getDate()).padStart(2, '0'); // Pad day with leading zero
+    const hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0'); // Pad with leading zero
+    const amPm = hours >= 12 ? 'PM' : 'AM';
+    const modifiedHours = hours % 12 || 12; // Convert to 12-hour format (12 for midnight/noon)
+
+    return `${year}-${month}-${day} / ${modifiedHours}:${minutes} ${amPm}`;
+  }
 
   const getStoresData = async () => {
     setLoading(true);
@@ -474,6 +555,45 @@ const Customers = () => {
     const nextInd = (index + 1) % len;
     const current = storeAnomalies[cData._id].allAnomalies[nextInd];
     setCdata(current);
+  };
+
+  const handlexnextclick = () => {
+    console.log(cData);
+    let index = 0;
+    const current = cData && cData[0].metadata_id;
+    console.log(current);
+    for (var i = 0; i < storesData[0].anomalies_details.length; i++) {
+      if (String(storesData[0].anomalies_details[i].metadata_id) === String(current)) {
+        index = i;
+      }
+    }
+    console.log(storesData[0].anomalies_details.length);
+
+    index = (index + 1) % storesData[0].anomalies_details.length;
+
+    let anomaly = storesData[0].anomalies_details[index];
+    console.log(anomaly);
+
+    handleImageClickfromnext(anomaly.bay_img_urls, anomaly.metadata_id, anomaly);
+  };
+  const handleprevclick = () => {
+    console.log(cData);
+    let index = 0;
+    const current = cData && cData[0].metadata_id;
+    console.log(current);
+    for (var i = 0; i < storesData[0].anomalies_details.length; i++) {
+      if (String(storesData[0].anomalies_details[i].metadata_id) === String(current)) {
+        index = i;
+      }
+    }
+    console.log(storesData[0].anomalies_details.length);
+
+    index = (index - 1) % storesData[0].anomalies_details.length;
+
+    let anomaly = storesData[0].anomalies_details[index];
+    console.log(anomaly);
+
+    handleImageClickfromnext(anomaly.bay_img_urls, anomaly.metadata_id, anomaly);
   };
 
   const handlePrevClick = () => {
@@ -984,7 +1104,8 @@ const Customers = () => {
                                     borderRadius: '50%',
                                     padding: '5px'
                                   }}
-                                  onClick={handleNextClick}
+                                  //onClick={handleNextClick}
+                                  onClick={handlexnextclick}
                                 >
                                   <FaAngleDoubleRight />
                                 </IconButton>
@@ -997,7 +1118,7 @@ const Customers = () => {
                                     borderRadius: '50%',
                                     padding: '5px'
                                   }}
-                                  onClick={handlePrevClick}
+                                  onClick={handleprevclick}
                                 >
                                   <FaAngleDoubleLeft />
                                 </IconButton>
@@ -1030,7 +1151,7 @@ const Customers = () => {
                       </Typography>
                       <Divider />
                       <Typography paddingBottom={1.5} width={'100%'} variant="h5">
-                        {cData[0].timestamp}
+                        {formatDate(cData[0].timestamp)}
                       </Typography>
                       {/* <Typography width={'100%'} variant="h3">
                         Groups
@@ -1048,9 +1169,9 @@ const Customers = () => {
                       </Typography>
 
                       <Divider />
-                      <Typography width={'100%'} variant="h6">
-                        {cData[0].unique_anomaly_array.map((anomaly) => anomaly)}
-                      </Typography>
+                      {/* <Typography width={'100%'} variant="h6">
+                      {cData[0].unique_anomaly_array.map((anomaly) => anomaly)}
+                      </Typography> */}
 
                       <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
                         {anomalyType === 'color_assortment' ? (
@@ -1060,6 +1181,7 @@ const Customers = () => {
                             className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center"
                           >
                             <RiErrorWarningLine className="text-4xl mr-0.5 text-purple-500" />
+
                             <Typography paddingRight={2} variant="h6">
                               Colour
                             </Typography>
@@ -1070,25 +1192,25 @@ const Customers = () => {
                           cData.map((itm, ind) => (
                             <Tooltip
                               key={0 + ind}
-                              title={
-                                <div>
-                                  {console.log(itm, ind)}
-                                  <Typography variant="body1">
-                                    Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
-                                  </Typography>
-                                  <Typography variant="body1">
-                                    <span>Description :</span>
-                                    {itm.anomaly_type === 'alien_pop'
-                                      ? itm.print_tag
-                                        ? itm.print_tag
-                                        : 'No Data Found'
-                                      : itm.article_description
-                                      ? itm.article_description
-                                      : 'No Data Found'}
-                                  </Typography>
-                                  <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
-                                </div>
-                              }
+                              // title={
+                              //   <div>
+                              //     {console.log(itm, ind)}
+                              //     <Typography variant="body1">
+                              //       Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
+                              //     </Typography>
+                              //     <Typography variant="body1">
+                              //       <span>Description :</span>
+                              //       {itm.anomaly_type === 'alien_pop'
+                              //         ? itm.print_tag
+                              //           ? itm.print_tag
+                              //           : 'No Data Found'
+                              //         : itm.article_description
+                              //         ? itm.article_description
+                              //         : 'No Data Found'}
+                              //     </Typography>
+                              //     <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
+                              //   </div>
+                              // }
                             >
                               <Box
                                 key={ind}
@@ -1115,6 +1237,7 @@ const Customers = () => {
                                 <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
                                 <Typography paddingRight={2} variant="h6">
                                   {itm.anomaly_type}
+                                  {cData[0].unique_anomaly_array.map((anomaly) => anomaly)}
                                 </Typography>
                               </Box>
                             </Tooltip>

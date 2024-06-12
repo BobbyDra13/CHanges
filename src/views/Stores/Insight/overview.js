@@ -134,9 +134,9 @@ function Overview() {
   const [capture7days, setcapture7days] = useState(null);
   const [fullness7days, setfullness7days] = useState(null);
 
-  const get7daysdata = async () => {
+  const get7daysdata = async (date) => {
     try {
-      const result = await getsevendaydata();
+      const result = await getsevendaydata(date);
       result && setcapture7days(result.capture7days);
       result && setfullness7days(result.fullness7days);
     } catch (error) {
@@ -145,8 +145,11 @@ function Overview() {
   };
 
   useEffect(() => {
-    get7daysdata();
+    get7daysdata(date);
   }, []);
+  useEffect(() => {
+    get7daysdata(date);
+  }, [date]);
   const handleClickAssociateScoreModal = () => {
     setOpenAssociateScoreModal((prev) => !prev);
     setIsSnackbarOpen(false);
@@ -498,6 +501,8 @@ function Overview() {
   // ftfall && ftfall.sort((a, b) => b.totalCustomerZone - a.totalCustomerZone);
   // dweltimeData && dweltimeData.sort((a, b) => b.avgDwellTime - a.avgDwellTime);
 
+  useEffect(()=>{console.log("date from dasda" ,date)},[date])
+
   return (
     <div className="w-full">
       <Grid container spacing={2}>
@@ -506,7 +511,7 @@ function Overview() {
             <Typography variant="h3">Overview </Typography>
             {storeID ? <Typography variant="h6">Store ID: {storeID}</Typography> : <></>}
             <div className="flex space-x-2 sm:mt-2">
-              <DatePickerStore SetSelectedDate={setSelectedDate} style={{ borderRadius: '15px' }} />
+              <DatePickerStore SetSelectedDate={setSelectedDate} style={{ borderRadius: '15px' }}  />
               <div>
                 <button
                   onClick={isDownloading ? null : handleDownload}

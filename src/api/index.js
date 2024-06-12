@@ -598,11 +598,11 @@ export const GetReport = async (data) => {
 };
 
 ///////////////////////////////////////API for getting last seven days data that is fulness7days and capture7days////////////////////////////
-export const getsevendaydata = async () => {
+export const getsevendaydata = async (date) => {
   try {
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/line-chart';
     const data = {
-      date: '2024-06-11',
+      date: String(date),
       store_id: '6623a893c40c738627f3373f',
       category: 'fragrances'
     };

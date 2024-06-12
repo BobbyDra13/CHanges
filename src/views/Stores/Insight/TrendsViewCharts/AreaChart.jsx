@@ -31,46 +31,51 @@ const Areachart = ({ storeId, date }) => {
     return dates.reverse(); // Reverse to show most recent day first
   }
 
-  // const getsevendaydata = async () => {
-  //   try {
-  //     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/line-chart';
-  //     const data = {
-  //       date: '2024-06-11',
-  //       store_id: '6623a893c40c738627f3373f',
-  //       category: 'fragrances'
-  //     };
-
-  //     const response = await fetch(url, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json'
-  //       },
-  //       body: JSON.stringify(data)
-  //     });
-  //     console.log('here from getsevendaydata');
-  //     if (response) {
-  //       console.log('response from getsevenday data :  ', response);
-  //       const result = await response.json();
-  //       console.log('RESULT IS :', result);
-  //       result && setcapture7days(result.capture7days);
-  //       result && setfullness7days(result.fullness7days);
-  //     }
-  //   } catch (error) {
-  //     console.log('error in getsevendaydata : ', error);
-  //   }
-  // };
-  const get7daysdata = async () => {
+  function getLastWeekDates(dateString) {
+    // Try parsing the date string
     try {
-      const result = await getsevendaydata();
+      const date = new Date(dateString);
+  
+      // Ensure the parsed date is valid
+      if (isNaN(date.getTime())) {
+        throw new Error('Invalid date format. Please provide a valid date string.');
+      }
+  
+      const lastWeekDates = [];
+      for (let i = 0; i < 7; i++) {
+        const day = new Date(date.getTime() - (i * 24 * 60 * 60 * 1000));
+        const year = day.getFullYear();
+        const month = String(day.getMonth() + 1).padStart(2, '0'); // Pad with leading zero
+        const dayStr = String(day.getDate()).padStart(2, '0');
+        lastWeekDates.push(`${year}-${month}-${dayStr}`);
+      }
+      lastWeekDates.reverse();
+      return  lastWeekDates;
+  
+    } catch (error) {
+      console.error('Error getting last week dates:', error.message);
+      return []; // Return empty array on error
+    }
+  }
+
+  const get7daysdata = async (date) => {
+    try {
+      const result = await getsevendaydata(date);
       result && setcapture7days(result.capture7days);
       result && setfullness7days(result.fullness7days);
     } catch (error) {
       console.log('error in get7daysdata', error);
     }
   };
+
   useEffect(() => {
-    get7daysdata();
+    get7daysdata(date);
+  }, [date]);
+
+  useEffect(() => {
+   date &&  get7daysdata(date);
   }, []);
+  
   useEffect(() => {
     async function getData() {
       console.log(date);
@@ -286,7 +291,7 @@ const Areachart = ({ storeId, date }) => {
         // categories : [
         //   'mon' , 'tue' , 'wed' , 'thur', 'fri', 'sat' , 'sun'
         // ],
-        categories: getLastSevenDaysDates(),
+        categories: getLastWeekDates(date),
         // categories: [
         //   '2018-09-19T15:30:00.000Z',
         //   '2018-09-19T16:00:00.000Z',
