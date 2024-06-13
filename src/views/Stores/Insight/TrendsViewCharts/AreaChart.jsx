@@ -149,7 +149,7 @@ const Areachart = ({ storeId, date }) => {
         //data: [90, 7, 4, 20, 18, 80, 100, 40, 60, 30, 20, 33, 15, 9, 4]
       },
       {
-        name: 'OSI Score',
+        name: 'OSA Score',
         data: fullness7days
         //data: [480, 7, 4, 20, 18, 80, 100, 40, 60, 30, 20]
       }
