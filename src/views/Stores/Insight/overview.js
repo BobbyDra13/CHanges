@@ -38,7 +38,15 @@ import { CgSpinner } from 'react-icons/cg';
 import CsvModal from './CsvUpload';
 import CsvModalAssociate from './CSV_Associate';
 import RadarChart from './RadarChart';
-import { GetPopPercentage, GetpopKPI, GetCapProgStoreView, GetAnomaliesCount, getAssociateScoreData, GetReport } from 'api';
+import {
+  GetPopPercentage,
+  //  GetpopKPI,
+  GetCapProgStoreView,
+  GetAnomaliesCount,
+  getAssociateScoreData,
+  GetReport,
+  getsevendaydata
+} from 'api';
 // import { IoIosWarning } from 'react-icons/io';
 // import { get } from 'react-hook-form';
 import Chart from 'react-apexcharts';
@@ -122,7 +130,26 @@ function Overview() {
   //eslint-disable-next-line
   const [anomaliesCount, setAnomaliesCount] = useState([]);
   const [anomaliesLoading, setAnomaliesLoading] = useState(true);
+  const [sevendaydata, setsevendaydata] = useState(null);
+  const [capture7days, setcapture7days] = useState(null);
+  const [fullness7days, setfullness7days] = useState(null);
 
+  const get7daysdata = async (date) => {
+    try {
+      const result = await getsevendaydata(date);
+      result && setcapture7days(result.capture7days);
+      result && setfullness7days(result.fullness7days);
+    } catch (error) {
+      console.log('error in get7daysdata', error);
+    }
+  };
+
+  useEffect(() => {
+    get7daysdata(date);
+  }, []);
+  useEffect(() => {
+    get7daysdata(date);
+  }, [date]);
   const handleClickAssociateScoreModal = () => {
     setOpenAssociateScoreModal((prev) => !prev);
     setIsSnackbarOpen(false);
@@ -264,7 +291,8 @@ function Overview() {
       }
       // labels: ['Progress']
     },
-    series: [68]
+    series: [capture7days ? capture7days[capture7days.length - 1] : 0],
+    labels: ['A']
   };
 
   const modalStyle = {
@@ -341,41 +369,41 @@ function Overview() {
       }
       // console.log(commonBody);
       // eslint-disable-next-line
-      async function getFootfalldata() {
-        try {
-          // const data = await footfallCard(commonBody);
-          const data = await GetpopKPI(popBody);
-          const data2 = await GetPopPercentage(popBody);
-          // console.log(data2.data);
-          data2.data !== null ? setTotalPop(parseFloat(data2.data.average_pop_score).toFixed(1)) : setTotalPop(false);
+      // async function getFootfalldata() {
+      //   try {
+      //     // const data = await footfallCard(commonBody);
+      //     // const data = await GetpopKPI(popBody);
+      //     // const data2 = await GetPopPercentage(popBody);
+      //     // console.log(data2.data);
+      //     data2.data !== null ? setTotalPop(parseFloat(data2.data.average_pop_score).toFixed(1)) : setTotalPop(false);
 
-          console.log('pop data', data2.data);
-          if (data.data.length === 0) {
-            // console.log('hello')
-            setFootfalldata(false);
-            setftfall(false);
-          } else if (data.data.length > 0) {
-            // const { totalCustomerStore } = data[0];
-            // const { zones } = data[0];
-            const group = data.data;
-            setIsGroup(group);
+      //     console.log('pop data', data2.data);
+      //     // if (data.data.length === 0) {
+      //     //   // console.log('hello')
+      //     //   setFootfalldata(false);
+      //     //   setftfall(false);
+      //     // } else if (data.data.length > 0) {
+      //     //   // const { totalCustomerStore } = data[0];
+      //     //   // const { zones } = data[0];
+      //     //   const group = data.data;
+      //     //   setIsGroup(group);
 
-            group.forEach((item) => {
-              let percentageString = item.data.FullnessPopPercent.replace('%', '');
-              item.data.FullnessPopPercent = parseFloat(percentageString);
-            });
-            group.sort((a, b) => a.data.FullnessPopPercent - b.data.FullnessPopPercent);
-            console.log('pxs');
-            setftfall(true);
-            // console.log(zones);
-            setFootfalldata(group);
-          }
+      //     //   group.forEach((item) => {
+      //     //     let percentageString = item.data.FullnessPopPercent.replace('%', '');
+      //     //     item.data.FullnessPopPercent = parseFloat(percentageString);
+      //     //   });
+      //     //   group.sort((a, b) => a.data.FullnessPopPercent - b.data.FullnessPopPercent);
+      //     //   console.log('pxs');
+      //     //   setftfall(true);
+      //     //   // console.log(zones);
+      //     //   setFootfalldata(group);
+      //     // }
 
-          return data;
-        } catch (error) {
-          console.log(error);
-        }
-      }
+      //     // return data;
+      //   } catch (error) {
+      //     console.log(error);
+      //   }
+      // }
       // eslint-disable-next-line
       async function getRatioData() {
         const body = {
@@ -404,7 +432,8 @@ function Overview() {
       //eslint-disable-next-line
       async function getCaptureProg() {
         try {
-          const capProgress = await GetCapProgStoreView(popBody);
+          // const capProgress = await GetCapProgStoreView(popBody);
+          const capProgress = { data: [] };
           // console.log('capTop ', capProgress);
 
           // const capProg = capProgress.data.captureProgressZoneData.map((item) => {
@@ -414,7 +443,7 @@ function Overview() {
           //   };
           // });
           // setCaptureProg(capProg);
-          setCapProgressValue(capProgress.data[0].capture_percentage);
+          // setCapProgressValue(capProgress.data[0].capture_percentage);
         } catch (error) {
           console.log(error);
         }
@@ -422,7 +451,8 @@ function Overview() {
       //eslint-disable-next-line
       async function getAnomalies() {
         try {
-          const anomalies = await GetAnomaliesCount(popBody);
+          // const anomalies = await GetAnomaliesCount(popBody);
+          const anomalies = { data: [] };
           if (anomalies) {
             setAnomaliesLoading(false);
             setAnomaliesCount(anomalies.data);
@@ -442,7 +472,8 @@ function Overview() {
         };
         console.log('Body', body);
         try {
-          const associateScore = await getAssociateScoreData(body);
+          // const associateScore = await getAssociateScoreData(body);
+          const associateScore = { data: [] };
           if (associateScore) {
             setAssociateScoreData(associateScore.data);
             console.log('Associate Score', associateScore.data);
@@ -453,7 +484,7 @@ function Overview() {
       }
 
       getAnomalies();
-      getFootfalldata();
+      // getFootfalldata();
       getDataDwell();
       getRatioData();
       getCaptureProg();
@@ -470,6 +501,8 @@ function Overview() {
   // ftfall && ftfall.sort((a, b) => b.totalCustomerZone - a.totalCustomerZone);
   // dweltimeData && dweltimeData.sort((a, b) => b.avgDwellTime - a.avgDwellTime);
 
+  useEffect(()=>{console.log("date from dasda" ,date)},[date])
+
   return (
     <div className="w-full">
       <Grid container spacing={2}>
@@ -478,7 +511,7 @@ function Overview() {
             <Typography variant="h3">Overview </Typography>
             {storeID ? <Typography variant="h6">Store ID: {storeID}</Typography> : <></>}
             <div className="flex space-x-2 sm:mt-2">
-              <DatePickerStore SetSelectedDate={setSelectedDate} style={{ borderRadius: '15px' }} />
+              <DatePickerStore SetSelectedDate={setSelectedDate} style={{ borderRadius: '15px' }}  />
               <div>
                 <button
                   onClick={isDownloading ? null : handleDownload}
@@ -892,13 +925,15 @@ function Overview() {
                     <div>
                       <Chart
                         options={progressChart.options}
-                        series={capProgressValue ? [parseFloat(capProgressValue).toFixed(1)] : [0]}
+                        // series={capProgressValue ? [parseFloat(capProgressValue).toFixed(1)] : [0]}
+                        series={progressChart.series}
                         type={progressChart.options.chart.type}
                         height={progressChart.options.chart.height}
                       />
                     </div>
                     <div className="flex gap-1 flex-col">
-                      <div className="text-4xl font-semibold">{capProgressValue ? parseFloat(capProgressValue).toFixed(1) : 0}%</div>
+                      {/* <div className="text-4xl font-semibold">{capProgressValue ? parseFloat(capProgressValue).toFixed(1) : 0}%</div> */}
+                      <div className="text-4xl font-semibold">{capture7days ? capture7days[capture7days.length - 1] : 0}%</div>
                       <div className="text-sm font-semibold">Capture Progress</div>
                     </div>
                   </div>
@@ -914,7 +949,7 @@ function Overview() {
                       <span className="text-center text-white text-sm font-semibold">Missing</span>
                       {!anomaliesLoading ? (
                         <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                          {anomaliesCount[0].totalMissingPopCount}
+                          {/* {anomaliesCount[0].totalMissingPopCount} */}
                         </span>
                       ) : (
                         <Skeleton variant="rectangular" height={184} className="rounded-md" />
@@ -924,7 +959,7 @@ function Overview() {
                       <span className="text-center text-white  text-sm font-semibold">Alien</span>
                       {!anomaliesLoading ? (
                         <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                          {anomaliesCount[0].totalAlienPopCount}
+                          {/* {anomaliesCount[0].totalAlienPopCount} */}
                         </span>
                       ) : (
                         <Skeleton variant="rectangular" height={184} className="rounded-md" />
@@ -934,7 +969,7 @@ function Overview() {
                       <span className="text-center text-white  text-sm font-semibold">Incorrect</span>
                       {!anomaliesLoading ? (
                         <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                          {anomaliesCount[0].totalIncorrectPopCount}
+                          {/* {anomaliesCount[0].totalIncorrectPopCount} */}
                         </span>
                       ) : (
                         <Skeleton variant="rectangular" height={184} className="rounded-md" />

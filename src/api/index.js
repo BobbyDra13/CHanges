@@ -177,33 +177,33 @@ export const GetPartsWiseDetails = async (date, shelf_id) => {
 const lambUrl = 'https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/';
 // const lambUrl = 'https://m1xgkzhe9j.execute-api.ap-south-1.amazonaws.com/prod/web-app/';
 
-export const GetFullnessPop = async (data) => {
-  try {
-    const res = await axios.post(`${lambUrl}store-view/seven_day_pop_score`, data, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
-      }
-    });
-    return res;
-  } catch (error) {
-    console.log('Error Calling GetCaptureProgress API: ', error);
-  }
-};
+// export const GetFullnessPop = async (data) => {
+//   try {
+//     const res = await axios.post(`${lambUrl}store-view/seven_day_pop_score`, data, {
+//       headers: {
+//         Accept: 'application/json',
+//         Authorization: await token()
+//       }
+//     });
+//     return res;
+//   } catch (error) {
+//     console.log('Error Calling GetCaptureProgress API: ', error);
+//   }
+// };
 
-export const GetSevenDayCapProgress = async (data) => {
-  try {
-    const res = await axios.post(`${lambUrl}store-view/seven_day_capture_progress`, data, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
-      }
-    });
-    return res;
-  } catch (error) {
-    console.log('Error Calling GetCaptureProgress API: ', error);
-  }
-};
+// export const GetSevenDayCapProgress = async (data) => {
+//   try {
+//     const res = await axios.post(`${lambUrl}store-view/seven_day_capture_progress`, data, {
+//       headers: {
+//         Accept: 'application/json',
+//         Authorization: await token()
+//       }
+//     });
+//     return res;
+//   } catch (error) {
+//     console.log('Error Calling GetCaptureProgress API: ', error);
+//   }
+// };
 
 export const GetStoreData = async (data) => {
   try {
@@ -406,20 +406,20 @@ export const GetPopWeekLineData = async (data) => {
   }
 };
 
-export const GetCaptureProgress = async (data) => {
-  try {
-    console.log(data);
-    const res = await axios.post(`${lambUrl}dashboard/sevenD-capture-progress`, data, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
-      }
-    });
-    return res;
-  } catch (error) {
-    console.log('Error Calling GetPopWeekLineData API: ', error);
-  }
-};
+// export const GetCaptureProgress = async (data) => {
+//   try {
+//     console.log(data);
+//     const res = await axios.post(`${lambUrl}dashboard/sevenD-capture-progress`, data, {
+//       headers: {
+//         Accept: 'application/json',
+//         Authorization: await token()
+//       }
+//     });
+//     return res;
+//   } catch (error) {
+//     console.log('Error Calling GetPopWeekLineData API: ', error);
+//   }
+// };
 
 export const GetRadarChartData = async (data) => {
   try {
@@ -441,19 +441,19 @@ export const GetRadarChartData = async (data) => {
   }
 };
 
-export const GetDates = async (data) => {
-  try {
-    const res = await axios.post(`${lambUrl}calender`, data, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
-      }
-    });
-    return res;
-  } catch (error) {
-    console.log('Error Calling GetDates API: ', error);
-  }
-};
+// export const GetDates = async (data) => {
+//   try {
+//     const res = await axios.post(`${lambUrl}calender`, data, {
+//       headers: {
+//         Accept: 'application/json',
+//         Authorization: await token()
+//       }
+//     });
+//     return res;
+//   } catch (error) {
+//     console.log('Error Calling GetDates API: ', error);
+//   }
+// };
 
 export const GetPopHistogramData = async (data) => {
   try {
@@ -469,19 +469,19 @@ export const GetPopHistogramData = async (data) => {
   }
 };
 
-export const GetpopKPI = async (data) => {
-  try {
-    const res = await axios.post(`${lambUrl}store-view/zone-wise-pop-score`, data, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
-      }
-    });
-    return res;
-  } catch (error) {
-    console.log('Error Calling GetDates API: ', error);
-  }
-};
+// export const GetpopKPI = async (data) => {
+//   try {
+//     const res = await axios.post(`${lambUrl}store-view/zone-wise-pop-score`, data, {
+//       headers: {
+//         Accept: 'application/json',
+//         Authorization: await token()
+//       }
+//     });
+//     return res;
+//   } catch (error) {
+//     console.log('Error Calling GetDates API: ', error);
+//   }
+// };
 
 export const SendAlert = async (data, apiKey, apiUrl) => {
   console.log('SendAlert', data);
@@ -499,19 +499,19 @@ export const SendAlert = async (data, apiKey, apiUrl) => {
     return false;
   }
 };
-export const getAnomalyForStore = async (data) => {
-  try {
-    const res = await axios.post(`${lambUrl}stores/get-anomalies`, data, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
-      }
-    });
-    return res.data[0];
-  } catch (error) {
-    console.log('Error Calling getAnomalyForStore API: ', error);
-  }
-};
+// export const getAnomalyForStore = async (data) => {
+//   try {
+//     const res = await axios.post(`${lambUrl}stores/get-anomalies`, data, {
+//       headers: {
+//         Accept: 'application/json',
+//         Authorization: await token()
+//       }
+//     });
+//     return res.data[0];
+//   } catch (error) {
+//     console.log('Error Calling getAnomalyForStore API: ', error);
+//   }
+// };
 
 export const getUpdatedStatus = async (data) => {
   try {
@@ -527,19 +527,19 @@ export const getUpdatedStatus = async (data) => {
   }
 };
 
-export const getAssociateScoreData = async (data) => {
-  try {
-    const res = await axios.post(`${lambUrl}store-view/users-pop-score`, data, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
-      }
-    });
-    return res;
-  } catch (error) {
-    console.log('Error Calling getAnomalyForStore API: ', error);
-  }
-};
+// export const getAssociateScoreData = async (data) => {
+//   try {
+//     const res = await axios.post(`${lambUrl}store-view/users-pop-score`, data, {
+//       headers: {
+//         Accept: 'application/json',
+//         Authorization: await token()
+//       }
+//     });
+//     return res;
+//   } catch (error) {
+//     console.log('Error Calling getAnomalyForStore API: ', error);
+//   }
+// };
 
 export const getUsers = async () => {
   try {
@@ -596,3 +596,33 @@ export const GetReport = async (data) => {
     console.log('Error Calling GetReport API: ', error);
   }
 };
+
+///////////////////////////////////////API for getting last seven days data that is fulness7days and capture7days////////////////////////////
+export const getsevendaydata = async (date) => {
+  try {
+    const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/line-chart';
+    const data = {
+      date: String(date),
+      store_id: '6623a893c40c738627f3373f',
+      category: 'fragrances'
+    };
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response) {
+      console.log('response from getsevenday data :  ', response);
+      const result = await response.json();
+      return result;
+    } else {
+      return 'NOT FOUND';
+    }
+  } catch (error) {
+    console.log('error in getsevendaydata : ', error);
+  }
+};
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
