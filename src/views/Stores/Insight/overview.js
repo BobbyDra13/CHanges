@@ -15,7 +15,14 @@ import {
   IconButton,
   Divider,
   Snackbar,
-  Alert
+  Alert,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableCell,
+  Paper,
+  Table,
+  TableBody
 } from '@mui/material';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { avgDwelTime } from '../../../api/sentinelAPI';
@@ -45,7 +52,11 @@ import {
   GetAnomaliesCount,
   getAssociateScoreData,
   GetReport,
-  getsevendaydata
+  getsevendaydata,
+  storeviewcaptureprogress,
+  OsaScoreForKpi,
+  associateScore,
+  associatescoreaforkpi
 } from 'api';
 // import { IoIosWarning } from 'react-icons/io';
 // import { get } from 'react-hook-form';
@@ -232,7 +243,23 @@ function Overview() {
       setIsDownloading(false);
     }
   };
+  const [storeviewcaptureprogres, setstoreviewcaptureprogres] = useState(0);
+  const getviewcaptureprogress = async () => {
+    try {
+      const response = await storeviewcaptureprogress(date);
 
+      console.log(response);
+      setstoreviewcaptureprogres(response.captureProgress);
+    } catch (error) {
+      console.log('error from getviewcaptureprogress', error);
+    }
+  };
+  useEffect(() => {
+    getviewcaptureprogress();
+  }, [fullness7days,date]);
+  useEffect(() => {
+    getviewcaptureprogress();
+  }, []);
   const accentColLight = theme.palette.success.light;
   const accentColDark = theme.palette.success.dark;
   const progressChart = {
@@ -291,7 +318,7 @@ function Overview() {
       }
       // labels: ['Progress']
     },
-    series: [capture7days ? capture7days[capture7days.length - 1] : 0],
+    series: [storeviewcaptureprogres ? storeviewcaptureprogres : 0],
     labels: ['A']
   };
 
@@ -501,8 +528,44 @@ function Overview() {
   // ftfall && ftfall.sort((a, b) => b.totalCustomerZone - a.totalCustomerZone);
   // dweltimeData && dweltimeData.sort((a, b) => b.avgDwellTime - a.avgDwellTime);
 
-  useEffect(()=>{console.log("date from dasda" ,date)},[date])
+  useEffect(() => {
+    console.log('date from dasda', date);
+  }, [date]);
 
+  const [osascore,setosascore] = useState(null);
+const getosascoreforkpi = async()=>{
+  try{
+      const result = await OsaScoreForKpi(date);
+      console.log("osa score" , result[0].avg_osa_score);
+      setosascore(result[0].avg_osa_score);
+
+  }catch(e){
+    console.log("error from osascore", e);
+  }
+}
+
+const [associatescore,setassociatescore] = useState([]);
+const getassociatescore = async()=>{
+  try{
+      const result = await associatescoreaforkpi(date);
+      console.log("assocaite score kpi" , result);
+      setassociatescore(result);
+      console.log("result", result[0].osa_score)
+      
+
+  }catch(e){
+    console.log("error from osascore", e);
+  }
+}
+
+useEffect(()=>{
+    getosascoreforkpi();
+    getassociatescore();
+},[])
+useEffect(()=>{
+  getosascoreforkpi();
+  getassociatescore();
+},[date])
   return (
     <div className="w-full">
       <Grid container spacing={2}>
@@ -511,7 +574,7 @@ function Overview() {
             <Typography variant="h3">Overview </Typography>
             {storeID ? <Typography variant="h6">Store ID: {storeID}</Typography> : <></>}
             <div className="flex space-x-2 sm:mt-2">
-              <DatePickerStore SetSelectedDate={setSelectedDate} style={{ borderRadius: '15px' }}  />
+              <DatePickerStore SetSelectedDate={setSelectedDate} style={{ borderRadius: '15px' }} />
               <div>
                 <button
                   onClick={isDownloading ? null : handleDownload}
@@ -534,99 +597,8 @@ function Overview() {
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <Card className="border border-gray-300" sx={{ height: '276px' }}>
-                {totalPOP ? (
-                  <div className="flex  w-full  flex-col gap-1 p-3">
-                    <div className="flex items-center justify-center gap-2 w-full">
-                      {footfalldata.length > 0 ? (
-                        // <DirectionsWalkIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" />
-                        // icon here
-                        <img src={popIcon} alt="pop" className="h-14 w-14" />
-                      ) : (
-                        <Skeleton variant="circular" width={60} height={45} />
-                      )}
-                      <div className="w-full">
-                        {footfalldata.length > 0 ? (
-                          <p className="text-3xl">{totalPOP} %</p>
-                        ) : (
-                          <Skeleton variant="rectangular" className="mb-3 rounded-sm" width={50} height={20} />
-                        )}
-
-                        {footfalldata.length > 0 ? (
-                          <p className="text-lg font-semibold">PoP</p>
-                        ) : (
-                          <Skeleton variant="rectangular" width={150} height={15} className=" mb-2 rounded-sm" />
-                        )}
-                      </div>
-                      <>
-                        <IoMdSettings className="text-5xl cursor-pointer" onClick={handleClickPopScoreModal} />
-                        <Modal
-                          open={openPopScoreModal}
-                          onClose={handleClose}
-                          aria-labelledby="modal-modal-title"
-                          aria-describedby="modal-modal-description"
-                        >
-                          <Box sx={modalStyle}>
-                            <CsvModal onUploadComplete={handleUploadComplete} type={'popScore'} />
-                          </Box>
-                        </Modal>
-                      </>
-                    </div>
-                    {footfalldata.length > 0 ? (
-                      <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
-                        {footfalldata.map((item, index) => {
-                          // const percentage = (item.totalCustomerZone / ftfall[0].totalCustomerZone) * 100;
-                          const percentage =
-                            item.data.FullnessPopPercent != undefined ? Math.round(parseFloat(item.data.FullnessPopPercent)) : 0;
-                          const barcolor = percentage >= 99 ? '#00ac69' : percentage >= 95 ? '#f4a100' : '#ff413a';
-                          // console.log(percentage);
-                          return (
-                            // <button
-                            // key={index}
-                            // onClick={handleScrollToComponent}
-                            // className='flex w-full'
-
-                            // >
-
-                            <div onClick={() => handleScrollToComponent(item.zone_id)} className="mt-2 hover:cursor-pointer" key={index}>
-                              <div className="flex gap-1 items-center">
-                                {/* <div
-                                  className=" rounded-full h-4 w-4"
-                                  style={{
-                                    backgroundColor: `${item.zoneColourHex}`
-                                  }}
-                                >
-                                  {' '}
-                                </div> */}
-                                <div>
-                                  {item.zone_id} :
-                                  <span className="text-base font-semibold" style={{ color: barcolor }}>
-                                    {' '}
-                                    {percentage} %
-                                  </span>
-                                </div>
-                              </div>
-                              <LinearProgress
-                                variant="determinate"
-                                value={percentage}
-                                className="rounded-lg"
-                                sx={{
-                                  marginTop: '5px',
-                                  backgroundColor: 'white', // Set color for unfilled part
-                                  '& .MuiLinearProgress-bar': {
-                                    backgroundColor: `${barcolor}` // Set color for filled part
-                                  }
-                                }}
-                              />
-                            </div>
-                            // </button>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <Skeleton variant="rectangular" height={184} className="rounded-md" />
-                    )}
-                  </div>
-                ) : (
+          
+                (
                   <div className="flex  w-full  flex-col gap-1 p-3">
                     <div className="flex items-center justify-center gap-2 w-full">
                       <img src={popIcon} alt="pop" className="h-14 w-14" />
@@ -635,93 +607,23 @@ function Overview() {
                         <p className="text-lg font-semibold">PoP</p>
                       </div>
                       <>
-                        <IoMdSettings className="text-5xl cursor-pointer" onClick={handleClickPopScoreModal} />
-                        <Modal
-                          open={openPopScoreModal}
-                          onClose={handleClose}
-                          aria-labelledby="modal-modal-title"
-                          aria-describedby="modal-modal-description"
-                        >
-                          <Box sx={modalStyle}>
-                            <CsvModal onUploadComplete={handleUploadComplete} type={'popScore'} />
-                          </Box>
-                        </Modal>
+                        <IoMdSettings className="text-5xl cursor-pointer" />
+                       
+    
                       </>
                     </div>
                     <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
-                      <p className="text-base font-semibold text-gray-500">Currently No data available</p>
+                      {/* <p className="text-base font-semibold text-gray-500">Currently No data available</p> */}
                     </div>
                   </div>
 
-                  // <img src={NoDataImg} style={{height:"100%", width:"100%"}} alt="No data" />
-                )}
+                )
               </Card>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <Card className="border border-gray-300" sx={{ height: '276px' }}>
-                {dweltimeData.length > 0 || dweltimeData.length === 0 ? (
-                  <div className="flex flex-col w-full gap-1 p-3">
-                    <div className="flex items-center justify-center gap-2 w-full">
-                      {storeDwelTime ? (
-                        <img src={pog} alt="pop" className="h-14 w-14" />
-                      ) : (
-                        <Skeleton variant="circular" width={45} height={45} />
-                      )}
-                      <div className="w-full">
-                        {storeDwelTime ? (
-                          <p className="text-3xl">{averageDwellTime.toFixed(2)} min</p>
-                        ) : (
-                          <Skeleton variant="rectangular" className="mb-3 rounded-sm" width={50} height={15} />
-                        )}
-                        {storeDwelTime ? (
-                          <p className="text-lg font-semibold">PoG</p>
-                        ) : (
-                          <Skeleton variant="rectangular" width={150} height={15} className=" mb-5 rounded-sm" />
-                        )}
-                      </div>
-                      <IoMdSettings className="text-5xl cursor-not-allowed" />
-                    </div>
-                    {storeDwelTime ? (
-                      <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] scrollbar rounded-lg p-2.5">
-                        {dweltimeData.map((item, index) => {
-                          const percentage = (item.avgDwellTime / dweltimeData[0].avgDwellTime) * 100;
-                          const barcolor = percentage >= 80 ? '#00ac69' : percentage >= 50 ? '#f4a100' : '#ff413a';
-                          return (
-                            <div className="mt-2" key={index}>
-                              <div className="flex gap-1 items-center">
-                                <div
-                                  className=" rounded-full h-4 w-4"
-                                  style={{
-                                    backgroundColor: `${item.zoneColourHex}`
-                                  }}
-                                >
-                                  {' '}
-                                </div>
-                                <div>
-                                  {item.zoneName} : {item.avgDwellTime.toFixed(2)} min
-                                </div>
-                              </div>
-                              <LinearProgress
-                                variant="determinate"
-                                value={percentage}
-                                sx={{
-                                  marginTop: '5px',
-                                  backgroundColor: 'rgb(241 245 249)', // Set color for unfilled part
-                                  '& .MuiLinearProgress-bar': {
-                                    backgroundColor: `${barcolor}` // Set color for filled part
-                                  }
-                                }}
-                              />
-                            </div>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <Skeleton variant="rectangular" height={184} className="rounded-md" />
-                    )}
-                  </div>
-                ) : (
-                  // dfhfdjdgretyuiuoiytrretyuk
+               
+              
                   <div className="flex  w-full  flex-col gap-1 p-3">
                     <div className="flex items-center justify-center gap-2 w-full">
                       {/* <DirectionsWalkIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" /> */}
@@ -738,19 +640,34 @@ function Overview() {
                     </div>
                   </div>
 
-                  // <img src={NoDataImg} style={{height:"100%", width:"100%"}} alt="No data" />
-                )}
+                
               </Card>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <Card className="border border-gray-300" sx={{ height: '276px' }}>
-                <Uniquejourney date={date} />
+               
+              
+              <div className="flex  w-full  flex-col gap-1 p-3">
+                    <div className="flex items-center justify-center gap-2 w-full">
+                      {/* <DirectionsWalkIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" /> */}
+                      <img src={pog} alt="pop" className="h-14 w-14" />
+
+                      <div className="w-full">
+                        <p className="text-3xl text-gray-500 ">{osascore ? osascore : 0}%</p>
+                        <p className="text-lg font-semibold">OSA</p>
+                      </div>
+                      <IoMdSettings className="text-5xl cursor-not-allowed" />
+                    </div>
+                    <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
+                      <p className="text-base font-semibold text-gray-500">Currently No data available</p>
+                    </div>
+                  </div>
               </Card>
             </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
+           <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <div style={{ height: '276px' }} className="flex flex-col">
                 <Card className="border border-gray-300" sx={{ height: '276px' }}>
-                  {associateScoreData.length > 0 ? (
+                  { associatescore.length > 0 ? (
                     <div className="flex  w-full  flex-col gap-1 p-3">
                       <div className="flex items-center justify-center gap-2 w-full">
                         <img src={associate} alt="pop" className="h-14 w-14" />
@@ -773,32 +690,33 @@ function Overview() {
                         </>
                       </div>
                       <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
-                        {associateScoreData.length > 0 ? (
-                          associateScoreData.map((item, index) => {
+                        {associatescore.length > 0 ? (
+                          associatescore.map((item, index) => {
+                            console.log("item",item.osa_score)
                             const percentage =
-                              Math.round(parseFloat(item.total_pop_percentage)) > 100
+                              Math.round(parseFloat(item.osa_score)) > 100
                                 ? 100
-                                : Math.round(parseFloat(item.total_pop_percentage));
+                                : Math.round(parseFloat(item.osa_score));
                             const barcolor = percentage >= 99 ? '#00ac69' : percentage >= 95 ? '#f4a100' : '#ff413a';
-                            const capturedZone = item.zones.map((i) => {
-                              return i._id.zone;
-                            });
-                            const capturedZoneString = capturedZone.join(', ');
-                            const assignedZone = item.assigned_zones;
-                            const assignedZoneString = assignedZone.join(', ');
-                            const firstScore =
-                              parseFloat(item.total_pop_percentage_first).toFixed(1) > 100
-                                ? 100
-                                : parseFloat(item.total_pop_percentage_first).toFixed(1);
-                            const secondScore =
-                              parseFloat(item.total_pop_percentage).toFixed(1) > 100
-                                ? 100
-                                : parseFloat(item.total_pop_percentage).toFixed(1);
+                            // const capturedZone = item.zones.map((i) => {
+                            //   return i._id.zone;
+                            // });
+                            // const capturedZoneString = capturedZone.join(', ');
+                            // const assignedZone = item.assigned_zones;
+                            // const assignedZoneString = assignedZone.join(', ');
+                            // const firstScore =
+                            //   parseFloat(item.total_pop_percentage_first).toFixed(1) > 100
+                            //     ? 100
+                            //     : parseFloat(item.total_pop_percentage_first).toFixed(1);
+                            // const secondScore =
+                            //   parseFloat(item.total_pop_percentage).toFixed(1) > 100
+                            //     ? 100
+                            //     : parseFloat(item.total_pop_percentage).toFixed(1);
                             return (
                               <div className="mt-2" key={index}>
                                 <div className="flex gap-1 items-center justify-between">
                                   <div>
-                                    {item.name} :
+                                    {item.user_name} :
                                     <span className="text-base font-semibold" style={{ color: barcolor }}>
                                       {' ' + percentage} %
                                     </span>
@@ -809,7 +727,7 @@ function Overview() {
                                       <div>
                                         <div className="mb-2 p-2">
                                           <p className="text-base">Assigned Zones</p>
-                                          <p className="text-xs "> {assignedZoneString}</p>
+                                          <p className="text-xs "> {item.no_of_bays_captured}</p>
                                         </div>
                                         <Divider
                                           sx={{
@@ -818,7 +736,7 @@ function Overview() {
                                         />
                                         <div className="mb-2 p-2">
                                           <p className="text-base">Captured Zones</p>
-                                          <p className="text-xs "> {capturedZoneString}</p>
+                                          <p className="text-xs "> {item.no_of_bays_with_anomalies}</p>
                                         </div>
                                         <Divider
                                           sx={{
@@ -826,8 +744,8 @@ function Overview() {
                                           }}
                                         />
                                         <div className=" p-2">
-                                          <p className="text-xs">First Score :{' ' + firstScore} %</p>
-                                          <p className="text-xs ">Second Score :{' ' + secondScore} %</p>
+                                          <p className="text-xs">First Score :{' ' + item.missing_tester_percentage} %</p>
+                                         
                                         </div>
                                       </div>
                                     }
@@ -886,7 +804,80 @@ function Overview() {
                   )}
                 </Card>
               </div>
-            </Grid>
+            </Grid> 
+            <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
+              <Card className="border border-gray-300" sx={{ height: '276px' }}>
+                <div className="flex  w-full  flex-col gap-1 p-3">
+                  <div className="flex items-start justify-center gap-2 w-full">
+                    {/* <DirectionsWalkIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" /> */}
+                    <img src={pog} alt="pop" className="h-14 w-14" />
+                    <div className="w-full">
+                      <p className="text-3xl text-gray-500 ">NA</p>
+                      {/* PoG changed to Brands Captured  */}
+                      <p className="text-sm font-semibold">Associate Score</p>
+                    </div>
+                    {/* Form to select brand */}
+                    {/* for brands captured */}
+                    <div className="flex justify-center gap-2 items-end">
+                      <div className="flex justify-center items-center">
+                        <Box
+                          sx={{
+                            width: 25,
+                            height: 25,
+                            backgroundColor: 'slateblue', // Dynamically apply the color
+                            borderRadius: '100px'
+                          }}
+                        />
+                      </div>
+                      <IoMdSettings size={28} />
+                    </div>
+                  </div>
+                  <Box sx={{ maxHeight: '100%', maxWidth: '100%', overflowY: 'auto' }}>
+                    <TableContainer component={Paper} sx={{ maxHeight: '100%', maxWidth: '100%', padding: 0 }}>
+                      <Table size="small" stickyHeader>
+                        <TableHead>
+                          <TableRow sx={{ height: '30px' }}>
+                            {' '}
+                            {/* Reduced row height */}
+                            <TableCell sx={{ padding: '5px' }}>Name</TableCell> {/* Reduced padding */}
+                            <TableCell align="right" sx={{ padding: '5px' }}>
+                              osa_score
+                            </TableCell>
+                            <TableCell align="right" sx={{ padding: '5px' }}>
+                              missing_tester... 
+                              
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {associatescore.map((row, index) => (
+                            <TableRow key={index} sx={{ height: '25px' }}>
+                              {' '}
+                              {/* Reduced row height */}
+                              <TableCell component="th" scope="row" sx={{ padding: '5px' }}>
+                                {' '}
+                                {/* Reduced padding */}
+                                {row.user_name}
+                              </TableCell>
+                              <TableCell align="right" sx={{ padding: '5px' }}>
+                                {row.osa_score}
+                              </TableCell>
+                              <TableCell align="right" sx={{ padding: '5px' }}>
+                                {row.missing_tester_percentage}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </Box>
+                  {/* brand selected, anomalies to be shown */}
+                  {/* <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
+                      <p className="text-base font-semibold text-gray-500">Currently No data available</p>
+                    </div> */}
+                </div>
+              </Card>
+            </Grid> 
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <Card
                 className="border border-gray-300 h-full"
@@ -933,7 +924,7 @@ function Overview() {
                     </div>
                     <div className="flex gap-1 flex-col">
                       {/* <div className="text-4xl font-semibold">{capProgressValue ? parseFloat(capProgressValue).toFixed(1) : 0}%</div> */}
-                      <div className="text-4xl font-semibold">{capture7days ? capture7days[capture7days.length - 1] : 0}%</div>
+                      <div className="text-4xl font-semibold">{storeviewcaptureprogres ? storeviewcaptureprogres.toFixed(2) : 0}%</div>
                       <div className="text-sm font-semibold">Capture Progress</div>
                     </div>
                   </div>
