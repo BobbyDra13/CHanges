@@ -657,6 +657,34 @@ export const storeviewcaptureprogress = async(date) =>{
   }
 }
 
+export const storeanomalycount = async(date) =>{
+  try {
+    const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/anomly-count';
+    const data = {
+         store_id:"6623a893c40c738627f3373f",
+        
+          date : String(date)
+        // date:"2024-06-13"
+    };
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response) {
+      console.log('response from storeanomalycount data :  ', response);
+      const result = await response.json();
+      return result;
+    } else {
+      return 'NOT FOUND';
+    }
+  } catch (error) {
+    console.log('error in storeanomalycount : ', error);
+  }
+}
 
 export const OsaScoreForKpi = async(date)=>{
   try {

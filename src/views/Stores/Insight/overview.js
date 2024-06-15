@@ -54,6 +54,7 @@ import {
   GetReport,
   getsevendaydata,
   storeviewcaptureprogress,
+  storeanomalycount,
   OsaScoreForKpi,
   associateScore,
   associatescoreaforkpi
@@ -481,7 +482,7 @@ function Overview() {
           // const anomalies = await GetAnomaliesCount(popBody);
           const anomalies = { data: [] };
           if (anomalies) {
-            setAnomaliesLoading(false);
+            // setAnomaliesLoading(false);
             setAnomaliesCount(anomalies.data);
             console.log('def', anomalies.data);
             console.log('def date', date);
@@ -543,6 +544,23 @@ const getosascoreforkpi = async()=>{
     console.log("error from osascore", e);
   }
 }
+
+const [anomalycount, setanomalycount] = useState(null);
+const getanomalydetails = async () => {
+  try {
+    const res = await storeanomalycount(date);
+    setanomalycount(res);
+    setAnomaliesLoading(false);
+    console.log('tty',res);
+    console.log('uuop',res.missingTesterCount);
+  } catch (error) {
+    console.log('error:', error);
+  }
+}
+
+useEffect(() => {
+  getanomalydetails();
+},[date]);
 
 const [associatescore,setassociatescore] = useState([]);
 const getassociatescore = async()=>{
@@ -805,20 +823,20 @@ useEffect(()=>{
                 </Card>
               </div>
             </Grid> 
-            <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
-              <Card className="border border-gray-300" sx={{ height: '276px' }}>
-                <div className="flex  w-full  flex-col gap-1 p-3">
-                  <div className="flex items-start justify-center gap-2 w-full">
+            {/* <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}> */}
+              {/* <Card className="border border-gray-300" sx={{ height: '276px' }}> */}
+                {/* <div className="flex  w-full  flex-col gap-1 p-3"> */}
+                  {/* <div className="flex items-start justify-center gap-2 w-full"> */}
                     {/* <DirectionsWalkIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" /> */}
-                    <img src={pog} alt="pop" className="h-14 w-14" />
+                    {/* <img src={pog} alt="pop" className="h-14 w-14" />
                     <div className="w-full">
-                      <p className="text-3xl text-gray-500 ">NA</p>
+                      <p className="text-3xl text-gray-500 ">NA</p> */}
                       {/* PoG changed to Brands Captured  */}
-                      <p className="text-sm font-semibold">Associate Score</p>
-                    </div>
+                      {/* <p className="text-sm font-semibold">Associate Score</p>
+                    </div> */}
                     {/* Form to select brand */}
                     {/* for brands captured */}
-                    <div className="flex justify-center gap-2 items-end">
+                    {/* <div className="flex justify-center gap-2 items-end">
                       <div className="flex justify-center items-center">
                         <Box
                           sx={{
@@ -831,53 +849,53 @@ useEffect(()=>{
                       </div>
                       <IoMdSettings size={28} />
                     </div>
-                  </div>
-                  <Box sx={{ maxHeight: '100%', maxWidth: '100%', overflowY: 'auto' }}>
-                    <TableContainer component={Paper} sx={{ maxHeight: '100%', maxWidth: '100%', padding: 0 }}>
-                      <Table size="small" stickyHeader>
-                        <TableHead>
-                          <TableRow sx={{ height: '30px' }}>
-                            {' '}
+                  </div> */}
+                  {/* <Box sx={{ maxHeight: '100%', maxWidth: '100%', overflowY: 'auto' }}> */}
+                    {/* <TableContainer component={Paper} sx={{ maxHeight: '100%', maxWidth: '100%', padding: 0 }}> */}
+                      {/* <Table size="small" stickyHeader> */}
+                        {/* <TableHead> */}
+                          {/* <TableRow sx={{ height: '30px' }}> */}
+                            {/* {' '} */}
                             {/* Reduced row height */}
-                            <TableCell sx={{ padding: '5px' }}>Name</TableCell> {/* Reduced padding */}
-                            <TableCell align="right" sx={{ padding: '5px' }}>
-                              osa_score
-                            </TableCell>
-                            <TableCell align="right" sx={{ padding: '5px' }}>
-                              missing_tester... 
+                            {/* <TableCell sx={{ padding: '5px' }}>Name</TableCell> Reduced padding */}
+                            {/* <TableCell align="right" sx={{ padding: '5px' }}> */}
+                              {/* osa_score */}
+                            {/* </TableCell> */}
+                            {/* <TableCell align="right" sx={{ padding: '5px' }}> */}
+                              {/* missing_tester...  */}
                               
-                            </TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {associatescore.map((row, index) => (
-                            <TableRow key={index} sx={{ height: '25px' }}>
-                              {' '}
+                            {/* </TableCell> */}
+                          {/* </TableRow> */}
+                        {/* </TableHead> */}
+                        {/* <TableBody> */}
+                          {/* {associatescore.map((row, index) => ( */}
+                            {/* <TableRow key={index} sx={{ height: '25px' }}> */}
+                              {/* {' '} */}
                               {/* Reduced row height */}
-                              <TableCell component="th" scope="row" sx={{ padding: '5px' }}>
-                                {' '}
+                              {/* <TableCell component="th" scope="row" sx={{ padding: '5px' }}> */}
+                                {/* {' '} */}
                                 {/* Reduced padding */}
-                                {row.user_name}
-                              </TableCell>
-                              <TableCell align="right" sx={{ padding: '5px' }}>
-                                {row.osa_score}
-                              </TableCell>
-                              <TableCell align="right" sx={{ padding: '5px' }}>
-                                {row.missing_tester_percentage}
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Box>
+                                {/* {row.user_name} */}
+                              {/* </TableCell> */}
+                              {/* <TableCell align="right" sx={{ padding: '5px' }}> */}
+                                {/* {row.osa_score} */}
+                              {/* </TableCell> */}
+                              {/* <TableCell align="right" sx={{ padding: '5px' }}> */}
+                                {/* {row.missing_tester_percentage} */}
+                              {/* </TableCell> */}
+                            {/* </TableRow> */}
+                          {/* ))} */}
+                        {/* </TableBody> */}
+                      {/* </Table> */}
+                    {/* </TableContainer> */}
+                  {/* </Box> */}
                   {/* brand selected, anomalies to be shown */}
                   {/* <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
                       <p className="text-base font-semibold text-gray-500">Currently No data available</p>
                     </div> */}
-                </div>
+                {/* </div>
               </Card>
-            </Grid> 
+            </Grid>  */}
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <Card
                 className="border border-gray-300 h-full"
@@ -938,9 +956,10 @@ useEffect(()=>{
                   <div className="flex w-full h-full">
                     <div className="w-2/6 h-full flex flex-col">
                       <span className="text-center text-white text-sm font-semibold">Missing</span>
-                      {!anomaliesLoading ? (
+                      {!anomaliesLoading && anomalycount !== null ? (
                         <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                          {/* {anomaliesCount[0].totalMissingPopCount} */}
+                          {console.log('dds',anomalycount)}
+                          {anomalycount.missingTesterCount}
                         </span>
                       ) : (
                         <Skeleton variant="rectangular" height={184} className="rounded-md" />
@@ -948,9 +967,9 @@ useEffect(()=>{
                     </div>
                     <div className="w-2/6 h-full flex flex-col border-2 border-t-0 border-b-0 border-l-white border-r-white">
                       <span className="text-center text-white  text-sm font-semibold">Alien</span>
-                      {!anomaliesLoading ? (
+                      {!anomaliesLoading && anomalycount !== null ? (
                         <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                          {/* {anomaliesCount[0].totalAlienPopCount} */}
+                          {anomalycount.emptyTrayCount}
                         </span>
                       ) : (
                         <Skeleton variant="rectangular" height={184} className="rounded-md" />
