@@ -172,9 +172,10 @@ export const GetPartsWiseDetails = async (date, shelf_id) => {
   }
 };
 
-//--------------------------------- API for DISHA SMART ----------------------------------------------
+//--------------------------------- API for DISHA TIRA ----------------------------------------------
 
-const lambUrl = 'https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/';
+const lambUrl = 'https://fccnagykqk.execute-api.ap-south-1.amazonaws.com/Dev/';
+// const lambUrl = 'https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/';
 // const lambUrl = 'https://m1xgkzhe9j.execute-api.ap-south-1.amazonaws.com/prod/web-app/';
 
 // export const GetFullnessPop = async (data) => {
@@ -336,16 +337,17 @@ export const GetDonutData = async (data) => {
 
 export const GetZonedetails = async (data) => {
   try {
-    const response = await axios.post(`${lambUrl}store-view/get-zones`, data, {
+    const response = await axios.post(`${lambUrl}mob_api/get_zones`, data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
       }
     });
-    const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.id }));
-    return res;
+    console.log('aur',response);
+    // const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.id }));
+    return response;
   } catch (error) {
-    console.log('Error Calling GetCaptureProgress API: ', error);
+    console.log('Error Calling GetZonedetails API: ', error);
   }
 };
 
