@@ -625,4 +625,89 @@ export const getsevendaydata = async (date) => {
     console.log('error in getsevendaydata : ', error);
   }
 };
+
+export const storeviewcaptureprogress = async(date) =>{
+  try {
+    const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/capture-progress';
+    const data = {
+         store_id:"6623a893c40c738627f3373f",
+        
+          date : String(date)
+        // date:"2024-06-13"
+    };
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response) {
+      console.log('response from storeviewcaptureprogress data :  ', response);
+      const result = await response.json();
+      return result;
+    } else {
+      return 'NOT FOUND';
+    }
+  } catch (error) {
+    console.log('error in storeviewcaptureprogress : ', error);
+  }
+}
+
+
+export const OsaScoreForKpi = async(date)=>{
+  try {
+    const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/osa-score-kpi';
+    const data = {
+         store_id:"6623a893c40c738627f3373f",
+          date:String(date)
+         // date:"2024-06-13"
+    };
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response) {
+      console.log('response from OsaScoreForKpi data :  ', response);
+      const result = await response.json();
+      return result;
+    } else {
+      return 'NOT FOUND';
+    }
+  } catch (error) {
+    console.log('error in OsaScoreForKpi : ', error);
+  }
+}
+export const associatescoreaforkpi = async(date)=>{
+  try {
+    const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/associate-score';
+    const data = {
+         store_id:"6623a893c40c738627f3373f",
+          date: String(date)
+         // date:"2024-06-13"
+    };
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response) {
+      console.log('response from associateScoreForKpi data :  ', response);
+      const result = await response.json();
+      return result;
+    } else {
+      return 'NOT FOUND';
+    }
+  } catch (error) {
+    console.log('error in assocaiteScoreForKpi : ', error);
+  }
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

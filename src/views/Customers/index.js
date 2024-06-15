@@ -584,6 +584,7 @@ const Customers = () => {
     for (var i = 0; i < storesData[0].anomalies_details.length; i++) {
       if (String(storesData[0].anomalies_details[i].metadata_id) === String(current)) {
         index = i;
+        break;
       }
     }
     console.log(storesData[0].anomalies_details.length);
