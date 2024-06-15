@@ -41,6 +41,7 @@ bouncy.register();
 // };
 
 export default function ShelfView({ date, groups }) {
+  console.log("hello i am her")
   const { store } = useParams();
   const zoneIds = useSelector((state) => state.zone);
   const [active, setActive] = useState(false);

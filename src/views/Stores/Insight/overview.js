@@ -39,13 +39,14 @@ import CsvModal from './CsvUpload';
 import CsvModalAssociate from './CSV_Associate';
 import RadarChart from './RadarChart';
 import {
-   GetPopPercentage,
+  GetPopPercentage,
   //  GetpopKPI,
-   GetCapProgStoreView,
-   GetAnomaliesCount,
-   getAssociateScoreData,
-   GetReport
-   } from 'api';
+  GetCapProgStoreView,
+  GetAnomaliesCount,
+  getAssociateScoreData,
+  GetReport,
+  getsevendaydata
+} from 'api';
 // import { IoIosWarning } from 'react-icons/io';
 // import { get } from 'react-hook-form';
 import Chart from 'react-apexcharts';
@@ -129,7 +130,26 @@ function Overview() {
   //eslint-disable-next-line
   const [anomaliesCount, setAnomaliesCount] = useState([]);
   const [anomaliesLoading, setAnomaliesLoading] = useState(true);
+  const [sevendaydata, setsevendaydata] = useState(null);
+  const [capture7days, setcapture7days] = useState(null);
+  const [fullness7days, setfullness7days] = useState(null);
 
+  const get7daysdata = async (date) => {
+    try {
+      const result = await getsevendaydata(date);
+      result && setcapture7days(result.capture7days);
+      result && setfullness7days(result.fullness7days);
+    } catch (error) {
+      console.log('error in get7daysdata', error);
+    }
+  };
+
+  useEffect(() => {
+    get7daysdata(date);
+  }, []);
+  useEffect(() => {
+    get7daysdata(date);
+  }, [date]);
   const handleClickAssociateScoreModal = () => {
     setOpenAssociateScoreModal((prev) => !prev);
     setIsSnackbarOpen(false);
@@ -271,7 +291,8 @@ function Overview() {
       }
       // labels: ['Progress']
     },
-    series: [68]
+    series: [capture7days ? capture7days[capture7days.length - 1] : 0],
+    labels: ['A']
   };
 
   const modalStyle = {
@@ -480,6 +501,8 @@ function Overview() {
   // ftfall && ftfall.sort((a, b) => b.totalCustomerZone - a.totalCustomerZone);
   // dweltimeData && dweltimeData.sort((a, b) => b.avgDwellTime - a.avgDwellTime);
 
+  useEffect(()=>{console.log("date from dasda" ,date)},[date])
+
   return (
     <div className="w-full">
       <Grid container spacing={2}>
@@ -488,7 +511,7 @@ function Overview() {
             <Typography variant="h3">Overview </Typography>
             {storeID ? <Typography variant="h6">Store ID: {storeID}</Typography> : <></>}
             <div className="flex space-x-2 sm:mt-2">
-              <DatePickerStore SetSelectedDate={setSelectedDate} style={{ borderRadius: '15px' }} />
+              <DatePickerStore SetSelectedDate={setSelectedDate} style={{ borderRadius: '15px' }}  />
               <div>
                 <button
                   onClick={isDownloading ? null : handleDownload}
@@ -902,13 +925,15 @@ function Overview() {
                     <div>
                       <Chart
                         options={progressChart.options}
-                        series={capProgressValue ? [parseFloat(capProgressValue).toFixed(1)] : [0]}
+                        // series={capProgressValue ? [parseFloat(capProgressValue).toFixed(1)] : [0]}
+                        series={progressChart.series}
                         type={progressChart.options.chart.type}
                         height={progressChart.options.chart.height}
                       />
                     </div>
                     <div className="flex gap-1 flex-col">
-                      <div className="text-4xl font-semibold">{capProgressValue ? parseFloat(capProgressValue).toFixed(1) : 0}%</div>
+                      {/* <div className="text-4xl font-semibold">{capProgressValue ? parseFloat(capProgressValue).toFixed(1) : 0}%</div> */}
+                      <div className="text-4xl font-semibold">{capture7days ? capture7days[capture7days.length - 1] : 0}%</div>
                       <div className="text-sm font-semibold">Capture Progress</div>
                     </div>
                   </div>
