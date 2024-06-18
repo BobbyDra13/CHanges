@@ -424,7 +424,7 @@ const Customers = () => {
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/get-store-details';
     const data = {
       user_id: '66238a99c40c738627f33735',
-      date: '2024-06-11'
+      date: '2024-06-18'
     };
 
     try {
