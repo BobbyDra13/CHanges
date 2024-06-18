@@ -57,7 +57,8 @@ import {
   storeanomalycount,
   OsaScoreForKpi,
   associateScore,
-  associatescoreaforkpi
+  associatescoreaforkpi,
+  brandWiseOsaAndTesterScore
 } from 'api';
 // import { IoIosWarning } from 'react-icons/io';
 // import { get } from 'react-hook-form';
@@ -73,7 +74,7 @@ function Overview() {
   const data = Object.fromEntries(urlParams.entries());
   const value = JSON.stringify(data).substring(2, 12);
   const storeID = JSON.stringify(data).substring(16, 20);
-  console.log(storeID);
+
   // console.log(JSON.stringify(data));
   // const [storeID, setStoreID]=useState("");
   // if(data){
@@ -82,6 +83,9 @@ function Overview() {
   // console.log(storeID);
 
   const { store } = useParams();
+  console.log('storeId is : ', store);
+
+  console.log('the id is', store);
   const dispatch = useDispatch();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -148,7 +152,8 @@ function Overview() {
 
   const get7daysdata = async (date) => {
     try {
-      const result = await getsevendaydata(date);
+      const result = (store && date) && (await getsevendaydata(date, store));
+      console.log('result from get7daysdata', result);
       result && setcapture7days(result.capture7days);
       result && setfullness7days(result.fullness7days);
     } catch (error) {
@@ -161,7 +166,7 @@ function Overview() {
   }, []);
   useEffect(() => {
     get7daysdata(date);
-  }, [date]);
+  }, [date, store]);
   const handleClickAssociateScoreModal = () => {
     setOpenAssociateScoreModal((prev) => !prev);
     setIsSnackbarOpen(false);
@@ -247,7 +252,7 @@ function Overview() {
   const [storeviewcaptureprogres, setstoreviewcaptureprogres] = useState(0);
   const getviewcaptureprogress = async () => {
     try {
-      const response = await storeviewcaptureprogress(date);
+      const response = (store && date) && (await storeviewcaptureprogress(date, store));
 
       console.log(response);
       setstoreviewcaptureprogres(response.captureProgress);
@@ -257,7 +262,7 @@ function Overview() {
   };
   useEffect(() => {
     getviewcaptureprogress();
-  }, [fullness7days,date]);
+  }, [fullness7days, date, store]);
   useEffect(() => {
     getviewcaptureprogress();
   }, []);
@@ -319,7 +324,7 @@ function Overview() {
       }
       // labels: ['Progress']
     },
-    series: [storeviewcaptureprogres ? storeviewcaptureprogres : 0],
+    series: [capture7days? capture7days[capture7days.length - 1]  : 0],
     labels: ['A']
   };
 
@@ -533,57 +538,77 @@ function Overview() {
     console.log('date from dasda', date);
   }, [date]);
 
-  const [osascore,setosascore] = useState(null);
-const getosascoreforkpi = async()=>{
-  try{
-      const result = await OsaScoreForKpi(date);
-      console.log("osa score" , result[0].avg_osa_score);
-      setosascore(result[0].avg_osa_score);
+  const [osascore, setosascore] = useState(0);
+  const [testerscore, settesterscore] = useState(0);
+  const getosascoreforkpi = async () => {
+    try {
+      const result = store && date && (await OsaScoreForKpi(date, store));
+      console.log(result);
+      //   result && console.log("osa score" , result[0].osa_score.avg_osa_score);
+      //  result &&  console.log("and the result is", result);
+      (result && result.osa_score.length>0) ? setosascore(result.osa_score[0].avg_osa_score) : setosascore(0);
+      (result && result.tester_score.length>0) ? settesterscore(result.tester_score[0].avg_osa_score) : settesterscore(0);
+    } catch (e) {
+      setosascore(0);
+      settesterscore(0);
+      console.log('error from osascore', e);
+    }
+  };
 
-  }catch(e){
-    console.log("error from osascore", e);
-  }
-}
+  const [anomalycount, setanomalycount] = useState(null);
+  const getanomalydetails = async () => {
+    try {
+      const res = store && date && (await storeanomalycount(date, store));
+      setanomalycount(res);
+      setAnomaliesLoading(false);
+      console.log('tty', res);
+      console.log('uuop', res.missingTesterCount);
+    } catch (error) {
+      console.log('error:', error);
+    }
+  };
+  useEffect(() => {
+    getanomalydetails();
+  }, []);
+  useEffect(() => {
+    getanomalydetails();
+  }, [date, store]);
 
-const [anomalycount, setanomalycount] = useState(null);
-const getanomalydetails = async () => {
-  try {
-    const res = await storeanomalycount(date);
-    setanomalycount(res);
-    setAnomaliesLoading(false);
-    console.log('tty',res);
-    console.log('uuop',res.missingTesterCount);
-  } catch (error) {
-    console.log('error:', error);
-  }
-}
-
-useEffect(() => {
-  getanomalydetails();
-},[date]);
-
-const [associatescore,setassociatescore] = useState([]);
-const getassociatescore = async()=>{
-  try{
-      const result = await associatescoreaforkpi(date);
-      console.log("assocaite score kpi" , result);
+  const [associatescore, setassociatescore] = useState([]);
+  const getassociatescore = async () => {
+    try {
+      const result = (store && date) && (await associatescoreaforkpi(date, store));
+      console.log('assocaite score kpi', result);
       setassociatescore(result);
-      console.log("result", result[0].osa_score)
-      
+     (result && result.length>0 ) &&  console.log('result', result[0].osa_score);
+    } catch (e) {
+      console.log('error from osascore', e);
+    }
+  };
+  const [brandwiseosaandtester_osa, setbrandwiseosaandtester_osa] = useState([]);
+  const [brandwiseosaandtester_tester, setbrandwiseosaandtester_tester] = useState([]);
+  const getbrandwiseosaandtesterscore = async () => {
+    try {
+      const result1 = store && date && (await brandWiseOsaAndTesterScore(date, store));
+      console.log('getbrandwiseosaandtesterscore score kpi', result1);
+      const result2 = result1;
+      result1 && result1.length > 0 && result1.sort((a, b) => a.OSA_Score - b.OSA_Score);
+      setbrandwiseosaandtester_osa(result1);
+      result2 && result2.length > 0 && result2.sort((a, b) => a.testers_present_percent - b.testers_present_percent);
+      setbrandwiseosaandtester_tester(result2);
+    
+    } catch (error) {
+      console.log('error from brand wise osa and tester score', error);
+    }
+  };
 
-  }catch(e){
-    console.log("error from osascore", e);
-  }
-}
-
-useEffect(()=>{
-    getosascoreforkpi();
+  useEffect(() => {
     getassociatescore();
-},[])
-useEffect(()=>{
-  getosascoreforkpi();
-  getassociatescore();
-},[date])
+    getosascoreforkpi();
+    getbrandwiseosaandtesterscore();
+    // getanomalydetails();
+  }, [store, date]);
+
   return (
     <div className="w-full">
       <Grid container spacing={2}>
@@ -614,78 +639,309 @@ useEffect(()=>{
         <Grid item xs={12}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
-              <Card className="border border-gray-300" sx={{ height: '276px' }}>
-          
-                (
-                  <div className="flex  w-full  flex-col gap-1 p-3">
-                    <div className="flex items-center justify-center gap-2 w-full">
-                      <img src={popIcon} alt="pop" className="h-14 w-14" />
-                      <div className="w-full">
-                        <p className="text-3xl text-gray-500 ">NA</p>
-                        <p className="text-lg font-semibold">PoP</p>
-                      </div>
-                      <>
-                        <IoMdSettings className="text-5xl cursor-pointer" />
-                       
-    
-                      </>
-                    </div>
-                    <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
-                      {/* <p className="text-base font-semibold text-gray-500">Currently No data available</p> */}
-                    </div>
-                  </div>
-
-                )
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
-              <Card className="border border-gray-300" sx={{ height: '276px' }}>
-               
-              
-                  <div className="flex  w-full  flex-col gap-1 p-3">
-                    <div className="flex items-center justify-center gap-2 w-full">
-                      {/* <DirectionsWalkIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" /> */}
-                      <img src={pog} alt="pop" className="h-14 w-14" />
-
-                      <div className="w-full">
-                        <p className="text-3xl text-gray-500 ">NA</p>
-                        <p className="text-lg font-semibold">PoG</p>
-                      </div>
-                      <IoMdSettings className="text-5xl cursor-not-allowed" />
-                    </div>
-                    <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
-                      <p className="text-base font-semibold text-gray-500">Currently No data available</p>
-                    </div>
-                  </div>
-
-                
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
-              <Card className="border border-gray-300" sx={{ height: '276px' }}>
-               
-              
-              <div className="flex  w-full  flex-col gap-1 p-3">
-                    <div className="flex items-center justify-center gap-2 w-full">
-                      {/* <DirectionsWalkIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" /> */}
-                      <img src={pog} alt="pop" className="h-14 w-14" />
-
-                      <div className="w-full">
-                        <p className="text-3xl text-gray-500 ">{osascore ? osascore : 0}%</p>
-                        <p className="text-lg font-semibold">OSA</p>
-                      </div>
-                      <IoMdSettings className="text-5xl cursor-not-allowed" />
-                    </div>
-                    <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
-                      <p className="text-base font-semibold text-gray-500">Currently No data available</p>
-                    </div>
-                  </div>
-              </Card>
-            </Grid>
-           <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <div style={{ height: '276px' }} className="flex flex-col">
                 <Card className="border border-gray-300" sx={{ height: '276px' }}>
-                  { associatescore.length > 0 ? (
+                  {brandwiseosaandtester_osa.length > 0 ? (
+                    <div className="flex  w-full  flex-col gap-1 p-3">
+                      <div className="flex items-center justify-center gap-2 w-full">
+                        <img src={associate} alt="pop" className="h-14 w-14" />
+                        <div className="w-full">
+                          <p className="text-3xl text-gray-500 ">{osascore}%</p>
+                          <p className="text-lg font-semibold">OSA</p>
+                        </div>
+                        <>
+                          <IoMdSettings className="text-5xl" onClick={handleClickAssociateScoreModal} />
+                          <Modal
+                            open={openAssociateScoreModal}
+                            onClose={handleCloseAssociateScoreModal}
+                            aria-labelledby="modal-modal-title"
+                            aria-describedby="modal-modal-description"
+                          >
+                            <Box sx={modalStyle}>
+                              <CsvModalAssociate onUploadComplete={handleAssociateUploadComplete} />
+                            </Box>
+                          </Modal>
+                        </>
+                      </div>
+                      <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
+                        {brandwiseosaandtester_osa.length > 0 ? (
+                          brandwiseosaandtester_osa.map((item, index) => {
+                            console.log('item', item.OSA_Score);
+                            const percentage = Math.round(parseFloat(item.OSA_Score)) > 100 ? 100 : Math.round(parseFloat(item.OSA_Score));
+                            const barcolor = percentage >= 99 ? '#00ac69' : percentage >= 95 ? '#f4a100' : '#ff413a';
+                            // const capturedZone = item.zones.map((i) => {
+                            //   return i._id.zone;
+                            // });
+                            // const capturedZoneString = capturedZone.join(', ');
+                            // const assignedZone = item.assigned_zones;
+                            // const assignedZoneString = assignedZone.join(', ');
+                            // const firstScore =
+                            //   parseFloat(item.total_pop_percentage_first).toFixed(1) > 100
+                            //     ? 100
+                            //     : parseFloat(item.total_pop_percentage_first).toFixed(1);
+                            // const secondScore =
+                            //   parseFloat(item.total_pop_percentage).toFixed(1) > 100
+                            //     ? 100
+                            //     : parseFloat(item.total_pop_percentage).toFixed(1);
+                            return (
+                              <div className="mt-2" key={index}>
+                                <div className="flex gap-1 items-center justify-between">
+                                  <div>
+                                    {item._id.toUpperCase()} :
+                                    <span className="text-base font-semibold" style={{ color: barcolor }}>
+                                      {' ' + percentage} %
+                                    </span>
+                                  </div>
+                                  <Tooltip
+                                    key={index}
+                                    title={
+                                      <div>
+                                        <div className="mb-2 p-2">
+                                          <p className="text-base">Bays Captured</p>
+                                          <p className="text-base "> {item.no_of_bays_captured}</p>
+                                        </div>
+                                        <Divider
+                                          sx={{
+                                            bgcolor: 'white'
+                                          }}
+                                        />
+                                        {/* <div className="mb-2 p-2">
+                                          <p className="text-base">Bays with anomalies</p>
+                                          <p className="text-base "> {item.no_of_bays_with_anomalies}</p>
+                                        </div> */}
+                                        {/* <Divider
+                                          sx={{
+                                            bgcolor: 'white'
+                                          }}
+                                        /> */}
+                                        {/* <div className=" p-2">
+                                          <p className="text-xs">First Score :{' ' + item.missing_tester_percentage} %</p>
+                                         
+                                        </div> */}
+                                      </div>
+                                    }
+                                  >
+                                    <IconButton>
+                                      <FaCircleInfo className="text-xs" />
+                                    </IconButton>
+                                  </Tooltip>
+                                </div>
+                                <LinearProgress
+                                  variant="determinate"
+                                  value={percentage}
+                                  className="rounded-lg"
+                                  sx={{
+                                    marginTop: '5px',
+                                    backgroundColor: 'white', // Set color for unfilled part
+                                    '& .MuiLinearProgress-bar': {
+                                      backgroundColor: `${barcolor}` // Set color for filled part
+                                    }
+                                  }}
+                                />
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <Skeleton variant="rectangular" height={184} className="rounded-md" />
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex  w-full  flex-col gap-1 p-3">
+                      <div className="flex items-center justify-center gap-2 w-full">
+                        <img src={popIcon} alt="pop" className="h-14 w-14" />
+                        <div className="w-full">
+                          <p className="text-3xl text-gray-500 ">NA</p>
+                          <p className="text-lg font-semibold">OSA</p>
+                        </div>
+                        <>
+                          <IoMdSettings className="text-5xl" onClick={handleClickAssociateScoreModal} />
+                          <Modal
+                            open={openAssociateScoreModal}
+                            onClose={handleCloseAssociateScoreModal}
+                            aria-labelledby="modal-modal-title"
+                            aria-describedby="modal-modal-description"
+                          >
+                            <Box sx={modalStyle}>
+                              <CsvModalAssociate onUploadComplete={handleAssociateUploadComplete} type="associateStore" />
+                            </Box>
+                          </Modal>
+                        </>
+                      </div>
+                      <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
+                        <p className="text-base font-semibold text-gray-500">Currently No data available</p>
+                      </div>
+                    </div>
+                  )}
+                </Card>
+              </div>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
+              <div style={{ height: '276px' }} className="flex flex-col">
+                <Card className="border border-gray-300" sx={{ height: '276px' }}>
+                  {brandwiseosaandtester_tester.length > 0 ? (
+                    <div className="flex  w-full  flex-col gap-1 p-3">
+                      <div className="flex items-center justify-center gap-2 w-full">
+                        <img src={associate} alt="pop" className="h-14 w-14" />
+                        <div className="w-full">
+                          <p className="text-3xl text-gray-500 ">{testerscore}%</p>
+                          <p className="text-lg font-semibold">Tester Score</p>
+                        </div>
+                        <>
+                          <IoMdSettings className="text-5xl" onClick={handleClickAssociateScoreModal} />
+                          <Modal
+                            open={openAssociateScoreModal}
+                            onClose={handleCloseAssociateScoreModal}
+                            aria-labelledby="modal-modal-title"
+                            aria-describedby="modal-modal-description"
+                          >
+                            <Box sx={modalStyle}>
+                              <CsvModalAssociate onUploadComplete={handleAssociateUploadComplete} />
+                            </Box>
+                          </Modal>
+                        </>
+                      </div>
+                      <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
+                        {brandwiseosaandtester_tester.length > 0 ? (
+                          brandwiseosaandtester_tester.map((item, index) => {
+                            console.log('item', item.testers_present_percent);
+                            const percentage =
+                              Math.round(parseFloat(item.testers_present_percent)) > 100
+                                ? 100
+                                : Math.round(parseFloat(item.testers_present_percent));
+                            const barcolor = percentage >= 99 ? '#00ac69' : percentage >= 95 ? '#f4a100' : '#ff413a';
+                            // const capturedZone = item.zones.map((i) => {
+                            //   return i._id.zone;
+                            // });
+                            // const capturedZoneString = capturedZone.join(', ');
+                            // const assignedZone = item.assigned_zones;
+                            // const assignedZoneString = assignedZone.join(', ');
+                            // const firstScore =
+                            //   parseFloat(item.total_pop_percentage_first).toFixed(1) > 100
+                            //     ? 100
+                            //     : parseFloat(item.total_pop_percentage_first).toFixed(1);
+                            // const secondScore =
+                            //   parseFloat(item.total_pop_percentage).toFixed(1) > 100
+                            //     ? 100
+                            //     : parseFloat(item.total_pop_percentage).toFixed(1);
+                            return (
+                              <div className="mt-2" key={index}>
+                                <div className="flex gap-1 items-center justify-between">
+                                  <div>
+                                    {item._id.toUpperCase()} :
+                                    <span className="text-base font-semibold" style={{ color: barcolor }}>
+                                      {' ' + percentage} %
+                                    </span>
+                                  </div>
+                                  <Tooltip
+                                    key={index}
+                                    title={
+                                      <div>
+                                        <div className="mb-2 p-2">
+                                          <p className="text-base">Bays Captured</p>
+                                          <p className="text-base "> {item.no_of_bays_captured}</p>
+                                        </div>
+                                        {/* <Divider
+                                          sx={{
+                                            bgcolor: 'white'
+                                          }}
+                                        />
+                                        <div className="mb-2 p-2">
+                                          <p className="text-base">Bays with anomalies</p>
+                                          <p className="text-base "> {item.no_of_bays_with_anomalies}</p>
+                                        </div>
+                                        <Divider
+                                          sx={{
+                                            bgcolor: 'white'
+                                          }}
+                                        /> */}
+                                        {/* <div className=" p-2">
+                                          <p className="text-xs">First Score :{' ' + item.missing_tester_percentage} %</p>
+                                         
+                                        </div> */}
+                                      </div>
+                                    }
+                                  >
+                                    <IconButton>
+                                      <FaCircleInfo className="text-xs" />
+                                    </IconButton>
+                                  </Tooltip>
+                                </div>
+                                <LinearProgress
+                                  variant="determinate"
+                                  value={percentage}
+                                  className="rounded-lg"
+                                  sx={{
+                                    marginTop: '5px',
+                                    backgroundColor: 'white', // Set color for unfilled part
+                                    '& .MuiLinearProgress-bar': {
+                                      backgroundColor: `${barcolor}` // Set color for filled part
+                                    }
+                                  }}
+                                />
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <Skeleton variant="rectangular" height={184} className="rounded-md" />
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex  w-full  flex-col gap-1 p-3">
+                      <div className="flex items-center justify-center gap-2 w-full">
+                        <img src={popIcon} alt="pop" className="h-14 w-14" />
+                        <div className="w-full">
+                          <p className="text-3xl text-gray-500 ">NA</p>
+                          <p className="text-lg font-semibold">Tester Score</p>
+                        </div>
+                        <>
+                          <IoMdSettings className="text-5xl" onClick={handleClickAssociateScoreModal} />
+                          <Modal
+                            open={openAssociateScoreModal}
+                            onClose={handleCloseAssociateScoreModal}
+                            aria-labelledby="modal-modal-title"
+                            aria-describedby="modal-modal-description"
+                          >
+                            <Box sx={modalStyle}>
+                              <CsvModalAssociate onUploadComplete={handleAssociateUploadComplete} type="associateStore" />
+                            </Box>
+                          </Modal>
+                        </>
+                      </div>
+                      <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
+                        <p className="text-base font-semibold text-gray-500">Currently No data available</p>
+                      </div>
+                    </div>
+                  )}
+                </Card>
+              </div>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
+              <Card className="border border-gray-300" sx={{ height: '276px' }}>
+                <div className="flex  w-full  flex-col gap-1 p-3">
+                  <div className="flex items-center justify-center gap-2 w-full">
+                    {/* <DirectionsWalkIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" /> */}
+                    <img src={pog} alt="pop" className="h-14 w-14" />
+
+                    <div className="w-full">
+                      <p className="text-3xl text-gray-500 ">NA</p>
+                      <p className="text-lg font-semibold">PoG</p>
+                    </div>
+                    <IoMdSettings className="text-5xl cursor-not-allowed" />
+                  </div>
+                  <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
+                    <p className="text-base font-semibold text-gray-500">Currently No data available</p>
+                  </div>
+                </div>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
+              <div style={{ height: '276px' }} className="flex flex-col">
+                <Card className="border border-gray-300" sx={{ height: '276px' }}>
+                  {associatescore.length > 0 ? (
                     <div className="flex  w-full  flex-col gap-1 p-3">
                       <div className="flex items-center justify-center gap-2 w-full">
                         <img src={associate} alt="pop" className="h-14 w-14" />
@@ -710,11 +966,8 @@ useEffect(()=>{
                       <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
                         {associatescore.length > 0 ? (
                           associatescore.map((item, index) => {
-                            console.log("item",item.osa_score)
-                            const percentage =
-                              Math.round(parseFloat(item.osa_score)) > 100
-                                ? 100
-                                : Math.round(parseFloat(item.osa_score));
+                            console.log('item', item.osa_score);
+                            const percentage = Math.round(parseFloat(item.osa_score)) > 100 ? 100 : Math.round(parseFloat(item.osa_score));
                             const barcolor = percentage >= 99 ? '#00ac69' : percentage >= 95 ? '#f4a100' : '#ff413a';
                             // const capturedZone = item.zones.map((i) => {
                             //   return i._id.zone;
@@ -744,27 +997,27 @@ useEffect(()=>{
                                     title={
                                       <div>
                                         <div className="mb-2 p-2">
-                                          <p className="text-base">Assigned Zones</p>
-                                          <p className="text-xs "> {item.no_of_bays_captured}</p>
+                                          <p className="text-base">Bays Captured</p>
+                                          <p className="text-base "> {item.no_of_bays_captured}</p>
                                         </div>
-                                        <Divider
+                                        {/* <Divider
                                           sx={{
                                             bgcolor: 'white'
                                           }}
                                         />
                                         <div className="mb-2 p-2">
-                                          <p className="text-base">Captured Zones</p>
-                                          <p className="text-xs "> {item.no_of_bays_with_anomalies}</p>
+                                          <p className="text-base">Bays with anomalies</p>
+                                          <p className="text-base "> {item.no_of_bays_with_anomalies}</p>
                                         </div>
                                         <Divider
                                           sx={{
                                             bgcolor: 'white'
                                           }}
-                                        />
-                                        <div className=" p-2">
+                                        /> */}
+                                        {/* <div className=" p-2">
                                           <p className="text-xs">First Score :{' ' + item.missing_tester_percentage} %</p>
                                          
-                                        </div>
+                                        </div> */}
                                       </div>
                                     }
                                   >
@@ -822,80 +1075,9 @@ useEffect(()=>{
                   )}
                 </Card>
               </div>
-            </Grid> 
-            {/* <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}> */}
-              {/* <Card className="border border-gray-300" sx={{ height: '276px' }}> */}
-                {/* <div className="flex  w-full  flex-col gap-1 p-3"> */}
-                  {/* <div className="flex items-start justify-center gap-2 w-full"> */}
-                    {/* <DirectionsWalkIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" /> */}
-                    {/* <img src={pog} alt="pop" className="h-14 w-14" />
-                    <div className="w-full">
-                      <p className="text-3xl text-gray-500 ">NA</p> */}
-                      {/* PoG changed to Brands Captured  */}
-                      {/* <p className="text-sm font-semibold">Associate Score</p>
-                    </div> */}
-                    {/* Form to select brand */}
-                    {/* for brands captured */}
-                    {/* <div className="flex justify-center gap-2 items-end">
-                      <div className="flex justify-center items-center">
-                        <Box
-                          sx={{
-                            width: 25,
-                            height: 25,
-                            backgroundColor: 'slateblue', // Dynamically apply the color
-                            borderRadius: '100px'
-                          }}
-                        />
-                      </div>
-                      <IoMdSettings size={28} />
-                    </div>
-                  </div> */}
-                  {/* <Box sx={{ maxHeight: '100%', maxWidth: '100%', overflowY: 'auto' }}> */}
-                    {/* <TableContainer component={Paper} sx={{ maxHeight: '100%', maxWidth: '100%', padding: 0 }}> */}
-                      {/* <Table size="small" stickyHeader> */}
-                        {/* <TableHead> */}
-                          {/* <TableRow sx={{ height: '30px' }}> */}
-                            {/* {' '} */}
-                            {/* Reduced row height */}
-                            {/* <TableCell sx={{ padding: '5px' }}>Name</TableCell> Reduced padding */}
-                            {/* <TableCell align="right" sx={{ padding: '5px' }}> */}
-                              {/* osa_score */}
-                            {/* </TableCell> */}
-                            {/* <TableCell align="right" sx={{ padding: '5px' }}> */}
-                              {/* missing_tester...  */}
-                              
-                            {/* </TableCell> */}
-                          {/* </TableRow> */}
-                        {/* </TableHead> */}
-                        {/* <TableBody> */}
-                          {/* {associatescore.map((row, index) => ( */}
-                            {/* <TableRow key={index} sx={{ height: '25px' }}> */}
-                              {/* {' '} */}
-                              {/* Reduced row height */}
-                              {/* <TableCell component="th" scope="row" sx={{ padding: '5px' }}> */}
-                                {/* {' '} */}
-                                {/* Reduced padding */}
-                                {/* {row.user_name} */}
-                              {/* </TableCell> */}
-                              {/* <TableCell align="right" sx={{ padding: '5px' }}> */}
-                                {/* {row.osa_score} */}
-                              {/* </TableCell> */}
-                              {/* <TableCell align="right" sx={{ padding: '5px' }}> */}
-                                {/* {row.missing_tester_percentage} */}
-                              {/* </TableCell> */}
-                            {/* </TableRow> */}
-                          {/* ))} */}
-                        {/* </TableBody> */}
-                      {/* </Table> */}
-                    {/* </TableContainer> */}
-                  {/* </Box> */}
-                  {/* brand selected, anomalies to be shown */}
-                  {/* <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
-                      <p className="text-base font-semibold text-gray-500">Currently No data available</p>
-                    </div> */}
-                {/* </div>
-              </Card>
-            </Grid>  */}
+            </Grid>
+
+          
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <Card
                 className="border border-gray-300 h-full"
@@ -942,7 +1124,7 @@ useEffect(()=>{
                     </div>
                     <div className="flex gap-1 flex-col">
                       {/* <div className="text-4xl font-semibold">{capProgressValue ? parseFloat(capProgressValue).toFixed(1) : 0}%</div> */}
-                      <div className="text-4xl font-semibold">{storeviewcaptureprogres ? storeviewcaptureprogres.toFixed(2) : 0}%</div>
+                      <div className="text-4xl font-semibold">{capture7days  ? capture7days[capture7days.length - 1] .toFixed(2) : 0}%</div>
                       <div className="text-sm font-semibold">Capture Progress</div>
                     </div>
                   </div>
@@ -958,7 +1140,7 @@ useEffect(()=>{
                       <span className="text-center text-white text-sm font-semibold">Missing</span>
                       {!anomaliesLoading && anomalycount !== null ? (
                         <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                          {console.log('dds',anomalycount)}
+                          {console.log('dds', anomalycount)}
                           {anomalycount.missingTesterCount}
                         </span>
                       ) : (

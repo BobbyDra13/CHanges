@@ -600,12 +600,13 @@ export const GetReport = async (data) => {
 };
 
 ///////////////////////////////////////API for getting last seven days data that is fulness7days and capture7days////////////////////////////
-export const getsevendaydata = async (date) => {
+export const getsevendaydata = async (date,store) => {
   try {
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/line-chart';
     const data = {
       date: String(date),
-      store_id: '6623a893c40c738627f3373f',
+      store_id: String(store),
+      //store_id: '6623a893c40c738627f3373f',
       category: 'fragrances'
     };
 
@@ -628,11 +629,13 @@ export const getsevendaydata = async (date) => {
   }
 };
 
-export const storeviewcaptureprogress = async(date) =>{
+export const storeviewcaptureprogress = async(date,store) =>{
   try {
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/capture-progress';
     const data = {
-         store_id:"6623a893c40c738627f3373f",
+        
+       store_id:String(store),
+      //store_id:"6623a893c40c738627f3373f",
         
           date : String(date)
         // date:"2024-06-13"
@@ -657,11 +660,12 @@ export const storeviewcaptureprogress = async(date) =>{
   }
 }
 
-export const storeanomalycount = async(date) =>{
+export const storeanomalycount = async(date,store) =>{
   try {
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/anomly-count';
     const data = {
-         store_id:"6623a893c40c738627f3373f",
+         store_id:String(store),
+       //  store_id:"6623a893c40c738627f3373f",
         
           date : String(date)
         // date:"2024-06-13"
@@ -686,12 +690,14 @@ export const storeanomalycount = async(date) =>{
   }
 }
 
-export const OsaScoreForKpi = async(date)=>{
+export const OsaScoreForKpi = async(date,store)=>{
   try {
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/osa-score-kpi';
     const data = {
-         store_id:"6623a893c40c738627f3373f",
-          date:String(date)
+         store_id:String(store),
+         //store_id:"6623a893c40c738627f3373f",
+       
+         date:String(date)
          // date:"2024-06-13"
     };
 
@@ -713,11 +719,12 @@ export const OsaScoreForKpi = async(date)=>{
     console.log('error in OsaScoreForKpi : ', error);
   }
 }
-export const associatescoreaforkpi = async(date)=>{
+export const associatescoreaforkpi = async(date,store)=>{
   try {
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/associate-score';
     const data = {
-         store_id:"6623a893c40c738627f3373f",
+         store_id:String(store),
+        // store_id:"6623a893c40c738627f3373f",
           date: String(date)
          // date:"2024-06-13"
     };
@@ -740,4 +747,36 @@ export const associatescoreaforkpi = async(date)=>{
     console.log('error in assocaiteScoreForKpi : ', error);
   }
 }
+
+
+export const brandWiseOsaAndTesterScore = async(date,store)=>{
+  try {
+    const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/brand-wise-score';
+    const data = {
+         store_id:String(store),
+        // store_id:"6623a893c40c738627f3373f",
+          date: String(date)
+         // date:"2024-06-13"
+    };
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response) {
+      console.log('response from brandWiseOsaAndTesterScore data :  ', response);
+      const result = await response.json();
+      return result;
+    } else {
+      return 'NOT FOUND';
+    }
+  } catch (error) {
+    console.log('error in brandWiseOsaAndTesterScore : ', error);
+  }
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
