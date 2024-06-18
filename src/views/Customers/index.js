@@ -644,15 +644,23 @@ const Customers = () => {
   useEffect(() => {
     //   cData && console.log(cData[0].anomaly_details);
   }, [cData]);
+  function capitalizeWords(str) {
+    return str.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+  }
+  function replaceUnderscores(str) {
+    // Use the replace method with a regular expression
+    return capitalizeWords(str.replace(/_/g, " "));
+  }
   function removeAfterLastUnderscore(str) {
     const lastUnderscoreIndex = str.lastIndexOf("_");
     if (lastUnderscoreIndex !== -1) {
-      return str.substring(0, lastUnderscoreIndex);
+      return replaceUnderscores(str.substring(0, lastUnderscoreIndex));
     } else {
       // No underscore found, return original string
-      return str;
+      return replaceUnderscores(str);
     }
   }
+
   return (
     <>
       <Breadcrumb title="Stores">
@@ -697,8 +705,8 @@ const Customers = () => {
                                 {item.id} - {item.store_name}
                               </Typography>
                             </Stack>
-                            {/* <div className="h-full w-fit"></div> */}
-                            {/* <button
+                             {/* <div className="h-full w-fit"></div> 
+                             <button
                               onClick={() => {
                                 settingAnalysisStoreDetails(item.store_name, item.lat, item.long, item._id, item.id);
                                 navigate(`/main/stores/storeinsight/overview/${item.store}`);
@@ -706,7 +714,7 @@ const Customers = () => {
                               className="w-20 h-6 text-sm border border-emerald-500 self-center shadow-md drop-shadow-md text-emerald-500 rounded-lg"
                             >
                               Analysis
-                            </button> */}
+                            </button>  */}
                             <div className="hidden">
                               <IconButton
                                 size="small"
