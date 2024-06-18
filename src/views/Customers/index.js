@@ -424,7 +424,7 @@ const Customers = () => {
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/get-store-details';
     const data = {
       user_id: '66238a99c40c738627f33735',
-      date: '2024-06-11'
+      date: '2024-06-18'
     };
 
     try {
@@ -644,6 +644,23 @@ const Customers = () => {
   useEffect(() => {
     //   cData && console.log(cData[0].anomaly_details);
   }, [cData]);
+  function capitalizeWords(str) {
+    return str.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+  }
+  function replaceUnderscores(str) {
+    // Use the replace method with a regular expression
+    return capitalizeWords(str.replace(/_/g, " "));
+  }
+  function removeAfterLastUnderscore(str) {
+    const lastUnderscoreIndex = str.lastIndexOf("_");
+    if (lastUnderscoreIndex !== -1) {
+      return replaceUnderscores(str.substring(0, lastUnderscoreIndex));
+    } else {
+      // No underscore found, return original string
+      return replaceUnderscores(str);
+    }
+  }
+
   return (
     <>
       <Breadcrumb title="Stores">
@@ -688,8 +705,8 @@ const Customers = () => {
                                 {item.id} - {item.store_name}
                               </Typography>
                             </Stack>
-                            {/* <div className="h-full w-fit"></div> */}
-                            {/* <button
+                             {/* <div className="h-full w-fit"></div> 
+                             <button
                               onClick={() => {
                                 settingAnalysisStoreDetails(item.store_name, item.lat, item.long, item._id, item.id);
                                 navigate(`/main/stores/storeinsight/overview/${item.store}`);
@@ -697,7 +714,7 @@ const Customers = () => {
                               className="w-20 h-6 text-sm border border-emerald-500 self-center shadow-md drop-shadow-md text-emerald-500 rounded-lg"
                             >
                               Analysis
-                            </button> */}
+                            </button>  */}
                             <div className="hidden">
                               <IconButton
                                 size="small"
@@ -752,12 +769,12 @@ const Customers = () => {
                             </div>
                           </Box>
                           <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
-                            {/* <Typography sx={{ width: 120 }} variant="h6">
+                            <Typography sx={{ width: 120 }} variant="h6">
                               Capture %
-                            </Typography> */}
+                            </Typography>
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'start' }}>
                               {/* here we have linearProgress showing the PoP */}
-                              {/* item.capture_percentage */}
+                              { item.capture_percentage}
                               {/* marker 1 */}
                               <LinearProgress
                                 sx={{
@@ -783,13 +800,13 @@ const Customers = () => {
                             </Box>
                           </Stack>
                           <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
-                            {/* <Typography sx={{ width: 120 }} variant={clickedBar.isUpKeep ? 'h5' : 'h6'}>
+                            <Typography sx={{ width: 120 }} variant={clickedBar.isUpKeep ? 'h5' : 'h6'}>
                               Up-Keep Score
-                            </Typography> */}
-                            {/* <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
+                            </Typography>
+                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
                               {/* marker 2 */}
                             {/* Store Fullness */}
-                            {/* We don't need to relace this  
+                            {/* We don't need to relace this   */}
                               <LinearProgress
                                 sx={{
                                   width: '100%',
@@ -828,15 +845,15 @@ const Customers = () => {
                                   Up-Keep Score: NA
                                 </Typography>
                               </button>
-                            </Box> */}
+                            </Box>
                           </Stack>
-                          {/* <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}> */}
-                          {/* <Typography sx={{ width: 120 }} variant={clickedBar.isVm ? 'h5' : 'h6'}>
+                          <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
+                          <Typography sx={{ width: 120 }} variant={clickedBar.isVm ? 'h5' : 'h6'}>
                               VM Score
-                            </Typography> */}
-                          {/* <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}> */}
+                            </Typography>
+                          <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
                           {/* marker 3 */}
-                          {/* anomalies count 
+                          {/* anomalies count */ }
                               <LinearProgress
                                 sx={{
                                   width: '100%',
@@ -872,17 +889,17 @@ const Customers = () => {
                                 className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center"
                               >
                                 <Typography sx={{ color: 'black' }} variant="subtitle1">
-                                  {/* {Math.floor((anomalies_count / totalParts) * 100) > 100
+                                   {/* {Math.floor((anomalies_count / totalParts) * 100) > 100
                                     ? 100
                                     : Math.floor((anomalies_count / totalParts) * 100)}{' '}
-                                  % 
+                                  %  */}
                                   VM Score: NA
                                 </Typography>
                               </button>
-                            </Box>*/}
-                          {/* </Stack> */}
-                          {/* <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}> */}
-                          {/* <Typography sx={{ width: 120 }} variant={clickedBar.isPop ? 'h5' : 'h6'}>
+                            </Box>
+                           </Stack> 
+                           <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}> 
+                           <Typography sx={{ width: 120 }} variant={clickedBar.isPop ? 'h5' : 'h6'}>
                               PoP Score
                             </Typography> 
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
@@ -909,12 +926,12 @@ const Customers = () => {
                                 className="absolute hover:cursor-pointer w-full h-full flex justify-center place-items-center"
                               >
                                 <Typography sx={{ color: 'black' }} variant="subtitle1">
-                                  {/* pop percentage is being shown  
+                                  {/* pop percentage is being shown  */}
                                   PoP Score: {item.pop_percentage ? parseFloat(item.pop_percentage).toFixed(2) : '0'}%
                                 </Typography>
                               </button>
                             </Box>
-                           </Stack> */}
+                           </Stack> 
                         </Stack>
                       </Grid>
                     </Grid>
@@ -1238,7 +1255,7 @@ const Customers = () => {
                                 <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
                                 <Typography paddingRight={2} variant="h6">
                                   {itm.anomaly_type}
-                                  {cData[0].unique_anomaly_array.map((anomaly) => anomaly)}
+                                  {cData[0].unique_anomaly_array.map((anomaly) => removeAfterLastUnderscore(anomaly))}
                                 </Typography>
                               </Box>
                             </Tooltip>
