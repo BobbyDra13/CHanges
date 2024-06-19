@@ -3,20 +3,23 @@ import { getsevendaydata } from 'api';
 
 import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
+import { useParams } from 'react-router';
 // import { footfallGraph } from 'api/sentinelAPI';
 // import { GetFullnessPop, GetSevenDayCapProgress } from 'api';
 // import Bubbledxaxis from './Bubbledx-axis';
 // import {footfallGraph} from "api/sentinelAPI";
 // const footfalldata=footfallGraph();
 
-const Areachart = ({ storeId, date }) => {
+const Areachart = ({ storeId, date, capture7days,Osa7days,testfullness7days}) => {
+  const { store } = useParams();
   const [category, setCategory] = useState([]);
   const [custCount, setCustCount] = useState([]);
   const [capProgress, setCapProgress] = useState([]);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState([]);
-  const [capture7days, setcapture7days] = useState(null);
-  const [fullness7days, setfullness7days] = useState(null);
+  // const [capture7days, setcapture7days] = useState(null);
+  // const [fullness7days, setfullness7days] = useState(null);
+  // const [Osa7days, setOsa7days] = useState(null);
   function getLastSevenDaysDates() {
     const today = new Date();
     const dates = [];
@@ -57,23 +60,26 @@ const Areachart = ({ storeId, date }) => {
     }
   }
 
-  const get7daysdata = async (date) => {
-    try {
-      const result = await getsevendaydata(date);
-      result && setcapture7days(result.capture7days);
-      result && setfullness7days(result.fullness7days);
-    } catch (error) {
-      console.log('error in get7daysdata', error);
-    }
-  };
+  // const get7daysdata = async (date) => {
+  //   try {
+  //     const result = (store && date) && await getsevendaydata(date, store);
+  //     console.log('result from get7daysdata', result);
+  //     result && setcapture7days(result.capture7days);
+  //     result && setfullness7days(result.testerFullness7days);
+  //     result && setOsa7days(result.OSA7days);
+  //   } catch (error) {
+  //     console.log('error in get7daysdata', error);
+  //   }
+  // };
 
-  useEffect(() => {
-    get7daysdata(date);
-  }, [date]);
+  // useEffect(() => {
+  //   get7daysdata(date);
+  // }, []);
+  // useEffect(() => {
+  //   get7daysdata(date);
+  // }, [date, store]);
 
-  useEffect(() => {
-    date && get7daysdata(date);
-  }, []);
+ 
 
   useEffect(() => {
     async function getData() {
@@ -85,7 +91,7 @@ const Areachart = ({ storeId, date }) => {
       try {
         setLoading(true);
         // const data = await GetFullnessPop(body);
-        const data = { data: [fullness7days] };
+        const data = { data: [testfullness7days] };
         // console.log("data", data);
         if (data) {
           const catagorydata = data.data.map((d) => d);
@@ -135,7 +141,7 @@ const Areachart = ({ storeId, date }) => {
     getData();
     getCaptureData();
     // eslint-disable-next-line
-  }, [date, capture7days, fullness7days]);
+  }, [date, capture7days, testfullness7days]);
   // console.log("capturesss", capProgress);
   // console.log("pop", custCount);
   //graph options start
@@ -144,14 +150,18 @@ const Areachart = ({ storeId, date }) => {
     series: [
       {
         name: 'Capture Progress',
-        data: capture7days
+        data:  capture7days && capture7days
         //  data: [90, 7, 4, 20, 18, 80, 100, 40, 60, 30, 20]
         //data: [90, 7, 4, 20, 18, 80, 100, 40, 60, 30, 20, 33, 15, 9, 4]
       },
       {
-        name: 'OSA Score',
-        data: fullness7days
+        name: 'Tester Fulless',
+        data: testfullness7days && testfullness7days
         //data: [480, 7, 4, 20, 18, 80, 100, 40, 60, 30, 20]
+      },
+      {
+        name : 'OSA Score',
+        data :  Osa7days && Osa7days
       }
       // {
 
@@ -266,6 +276,55 @@ const Areachart = ({ storeId, date }) => {
             fillColor: status[6] ? '#2BC0DA' : '#dadada',
             strokeColor: 'white',
             size: 12
+          },
+          {
+            seriesIndex: 2,
+            dataPointIndex: 0,
+            fillColor: status[0] ? '#33C393' : '#dadada',
+            strokeColor: 'white',
+            size: 12
+          },
+          {
+            seriesIndex: 2,
+            dataPointIndex: 1,
+            fillColor: status[1] ? '#33C393' : '#dadada',
+            strokeColor: 'white',
+            size: 12
+          },
+          {
+            seriesIndex: 2,
+            dataPointIndex: 2,
+            fillColor: status[2] ? '#33C393' : '#dadada',
+            strokeColor: 'white',
+            size: 12
+          },
+          {
+            seriesIndex: 2,
+            dataPointIndex: 3,
+            fillColor: status[3] ? '#33C393' : '#dadada',
+            strokeColor: 'white',
+            size: 12
+          },
+          {
+            seriesIndex: 2,
+            dataPointIndex: 4,
+            fillColor: status[4] ? '#33C393' : '#dadada',
+            strokeColor: 'white',
+            size: 12
+          },
+          {
+            seriesIndex: 2,
+            dataPointIndex: 5,
+            fillColor: status[5] ? '#33C393' : '#dadada',
+            strokeColor: 'white',
+            size: 12
+          },
+          {
+            seriesIndex: 2,
+            dataPointIndex: 6,
+            fillColor: status[6] ? '#33C393' : '#dadada',
+            strokeColor: 'white',
+            size: 12
           }
         ]
       },
@@ -320,7 +379,7 @@ const Areachart = ({ storeId, date }) => {
         type: 'Number'
         // categories:['0','5','10','15','20','25','30','35','40','45','50','55','60','65','70','75','80','85','90','95','100']
       },
-      colors: ['#10b981', '#06b6d4']
+      colors: ['#10b981', '#06b6d4',"#e97451" ]
     }
   };
 

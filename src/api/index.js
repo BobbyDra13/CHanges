@@ -779,4 +779,35 @@ export const brandWiseOsaAndTesterScore = async(date,store)=>{
 }
 
 
+
+export const getusers = async()=>{
+  try {
+    const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/team/get-team';
+    const data = {
+        // store_id:String(store),
+         store_id:"6623a893c40c738627f3373f",
+        //  date: String(date),
+        category: "fragrances",
+        date:'2024-06-19'
+    };
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response) {
+      console.log('response from getuser data :  ', response);
+      const result = await response.json();
+      return result;
+    } else {
+      return 'NOT FOUND';
+    }
+  } catch (error) {
+    console.log('error in getuser : ', error);
+  }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

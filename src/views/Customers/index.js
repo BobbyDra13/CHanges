@@ -645,14 +645,17 @@ const Customers = () => {
     //   cData && console.log(cData[0].anomaly_details);
   }, [cData]);
   function capitalizeWords(str) {
-    return str.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+    return str
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
   }
   function replaceUnderscores(str) {
     // Use the replace method with a regular expression
-    return capitalizeWords(str.replace(/_/g, " "));
+    return capitalizeWords(str.replace(/_/g, ' '));
   }
   function removeAfterLastUnderscore(str) {
-    const lastUnderscoreIndex = str.lastIndexOf("_");
+    const lastUnderscoreIndex = str.lastIndexOf('_');
     if (lastUnderscoreIndex !== -1) {
       return replaceUnderscores(str.substring(0, lastUnderscoreIndex));
     } else {
@@ -705,7 +708,7 @@ const Customers = () => {
                                 {item.id} - {item.store_name}
                               </Typography>
                             </Stack>
-                             {/* <div className="h-full w-fit"></div> 
+                            {/* <div className="h-full w-fit"></div> 
                              <button
                               onClick={() => {
                                 settingAnalysisStoreDetails(item.store_name, item.lat, item.long, item._id, item.id);
@@ -774,7 +777,7 @@ const Customers = () => {
                             </Typography>
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'start' }}>
                               {/* here we have linearProgress showing the PoP */}
-                              { item.capture_percentage}
+                              {item.capture_percentage}
                               {/* marker 1 */}
                               <LinearProgress
                                 sx={{
@@ -803,10 +806,10 @@ const Customers = () => {
                             <Typography sx={{ width: 120 }} variant={clickedBar.isUpKeep ? 'h5' : 'h6'}>
                               Up-Keep Score
                             </Typography>
-                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
+                            <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
                               {/* marker 2 */}
-                            {/* Store Fullness */}
-                            {/* We don't need to relace this   */}
+                              {/* Store Fullness */}
+                              {/* We don't need to relace this   */}
                               <LinearProgress
                                 sx={{
                                   width: '100%',
@@ -848,12 +851,12 @@ const Customers = () => {
                             </Box>
                           </Stack>
                           <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
-                          <Typography sx={{ width: 120 }} variant={clickedBar.isVm ? 'h5' : 'h6'}>
+                            <Typography sx={{ width: 120 }} variant={clickedBar.isVm ? 'h5' : 'h6'}>
                               VM Score
                             </Typography>
-                          <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
-                          {/* marker 3 */}
-                          {/* anomalies count */ }
+                            <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
+                              {/* marker 3 */}
+                              {/* anomalies count */}
                               <LinearProgress
                                 sx={{
                                   width: '100%',
@@ -889,7 +892,7 @@ const Customers = () => {
                                 className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center"
                               >
                                 <Typography sx={{ color: 'black' }} variant="subtitle1">
-                                   {/* {Math.floor((anomalies_count / totalParts) * 100) > 100
+                                  {/* {Math.floor((anomalies_count / totalParts) * 100) > 100
                                     ? 100
                                     : Math.floor((anomalies_count / totalParts) * 100)}{' '}
                                   %  */}
@@ -897,11 +900,11 @@ const Customers = () => {
                                 </Typography>
                               </button>
                             </Box>
-                           </Stack> 
-                           <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}> 
-                           <Typography sx={{ width: 120 }} variant={clickedBar.isPop ? 'h5' : 'h6'}>
+                          </Stack>
+                          <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
+                            <Typography sx={{ width: 120 }} variant={clickedBar.isPop ? 'h5' : 'h6'}>
                               PoP Score
-                            </Typography> 
+                            </Typography>
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
                               <LinearProgress
                                 sx={{
@@ -931,7 +934,7 @@ const Customers = () => {
                                 </Typography>
                               </button>
                             </Box>
-                           </Stack> 
+                          </Stack>
                         </Stack>
                       </Grid>
                     </Grid>
