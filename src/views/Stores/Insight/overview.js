@@ -579,7 +579,7 @@ function Overview() {
   const [associatescore, setassociatescore] = useState([]);
   const getassociatescore = async () => {
     try {
-      const result = store && date && (await associatescoreaforkpi(date, store));
+      const result = (store && date) && (await associatescoreaforkpi(date, store));
       console.log('assocaite score kpi', result);
       setassociatescore(result);
       result && result.length > 0 && console.log('result', result[0].osa_score);
@@ -968,8 +968,8 @@ function Overview() {
                       <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
                         {associatescore.length > 0 ? (
                           associatescore.map((item, index) => {
-                            console.log('item', item.osa_score);
-                            const percentage = Math.round(parseFloat(item.osa_score)) > 100 ? 100 : Math.round(parseFloat(item.osa_score));
+                            console.log('item', item.associate_score);
+                            const percentage = Math.round(parseFloat(item.associate_score)) > 100 ? 100 : Math.round(parseFloat(item.associate_score));
                             const barcolor = percentage >= 99 ? '#00ac69' : percentage >= 95 ? '#f4a100' : '#ff413a';
                             // const capturedZone = item.zones.map((i) => {
                             //   return i._id.zone;
@@ -1000,7 +1000,7 @@ function Overview() {
                                       <div>
                                         <div className="mb-2 p-2">
                                           <p className="text-base">Bays Captured</p>
-                                          <p className="text-base "> {item.no_of_bays_captured}</p>
+                                          <p className="text-base "> {item.no_of_bays_captured ? item.no_of_bays_captured : 0}</p>
                                         </div>
                                         {/* <Divider
                                           sx={{

@@ -130,6 +130,48 @@ const StoresTable = ({
       </HeaderCell>
     );
   };
+    const HeaderCellWithSortIcon1 = ({ label, onClick, sortedKey }) => {
+    const isAscending = sortConfig.key === sortedKey && sortConfig.direction === 'ascending';
+    const isDescending = sortConfig.key === sortedKey && sortConfig.direction === 'descending';
+
+    return (
+      <HeaderCell align="left" onClick={onClick}>
+        <div style={{ display: 'flex', alignItems: 'center', width: "95px" }}>
+          {label}
+          {isAscending && <ArrowUpwardRounded />}
+          {isDescending && <ArrowDownwardRounded />}
+        </div>
+      </HeaderCell>
+    );
+  };
+  const HeaderCellWithSortIcon2 = ({ label, onClick, sortedKey }) => {
+    const isAscending = sortConfig.key === sortedKey && sortConfig.direction === 'ascending';
+    const isDescending = sortConfig.key === sortedKey && sortConfig.direction === 'descending';
+
+    return (
+      <HeaderCell align="left" onClick={onClick}>
+        <div style={{ display: 'flex', alignItems: 'center', width: "80px" }}>
+          {label}
+          {isAscending && <ArrowUpwardRounded />}
+          {isDescending && <ArrowDownwardRounded />}
+        </div>
+      </HeaderCell>
+    );
+  };
+  const HeaderCellWithSortIcon3 = ({ label, onClick, sortedKey }) => {
+    const isAscending = sortConfig.key === sortedKey && sortConfig.direction === 'ascending';
+    const isDescending = sortConfig.key === sortedKey && sortConfig.direction === 'descending';
+
+    return (
+      <HeaderCell align="left" onClick={onClick}>
+        <div style={{ display: 'flex', alignItems: 'center', width: "80px" }}>
+          {label}
+          {isAscending && <ArrowUpwardRounded />}
+          {isDescending && <ArrowDownwardRounded />}
+        </div>
+      </HeaderCell>
+    );
+  };
 
   const [editRowId, setEditRowId] = useState(null);
 
@@ -164,11 +206,12 @@ const StoresTable = ({
               }}
             >
               <TableCell padding="checkbox"></TableCell>
-              <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_dept')} sortedKey="user_dept" label="Department" />
+              <HeaderCellWithSortIcon2 align="left" onClick={() => requestSort('user_dept')} sortedKey="user_dept" label="Department" />
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_role')} sortedKey="user_role" label="Role" />
               {/* <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_id')} sortedKey="user_id" label="ID" /> */}
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_name')} sortedKey="user_name" label="Name" />
-              <HeaderCellWithSortIcon align="left" onClick={() => requestSort('store_id')} sortedKey="store_id" label="Store" />
+              <HeaderCellWithSortIcon1 align="left" onClick={() => requestSort('store_id')} sortedKey="store_id" label="Store"/>
+             
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('email')} sortedKey="email" label="Email" />
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('number')} sortedKey="number" label="Phone Number" />
               <TableCell align="left">Last Login</TableCell>
