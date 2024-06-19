@@ -90,7 +90,7 @@ const StoresTable = ({
     const amPm = hours >= 12 ? 'PM' : 'AM';
     const modifiedHours = hours % 12 || 12; // Convert to 12-hour format (12 for midnight/noon)
 
-    return `${year}-${month}-${day} / ${modifiedHours}:${minutes} ${amPm}`;
+    return `${year}-${month}-${day}  ${modifiedHours}:${minutes} ${amPm}`;
   }
 
 
@@ -123,6 +123,48 @@ const StoresTable = ({
     return (
       <HeaderCell align="left" onClick={onClick}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
+          {label}
+          {isAscending && <ArrowUpwardRounded />}
+          {isDescending && <ArrowDownwardRounded />}
+        </div>
+      </HeaderCell>
+    );
+  };
+    const HeaderCellWithSortIcon1 = ({ label, onClick, sortedKey }) => {
+    const isAscending = sortConfig.key === sortedKey && sortConfig.direction === 'ascending';
+    const isDescending = sortConfig.key === sortedKey && sortConfig.direction === 'descending';
+
+    return (
+      <HeaderCell align="left" onClick={onClick}>
+        <div style={{ display: 'flex', alignItems: 'center', width: "95px" }}>
+          {label}
+          {isAscending && <ArrowUpwardRounded />}
+          {isDescending && <ArrowDownwardRounded />}
+        </div>
+      </HeaderCell>
+    );
+  };
+  const HeaderCellWithSortIcon2 = ({ label, onClick, sortedKey }) => {
+    const isAscending = sortConfig.key === sortedKey && sortConfig.direction === 'ascending';
+    const isDescending = sortConfig.key === sortedKey && sortConfig.direction === 'descending';
+
+    return (
+      <HeaderCell align="left" onClick={onClick}>
+        <div style={{ display: 'flex', alignItems: 'center', width: "80px" }}>
+          {label}
+          {isAscending && <ArrowUpwardRounded />}
+          {isDescending && <ArrowDownwardRounded />}
+        </div>
+      </HeaderCell>
+    );
+  };
+  const HeaderCellWithSortIcon3 = ({ label, onClick, sortedKey }) => {
+    const isAscending = sortConfig.key === sortedKey && sortConfig.direction === 'ascending';
+    const isDescending = sortConfig.key === sortedKey && sortConfig.direction === 'descending';
+
+    return (
+      <HeaderCell align="left" onClick={onClick}>
+        <div style={{ display: 'flex', alignItems: 'center', width: "80px" }}>
           {label}
           {isAscending && <ArrowUpwardRounded />}
           {isDescending && <ArrowDownwardRounded />}
@@ -164,11 +206,12 @@ const StoresTable = ({
               }}
             >
               <TableCell padding="checkbox"></TableCell>
-              <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_dept')} sortedKey="user_dept" label="Department" />
+              <HeaderCellWithSortIcon2 align="left" onClick={() => requestSort('user_dept')} sortedKey="user_dept" label="Department" />
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_role')} sortedKey="user_role" label="Role" />
               {/* <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_id')} sortedKey="user_id" label="ID" /> */}
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_name')} sortedKey="user_name" label="Name" />
-              <HeaderCellWithSortIcon align="left" onClick={() => requestSort('store_id')} sortedKey="store_id" label="Store" />
+              <HeaderCellWithSortIcon1 align="left" onClick={() => requestSort('store_id')} sortedKey="store_id" label="Store"/>
+             
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('email')} sortedKey="email" label="Email" />
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('number')} sortedKey="number" label="Phone Number" />
               <TableCell align="left">Last Login</TableCell>
@@ -190,7 +233,7 @@ const StoresTable = ({
                 <TableCell padding="checkbox">
                   <Checkbox checked={isSelected(row.id)} onChange={() => handleRowSelect(row.id)} />
                 </TableCell>
-                <TableCell component={'th'} scope="row">
+                <TableCell component={'th'} scope="row" >
                   {row.id}
                 </TableCell>
                 <TableCell align="left">{row.role}</TableCell>
@@ -201,7 +244,7 @@ const StoresTable = ({
                 </TableCell>
                 <TableCell align="left">{row.email}</TableCell>
                 <TableCell align="left">{row.number}</TableCell>
-                <TableCell align="left">{(row.logs && row.logs[0].last_login) ? formatDate(row.logs[0].last_login) : 'N/A'}</TableCell>
+                <TableCell align="left">{(row.logs && row.logs[0].last_login) ? formatDate(row.logs[0].last_login) : 'Not Logged In'}</TableCell>
                 <TableCell align="left">
                   <ButtonGroup variant="text" aria-label="user actions" sx={{ display: 'flex', gap: '8px' }}>
                     <IconButton
