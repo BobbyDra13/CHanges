@@ -148,14 +148,16 @@ function Overview() {
   const [anomaliesLoading, setAnomaliesLoading] = useState(true);
   const [sevendaydata, setsevendaydata] = useState(null);
   const [capture7days, setcapture7days] = useState(null);
-  const [fullness7days, setfullness7days] = useState(null);
-
+  const [Osa7days, setOsa7days] = useState(null);
+  const [testfullness7days, settestfullness7days] = useState(null);
+  
   const get7daysdata = async (date) => {
     try {
-      const result = (store && date) && (await getsevendaydata(date, store));
+      const result = (store && date) && await getsevendaydata(date, store);
       console.log('result from get7daysdata', result);
       result && setcapture7days(result.capture7days);
-      result && setfullness7days(result.fullness7days);
+      result && settestfullness7days(result.testerFullness7days);
+      result && setOsa7days(result.OSA7days);
     } catch (error) {
       console.log('error in get7daysdata', error);
     }
@@ -252,7 +254,7 @@ function Overview() {
   const [storeviewcaptureprogres, setstoreviewcaptureprogres] = useState(0);
   const getviewcaptureprogress = async () => {
     try {
-      const response = (store && date) && (await storeviewcaptureprogress(date, store));
+      const response = store && date && (await storeviewcaptureprogress(date, store));
 
       console.log(response);
       setstoreviewcaptureprogres(response.captureProgress);
@@ -262,7 +264,7 @@ function Overview() {
   };
   useEffect(() => {
     getviewcaptureprogress();
-  }, [fullness7days, date, store]);
+  }, [testfullness7days, date, store]);
   useEffect(() => {
     getviewcaptureprogress();
   }, []);
@@ -324,7 +326,7 @@ function Overview() {
       }
       // labels: ['Progress']
     },
-    series: [capture7days? capture7days[capture7days.length - 1]  : 0],
+    series: [capture7days ? capture7days[capture7days.length - 1] : 0],
     labels: ['A']
   };
 
@@ -546,8 +548,8 @@ function Overview() {
       console.log(result);
       //   result && console.log("osa score" , result[0].osa_score.avg_osa_score);
       //  result &&  console.log("and the result is", result);
-      (result && result.osa_score.length>0) ? setosascore(result.osa_score[0].avg_osa_score) : setosascore(0);
-      (result && result.tester_score.length>0) ? settesterscore(result.tester_score[0].avg_osa_score) : settesterscore(0);
+      result && result.osa_score.length > 0 ? setosascore(result.osa_score[0].avg_osa_score) : setosascore(0);
+      result && result.tester_score.length > 0 ? settesterscore(result.tester_score[0].avg_osa_score) : settesterscore(0);
     } catch (e) {
       setosascore(0);
       settesterscore(0);
@@ -577,10 +579,10 @@ function Overview() {
   const [associatescore, setassociatescore] = useState([]);
   const getassociatescore = async () => {
     try {
-      const result = (store && date) && (await associatescoreaforkpi(date, store));
+      const result = store && date && (await associatescoreaforkpi(date, store));
       console.log('assocaite score kpi', result);
       setassociatescore(result);
-     (result && result.length>0 ) &&  console.log('result', result[0].osa_score);
+      result && result.length > 0 && console.log('result', result[0].osa_score);
     } catch (e) {
       console.log('error from osascore', e);
     }
@@ -590,13 +592,13 @@ function Overview() {
   const getbrandwiseosaandtesterscore = async () => {
     try {
       const result1 = store && date && (await brandWiseOsaAndTesterScore(date, store));
+      const result2 = store && date && (await brandWiseOsaAndTesterScore(date, store));
       console.log('getbrandwiseosaandtesterscore score kpi', result1);
-      const result2 = result1;
       result1 && result1.length > 0 && result1.sort((a, b) => a.OSA_Score - b.OSA_Score);
       setbrandwiseosaandtester_osa(result1);
       result2 && result2.length > 0 && result2.sort((a, b) => a.testers_present_percent - b.testers_present_percent);
+
       setbrandwiseosaandtester_tester(result2);
-    
     } catch (error) {
       console.log('error from brand wise osa and tester score', error);
     }
@@ -646,7 +648,7 @@ function Overview() {
                       <div className="flex items-center justify-center gap-2 w-full">
                         <img src={associate} alt="pop" className="h-14 w-14" />
                         <div className="w-full">
-                          <p className="text-3xl text-gray-500 ">{osascore}%</p>
+                          <p className="text-3xl text-gray-500 ">{Osa7days ? Osa7days[Osa7days.length - 1] : 0}%</p>
                           <p className="text-lg font-semibold">OSA</p>
                         </div>
                         <>
@@ -785,7 +787,7 @@ function Overview() {
                       <div className="flex items-center justify-center gap-2 w-full">
                         <img src={associate} alt="pop" className="h-14 w-14" />
                         <div className="w-full">
-                          <p className="text-3xl text-gray-500 ">{testerscore}%</p>
+                          <p className="text-3xl text-gray-500 ">{testfullness7days ? testfullness7days[testfullness7days.length-1] : 0}%</p>
                           <p className="text-lg font-semibold">Tester Score</p>
                         </div>
                         <>
@@ -1077,7 +1079,6 @@ function Overview() {
               </div>
             </Grid>
 
-          
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <Card
                 className="border border-gray-300 h-full"
@@ -1093,14 +1094,19 @@ function Overview() {
         </Grid>
         <Grid item xs={12}>
           <Grid container spacing={2}>
+          
             <Grid ref={targetRef} className="mb-10" item xs={12} lg={9} xl={9.6}>
               <Card className="border border-gray-300" sx={{ height: '550px' }}>
                 <LineChartToggle
+                  capture7days= {capture7days} 
+                  Osa7days = {Osa7days}
+                  testfullness7days = {testfullness7days}
                   storeId={store}
                   date={date}
                   groups={isGroup}
                   activeButton={activeButton}
                   handleButtonClick={handleButtonClick}
+
                 />
               </Card>
             </Grid>
@@ -1124,7 +1130,7 @@ function Overview() {
                     </div>
                     <div className="flex gap-1 flex-col">
                       {/* <div className="text-4xl font-semibold">{capProgressValue ? parseFloat(capProgressValue).toFixed(1) : 0}%</div> */}
-                      <div className="text-4xl font-semibold">{capture7days  ? capture7days[capture7days.length - 1] .toFixed(2) : 0}%</div>
+                      <div className="text-4xl font-semibold">{capture7days ? capture7days[capture7days.length - 1].toFixed(1) : 0}%</div>
                       <div className="text-sm font-semibold">Capture Progress</div>
                     </div>
                   </div>
@@ -1137,7 +1143,7 @@ function Overview() {
                 >
                   <div className="flex w-full h-full">
                     <div className="w-2/6 h-full flex flex-col">
-                      <span className="text-center text-white text-sm font-semibold">Missing</span>
+                      <span className="text-center text-white text-sm font-semibold">Missing Tester</span>
                       {!anomaliesLoading && anomalycount !== null ? (
                         <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
                           {console.log('dds', anomalycount)}
@@ -1148,7 +1154,7 @@ function Overview() {
                       )}
                     </div>
                     <div className="w-2/6 h-full flex flex-col border-2 border-t-0 border-b-0 border-l-white border-r-white">
-                      <span className="text-center text-white  text-sm font-semibold">Alien</span>
+                      <span className="text-center text-white  text-sm font-semibold">Empty Tray</span>
                       {!anomaliesLoading && anomalycount !== null ? (
                         <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
                           {anomalycount.emptyTrayCount}

@@ -6,7 +6,9 @@ import TrendsChart from './TrendsViewCharts/Trendchart';
 import ShelfView from './shelfView';
 import { useSelector } from 'react-redux';
 
-const LineChartToggle = ({ storeId, date, groups, activeButton, handleButtonClick }) => {
+const LineChartToggle = ({ storeId, date, groups, activeButton, handleButtonClick,capture7days,
+  Osa7days,
+  testfullness7days  }) => {
   // const theme = useTheme();
   // const [activeButton, setActiveButton] = useState('Trends View');
   const [isGroup, setIsGroup] = useState(null);
@@ -200,7 +202,9 @@ const LineChartToggle = ({ storeId, date, groups, activeButton, handleButtonClic
         {activeButton == 'Trends View' ? (
           <div style={{ width: '100%', overflow: 'auto', height: '500px' }}>
             {/* <Chart options={chartOptions} series={series} type="line" height={500} width={isSmallScreen || isMediumScreen ? 720 : '100%'} /> */}
-            <TrendsChart storeId={storeId} date={date} isSmallScreen={isSmallScreen} />
+            <TrendsChart storeId={storeId} date={date} isSmallScreen={isSmallScreen} capture7days= {capture7days} 
+                  Osa7days = {Osa7days}
+                  testfullness7days = {testfullness7days} />
             {/* <Grid
               container
               spacing={1}

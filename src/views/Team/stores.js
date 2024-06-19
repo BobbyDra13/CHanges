@@ -9,7 +9,7 @@ import SearchBar from './SearchBar';
 import StoresTable from './StoresTable';
 import AddStore from './addStore';
 import FilterationButton from './FilterationButton';
-import { deleteUser, getUsers } from 'api';
+import { deleteUser, getUsers, getusers } from 'api';
 import { bouncy } from 'ldrs';
 bouncy.register();
 
@@ -20,8 +20,17 @@ const AllStores = () => {
   const [page, setPage] = useState(0);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
+  const getAllUsers = async () => {
+    try {
+      const response = await getusers();
+      console.log('get all users', response);
+      rowchange(response);
+    } catch (e) {
+      console.log('error in get all users', e);
+    }
+  };
   const isSmallScreen = useMediaQuery(theme.breakpoints.up('sm'));
   const handleSnackbarOpen = () => {
     setSnackbarOpen(true);
@@ -52,18 +61,18 @@ const AllStores = () => {
     getAllUsers();
   };
 
-  const getAllUsers = async () => {
-    try {
-      setLoading(true);
-      let response = await getUsers();
-      console.log(response.data);
-      rowchange(response?.data);
-    } catch (error) {
-      console.error('Error Fetching Users: ', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const getAllUsers = async () => {
+  //   try {
+  //     setLoading(true);
+  //     let response = await getUsers();
+  //     console.log(response.data);
+  //     rowchange(response?.data);
+  //   } catch (error) {
+  //     console.error('Error Fetching Users: ', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const [searchQuery, setSearchQuery] = useState('');
   const handleSearchChange = (event) => {
@@ -296,6 +305,7 @@ const AllStores = () => {
         ) : (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             <StoresTable
+         
               rows={filteredAndSortedRows}
               getAllUsers={getAllUsers}
               page={page}

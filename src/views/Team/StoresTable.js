@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Table,
   TableHead,
@@ -25,6 +25,7 @@ import {
 import { ArrowDownwardRounded, ArrowUpwardRounded, Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import EditStore from './updateStore';
+import { getusers } from 'api';
 
 const HeaderCell = styled(TableCell)({
   fontWeight: 'bold',
@@ -61,6 +62,7 @@ const TRow = styled(TableRow)`
 `;
 
 const StoresTable = ({
+  allusers,
   rows,
   getAllUsers,
   page,
@@ -78,6 +80,19 @@ const StoresTable = ({
   const [deleteUserId, setDeleteUserId] = useState(null);
   const [deletionInProgress, setDeletionInProgress] = useState(false);
   const [deletionSuccess, setDeletionSuccess] = useState(null);
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Pad month with leading zero
+    const day = String(date.getDate()).padStart(2, '0'); // Pad day with leading zero
+    const hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0'); // Pad with leading zero
+    const amPm = hours >= 12 ? 'PM' : 'AM';
+    const modifiedHours = hours % 12 || 12; // Convert to 12-hour format (12 for midnight/noon)
+
+    return `${year}-${month}-${day} / ${modifiedHours}:${minutes} ${amPm}`;
+  }
+
 
   // const handleConfirmDialogOpen = (userId) => {
   //   setDeleteUserId(userId);
@@ -156,6 +171,7 @@ const StoresTable = ({
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('store_id')} sortedKey="store_id" label="Store" />
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('email')} sortedKey="email" label="Email" />
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('number')} sortedKey="number" label="Phone Number" />
+              <TableCell align="left">Last Login</TableCell>
               <TableCell align="left">Actions</TableCell>
             </THead>
           </TableHead>
@@ -180,9 +196,12 @@ const StoresTable = ({
                 <TableCell align="left">{row.role}</TableCell>
                 {/* <TableCell align="left">{row._id}</TableCell> */}
                 <TableCell align="left">{row.name}</TableCell>
-                <TableCell align="left">{row.store_name}</TableCell>
+                <TableCell align="left" sx={{ }}>
+                  {row.store_name}
+                </TableCell>
                 <TableCell align="left">{row.email}</TableCell>
                 <TableCell align="left">{row.number}</TableCell>
+                <TableCell align="left">{(row.logs && row.logs[0].last_login) ? formatDate(row.logs[0].last_login) : 'N/A'}</TableCell>
                 <TableCell align="left">
                   <ButtonGroup variant="text" aria-label="user actions" sx={{ display: 'flex', gap: '8px' }}>
                     <IconButton
