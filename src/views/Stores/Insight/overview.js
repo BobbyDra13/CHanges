@@ -1142,7 +1142,7 @@ function Overview() {
                   }}
                 >
                   <div className="flex w-full h-full">
-                    <div className="w-2/6 h-full flex flex-col">
+                    <div className="w-1/2 h-full flex flex-col">
                       <span className="text-center text-white text-sm font-semibold">Missing Tester</span>
                       {!anomaliesLoading && anomalycount !== null ? (
                         <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
@@ -1153,7 +1153,7 @@ function Overview() {
                         <Skeleton variant="rectangular" height={184} className="rounded-md" />
                       )}
                     </div>
-                    <div className="w-2/6 h-full flex flex-col border-2 border-t-0 border-b-0 border-l-white border-r-white">
+                    <div className="w-1/2 h-full flex flex-col border-l-2 border-t-0 border-b-0 border-l-white">
                       <span className="text-center text-white  text-sm font-semibold">Empty Tray</span>
                       {!anomaliesLoading && anomalycount !== null ? (
                         <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
@@ -1163,16 +1163,7 @@ function Overview() {
                         <Skeleton variant="rectangular" height={184} className="rounded-md" />
                       )}
                     </div>
-                    <div className="w-2/6 h-full flex flex-col">
-                      <span className="text-center text-white  text-sm font-semibold">Incorrect</span>
-                      {!anomaliesLoading ? (
-                        <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                          {/* {anomaliesCount[0].totalIncorrectPopCount} */}
-                        </span>
-                      ) : (
-                        <Skeleton variant="rectangular" height={184} className="rounded-md" />
-                      )}
-                    </div>
+                   
                   </div>
                 </Card>
               </div>

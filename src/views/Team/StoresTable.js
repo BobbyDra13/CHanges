@@ -90,7 +90,7 @@ const StoresTable = ({
     const amPm = hours >= 12 ? 'PM' : 'AM';
     const modifiedHours = hours % 12 || 12; // Convert to 12-hour format (12 for midnight/noon)
 
-    return `${year}-${month}-${day} / ${modifiedHours}:${minutes} ${amPm}`;
+    return `${year}-${month}-${day}  ${modifiedHours}:${minutes} ${amPm}`;
   }
 
 
@@ -190,7 +190,7 @@ const StoresTable = ({
                 <TableCell padding="checkbox">
                   <Checkbox checked={isSelected(row.id)} onChange={() => handleRowSelect(row.id)} />
                 </TableCell>
-                <TableCell component={'th'} scope="row">
+                <TableCell component={'th'} scope="row" >
                   {row.id}
                 </TableCell>
                 <TableCell align="left">{row.role}</TableCell>
@@ -201,7 +201,7 @@ const StoresTable = ({
                 </TableCell>
                 <TableCell align="left">{row.email}</TableCell>
                 <TableCell align="left">{row.number}</TableCell>
-                <TableCell align="left">{(row.logs && row.logs[0].last_login) ? formatDate(row.logs[0].last_login) : 'N/A'}</TableCell>
+                <TableCell align="left">{(row.logs && row.logs[0].last_login) ? formatDate(row.logs[0].last_login) : 'Not Logged In'}</TableCell>
                 <TableCell align="left">
                   <ButtonGroup variant="text" aria-label="user actions" sx={{ display: 'flex', gap: '8px' }}>
                     <IconButton
