@@ -87,7 +87,8 @@ const AllStores = () => {
       Name: row.name,
       Store: row.store_name,
       Email: row.email,
-      Phone: row.number
+      Phone: row.number,
+     
     }));
 
     return dataForExport;

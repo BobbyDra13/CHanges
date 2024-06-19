@@ -753,7 +753,7 @@ function Overview() {
                       <div className="flex items-center justify-center gap-2 w-full">
                         <img src={popIcon} alt="pop" className="h-14 w-14" />
                         <div className="w-full">
-                          <p className="text-3xl text-gray-500 ">NA</p>
+                          <p className="text-3xl text-gray-500 ">{Osa7days ? Osa7days[Osa7days.length - 1] : 0}%</p>
                           <p className="text-lg font-semibold">OSA</p>
                         </div>
                         <>
@@ -895,7 +895,7 @@ function Overview() {
                       <div className="flex items-center justify-center gap-2 w-full">
                         <img src={popIcon} alt="pop" className="h-14 w-14" />
                         <div className="w-full">
-                          <p className="text-3xl text-gray-500 ">NA</p>
+                          <p className="text-3xl text-gray-500 ">{testfullness7days ? testfullness7days[testfullness7days.length-1] : 0}%</p>
                           <p className="text-lg font-semibold">Tester Score</p>
                         </div>
                         <>
