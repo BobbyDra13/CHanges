@@ -150,7 +150,7 @@ const StoresTable = ({
 
     return (
       <HeaderCell align="left" onClick={onClick}>
-        <div style={{ display: 'flex', alignItems: 'center', width: "80px" }}>
+        <div style={{ display: 'flex', alignItems: 'center', width: "75px" }}>
           {label}
           {isAscending && <ArrowUpwardRounded />}
           {isDescending && <ArrowDownwardRounded />}
@@ -239,7 +239,7 @@ const StoresTable = ({
                 <TableCell align="left">{row.role}</TableCell>
                 {/* <TableCell align="left">{row._id}</TableCell> */}
                 <TableCell align="left">{row.name}</TableCell>
-                <TableCell align="left" sx={{ }}>
+                <TableCell align="left">
                   {row.store_name}
                 </TableCell>
                 <TableCell align="left">{row.email}</TableCell>

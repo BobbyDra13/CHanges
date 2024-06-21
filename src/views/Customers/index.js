@@ -405,6 +405,10 @@ const Customers = () => {
       // Update anomalyDetails state if needed
     }, 1000);
   };
+
+  const unique_anomalies = 1;  
+
+
   function formatDate(dateString) {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -463,7 +467,7 @@ const Customers = () => {
     const height = ((ymax - ymin) / natural.hght) * 100;
     setPos({ lft: lft, tp: top, wdth: width, hght: height });
     setAntn(true);
-    console.log(pos);
+    console.log("calcaulte",pos);
   };
 
   const highlightStyle = {
@@ -645,10 +649,10 @@ const Customers = () => {
     //   cData && console.log(cData[0].anomaly_details);
   }, [cData]);
   function capitalizeWords(str) {
-    return str
+    return (str
       .split(' ')
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+      .join(' '));
   }
   function replaceUnderscores(str) {
     // Use the replace method with a regular expression
@@ -1210,7 +1214,7 @@ const Customers = () => {
                         ) : (
                           // cData.anomaly_details.map((item, index) =>
 
-                          cData.map((itm, ind) => (
+                          cData[0].anomaly_details.map((itm, ind) => (
                             <Tooltip
                               key={0 + ind}
                               // title={
@@ -1240,10 +1244,10 @@ const Customers = () => {
                                 className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
                                 onMouseOver={() => {
                                   calculate(
-                                    cData[0].anomaly_details[0].coords[0],
-                                    cData[0].anomaly_details[0].coords[1],
-                                    cData[0].anomaly_details[0].coords[2],
-                                    cData[0].anomaly_details[0].coords[3]
+                                   itm.coords[0],
+                                   itm.coords[1],
+                                   itm.coords[2],
+                                   itm.coords[3]
                                   );
                                   //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
                                   setAntn(true);
@@ -1257,8 +1261,8 @@ const Customers = () => {
                               >
                                 <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
                                 <Typography paddingRight={2} variant="h6">
-                                  {itm.anomaly_type}
-                                  {cData[0].unique_anomaly_array.map((anomaly) => removeAfterLastUnderscore(anomaly))}
+                                  {removeAfterLastUnderscore(itm.type)}
+                                {/* {cData[0].unique_anomaly_array.map((anomaly) => removeAfterLastUnderscore(anomaly) )} */}
                                 </Typography>
                               </Box>
                             </Tooltip>
