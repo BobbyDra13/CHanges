@@ -667,7 +667,38 @@ const Customers = () => {
       return replaceUnderscores(str);
     }
   }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+const findUniqueObjects = (originalArray) => {
+  const seen = new Set(); // Set to store seen combinations of name and coord
 
+  const uniqueObjects = [];
+
+  for (const obj of originalArray) {
+    const key = JSON.stringify({ type: obj.type, coords: obj.coords }); // Create a unique key
+
+    if (!seen.has(key)) {
+      seen.add(key);
+      uniqueObjects.push(obj);
+    }
+  }
+
+  return uniqueObjects;
+};
+
+
+const [uniqueArray, setUniqueArray] = useState([]);
+
+  useEffect(() => {
+    if(cData){
+    const uniqueObjects = (cData && cData.length > 0 && cData[0].anomaly_details) && findUniqueObjects(cData[0].anomaly_details);
+    console.log("unique array of anomalies ", uniqueObjects);
+    setUniqueArray(uniqueObjects);
+  }
+  }, [cData]);
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   return (
     <>
       <Breadcrumb title="Stores">
@@ -1214,7 +1245,8 @@ const Customers = () => {
                         ) : (
                           // cData.anomaly_details.map((item, index) =>
 
-                          cData[0].anomaly_details.map((itm, ind) => (
+                          // cData[0].anomaly_details.map((itm, ind) => (
+                        uniqueArray.length > 0  &&    uniqueArray.map((itm, ind) => (
                             <Tooltip
                               key={0 + ind}
                               // title={

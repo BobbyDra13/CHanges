@@ -44,7 +44,7 @@ export default function ShelfView({ date, groups }) {
   console.log('hello i am her');
   const { store } = useParams();
   const zoneIds = useSelector((state) => state.zone);
-  const [active, setActive] = useState(false);
+  const [active, setActive] = useState(null);
   const [data, setData] = useState(null);
   const [shelves, setShelves] = useState(false);
   const [loading, setloading] = useState(true);
@@ -81,8 +81,18 @@ export default function ShelfView({ date, groups }) {
     const modifiedHours = hours % 12 || 12; // Convert to 12-hour format (12 for midnight/noon)
 
     return `${year}-${month}-${day} / ${modifiedHours}:${minutes} ${amPm}`;
+  }  
+  
+  function capitalizeWords(str) {
+    return (str
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' '));
   }
-
+  function replaceUnderscores(str) {
+    // Use the replace method with a regular expression
+    return capitalizeWords(str.replace(/_/g, ' '));
+  }
   function removeAfterLastUnderscore(str) {
     const lastUnderscoreIndex = str.lastIndexOf('_');
     if (lastUnderscoreIndex !== -1) {
@@ -445,6 +455,8 @@ export default function ShelfView({ date, groups }) {
                     // };
                     const style = {
                       backgroundColor: active === d ? 'black' : active ? 'white' : 'gray',
+                      // backgroundColor: active === d.brand_id ? 'black' : 'gray',
+                      // background: "black",
                       color: active === d ? 'white' : 'black',
                       fontWeight: 'bolder',
                       opacity: active ? 1 : 0.5, // Reduce opacity if no match
@@ -477,15 +489,16 @@ export default function ShelfView({ date, groups }) {
                           () => {
                             // setActive(d.name);
                             // zoneDetails(d.id);
+                            setActive(d.brand_id);
                             handleOpen(d.brand_id);
                           }
                           // : undefined
                         }
-                        // style={{
-                        //   backgroundColor: active === d.name ? 'black' : 'white',
-                        //   color: active === d.name ? 'white' : 'black',
-                        //   fontWeight: 'bolder'
-                        // }}
+                        style={{
+                          backgroundColor: active === d.brand_id ? 'black' : 'white',
+                          color: active === d.brand_id ? 'white' : 'black',
+                          fontWeight: 'bolder'
+                        }}
                         // style={style}
                       >
                         {/* <div  className='bg-gray-200 m-2  rounded' style={{height:"100px", width:"100px"}}></div> */}
@@ -518,7 +531,7 @@ export default function ShelfView({ date, groups }) {
               className="scrollbar inline-block "
             >
               {/* <Grid item md={12} sm={12} key={index}> */}
-              {data &&
+              {data ?
                 data.map((item, index) => {
                   const highlightStyle3 = {
                     position: 'absolute',
@@ -591,6 +604,7 @@ export default function ShelfView({ date, groups }) {
                                   item.shelves.map(
                                     (itm, ind) => (
                                       // itm.shelves.coords && (
+                                        itm.anomaly_found > 0 && 
                                       <Tooltip
                                         key={0 + ind}
                                         // title={
@@ -619,7 +633,7 @@ export default function ShelfView({ date, groups }) {
                                           paddingY={0.04}
                                           className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
                                           onMouseOver={() => {
-                                            // (itm.anomaly_found > 0) &&
+                                            (itm.anomaly_found > 0) &&
                                             // calculate(itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
                                             calculate3(index, itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
                                             //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
@@ -628,6 +642,9 @@ export default function ShelfView({ date, groups }) {
                                           }}
                                           onMouseOut={() => {
                                             if (antn) {
+                                              const arr = [...posarr];
+                                              arr[index]  =  { lft: 0, tp: 0, wdth: 0, ht: 0 };
+                                              setposarr(arr);
                                               setPos({ lft: false, tp: false, wdth: false, ht: false });
                                               setAntn(false);
                                             }
@@ -636,11 +653,12 @@ export default function ShelfView({ date, groups }) {
                                           {console.log('poppp', itm.coords)}
                                           <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
                                           <Typography paddingRight={2} variant="h6">
-                                            {itm.type} - {itm.shelf_index}
+                                            {removeAfterLastUnderscore(String(itm.type))} - {itm.shelf_index}
                                             {/* {itm.type.map((anomaly) => removeAfterLastUnderscore(anomaly))} */}
                                           </Typography>
                                         </Box>
                                       </Tooltip>
+                                      
                                     )
                                     // )
                                   )
@@ -701,7 +719,14 @@ export default function ShelfView({ date, groups }) {
                       </Grid>
                     </>
                   );
-                })}
+                })
+                
+                
+                : <h1 className='text-center text-4xl'>
+                      Please Choose A Brand
+                </h1>
+                
+              }
 
               {/* </Grid> */}
             </Grid>
