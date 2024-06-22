@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from 'react';
 
 // API imports
-import { GetRadarChartData, GetCapProg, GetPopHistogramData } from 'api';
+import { GetRadarChartData, GetCapProg, GetPopHistogramData, seven_day_anomalies } from 'api';
 // import { useHistory } from 'react-router-dom';
 
 // Apex chart import
@@ -415,6 +415,9 @@ const Insights = () => {
       setShowPopUp(false);
     }
 
+ 
+  
+
     // Add listener
     mediaQuery.addEventListener('change', handleMediaQueryChange);
 
@@ -424,6 +427,9 @@ const Insights = () => {
     };
   }, [showPopUp]);
   console.log(selectedDate);
+
+
+
 
   return (
     <Grid container spacing={gridSpacing}>
@@ -522,6 +528,7 @@ const Insights = () => {
           {showPopUp && <PopUp open={popupOpen} onClose={handleClosePopup} value={val} selectedDate={selectedDate} />}
 
           <Grid item lg={3} sm={6} xs={12}>
+            
             <AnomalyKPICard date={selectedDate} />
           </Grid>
         </Grid>
@@ -534,6 +541,7 @@ const Insights = () => {
                 <Grid container spacing={gridSpacing}>
                   <Grid item xs={12}>
                     <Card>
+                          
                       {
                         // histogramData
                         seriesData.length > 0 ? (
@@ -722,6 +730,7 @@ const Insights = () => {
                 </Grid>
               </Grid>
               <Grid item xs={12} md={5}>
+              
                 <Grid container spacing={gridSpacing}>
                   <Grid item xs={12}>
                     <Card>
@@ -760,7 +769,7 @@ const Insights = () => {
                             </Grid>
                           </Grid>
                         </Grid>
-
+                        
                         {allZero ? (
                           <div className="w-full h-full flex justify-center place-items-center">
                             <img style={{ height: '310px' }} src={NoDataImg} alt="No data" />
@@ -796,9 +805,11 @@ const Insights = () => {
               </Grid>
             </Grid>
             <Grid item xs={12}>
+        
               <Grid container paddingTop={3} spacing={gridSpacing}>
                 <Grid item xs={12}>
                   <Card>
+                          
                     <CardContent>
                       {/* content */}
                       <AnomaliesBarChart selectedDate={selectedDate} />
@@ -895,6 +906,7 @@ const Insights = () => {
                   className="overflow-y-auto flex flex-col gap-1 scrollbar"
                 >
                   <Grid container spacing={gridSpacing}>
+                  
                     {capProgress ? (
                       // capProgress.map((item) => (
                       capProgress.map((item, key) => {
@@ -909,6 +921,7 @@ const Insights = () => {
                                   {/* {Math.floor(item.capture_percentage)}% */}
                                   {parseFloat(item.storeCapturePercentage).toFixed(1)}
                                 </Typography>
+                                
                               </Grid>
 
                               <Grid item xs={12}>
@@ -1011,6 +1024,7 @@ const Insights = () => {
                                   //     </MenuItem>
                                   //   ))}
                                   // </Menu>
+
                                 )}
                               </Grid>
                             </Grid>
@@ -1018,19 +1032,23 @@ const Insights = () => {
                         );
                       })
                     ) : // ))
+                    
                     capProgress.length === 0 ? (
                       <div className="w-full h-full flex justify-center place-items-center">
+                       
                         <img style={{ width: '100%' }} src={NoDataPng} alt="No data" />
                       </div>
                     ) : (
                       // <>No data</>
                       <Stack paddingLeft={gridSpacing} width={'100%'} spacing={gridSpacing}>
+                      
                         <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
                         <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
                         <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
                         <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
                         <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
                       </Stack>
+                
                     )}
                   </Grid>
                 </CardContent>
