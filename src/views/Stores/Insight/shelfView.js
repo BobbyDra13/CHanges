@@ -21,7 +21,7 @@ import {
 import { FaCamera } from 'react-icons/fa';
 // import src1 from '../../../assets/images/heatmap.jpg';
 // import src2 from '../../../assets/images/heatmap2.jpg';
-import { GetShelfData, GetShelvesData, GetZonedetails } from 'api';
+import { GetShelfData, GetShelvesData, GetZonedetails, GetAllBrands, getZonedetails } from 'api';
 import { bouncy } from 'ldrs';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { IoIosClose } from 'react-icons/io';
@@ -41,11 +41,11 @@ bouncy.register();
 // };
 
 export default function ShelfView({ date, groups }) {
-  console.log("hello i am her")
+  console.log('hello i am her');
   const { store } = useParams();
   const zoneIds = useSelector((state) => state.zone);
-  const [active, setActive] = useState(false);
-  const [data, setData] = useState(false);
+  const [active, setActive] = useState(null);
+  const [data, setData] = useState(null);
   const [shelves, setShelves] = useState(false);
   const [loading, setloading] = useState(true);
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
@@ -55,17 +55,53 @@ export default function ShelfView({ date, groups }) {
   const [nextClickLoad, setNextClickLoad] = useState(false);
   const [nextBtn, setNextbtn] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [anomalyType, setAnomalyType] = useState('');
+  const [isBrandData, setIsBrandData] = useState([]);
+  const [isBrandName, setIsBrandName] = useState([]);
+  const [isBrandId, setIsBrandId] = useState(null);
 
   const theme = useTheme();
   const success = theme.palette.success.main;
+  const error = theme.palette.error.main;
   const isSmallScreen = !useMediaQuery(theme.breakpoints.up('sm'));
   const [isGroup, setIsGroup] = useState(null);
   const paperRefs = useRef([]);
 
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [open, setOpen] = useState(false);
 
+  const handleClose = () => setOpen(false);
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Pad month with leading zero
+    const day = String(date.getDate()).padStart(2, '0'); // Pad day with leading zero
+    const hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0'); // Pad with leading zero
+    const amPm = hours >= 12 ? 'PM' : 'AM';
+    const modifiedHours = hours % 12 || 12; // Convert to 12-hour format (12 for midnight/noon)
+
+    return `${year}-${month}-${day} / ${modifiedHours}:${minutes} ${amPm}`;
+  }  
+  
+  function capitalizeWords(str) {
+    return (str
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' '));
+  }
+  function replaceUnderscores(str) {
+    // Use the replace method with a regular expression
+    return capitalizeWords(str.replace(/_/g, ' '));
+  }
+  function removeAfterLastUnderscore(str) {
+    const lastUnderscoreIndex = str.lastIndexOf('_');
+    if (lastUnderscoreIndex !== -1) {
+      return replaceUnderscores(str.substring(0, lastUnderscoreIndex));
+    } else {
+      // No underscore found, return original string
+      return replaceUnderscores(str);
+    }
+  }
   // const [selectedZoneId, setSelectedZoneId] = useState('');
 
   //   useEffect(() => {
@@ -149,30 +185,66 @@ export default function ShelfView({ date, groups }) {
 
   const latestZoneId = zoneIds.length > 0 ? zoneIds[zoneIds.length - 1] : '';
 
+  const GetZoneDetailees = async (brand_id) => {
+    try {
+      const body = {
+        date: date.toString(),
+        // brand_id: '6664320b8b4922abc9b0951c' // hard coded
+        brand_id: brand_id
+      };
+      console.log('tyh', body);
+      const Zonedata = store && date && (await getZonedetails(body));
+      console.log(Zonedata);
+      const shelvesData = Zonedata.data;
+      console.log('Zonedata:', shelvesData);
+      setData(shelvesData);
+      console.log(data);
+      setloading(false);
+    } catch (e) {
+      console.log('error in GetZoneDetails', e);
+      setloading(false);
+    }
+    // setActive(Zonedata[0].name);
+    // zoneDetails(Zonedata[0].id);
+  };
+  const handleOpen = (brand_id) => {
+    console.log('heelo from onclick', brand_id);
+    setloading(true);
+    GetZoneDetailees(brand_id);
+  };
+
   useEffect(() => {
     console.log('latestZoneId fetched from store in shelfView:', latestZoneId);
     setSearchQuery(latestZoneId.toString());
-    async function GetZone() {
-      setloading(false);
+
+    //  GetZone();
+    //  setIsGroup(groups);
+    // console.log('hatt', isGroup, date);
+
+    async function getallbrandsname() {
       const body = {
-        date: date.toString(),
-        user_id: "66238a99c40c738627f33735" // hard coded
+        store_id: [store], // hard coded
+        //  store_id: ["6623a893c40c738627f3373f"], // hard coded
+        date: '2024-06-19'
+        //  date: date.toString()
       };
-      console.log('tyh',body);
-      const Zonedata = await GetZonedetails(body);
-      const shelvesData = Zonedata.data.shelf_config;
-      console.log('Zonedata:', shelvesData[0].brand);
-      setData(shelvesData);
-      // setActive(Zonedata[0].name);
-      // zoneDetails(Zonedata[0].id);
+      console.log('y12', body);
+      const brandres = date && store && (await GetAllBrands(body));
+      const branddata = brandres.data;
+      console.log('te1', branddata[0].brand_name);
+      setIsBrandData(branddata);
+      console.log('here is branddata', isBrandData);
+      setIsBrandName(branddata[0].brand_name);
+      console.log('hello frin herere', isBrandName);
     }
-    GetZone();
-    setIsGroup(groups);
-    console.log('hatt', isGroup, date);
+    getallbrandsname();
     // eslint-disable-next-line
   }, [date, groups, store, zoneIds]);
+
+  useEffect(() => {}, []);
   const [antn, setAntn] = useState(false);
   const [pos, setPos] = useState({ lft: false, tp: false, wdth: false, ht: false });
+
   const [natural, setNaturel] = useState({ wdth: false, hght: false });
 
   const calculate = (xmin, ymin, xmax, ymax) => {
@@ -182,6 +254,8 @@ export default function ShelfView({ date, groups }) {
     const height = ((ymax - ymin) / natural.hght) * 100;
     setPos({ lft: lft, tp: top, wdth: width, hght: height });
     setAntn(true);
+    // console.log('oll',pos);
+    console.log('oll', xmin, ymin, xmax, ymax);
   };
 
   const calculate2 = (xmin, ymin, xmax, ymax, type, naturalWidth, naturalHeight) => {
@@ -206,6 +280,46 @@ export default function ShelfView({ date, groups }) {
     borderRadius: '5px'
   };
   const [posArr, setPosArr] = useState(false);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////
+  const imageRefs = useRef([]);
+  const [imageDimensions, setImageDimensions] = useState({}); // Object to store dimensions for all images
+  const [posarr, setposarr] = useState([]);
+  const handleImageLoad = (index) => {
+    return () => {
+      if (imageRefs.current[index]) {
+        const { naturalWidth, naturalHeight } = imageRefs.current[index];
+        setImageDimensions((prevDimensions) => ({
+          ...prevDimensions,
+          [index]: { width: naturalWidth, height: naturalHeight }
+        }));
+        console.log('hello from 292', imageDimensions);
+      }
+    };
+  };
+  const calculate3 = (index, xmin, ymin, xmax, ymax) => {
+    const curr = imageDimensions[index];
+    console.log(curr);
+    const lft = (xmin / curr.width) * 100;
+    const top = (ymin / curr.height) * 100;
+    const width = ((xmax - xmin) / curr.width) * 100;
+    const height = ((ymax - ymin) / curr.height) * 100;
+    setPos({ lft: lft, tp: top, wdth: width, hght: height });
+    const arr = [];
+    arr[index] = { lft: lft, tp: top, wdth: width, hght: height };
+    setposarr(arr);
+    setAntn(true);
+    // console.log('oll',pos);
+    console.log('oll', xmin, ymin, xmax, ymax);
+  };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////
+  const findDimensionss = (event) => {
+    setImageLoading(false);
+    const { naturalWidth, naturalHeight } = event.target;
+    setNaturel({ wdth: naturalWidth, hght: naturalHeight });
+  };
+
   const findDimensions = (event) => {
     setImageLoading(false);
     const { naturalWidth, naturalHeight } = event.target;
@@ -261,22 +375,42 @@ export default function ShelfView({ date, groups }) {
   };
 
   // const brandName = data.map((d) => )
-    console.log('uuu',data);
-    const brandNames = Array.isArray(data) && data.length > 0 ? data.map((d) => d?.brand || '') : [];
-    console.log('yut',brandNames);
-    // const brandNames = data.filter((d) => d?.name).map((d) => d.name);
-    // const brandNames = data.length > 0 ? data.map((d) => d.name) : [];
-    // const brandNames = data.map((d) => d.name);
+  console.log('uuu', data);
+  console.log('y76', isBrandName);
+
+  const brandNames = Array.isArray(isBrandData) && isBrandData.length > 0 ? isBrandData.map((d) => d?.brand_name || '') : [];
+  //   if (Array.isArray(data) && data.length > 0) {
+  //     data.forEach((d, index) => {
+  //         // Update brand_id dynamically
+  //         if (d) {
+  //             d.brand_id = `B150${index}`; // Example of updating the brand_id dynamically
+  //         }
+
+  //         // Extract brand_name and push to the brandNames array
+  //         if (d && d.brand_name) {
+  //             brandNames.push(d.brand_name);
+  //         }
+  //     });
+  // }
+  console.log('yut', brandNames);
+  isBrandData.map((name) => {
+    console.log(name.brand_name);
+  });
+
+  // const brandNames = data.filter((d) => d?.name).map((d) => d.name);
+  // const brandNames = data.length > 0 ? data.map((d) => d.name) : [];
+  // const brandNames = data.map((d) => d.name);
   // const filteredData = useMemo(() => {
   //   return Array.isArray(data) ? data.filter((d) => d.name.toLowerCase().includes(searchQuery.toLowerCase())) : [];
   // }, [data, searchQuery]);
   // console.log('vb', filteredData);
+
   return (
     <>
-      {data ? (
+      {isBrandData && isBrandData.length > 0 ? (
         <div style={{ margin: '20px', overflowY: 'scroll' }} className="scrollbar">
           <Grid container spacing={4}>
-            <Grid item md={2.5} sm={2} style={{ height: '500px', marginBottom: '50px', overflowY: 'scroll' }} className="scrollbar">
+            <Grid item md={3.5} sm={3.4} style={{ height: '500px', marginBottom: '50px', overflowY: 'scroll' }} className="scrollbar">
               <Grid item xs={9}>
                 <Grid container alignItems="center" className="mb-4">
                   <Grid item>
@@ -293,19 +427,20 @@ export default function ShelfView({ date, groups }) {
                   </Grid>
                 </Grid>
               </Grid>
-              {data &&
-                brandNames
+              {isBrandData &&
+                isBrandData.length > 0 &&
+                isBrandData
                   .sort((a, b) => {
                     // Custom sorting function for alphanumeric sorting
-                    const nameA = a.toLowerCase();
-                    const nameB = b.toLowerCase();
+                    const nameA = a.brand_name.toLowerCase();
+                    const nameB = b.brand_name.toLowerCase();
 
                     if (nameA < nameB) return -1;
                     if (nameA > nameB) return 1;
                     return 0;
                   })
-                  .filter(name => name.trim() !== '')
-                  .map(name => name.trim())
+                  .filter((name) => name.brand_name.trim() !== '')
+                  // .map((name) => (name.brand_name).trim())
                   .filter((name, index, self) => self.indexOf(name) === index)
                   .map((d, ind) => {
                     // Check if there is a matching zone_id in the groups data
@@ -320,6 +455,8 @@ export default function ShelfView({ date, groups }) {
                     // };
                     const style = {
                       backgroundColor: active === d ? 'black' : active ? 'white' : 'gray',
+                      // backgroundColor: active === d.brand_id ? 'black' : 'gray',
+                      // background: "black",
                       color: active === d ? 'white' : 'black',
                       fontWeight: 'bolder',
                       opacity: active ? 1 : 0.5, // Reduce opacity if no match
@@ -331,12 +468,12 @@ export default function ShelfView({ date, groups }) {
                     //   color: match ? 'white' : 'gray', // Change text color based on match
                     //   fontWeight: 'bolder'
                     // };
-                    console.log('whyme', d.name);
+                    // console.log('whyme', d.brand_id);
                     return (
                       <Paper
                         ref={(ref) => {
                           paperRefs.current[ind] = ref;
-                          console.log(`Ref assigned for index ${ind}:`, ref);
+                          //   console.log(`Ref assigned for index ${ind}:`, ref);
                         }}
                         key={ind}
                         elevation={4}
@@ -348,19 +485,20 @@ export default function ShelfView({ date, groups }) {
                         // }}
                         onClick={
                           // active
-                            // ? 
-                            () => {
-                                // setActive(d.name);
-                                // zoneDetails(d.id);
-                                handleOpen();
-                              }
-                            // : undefined
+                          // ?
+                          () => {
+                            // setActive(d.name);
+                            // zoneDetails(d.id);
+                            setActive(d.brand_id);
+                            handleOpen(d.brand_id);
+                          }
+                          // : undefined
                         }
-                        // style={{
-                        //   backgroundColor: active === d.name ? 'black' : 'white',
-                        //   color: active === d.name ? 'white' : 'black',
-                        //   fontWeight: 'bolder'
-                        // }}
+                        style={{
+                          backgroundColor: active === d.brand_id ? 'black' : 'white',
+                          color: active === d.brand_id ? 'white' : 'black',
+                          fontWeight: 'bolder'
+                        }}
                         // style={style}
                       >
                         {/* <div  className='bg-gray-200 m-2  rounded' style={{height:"100px", width:"100px"}}></div> */}
@@ -380,158 +518,193 @@ export default function ShelfView({ date, groups }) {
                           {' '}
                           <FaCamera />{' '}
                         </div>
-                        <h6>{d}</h6>
+                        <h6>{d.brand_name}</h6>
                       </Paper>
                     );
                   })}
             </Grid>
             <Grid
               item
-              md={9.5}
-              sm={10}
+              md={8}
+              sm={8.6}
               style={{ height: '460px', marginBottom: '50px', overflowY: 'scroll', marginTop: '35px' }}
               className="scrollbar inline-block "
             >
-              {/* {!url ? <div>please select one camera</div> : <img src={url} alt="img" style={{ height: '400px', width: '100%' }} />} */}
-              {isSmallScreen ? (
-                <div>
-                  <Modal
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description"
-                    style={{
-                      margin: 'auto',
-                      width: '100%',
-                      overflow: 'scroll',
-                      height: '100%'
-                    }}
-                  >
-                    <Box sx={{ bgcolor: 'background.paper' }}>
-                      <div style={{ position: 'sticky', top: '0', backgroundColor: 'white' }}>
-                        <div className="flex justify-between items-center px-3">
-                          <h3 className="text-xl font-bold">{active}</h3>
-                          <Button variant="contained" style={{ margin: '10px', backgroundColor: 'red' }} onClick={handleClose}>
-                            close
-                          </Button>
-                        </div>
-                      </div>
-                      <Typography id="modal-modal-title" variant="h6" component="h2">
-                        {loading ? (
-                          <Grid item md={12} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '500px' }}>
-                            <l-bouncy size="45" speed="1" color="black"></l-bouncy>
-                          </Grid>
-                        ) : (
-                          data &&
-                          data.map((item, index) => (
-                            <Grid item md={12} sm={12} key={index}>
-                              {item.meta_image ? (
-                                <div className="w-full h-full flex flex-col items-center justify-center mb-4">
-                                  {/* <div style={{ width: '90%', padding: '7px', display: 'flex' }}> */}
-                                    {/* <div className='text-black text-sm font-bold'>Name : {item.shelf_name}</div> */}
-                                    {/* <div> */}
-                                      {/* <span className="text-black text-md font-bold">Shelf Id: {item.id}, </span> */}
-                                      {/* <span className='text-black text-lg font-bold'>55 </span>  */}
-                                    {/* </div> */}
-                                    {/* <div> */}
-                                      {/* <span className="text-black text-md font-bold">PoP Score : {item.fullnessPopPercent}% </span> */}
-                                      {/* <span className='text-black text-lg font-bold'>60% </span>  */}
-                                    {/* </div> */}
-                                    {/* <div> */}
-                                      {/* <span className="text-black text-sm font-bold">Anomaly : {item.total_anomalies_detected} </span> */}
-                                      {/* <span className='text-black text-lg font-bold'>60% </span>  */}
-                                    {/* </div> */}
-                                  {/* </div> */}
-                                  <div style={{ width: '90%', height: '100%' }}>
-                                    <img
-                                      src={item.meta_image}
-                                      alt="img"
-                                      // style={{ height: '100%', width: '100%', borderRadius: '7px', cursor: 'pointer' }}
-                                      className='h-1/2 w-1/2 rounded-md cursor-pointer'
-                                      // onClick={() => GetShelfWiseDetails(item.shelf_id)}
-                                    />
-                                  </div>
-                                </div>
-                              ) : (
-                                <div className="flex w-full h-full">
-                                  <img
-                                    src={noData}
-                                    alt="img"
-                                    style={{ height: '50%', width: '100%', borderRadius: '7px', cursor: 'pointer' }}
-                                    // onClick={() => GetShelfWiseDetails(item.shelf_id)}
-                                  />
-                                </div>
-                              )}
-                            </Grid>
-                          ))
-                        )}
-                      </Typography>
-                    </Box>
-                  </Modal>
-                </div>
-              ) : (
-                <Grid container>
-                  {loading ? (
-                    <Grid item md={12} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '500px' }}>
-                      <l-bouncy size="45" speed="1" color="black"></l-bouncy>
-                    </Grid>
-                  ) : (
-                    data &&
-                    data.map((item, index) => (
-                      <Grid item md={12} sm={12} key={index}>
-                        {item.meta_image ? (
-                          <div className="flex w-full h-full justify-center">
-                            <div style={{ width: '75%', height: '80%' }}>
+              {/* <Grid item md={12} sm={12} key={index}> */}
+              {data ?
+                data.map((item, index) => {
+                  const highlightStyle3 = {
+                    position: 'absolute',
+                    left: `${posarr[index] ? posarr[index].lft : "0"}%`,
+                    top: `${posarr[index] ? posarr[index].tp : "0"}%`,
+                    width: `${posarr[index] ? posarr[index].wdth : "0"}%`,
+                    height: `${posarr[index] ? posarr[index].hght : "0"}%`,
+                    border: '1px solid red', // Change border color as desired
+                    boxSizing: 'border-box',
+                    pointerEvents: 'none', // So clicks can still interact with the image
+                    backgroundColor: 'rgba(255, 0, 0, 0.6)',
+                    borderRadius: '5px'
+                  };
+                  return (
+                    <>
+                      <Grid item md={12} sm={12} key={index} style={{ marginBottom: '10px' }}>
+                        {item.img_url ? (
+                          <div className="flex w-full h-full justify-around">
+                            <div className=" h-full relative">
                               <img
-                                src={item.meta_image}
+                                key={index}
+                                // style={{ width: '100%', height:objectFit: 'cover' }}
+                                src={item.img_url}
+                                ref={(el) => (imageRefs.current[index] = el)}
                                 alt="img"
-                                style={{ height: '40%', width: '40%', borderRadius: '7px', cursor: 'pointer' }}
-                                onClick={() => GetShelfWiseDetails(item.shelf_id)}
+                                className="image rounded-md shadow-md  hover:cursor-pointer h-96"
+                                // onLoad={findDimensionss}
+                                onLoad={handleImageLoad(index)}
+                                // style={{ height: '80%', width: '100%', borderRadius: '7px', cursor: 'pointer' }}
+                                // onClick={() => GetShelfWiseDetails(item.shelf_id)}
                               />
+                              {antn && <div style={highlightStyle3}></div>}
                             </div>
-                            {/* <div> */}
-                            <div className='space-y-1'>
-                              {item.shelves.map((shelf, ind) => (
-                                <div key={ind}>
-                                  <div style={{ width: '75%', height: '80%' }}>
-                              <img
-                                src={shelf.shelf_image}
-                                alt="img"
-                                // style={{ height: '40%', width: '40%', borderRadius: '7px', cursor: 'pointer' }}
-                                style={{
-                                  height: '40%',
-                                  width: '40%',
-                                  borderRadius: '7px',
-                                  cursor: 'pointer',
-                                  display: 'inline-block',
-                                  verticalAlign: 'middle' // Aligns the image vertically in the middle
-                                }}
-                                onClick={() => GetShelfWiseDetails(item.shelf_id)}
-                              />
-                              <span style={{ display: 'inline-block', marginLeft: '10px', verticalAlign: 'middle' }}>
-    Shelf index: {shelf.shelf_index}
-  </span>
-                            </div>
-                                  </div>
-                              ))}
-                              </div>
-                            {/* </div> */}
-                            {/* <div style={{ width: '25%', padding: '7px' }}> */}
-                              {/* <div className='text-black text-sm font-bold'>Name : {item.shelf_name}</div> */}
+                            <div style={{ width: '85%', padding: '7px' }}>
+                              <Typography variant="h3" className="">
+                                {/* {details.store_id} - {details.store_name} */}
+                                {item.brand_name}
+                              </Typography>
+                              {/* <Divider /> */}
+                              <Typography paddingBottom={1.5} width={'100%'} variant="h5">
+                                {/* / {details.bay_id} / {details.shelf_id} */} Bay ID : {item.bay_id}
+                              </Typography>
+                              <Typography width={'100%'} variant="h3">
+                                Date & Time of Capture
+                              </Typography>
+                              {/* <Divider /> */}
+                              <Typography paddingBottom={1.5} width={'100%'} variant="h5">
+                                {formatDate(item.timestamps)}
+                              </Typography>
+                              <Typography width={'100%'} variant="h3">
+                                Anomalies
+                              </Typography>
+                              {/* <Divider /> */}
+                              <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
+                                {anomalyType === 'color_assortment' ? (
+                                  <Box
+                                    paddingX={0.2}
+                                    paddingY={0.04}
+                                    className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center"
+                                  >
+                                    <RiErrorWarningLine className="text-4xl mr-0.5 text-purple-500" />
 
-                             {/* <div> */}
-                                {/* <span className="text-black text-sm font-bold">Shelf Id: {item.id} </span> */}
-                                {/* <span className='text-black text-lg font-bold'>55 </span>  */}
-                              {/* </div> */}
-                              {/* <div> */}
-                                {/* <span className="text-black text-sm font-bold">PoP Score : {item.fullnessPopPercent}% </span> */}
-                                {/* <span className='text-black text-lg font-bold'>60% </span>  */}
-                              {/* </div> */}
-                              {/* <div> */}
-                                {/* <span className="text-black text-sm font-bold">Anomaly : {item.total_anomalies_detected} </span> */}
-                                {/* <span className='text-black text-lg font-bold'>60% </span>  */}
-                              {/* </div> */}
-                            {/* </div> */}
+                                    <Typography paddingRight={2} variant="h6">
+                                      Colour
+                                    </Typography>
+                                  </Box>
+                                ) : (
+                                  // cData.anomaly_details.map((item, index) =>
+
+                                  item.shelves.map(
+                                    (itm, ind) => (
+                                      // itm.shelves.coords && (
+                                        itm.anomaly_found > 0 && 
+                                      <Tooltip
+                                        key={0 + ind}
+                                        // title={
+                                        //   <div>
+                                        //     {console.log(itm, ind)}
+                                        //     <Typography variant="body1">
+                                        //       Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
+                                        //     </Typography>
+                                        //     <Typography variant="body1">
+                                        //       <span>Description :</span>
+                                        //       {itm.anomaly_type === 'alien_pop'
+                                        //         ? itm.print_tag
+                                        //           ? itm.print_tag
+                                        //           : 'No Data Found'
+                                        //         : itm.article_description
+                                        //         ? itm.article_description
+                                        //         : 'No Data Found'}
+                                        //     </Typography>
+                                        //     <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
+                                        //   </div>
+                                        // }
+                                      >
+                                        <Box
+                                          key={ind}
+                                          paddingX={0.2}
+                                          paddingY={0.04}
+                                          className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                          onMouseOver={() => {
+                                            (itm.anomaly_found > 0) &&
+                                            // calculate(itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
+                                            calculate3(index, itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
+                                            //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
+                                            console.log('here', itm.coords);
+                                            setAntn(true);
+                                          }}
+                                          onMouseOut={() => {
+                                            if (antn) {
+                                              const arr = [...posarr];
+                                              arr[index]  =  { lft: 0, tp: 0, wdth: 0, ht: 0 };
+                                              setposarr(arr);
+                                              setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                              setAntn(false);
+                                            }
+                                          }}
+                                        >
+                                          {console.log('poppp', itm.coords)}
+                                          <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
+                                          <Typography paddingRight={2} variant="h6">
+                                            {removeAfterLastUnderscore(String(itm.type))} - {itm.shelf_index}
+                                            {/* {itm.type.map((anomaly) => removeAfterLastUnderscore(anomaly))} */}
+                                          </Typography>
+                                        </Box>
+                                      </Tooltip>
+                                      
+                                    )
+                                    // )
+                                  )
+                                  // )
+                                )}
+                              </div>
+                              {/* <Divider /> */}
+                              <Typography width={'100%'} variant="h3">
+                                Team
+                              </Typography>
+                              {/* <Divider /> */}
+                              {/* here the anomaly goes */}
+
+                              <div style={{ paddingBottom: 13 }} className="w-full flex justify-start">
+                                <AvatarGroup
+                                  sx={{
+                                    '& .MuiAvatar-root': { width: 40, height: 40, fontSize: 24 }
+                                  }}
+                                  max={2}
+                                >
+                                  <Tooltip
+                                    title={
+                                      <div className="w-[200px] p-2 flex flex-col space-y-2">
+                                        <Typography sx={{ width: '100%', color: 'white' }} variant="h6">
+                                          Agent Details
+                                        </Typography>
+                                        <Typography variant="subtitle2">Name: {item.user[0].name}</Typography>
+                                        <Typography variant="subtitle2">Number: {item.user[0].number}</Typography>
+                                      </div>
+                                    }
+                                    enterTouchDelay={1}
+                                    leaveTouchDelay={100000}
+                                  >
+                                    <Avatar
+                                      className="hover:cursor-pointer"
+                                      sx={{ bgcolor: success }}
+                                      alt={item.user[0].name}
+                                      src="/example.jpg"
+                                    />
+                                  </Tooltip>
+                                </AvatarGroup>
+                              </div>
+                              {/* </div>
+                      </div>
+                      </div> */}
+                            </div>
                           </div>
                         ) : (
                           <div className="flex w-full h-full">
@@ -544,16 +717,25 @@ export default function ShelfView({ date, groups }) {
                           </div>
                         )}
                       </Grid>
-                    ))
-                  )}
-                </Grid>
-              )}
+                    </>
+                  );
+                })
+                
+                
+                : <h1 className='text-center text-4xl'>
+                      Please Choose A Brand
+                </h1>
+                
+              }
+
+              {/* </Grid> */}
             </Grid>
           </Grid>
         </div>
       ) : (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '500px' }}>
           <l-bouncy size="45" speed="1" color="black"></l-bouncy>
+          {/* <h1>No data</h1> */}
         </div>
       )}
 
@@ -614,7 +796,7 @@ export default function ShelfView({ date, groups }) {
                                 // src={liveAnomalyImg ? selectedImage : anomalyDetails[0]?.reference_img}
                                 src={cData.img_url}
                                 alt="No img found"
-                                onLoad={findDimensions}
+                                //onLoad={findDimensionss}
                                 //   () => {
                                 //   setImageLoading(false);
                                 // }}

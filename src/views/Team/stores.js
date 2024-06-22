@@ -51,10 +51,10 @@ const AllStores = () => {
     setPage(0);
   };
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleString();
-  };
+  // const formatDate = (dateString) => {
+  //   const date = new Date(dateString);
+  //   return date.toLocaleString();
+  // };
 
   const deleteUserData = async (id) => {
     await deleteUser(id);
@@ -73,7 +73,18 @@ const AllStores = () => {
   //     setLoading(false);
   //   }
   // };
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Pad month with leading zero
+    const day = String(date.getDate()).padStart(2, '0'); // Pad day with leading zero
+    const hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0'); // Pad with leading zero
+    const amPm = hours >= 12 ? 'PM' : 'AM';
+    const modifiedHours = hours % 12 || 12; // Convert to 12-hour format (12 for midnight/noon)
 
+    return `${year}-${month}-${day}  ${modifiedHours}:${minutes} ${amPm}`;
+  }
   const [searchQuery, setSearchQuery] = useState('');
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
@@ -88,7 +99,7 @@ const AllStores = () => {
       Store: row.store_name,
       Email: row.email,
       Phone: row.number,
-     
+      Last_Login: row.logs && formatDate(row.logs[0].last_login)
     }));
 
     return dataForExport;
@@ -306,7 +317,6 @@ const AllStores = () => {
         ) : (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             <StoresTable
-         
               rows={filteredAndSortedRows}
               getAllUsers={getAllUsers}
               page={page}

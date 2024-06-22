@@ -810,4 +810,60 @@ export const getusers = async()=>{
   }
 }
 
+
+
+/////////////////////////////////////////////////////////shelf view //////////////////////////////////////////////////////////////////////
+export const getZonedetails = async (data) => {
+  try {
+    const response = await axios.post(
+      'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/brand/get-brand-meta-info',
+      data,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: await token()
+        }
+      }
+    );
+    console.log('aur', response.data);
+    // const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.id }));
+    return response;
+  } catch (error) {
+    console.log('Error Calling GetZonedetails API: ', error);
+  }
+};
+
+
+
+export const GetAllBrands  = async (data) => {
+  try {
+    const response = await axios.post(
+      'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/get-brands',
+      data,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: await token()
+        }
+      }
+    );
+    console.log('mlml', response.data);
+    // const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.id }));
+    return response;
+  } catch (error) {
+    console.log('Error Calling GetZonedetails API: ', error);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
