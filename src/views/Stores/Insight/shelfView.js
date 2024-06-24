@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import {
@@ -6,7 +6,7 @@ import {
   Dialog,
   DialogContent,
   Divider,
-  Button,
+  // Button,
   IconButton,
   Paper,
   TextField,
@@ -15,12 +15,13 @@ import {
   Avatar,
   AvatarGroup,
   useTheme,
-  useMediaQuery,
-  Modal
+  useMediaQuery
+  // Modal
 } from '@mui/material';
 import { FaCamera } from 'react-icons/fa';
 // import src1 from '../../../assets/images/heatmap.jpg';
 // import src2 from '../../../assets/images/heatmap2.jpg';
+//eslint-disable-next-line
 import { GetShelfData, GetShelvesData, GetZonedetails, GetAllBrands, getZonedetails } from 'api';
 import { bouncy } from 'ldrs';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
@@ -47,6 +48,7 @@ export default function ShelfView({ date, groups }) {
   const [active, setActive] = useState(null);
   const [data, setData] = useState(null);
   const [shelves, setShelves] = useState(false);
+  //eslint-disable-next-line
   const [loading, setloading] = useState(true);
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const [loadDialog, setLoadDialog] = useState(true);
@@ -55,20 +57,23 @@ export default function ShelfView({ date, groups }) {
   const [nextClickLoad, setNextClickLoad] = useState(false);
   const [nextBtn, setNextbtn] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  //eslint-disable-next-line
   const [anomalyType, setAnomalyType] = useState('');
   const [isBrandData, setIsBrandData] = useState([]);
   const [isBrandName, setIsBrandName] = useState([]);
+  //eslint-disable-next-line
   const [isBrandId, setIsBrandId] = useState(null);
 
   const theme = useTheme();
   const success = theme.palette.success.main;
   const error = theme.palette.error.main;
   const isSmallScreen = !useMediaQuery(theme.breakpoints.up('sm'));
+  //eslint-disable-next-line
   const [isGroup, setIsGroup] = useState(null);
   const paperRefs = useRef([]);
-
+  //eslint-disable-next-line
   const [open, setOpen] = useState(false);
-
+  //eslint-disable-next-line
   const handleClose = () => setOpen(false);
   function formatDate(dateString) {
     const date = new Date(dateString);
@@ -81,13 +86,13 @@ export default function ShelfView({ date, groups }) {
     const modifiedHours = hours % 12 || 12; // Convert to 12-hour format (12 for midnight/noon)
 
     return `${year}-${month}-${day} / ${modifiedHours}:${minutes} ${amPm}`;
-  }  
-  
+  }
+
   function capitalizeWords(str) {
-    return (str
+    return str
       .split(' ')
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' '));
+      .join(' ');
   }
   function replaceUnderscores(str) {
     // Use the replace method with a regular expression
@@ -120,6 +125,7 @@ export default function ShelfView({ date, groups }) {
   // }, [zoneid]);
 
   console.log('ansh', zoneIds);
+  //eslint-disable-next-line
   async function zoneDetails(id) {
     setloading(true);
     const body = {
@@ -154,7 +160,7 @@ export default function ShelfView({ date, groups }) {
     setloading(false);
     console.log('current Data :', cData);
   }
-
+  //eslint-disable-next-line
   async function GetShelfWiseDetails(id) {
     console.log('shelf id is ', id);
     setloading(true);
@@ -314,12 +320,13 @@ export default function ShelfView({ date, groups }) {
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////
+  //eslint-disable-next-line
   const findDimensionss = (event) => {
     setImageLoading(false);
     const { naturalWidth, naturalHeight } = event.target;
     setNaturel({ wdth: naturalWidth, hght: naturalHeight });
   };
-
+  //eslint-disable-next-line
   const findDimensions = (event) => {
     setImageLoading(false);
     const { naturalWidth, naturalHeight } = event.target;
@@ -453,6 +460,7 @@ export default function ShelfView({ date, groups }) {
                     //   opacity: match ? 1 : 0.5, // Reduce opacity if no match
                     //   cursor: match ? 'pointer' : 'not-allowed' // Change cursor if no match
                     // };
+                    //eslint-disable-next-line
                     const style = {
                       backgroundColor: active === d ? 'black' : active ? 'white' : 'gray',
                       // backgroundColor: active === d.brand_id ? 'black' : 'gray',
@@ -531,14 +539,14 @@ export default function ShelfView({ date, groups }) {
               className="scrollbar inline-block "
             >
               {/* <Grid item md={12} sm={12} key={index}> */}
-              {data ?
+              {data ? (
                 data.map((item, index) => {
                   const highlightStyle3 = {
                     position: 'absolute',
-                    left: `${posarr[index] ? posarr[index].lft : "0"}%`,
-                    top: `${posarr[index] ? posarr[index].tp : "0"}%`,
-                    width: `${posarr[index] ? posarr[index].wdth : "0"}%`,
-                    height: `${posarr[index] ? posarr[index].hght : "0"}%`,
+                    left: `${posarr[index] ? posarr[index].lft : '0'}%`,
+                    top: `${posarr[index] ? posarr[index].tp : '0'}%`,
+                    width: `${posarr[index] ? posarr[index].wdth : '0'}%`,
+                    height: `${posarr[index] ? posarr[index].hght : '0'}%`,
                     border: '1px solid red', // Change border color as desired
                     boxSizing: 'border-box',
                     pointerEvents: 'none', // So clicks can still interact with the image
@@ -602,64 +610,63 @@ export default function ShelfView({ date, groups }) {
                                   // cData.anomaly_details.map((item, index) =>
 
                                   item.shelves.map(
-                                    (itm, ind) => (
+                                    (itm, ind) =>
                                       // itm.shelves.coords && (
-                                        itm.anomaly_found > 0 && 
-                                      <Tooltip
-                                        key={0 + ind}
-                                        // title={
-                                        //   <div>
-                                        //     {console.log(itm, ind)}
-                                        //     <Typography variant="body1">
-                                        //       Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
-                                        //     </Typography>
-                                        //     <Typography variant="body1">
-                                        //       <span>Description :</span>
-                                        //       {itm.anomaly_type === 'alien_pop'
-                                        //         ? itm.print_tag
-                                        //           ? itm.print_tag
-                                        //           : 'No Data Found'
-                                        //         : itm.article_description
-                                        //         ? itm.article_description
-                                        //         : 'No Data Found'}
-                                        //     </Typography>
-                                        //     <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
-                                        //   </div>
-                                        // }
-                                      >
-                                        <Box
-                                          key={ind}
-                                          paddingX={0.2}
-                                          paddingY={0.04}
-                                          className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                          onMouseOver={() => {
-                                            (itm.anomaly_found > 0) &&
-                                            // calculate(itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
-                                            calculate3(index, itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
-                                            //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
-                                            console.log('here', itm.coords);
-                                            setAntn(true);
-                                          }}
-                                          onMouseOut={() => {
-                                            if (antn) {
-                                              const arr = [...posarr];
-                                              arr[index]  =  { lft: 0, tp: 0, wdth: 0, ht: 0 };
-                                              setposarr(arr);
-                                              setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                              setAntn(false);
-                                            }
-                                          }}
+                                      itm.anomaly_found > 0 && (
+                                        <Tooltip
+                                          key={0 + ind}
+                                          // title={
+                                          //   <div>
+                                          //     {console.log(itm, ind)}
+                                          //     <Typography variant="body1">
+                                          //       Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
+                                          //     </Typography>
+                                          //     <Typography variant="body1">
+                                          //       <span>Description :</span>
+                                          //       {itm.anomaly_type === 'alien_pop'
+                                          //         ? itm.print_tag
+                                          //           ? itm.print_tag
+                                          //           : 'No Data Found'
+                                          //         : itm.article_description
+                                          //         ? itm.article_description
+                                          //         : 'No Data Found'}
+                                          //     </Typography>
+                                          //     <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
+                                          //   </div>
+                                          // }
                                         >
-                                          {console.log('poppp', itm.coords)}
-                                          <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
-                                          <Typography paddingRight={2} variant="h6">
-                                            {removeAfterLastUnderscore(String(itm.type))} - {itm.shelf_index}
-                                            {/* {itm.type.map((anomaly) => removeAfterLastUnderscore(anomaly))} */}
-                                          </Typography>
-                                        </Box>
-                                      </Tooltip>
-                                      
-                                    )
+                                          <Box
+                                            key={ind}
+                                            paddingX={0.2}
+                                            paddingY={0.04}
+                                            className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                            onMouseOver={() => {
+                                              itm.anomaly_found > 0 &&
+                                                // calculate(itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
+                                                calculate3(index, itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
+                                              //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
+                                              console.log('here', itm.coords);
+                                              setAntn(true);
+                                            }}
+                                            onMouseOut={() => {
+                                              if (antn) {
+                                                const arr = [...posarr];
+                                                arr[index] = { lft: 0, tp: 0, wdth: 0, ht: 0 };
+                                                setposarr(arr);
+                                                setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                                setAntn(false);
+                                              }
+                                            }}
+                                          >
+                                            {console.log('poppp', itm.coords)}
+                                            <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
+                                            <Typography paddingRight={2} variant="h6">
+                                              {removeAfterLastUnderscore(String(itm.type))} - {itm.shelf_index}
+                                              {/* {itm.type.map((anomaly) => removeAfterLastUnderscore(anomaly))} */}
+                                            </Typography>
+                                          </Box>
+                                        </Tooltip>
+                                      )
                                     // )
                                   )
                                   // )
@@ -720,13 +727,9 @@ export default function ShelfView({ date, groups }) {
                     </>
                   );
                 })
-                
-                
-                : <h1 className='text-center text-4xl'>
-                      Please Choose A Brand
-                </h1>
-                
-              }
+              ) : (
+                <h1 className="text-center text-4xl">Please Choose A Brand</h1>
+              )}
 
               {/* </Grid> */}
             </Grid>

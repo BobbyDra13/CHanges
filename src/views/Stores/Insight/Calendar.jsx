@@ -38,11 +38,11 @@ function DatePickerComp({ SetSelectedDate }) {
   useEffect(() => {
     async function getEventsdata() {
       // setIsLoading(true);
-      const storeDetails = JSON.parse(localStorage.getItem('analysisStoreDetails'));
+      // const storeDetails = JSON.parse(localStorage.getItem('analysisStoreDetails'));
       try {
-        const body = {
-          store_id: [`${storeDetails.store}`]
-        };
+        // const body = {
+        //   store_id: [`${storeDetails.store}`]
+        // };
         // const Edata = await GetDates(body);
 
         // const daysOnly = Edata.data.map((item) => {
@@ -51,12 +51,13 @@ function DatePickerComp({ SetSelectedDate }) {
         // });
         const Edata = { data: [] };
 
-const daysOnly = Edata && Edata.data
-  ? Edata.data.map((item) => {
-      const eventdate = new Date(item);
-      return eventdate;
-    })
-  : [];
+        const daysOnly =
+          Edata && Edata.data
+            ? Edata.data.map((item) => {
+                const eventdate = new Date(item);
+                return eventdate;
+              })
+            : [];
         setEvents(daysOnly);
         // setIsLoading(false)
       } catch (error) {

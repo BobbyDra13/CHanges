@@ -73,6 +73,7 @@ import { FaAngleDoubleLeft } from 'react-icons/fa';
 const totalParts = 142;
 
 // Dummy Data
+//eslint-disable-next-line
 const dummyStoreData = [
   {
     store: 'Store123',
@@ -145,7 +146,7 @@ const dummyStoreData = [
   }
   // Add more dummy store data as needed
 ];
-
+//eslint-disable-next-line
 const dummyAnomaliesData = {
   Store123: {
     anomalies_detected: 15,
@@ -157,14 +158,21 @@ const dummyAnomaliesData = {
 };
 
 const Customers = () => {
+  //eslint-disable-next-line
   const [cord, setcord] = useState(null);
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const [storesData, setStoresData] = useState([]);
+  //eslint-disable-next-line
   const [colorArray, setColorArray] = useState([]);
+  //eslint-disable-next-line
   const [anomalies_count, setAnomalies_count] = useState(0);
+  //eslint-disable-next-line
   const [fullnessArray, setFullnessArray] = useState([]);
+  //eslint-disable-next-line
   const [anomalyDetails, setAnonmalyDetails] = useState([]);
+  //eslint-disable-next-line
   const [timestamps, setTimestamps] = useState({ date: '', time: '' });
+  //eslint-disable-next-line
   const [anomalyType, setAnomalyType] = useState('');
   const [loading, setLoading] = useState(false);
   const [clickedBar, setClickedBar] = useState({
@@ -178,6 +186,7 @@ const Customers = () => {
   const [cData, setCdata] = useState(null);
   const [lcData, setLCdata] = useState(false);
   const [storeAnomalies, setStoreAnomalies] = useState(dummyAnomaliesData);
+  //eslint-disable-next-line
   const [metadata, setMetadata] = useState('');
   const [alertData, setAlertData] = useState({
     zone_id: false,
@@ -227,7 +236,7 @@ const Customers = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const ITEM_HEIGHT = 48;
 
-  const user_id = 'dummyUserId';
+  //const user_id = 'dummyUserId';
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -240,7 +249,7 @@ const Customers = () => {
   // const upKeepClicked = () => {
   //   setClickedBar((prevState) => ({ ...prevState, isUpKeep: !prevState.isUpKeep }));
   // };
-
+  //eslint-disable-next-line
   const upKeepClicked = () => {
     if (!clickedBar.isUpKeep) {
       setClickedBar({ isUpKeep: true, isVm: false, isPop: false });
@@ -248,7 +257,7 @@ const Customers = () => {
       setClickedBar({ isUpKeep: false, isVm: false, isPop: false });
     }
   };
-
+  //eslint-disable-next-line
   const vMClicked = () => {
     if (!clickedBar.isVm) {
       setClickedBar({ isUpKeep: false, isVm: true, isPop: false });
@@ -259,8 +268,8 @@ const Customers = () => {
   // const vMClicked = () => {
   //   setClickedBar((prevState) => ({ ...prevState, isVm: !prevState.isVm }));
   // };
-  const [map, setmap] = useState(null);
-  const [mapindex, setmapindex] = useState(0);
+  // const [map, setmap] = useState(null);
+  //const [mapindex, setmapindex] = useState(0);
 
   useEffect(() => {
     console.log('here is storesData', storesData);
@@ -274,7 +283,7 @@ const Customers = () => {
       }
     }
     console.log('map', map);
-    setmap(map);
+    //setmap(map);
   }, [storesData]);
 
   const handleImageClick = async (url, id, anomaly, time) => {
@@ -406,8 +415,7 @@ const Customers = () => {
     }, 1000);
   };
 
-  const unique_anomalies = 1;  
-
+  // const unique_anomalies = 1;
 
   function formatDate(dateString) {
     const date = new Date(dateString);
@@ -467,7 +475,7 @@ const Customers = () => {
     const height = ((ymax - ymin) / natural.hght) * 100;
     setPos({ lft: lft, tp: top, wdth: width, hght: height });
     setAntn(true);
-    console.log("calcaulte",pos);
+    console.log('calcaulte', pos);
   };
 
   const highlightStyle = {
@@ -548,7 +556,7 @@ const Customers = () => {
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
   };
-
+  //eslint-disable-next-line
   const handleNextClick = () => {
     if (!cData || !storeAnomalies[cData._id]) return;
 
@@ -600,7 +608,7 @@ const Customers = () => {
 
     handleImageClickfromnext(anomaly.bay_img_urls, anomaly.metadata_id, anomaly);
   };
-
+  //eslint-disable-next-line
   const handlePrevClick = () => {
     if (!cData || !storeAnomalies[cData._id]) return;
 
@@ -649,10 +657,10 @@ const Customers = () => {
     //   cData && console.log(cData[0].anomaly_details);
   }, [cData]);
   function capitalizeWords(str) {
-    return (str
+    return str
       .split(' ')
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' '));
+      .join(' ');
   }
   function replaceUnderscores(str) {
     // Use the replace method with a regular expression
@@ -667,38 +675,35 @@ const Customers = () => {
       return replaceUnderscores(str);
     }
   }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-const findUniqueObjects = (originalArray) => {
-  const seen = new Set(); // Set to store seen combinations of name and coord
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  const findUniqueObjects = (originalArray) => {
+    const seen = new Set(); // Set to store seen combinations of name and coord
 
-  const uniqueObjects = [];
+    const uniqueObjects = [];
 
-  for (const obj of originalArray) {
-    const key = JSON.stringify({ type: obj.type, coords: obj.coords }); // Create a unique key
+    for (const obj of originalArray) {
+      const key = JSON.stringify({ type: obj.type, coords: obj.coords }); // Create a unique key
 
-    if (!seen.has(key)) {
-      seen.add(key);
-      uniqueObjects.push(obj);
+      if (!seen.has(key)) {
+        seen.add(key);
+        uniqueObjects.push(obj);
+      }
     }
-  }
 
-  return uniqueObjects;
-};
+    return uniqueObjects;
+  };
 
-
-const [uniqueArray, setUniqueArray] = useState([]);
+  const [uniqueArray, setUniqueArray] = useState([]);
 
   useEffect(() => {
-    if(cData){
-    const uniqueObjects = (cData && cData.length > 0 && cData[0].anomaly_details) && findUniqueObjects(cData[0].anomaly_details);
-    console.log("unique array of anomalies ", uniqueObjects);
-    setUniqueArray(uniqueObjects);
-  }
+    if (cData) {
+      const uniqueObjects = cData && cData.length > 0 && cData[0].anomaly_details && findUniqueObjects(cData[0].anomaly_details);
+      console.log('unique array of anomalies ', uniqueObjects);
+      setUniqueArray(uniqueObjects);
+    }
   }, [cData]);
 
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   return (
     <>
       <Breadcrumb title="Stores">
@@ -1246,7 +1251,8 @@ const [uniqueArray, setUniqueArray] = useState([]);
                           // cData.anomaly_details.map((item, index) =>
 
                           // cData[0].anomaly_details.map((itm, ind) => (
-                        uniqueArray.length > 0  &&    uniqueArray.map((itm, ind) => (
+                          uniqueArray.length > 0 &&
+                          uniqueArray.map((itm, ind) => (
                             <Tooltip
                               key={0 + ind}
                               // title={
@@ -1275,12 +1281,7 @@ const [uniqueArray, setUniqueArray] = useState([]);
                                 paddingY={0.04}
                                 className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
                                 onMouseOver={() => {
-                                  calculate(
-                                   itm.coords[0],
-                                   itm.coords[1],
-                                   itm.coords[2],
-                                   itm.coords[3]
-                                  );
+                                  calculate(itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
                                   //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
                                   setAntn(true);
                                 }}
@@ -1294,7 +1295,7 @@ const [uniqueArray, setUniqueArray] = useState([]);
                                 <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
                                 <Typography paddingRight={2} variant="h6">
                                   {removeAfterLastUnderscore(itm.type)}
-                                {/* {cData[0].unique_anomaly_array.map((anomaly) => removeAfterLastUnderscore(anomaly) )} */}
+                                  {/* {cData[0].unique_anomaly_array.map((anomaly) => removeAfterLastUnderscore(anomaly) )} */}
                                 </Typography>
                               </Box>
                             </Tooltip>
