@@ -9,7 +9,11 @@ import SearchBar from './SearchBar';
 import StoresTable from './StoresTable';
 import AddStore from './addStore';
 import FilterationButton from './FilterationButton';
-import { deleteUser, getUsers, getusers } from 'api';
+import {
+  deleteUser,
+  // getUsers,f
+  getusers
+} from 'api';
 import { bouncy } from 'ldrs';
 bouncy.register();
 
@@ -20,7 +24,10 @@ const AllStores = () => {
   const [page, setPage] = useState(0);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [
+    loading
+    // , setLoading
+  ] = useState(false);
 
   const getAllUsers = async () => {
     try {

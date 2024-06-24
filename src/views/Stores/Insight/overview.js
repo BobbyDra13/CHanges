@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useDispatch } from 'react-redux';
-import { addZone } from '../../../store/slices/zoneSlice';
+// import { useDispatch } from 'react-redux';
+// import { addZone } from '../../../store/slices/zoneSlice';
 import { useParams } from 'react-router-dom';
 import {
   Grid,
@@ -15,14 +15,14 @@ import {
   IconButton,
   Divider,
   Snackbar,
-  Alert,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  Paper,
-  Table,
-  TableBody
+  Alert
+  // TableContainer,
+  // TableHead,
+  // TableRow,
+  // TableCell,
+  // Paper,
+  // Table,
+  // TableBody
 } from '@mui/material';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { avgDwelTime } from '../../../api/sentinelAPI';
@@ -32,7 +32,7 @@ import { getRatio } from 'api/sentinelAPI';
 // import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import DatePickerStore from './Calendar';
 // import UpdateIcon from '@mui/icons-material/Update';
-import Uniquejourney from './KPICards/Uniquejourney';
+// import Uniquejourney from './KPICards/Uniquejourney';
 // import DonutChart from './TrendsViewCharts/DonutChart';
 // import DonutChartTwo from './TrendsViewCharts/DonutChartTwo';
 // import GroupIcon from '@mui/icons-material/Group';
@@ -42,21 +42,21 @@ import LineChartToggle from './lineChartToggle';
 // import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import { IoMdSettings, IoMdDownload } from 'react-icons/io';
 import { CgSpinner } from 'react-icons/cg';
-import CsvModal from './CsvUpload';
+// import CsvModal from './CsvUpload';
 import CsvModalAssociate from './CSV_Associate';
 import RadarChart from './RadarChart';
 import {
-  GetPopPercentage,
-  //  GetpopKPI,
-  GetCapProgStoreView,
-  GetAnomaliesCount,
-  getAssociateScoreData,
+  // GetPopPercentage,
+  // //  GetpopKPI,
+  // GetCapProgStoreView,
+  // GetAnomaliesCount,
+  // getAssociateScoreData,
   GetReport,
   getsevendaydata,
   storeviewcaptureprogress,
   storeanomalycount,
   OsaScoreForKpi,
-  associateScore,
+  // associateScore,
   associatescoreaforkpi,
   brandWiseOsaAndTesterScore
 } from 'api';
@@ -86,37 +86,52 @@ function Overview() {
   console.log('storeId is : ', store);
 
   console.log('the id is', store);
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const isMediumScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-  const [storeDwelTime, setStoreDwelTime] = useState(false);
-  const [averageDwellTime, setAverageDwellTime] = useState(false);
-  const [dweltimeData, setDweltimedata] = useState(false);
-  const [footfalldata, setFootfalldata] = useState(false);
-  const [associateScoreData, setAssociateScoreData] = useState([]);
-  const [isGroup, setIsGroup] = useState([]);
+  const [
+    // storeDwelTime,
+    setStoreDwelTime
+  ] = useState(false);
+  const [
+    // averageDwellTime,
+    setAverageDwellTime
+  ] = useState(false);
+  const [
+    // dweltimeData,
+    setDweltimedata
+  ] = useState(false);
+  // const [footfalldata, setFootfalldata] = useState(false);
+  const [
+    // associateScoreData,
+    setAssociateScoreData
+  ] = useState([]);
+  const [
+    isGroup
+    // , setIsGroup
+  ] = useState([]);
   const [activeButton, setActiveButton] = useState('Trends View');
   const [isDownloading, setIsDownloading] = useState(false);
   // const [selectedZoneID, setSelectedZoneID] = useState(null);
   const targetRef = useRef(null);
   //eslint-disable-next-line
-  const [ftfall, setftfall] = useState([]);
+  // const [ftfall, setftfall] = useState([]);
   // const [isZoneID, setIsZoneID] = useState('');
-  const handleScrollToComponent = (zoneId) => {
-    // Scroll to the target component
-    // localStorage.setItem('selectedZoneId', zoneId);
-    dispatch(addZone(zoneId)); //Add the zone id to store
-    console.log('zoneId in overview page:', zoneId);
-    // setIsZoneID(zoneId);
-    setTimeout(() => {
-      if (targetRef.current) {
-        targetRef.current.scrollIntoView({ behavior: 'smooth' });
-      }
-      handleButtonClick('Shelf View');
-    }, 100);
-  };
+  // const handleScrollToComponent = (zoneId) => {
+  //   // Scroll to the target component
+  //   // localStorage.setItem('selectedZoneId', zoneId);
+  //   dispatch(addZone(zoneId)); //Add the zone id to store
+  //   console.log('zoneId in overview page:', zoneId);
+  //   // setIsZoneID(zoneId);
+  //   setTimeout(() => {
+  //     if (targetRef.current) {
+  //       targetRef.current.scrollIntoView({ behavior: 'smooth' });
+  //     }
+  //     handleButtonClick('Shelf View');
+  //   }, 100);
+  // };
 
   const storeDetails = JSON.parse(localStorage.getItem('analysisStoreDetails'));
 
@@ -137,23 +152,23 @@ function Overview() {
   //eslint-disable-next-line
   const [costcnt, setCostcnt] = useState('');
   // const [ratio, setRatio] = useState('');
-  const [openPopScoreModal, setOpenPopScoreModal] = useState(false);
+  // const [openPopScoreModal, setOpenPopScoreModal] = useState(false);
   const [openAssociateScoreModal, setOpenAssociateScoreModal] = useState(false);
   const [snackbarConfig, setSnackbarConfig] = useState({ open: false, message: '', severity: 'success' });
   //eslint-disable-next-line
-  const [captureProg, setCaptureProg] = useState([]);
-  const [capProgressValue, setCapProgressValue] = useState(0);
+  // const [captureProg, setCaptureProg] = useState([]);
+  // const [capProgressValue, setCapProgressValue] = useState(0);
   //eslint-disable-next-line
   const [anomaliesCount, setAnomaliesCount] = useState([]);
   const [anomaliesLoading, setAnomaliesLoading] = useState(true);
-  const [sevendaydata, setsevendaydata] = useState(null);
+  // const [sevendaydata, setsevendaydata] = useState(null);
   const [capture7days, setcapture7days] = useState(null);
   const [Osa7days, setOsa7days] = useState(null);
   const [testfullness7days, settestfullness7days] = useState(null);
-  
+
   const get7daysdata = async (date) => {
     try {
-      const result = (store && date) && await getsevendaydata(date, store);
+      const result = store && date && (await getsevendaydata(date, store));
       console.log('result from get7daysdata', result);
       result && setcapture7days(result.capture7days);
       result && settestfullness7days(result.testerFullness7days);
@@ -165,35 +180,37 @@ function Overview() {
 
   useEffect(() => {
     get7daysdata(date);
+    //eslint-disable-next-line
   }, []);
   useEffect(() => {
     get7daysdata(date);
+    //eslint-disable-next-line
   }, [date, store]);
   const handleClickAssociateScoreModal = () => {
     setOpenAssociateScoreModal((prev) => !prev);
     setIsSnackbarOpen(false);
     // console.log(openPopScoreModal);
   };
-  const handleClickPopScoreModal = () => {
-    setOpenPopScoreModal((prev) => !prev);
-    setSnackbarConfig({ open: false, message: '', severity: 'success' });
-    console.log(openPopScoreModal);
-  };
+  // const handleClickPopScoreModal = () => {
+  //   setOpenPopScoreModal((prev) => !prev);
+  //   setSnackbarConfig({ open: false, message: '', severity: 'success' });
+  //   console.log(openPopScoreModal);
+  // };
 
-  const handleClose = () => {
-    setOpenPopScoreModal(false); // Close the modal
-    setOpenAssociateScoreModal(false);
-  };
+  // const handleClose = () => {
+  //   setOpenPopScoreModal(false); // Close the modal
+  //   setOpenAssociateScoreModal(false);
+  // };
 
-  const handleUploadComplete = (success) => {
-    //here changes are made, change it such that success is given as o/p only when both the API's give the response
-    setOpenPopScoreModal(false); // Close the modal
-    if (success) {
-      setSnackbarConfig({ open: true, message: 'File uploaded successfully!', severity: 'success' });
-    } else {
-      setSnackbarConfig({ open: true, message: 'Error uploading file!', severity: 'error' });
-    }
-  };
+  // const handleUploadComplete = (success) => {
+  //   //here changes are made, change it such that success is given as o/p only when both the API's give the response
+  //   setOpenPopScoreModal(false); // Close the modal
+  //   if (success) {
+  //     setSnackbarConfig({ open: true, message: 'File uploaded successfully!', severity: 'success' });
+  //   } else {
+  //     setSnackbarConfig({ open: true, message: 'Error uploading file!', severity: 'error' });
+  //   }
+  // };
 
   const handleCloseAssociateScoreModal = () => {
     setOpenAssociateScoreModal(false); // Close the modal
@@ -251,7 +268,10 @@ function Overview() {
       setIsDownloading(false);
     }
   };
-  const [storeviewcaptureprogres, setstoreviewcaptureprogres] = useState(0);
+  const [
+    // storeviewcaptureprogres,
+    setstoreviewcaptureprogres
+  ] = useState(0);
   const getviewcaptureprogress = async () => {
     try {
       const response = store && date && (await storeviewcaptureprogress(date, store));
@@ -264,9 +284,11 @@ function Overview() {
   };
   useEffect(() => {
     getviewcaptureprogress();
+    //eslint-disable-next-line
   }, [testfullness7days, date, store]);
   useEffect(() => {
     getviewcaptureprogress();
+    //eslint-disable-next-line
   }, []);
   const accentColLight = theme.palette.success.light;
   const accentColDark = theme.palette.success.dark;
@@ -351,7 +373,7 @@ function Overview() {
   // };
 
   const [isMounted, setIsMounted] = useState(true);
-  const [totalPOP, setTotalPop] = useState(false);
+  // const [totalPOP, setTotalPop] = useState(false);
   useEffect(() => {
     // Set the component to be mounted when the effect is run
     setIsMounted(true);
@@ -368,10 +390,10 @@ function Overview() {
         start_date: date,
         storeId: store
       };
-      const popBody = {
-        date: date,
-        store_id: store
-      };
+      // const popBody = {
+      //   date: date,
+      //   store_id: store
+      // };
       // eslint-disable-next-line
       async function getDataDwell() {
         // console.log(date);
@@ -468,9 +490,8 @@ function Overview() {
       async function getCaptureProg() {
         try {
           // const capProgress = await GetCapProgStoreView(popBody);
-          const capProgress = { data: [] };
+          // const capProgress = { data: [] };
           // console.log('capTop ', capProgress);
-
           // const capProg = capProgress.data.captureProgressZoneData.map((item) => {
           //   return {
           //     ...item,
@@ -540,8 +561,14 @@ function Overview() {
     console.log('date from dasda', date);
   }, [date]);
 
-  const [osascore, setosascore] = useState(0);
-  const [testerscore, settesterscore] = useState(0);
+  const [
+    // osascore,
+    setosascore
+  ] = useState(0);
+  const [
+    // testerscore,
+    settesterscore
+  ] = useState(0);
   const getosascoreforkpi = async () => {
     try {
       const result = store && date && (await OsaScoreForKpi(date, store));
@@ -571,15 +598,17 @@ function Overview() {
   };
   useEffect(() => {
     getanomalydetails();
+    //eslint-disable-next-line
   }, []);
   useEffect(() => {
     getanomalydetails();
+    //eslint-disable-next-line
   }, [date, store]);
 
   const [associatescore, setassociatescore] = useState([]);
   const getassociatescore = async () => {
     try {
-      const result = (store && date) && (await associatescoreaforkpi(date, store));
+      const result = store && date && (await associatescoreaforkpi(date, store));
       console.log('assocaite score kpi', result);
       setassociatescore(result);
       result && result.length > 0 && console.log('result', result[0].osa_score);
@@ -609,6 +638,7 @@ function Overview() {
     getosascoreforkpi();
     getbrandwiseosaandtesterscore();
     // getanomalydetails();
+    //eslint-disable-next-line
   }, [store, date]);
 
   return (
@@ -787,7 +817,9 @@ function Overview() {
                       <div className="flex items-center justify-center gap-2 w-full">
                         <img src={associate} alt="pop" className="h-14 w-14" />
                         <div className="w-full">
-                          <p className="text-3xl text-gray-500 ">{testfullness7days ? testfullness7days[testfullness7days.length-1] : 0}%</p>
+                          <p className="text-3xl text-gray-500 ">
+                            {testfullness7days ? testfullness7days[testfullness7days.length - 1] : 0}%
+                          </p>
                           <p className="text-lg font-semibold">Tester Score</p>
                         </div>
                         <>
@@ -895,7 +927,9 @@ function Overview() {
                       <div className="flex items-center justify-center gap-2 w-full">
                         <img src={popIcon} alt="pop" className="h-14 w-14" />
                         <div className="w-full">
-                          <p className="text-3xl text-gray-500 ">{testfullness7days ? testfullness7days[testfullness7days.length-1] : 0}%</p>
+                          <p className="text-3xl text-gray-500 ">
+                            {testfullness7days ? testfullness7days[testfullness7days.length - 1] : 0}%
+                          </p>
                           <p className="text-lg font-semibold">Tester Score</p>
                         </div>
                         <>
@@ -969,7 +1003,8 @@ function Overview() {
                         {associatescore.length > 0 ? (
                           associatescore.map((item, index) => {
                             console.log('item', item.associate_score);
-                            const percentage = Math.round(parseFloat(item.associate_score)) > 100 ? 100 : Math.round(parseFloat(item.associate_score));
+                            const percentage =
+                              Math.round(parseFloat(item.associate_score)) > 100 ? 100 : Math.round(parseFloat(item.associate_score));
                             const barcolor = percentage >= 99 ? '#00ac69' : percentage >= 95 ? '#f4a100' : '#ff413a';
                             // const capturedZone = item.zones.map((i) => {
                             //   return i._id.zone;
@@ -1094,19 +1129,17 @@ function Overview() {
         </Grid>
         <Grid item xs={12}>
           <Grid container spacing={2}>
-          
             <Grid ref={targetRef} className="mb-10" item xs={12} lg={9} xl={9.6}>
               <Card className="border border-gray-300" sx={{ height: '550px' }}>
                 <LineChartToggle
-                  capture7days= {capture7days} 
-                  Osa7days = {Osa7days}
-                  testfullness7days = {testfullness7days}
+                  capture7days={capture7days}
+                  Osa7days={Osa7days}
+                  testfullness7days={testfullness7days}
                   storeId={store}
                   date={date}
                   groups={isGroup}
                   activeButton={activeButton}
                   handleButtonClick={handleButtonClick}
-
                 />
               </Card>
             </Grid>
@@ -1163,7 +1196,6 @@ function Overview() {
                         <Skeleton variant="rectangular" height={184} className="rounded-md" />
                       )}
                     </div>
-                   
                   </div>
                 </Card>
               </div>

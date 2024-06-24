@@ -343,7 +343,7 @@ export const GetZonedetails = async (data) => {
         Authorization: await token()
       }
     });
-    console.log('aur',response);
+    console.log('aur', response);
     // const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.id }));
     return response;
   } catch (error) {
@@ -600,7 +600,7 @@ export const GetReport = async (data) => {
 };
 
 ///////////////////////////////////////API for getting last seven days data that is fulness7days and capture7days////////////////////////////
-export const getsevendaydata = async (date,store) => {
+export const getsevendaydata = async (date, store) => {
   try {
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/line-chart';
     const data = {
@@ -629,16 +629,15 @@ export const getsevendaydata = async (date,store) => {
   }
 };
 
-export const storeviewcaptureprogress = async(date,store) =>{
+export const storeviewcaptureprogress = async (date, store) => {
   try {
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/capture-progress';
     const data = {
-        
-       store_id:String(store),
+      store_id: String(store),
       //store_id:"6623a893c40c738627f3373f",
-        
-          date : String(date)
-        // date:"2024-06-13"
+
+      date: String(date)
+      // date:"2024-06-13"
     };
 
     const response = await fetch(url, {
@@ -658,17 +657,17 @@ export const storeviewcaptureprogress = async(date,store) =>{
   } catch (error) {
     console.log('error in storeviewcaptureprogress : ', error);
   }
-}
+};
 
-export const storeanomalycount = async(date,store) =>{
+export const storeanomalycount = async (date, store) => {
   try {
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/anomly-count';
     const data = {
-         store_id:String(store),
-       //  store_id:"6623a893c40c738627f3373f",
-        
-          date : String(date)
-        // date:"2024-06-13"
+      store_id: String(store),
+      //  store_id:"6623a893c40c738627f3373f",
+
+      date: String(date)
+      // date:"2024-06-13"
     };
 
     const response = await fetch(url, {
@@ -688,17 +687,17 @@ export const storeanomalycount = async(date,store) =>{
   } catch (error) {
     console.log('error in storeanomalycount : ', error);
   }
-}
+};
 
-export const OsaScoreForKpi = async(date,store)=>{
+export const OsaScoreForKpi = async (date, store) => {
   try {
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/osa-score-kpi';
     const data = {
-         store_id:String(store),
-         //store_id:"6623a893c40c738627f3373f",
-       
-         date:String(date)
-         // date:"2024-06-13"
+      store_id: String(store),
+      //store_id:"6623a893c40c738627f3373f",
+
+      date: String(date)
+      // date:"2024-06-13"
     };
 
     const response = await fetch(url, {
@@ -718,15 +717,15 @@ export const OsaScoreForKpi = async(date,store)=>{
   } catch (error) {
     console.log('error in OsaScoreForKpi : ', error);
   }
-}
-export const associatescoreaforkpi = async(date,store)=>{
+};
+export const associatescoreaforkpi = async (date, store) => {
   try {
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/associate-score';
     const data = {
-         store_id:String(store),
-        // store_id:"6623a893c40c738627f3373f",
-          date: String(date)
-         // date:"2024-06-13"
+      store_id: String(store),
+      // store_id:"6623a893c40c738627f3373f",
+      date: String(date)
+      // date:"2024-06-13"
     };
 
     const response = await fetch(url, {
@@ -746,17 +745,16 @@ export const associatescoreaforkpi = async(date,store)=>{
   } catch (error) {
     console.log('error in assocaiteScoreForKpi : ', error);
   }
-}
+};
 
-
-export const brandWiseOsaAndTesterScore = async(date,store)=>{
+export const brandWiseOsaAndTesterScore = async (date, store) => {
   try {
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/brand-wise-score';
     const data = {
-         store_id:String(store),
-        // store_id:"6623a893c40c738627f3373f",
-          date: String(date)
-         // date:"2024-06-13"
+      store_id: String(store),
+      // store_id:"6623a893c40c738627f3373f",
+      date: String(date)
+      // date:"2024-06-13"
     };
 
     const response = await fetch(url, {
@@ -776,19 +774,17 @@ export const brandWiseOsaAndTesterScore = async(date,store)=>{
   } catch (error) {
     console.log('error in brandWiseOsaAndTesterScore : ', error);
   }
-}
+};
 
-
-
-export const getusers = async()=>{
+export const getusers = async () => {
   try {
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/team/get-team';
     const data = {
-        // store_id:String(store),
-         store_id:"6623a893c40c738627f3373f",
-        //  date: String(date),
-        category: "fragrances",
-        date:'2024-06-19'
+      // store_id:String(store),
+      store_id: '6623a893c40c738627f3373f',
+      //  date: String(date),
+      category: 'fragrances',
+      date: '2024-06-19'
     };
 
     const response = await fetch(url, {
@@ -808,9 +804,7 @@ export const getusers = async()=>{
   } catch (error) {
     console.log('error in getuser : ', error);
   }
-}
-
-
+};
 
 /////////////////////////////////////////////////////////shelf view //////////////////////////////////////////////////////////////////////
 export const getZonedetails = async (data) => {
@@ -833,27 +827,21 @@ export const getZonedetails = async (data) => {
   }
 };
 
-
-
-export const GetAllBrands  = async (data) => {
+export const GetAllBrands = async (data) => {
   try {
-    const response = await axios.post(
-      'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/get-brands',
-      data,
-      {
-        headers: {
-          Accept: 'application/json',
-          Authorization: await token()
-        }
+    const response = await axios.post('https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/get-brands', data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
       }
-    );
+    });
     console.log('mlml', response.data);
     // const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.id }));
     return response;
   } catch (error) {
     console.log('Error Calling GetAllBrands API: ', error);
   }
-}
+};
 
 ////////////////////////////////////////////////////////insights page ////////////////////////////////////////////////////
 export const seven_day_anomalies  = async (data) => {
@@ -911,14 +899,5 @@ export const testerPercentAndOsaScoreHistogram = async(data)=>{
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

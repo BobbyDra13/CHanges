@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
 // import { GetpopKPI } from 'api';
 
-const RadarChart = ({ storeId, date }) => {
+const RadarChart = ({
+  // storeId,
+  date
+}) => {
   const [radarData, setRadarData] = useState([]);
   const [options, setOptions] = useState({});
   const defaultOption = {
@@ -23,10 +26,10 @@ const RadarChart = ({ storeId, date }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const body = {
-        date: date.toString(),
-        store_id: storeId
-      };
+      // const body = {
+      //   date: date.toString(),
+      //   store_id: storeId
+      // };
       // const response = await GetpopKPI(body);
       const response = { data: [] };
       setRadarData(response.data);

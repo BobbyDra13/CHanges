@@ -1,38 +1,49 @@
 import { Box, CircularProgress } from '@mui/material';
-import { getsevendaydata } from 'api';
+// import { getsevendaydata } from 'api';
 
 import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
-import { useParams } from 'react-router';
+// import { useParams } from 'react-router';f
 // import { footfallGraph } from 'api/sentinelAPI';
 // import { GetFullnessPop, GetSevenDayCapProgress } from 'api';
 // import Bubbledxaxis from './Bubbledx-axis';
 // import {footfallGraph} from "api/sentinelAPI";
 // const footfalldata=footfallGraph();
 
-const Areachart = ({ storeId, date, capture7days,Osa7days,testfullness7days}) => {
-  const { store } = useParams();
+const Areachart = ({
+  //  storeId,f
+  date,
+  capture7days,
+  Osa7days,
+  testfullness7days
+}) => {
+  // const { store } = useParams();
+  //eslint-disable-next-line
   const [category, setCategory] = useState([]);
   const [custCount, setCustCount] = useState([]);
+  //eslint-disable-next-line
   const [capProgress, setCapProgress] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState([]);
+  const [
+    status
+    // , setStatus
+  ] = useState([]);
   // const [capture7days, setcapture7days] = useState(null);
   // const [fullness7days, setfullness7days] = useState(null);
   // const [Osa7days, setOsa7days] = useState(null);
-  function getLastSevenDaysDates() {
-    const today = new Date();
-    const dates = [];
+  // function getLastSevenDaysDates() {
+  //   const today = new Date();
+  //   const dates = [];
 
-    // Loop through the last seven days
-    for (let i = 0; i < 7; i++) {
-      const day = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
-      const formattedDate = day.toLocaleDateString('en-US'); // Format as YYYY-MM-DD
-      dates.push(formattedDate);
-    }
+  //   // Loop through the last seven days
+  //   for (let i = 0; i < 7; i++) {
+  //     const day = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
+  //     const formattedDate = day.toLocaleDateString('en-US'); // Format as YYYY-MM-DD
+  //     dates.push(formattedDate);
+  //   }
 
-    return dates.reverse(); // Reverse to show most recent day first
-  }
+  //   return dates.reverse(); // Reverse to show most recent day first
+  // }
 
   function getLastWeekDates(dateString) {
     // Try parsing the date string
@@ -79,15 +90,13 @@ const Areachart = ({ storeId, date, capture7days,Osa7days,testfullness7days}) =>
   //   get7daysdata(date);
   // }, [date, store]);
 
- 
-
   useEffect(() => {
     async function getData() {
       console.log(date);
-      const body = {
-        date: date,
-        store_id: storeId
-      };
+      // const body = {
+      //   date: date,
+      //   store_id: storeId
+      // };
       try {
         setLoading(true);
         // const data = await GetFullnessPop(body);
@@ -112,10 +121,10 @@ const Areachart = ({ storeId, date, capture7days,Osa7days,testfullness7days}) =>
 
     async function getCaptureData() {
       console.log('date', date);
-      const captureBody = {
-        date: date,
-        store_id: storeId
-      };
+      // const captureBody = {
+      //   date: date,
+      //   store_id: storeId
+      // };
       try {
         setLoading(true);
         // const capData = await GetSevenDayCapProgress(captureBody);
@@ -150,7 +159,7 @@ const Areachart = ({ storeId, date, capture7days,Osa7days,testfullness7days}) =>
     series: [
       {
         name: 'Capture Progress',
-        data:  capture7days && capture7days
+        data: capture7days && capture7days
         //  data: [90, 7, 4, 20, 18, 80, 100, 40, 60, 30, 20]
         //data: [90, 7, 4, 20, 18, 80, 100, 40, 60, 30, 20, 33, 15, 9, 4]
       },
@@ -160,8 +169,8 @@ const Areachart = ({ storeId, date, capture7days,Osa7days,testfullness7days}) =>
         //data: [480, 7, 4, 20, 18, 80, 100, 40, 60, 30, 20]
       },
       {
-        name : 'OSA Score',
-        data :  Osa7days && Osa7days
+        name: 'OSA Score',
+        data: Osa7days && Osa7days
       }
       // {
 
@@ -379,7 +388,7 @@ const Areachart = ({ storeId, date, capture7days,Osa7days,testfullness7days}) =>
         type: 'Number'
         // categories:['0','5','10','15','20','25','30','35','40','45','50','55','60','65','70','75','80','85','90','95','100']
       },
-      colors: ['#10b981', '#06b6d4',"#e97451" ]
+      colors: ['#10b981', '#06b6d4', '#e97451']
     }
   };
 
