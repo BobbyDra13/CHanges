@@ -881,7 +881,30 @@ export const seven_day_anomalies  = async (data) => {
   }
 }
 
-
+export const getOSAScoreDataKPI = async(data)=>{
+  try {
+    //   const data = {
+    //     // store_id:String(store),
+    //     date: "2024-06-20",
+    //     user_id: "666fef1bdbf527b634e95c0b"
+    // };
+      const response = await axios.post(
+        'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/osa-score',
+        data,
+        {
+          headers: {
+            Accept: 'application/json',
+            Authorization: await token()
+          }
+        }
+      );
+      console.log('data from backedn of OSA Score for insightspage ', response.data);
+      // const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.id }));
+      return response;
+    } catch (error) {
+      console.log('Error Calling Osa score for insights page API: ', error);
+    }
+}
 
 
 

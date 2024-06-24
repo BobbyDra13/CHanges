@@ -14,6 +14,31 @@ function AnomalyKPICard({ date }) {
   const [status, setStatus] = useState([]);
   const [dates, setDates] = useState([]);
   const [isDataAvailable, setIsDataAvailable] = useState(true);
+  function getLastWeekDates(dateString) {
+    // Try parsing the date string
+    try {
+      const date = new Date(dateString);
+
+      // Ensure the parsed date is valid
+      if (isNaN(date.getTime())) {
+        throw new Error('Invalid date format. Please provide a valid date string.');
+      }
+
+      const lastWeekDates = [];
+      for (let i = 0; i < 7; i++) {
+        const day = new Date(date.getTime() - i * 24 * 60 * 60 * 1000);
+        const year = day.getFullYear();
+        const month = String(day.getMonth() + 1).padStart(2, '0'); // Pad with leading zero
+        const dayStr = String(day.getDate()).padStart(2, '0');
+        lastWeekDates.push(`${year}-${month}-${dayStr}`);
+      }
+      lastWeekDates.reverse();
+      return lastWeekDates;
+    } catch (error) {
+      console.error('Error getting last week dates:', error.message);
+      return []; // Return empty array on error
+    }
+  }
 
   const getsevendaysdata = async () => {
     const data = {
@@ -31,6 +56,7 @@ function AnomalyKPICard({ date }) {
       const anomaly1 = (res && res.data.length > 0) && res.data.map((item,index) => 
        item.anomaly_count >  0 ? stat[index] = true : stat[index] = false
       );
+
       setStatus(stat);
       
 
@@ -44,7 +70,7 @@ function AnomalyKPICard({ date }) {
   const dummyData = {
     data: [0, 0, 0, 0, 0, 0, 0],
     capture_status: [true, true, true, true, true, true, false],
-    categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
+    categories: getLastWeekDates(date)
   };
 
   useEffect(() => {
