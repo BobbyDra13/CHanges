@@ -881,7 +881,7 @@ export const seven_day_anomalies  = async (data) => {
   }
 }
 
-export const getOSAScoreDataKPI = async(data)=>{
+export const testerPercentAndOsaScoreHistogram = async(data)=>{
   try {
     //   const data = {
     //     // store_id:String(store),
@@ -889,7 +889,7 @@ export const getOSAScoreDataKPI = async(data)=>{
     //     user_id: "666fef1bdbf527b634e95c0b"
     // };
       const response = await axios.post(
-        'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/osa-score',
+        'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/insight/histogram',
         data,
         {
           headers: {
@@ -898,11 +898,11 @@ export const getOSAScoreDataKPI = async(data)=>{
           }
         }
       );
-      console.log('data from backedn of OSA Score for insightspage ', response.data);
+      console.log('data from backedn of  histogram for insightspage ', response.data);
       // const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.id }));
       return response;
     } catch (error) {
-      console.log('Error Calling Osa score for insights page API: ', error);
+      console.log('Error Calling histogram for insights page API: ', error);
     }
 }
 
