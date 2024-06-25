@@ -48,7 +48,8 @@ import {
   Divider,
   TextField,
   Snackbar,
-  Alert
+  Alert,
+  ClickAwayListener
 } from '@mui/material';
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -1116,7 +1117,8 @@ const Customers = () => {
           <l-bouncy size="45" speed="1" color="black"></l-bouncy>
         </div>
       ) : (
-        <Dialog fullScreen={isSmallScreen ? true : false} maxWidth={200} open={isImageDialogOpen} onClose={handleImageClick}>
+       
+        <Dialog fullScreen={isSmallScreen ? true : false} maxWidth={200} open={isImageDialogOpen} onClose={()=>{handleImageClick();handleImageClick()}}>
           <DialogContent>
             {/* {anomalyDetails.length > 0 && */}
             {
@@ -1380,6 +1382,8 @@ const Customers = () => {
             }
           </DialogContent>
         </Dialog>
+  
+        
       )}
       <Snackbar
         open={snackbarOpen}
