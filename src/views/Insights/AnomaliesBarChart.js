@@ -178,10 +178,10 @@ const AnomaliesBarChart = ({ selectedDate }) => {
                 name: 'Anomalies Count',
                 data: extractedResolved
               },
-              {
-                name: 'Capture Status',
-                data: extractedFound
-              }
+              // {
+              //   name: 'Capture Status',
+              //   data: extractedFound
+              // }
             ]);
            
           }
