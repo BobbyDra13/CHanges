@@ -45,7 +45,7 @@ export default function ShelfView({ date, groups }) {
   console.log('hello i am her');
   const { store } = useParams();
   const zoneIds = useSelector((state) => state.zone);
-  const [active, setActive] = useState(null);
+
   const [data, setData] = useState(null);
   const [shelves, setShelves] = useState(false);
   //eslint-disable-next-line
@@ -63,7 +63,7 @@ export default function ShelfView({ date, groups }) {
   const [isBrandName, setIsBrandName] = useState([]);
   //eslint-disable-next-line
   const [isBrandId, setIsBrandId] = useState(null);
-
+  const [active, setActive] = useState((isBrandData && isBrandData.length > 0) ? isBrandData[0].brand_id : null);
   const theme = useTheme();
   const success = theme.palette.success.main;
   const error = theme.palette.error.main;
@@ -218,6 +218,10 @@ export default function ShelfView({ date, groups }) {
     setloading(true);
     GetZoneDetailees(brand_id);
   };
+
+  useEffect(()=>{
+    handleOpen(active);
+  },[active])
 
   useEffect(() => {
     console.log('latestZoneId fetched from store in shelfView:', latestZoneId);
@@ -399,6 +403,9 @@ export default function ShelfView({ date, groups }) {
   //         }
   //     });
   // }
+  useEffect(()=>{
+      (isBrandData && isBrandData.length  >  0) && setActive(isBrandData[0].brand_id)
+  },[isBrandData])
   console.log('yut', brandNames);
   isBrandData.map((name) => {
     console.log(name.brand_name);

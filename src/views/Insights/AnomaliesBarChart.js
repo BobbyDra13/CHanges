@@ -1,7 +1,7 @@
 import { React, useEffect, useState } from 'react';
 
 // APIs
-import { GetAnomalies } from 'api';
+import { GetAnomalies, seven_day_anomalies } from 'api';
 
 // material-ui
 // import { useTheme } from '@mui/material/styles';
@@ -117,65 +117,108 @@ const AnomaliesBarChart = ({ selectedDate }) => {
   const user_id = JSON.parse(localStorage.getItem('userData')).data._id;
   console.log('iooio', user_id);
 
+  function getLastWeekDates(dateString) {
+    // Try parsing the date string
+    try {
+      const date = new Date(dateString);
+
+      // Ensure the parsed date is valid
+      if (isNaN(date.getTime())) {
+        throw new Error('Invalid date format. Please provide a valid date string.');
+      }
+
+      const lastWeekDates = [];
+      for (let i = 0; i < 7; i++) {
+        const day = new Date(date.getTime() - i * 24 * 60 * 60 * 1000);
+        const year = day.getFullYear();
+        const month = String(day.getMonth() + 1).padStart(2, '0'); // Pad with leading zero
+        const dayStr = String(day.getDate()).padStart(2, '0');
+        lastWeekDates.push(`${year}-${month}-${dayStr}`);
+      }
+      lastWeekDates.reverse();
+      return lastWeekDates;
+    } catch (error) {
+      console.error('Error getting last week dates:', error.message);
+      return []; // Return empty array on error
+    }
+  }
+
   useEffect(() => {
     async function fetchBarChartData() {
       const finalDate = selectedDate ? selectedDate : todayDate;
       const body = {
         date: finalDate,
-        user_id: user_id
+        user_id: "666fef1bdbf527b634e95c0b"
       };
 
       try {
-        const data = await GetAnomalies(body);
+        const data =  selectedDate && await seven_day_anomalies(body);
+        console.log("data from data" , data);
+
         if (data) {
           if (data.data.length > 0) {
             const extractedDates = data.data.map((item) => item.date);
-            const extractedResolved = data.data.map((item) => parseInt(item.anomaliesResolved) || 0);
-            const extractedFound = data.data.map((item) => parseInt(item.anomaliesFound) || 0);
+            const extractedResolved = data.data.map((item) => parseInt(item.anomaly_count) || 0);
+            const extractedFound = data.data.map((item) => parseInt(item.capture_status) || 0);
+            console.log(extractedDates);
+            setChartData(data.data);
             // console.log('BarDATA', extractedFound);
+            console.log(extractedDates);
+            console.log(extractedResolved);
+            console.log(extractedFound)
+            console.log(chartData);
             setOptions({
               ...columnChartOptions,
               xaxis: {
-                categories: extractedDates
+                  categories: getLastWeekDates(selectedDate)
               }
             });
             setSeries([
               {
-                name: 'Anomalies Found',
-                data: extractedFound
-              },
-              {
-                name: 'Anomalies Resolved',
+                name: 'Anomalies Count',
                 data: extractedResolved
-              }
+              },
+              // {
+              //   name: 'Capture Status',
+              //   data: extractedFound
+              // }
             ]);
+           
           }
-          setChartData(data.data);
+            
         }
+       
       } catch (error) {
-        console.log(error);
+        console.log("error from seven day anomalies", error);
       }
     }
+
+    
     fetchBarChartData();
-    return () => {
-      setChartData(null);
-    };
-    //eslint-disable-next-line
+    // return () => {
+    //   setChartData(null);
+    // };
+    // //eslint-disable-next-line
   }, [selectedDate]);
   console.log('chartData', chartData);
   return (
     <>
-      {chartData && chartData.length > 0 ? (
+      {(chartData && chartData.length > 0) ? (
         <div id="chart">
           <ReactApexChart options={options} series={series} type={options.chart.type} height={options.chart.height} />
         </div>
-      ) : chartData === null ? (
+      ) 
+      : chartData === null ? (
         <div className="w-full h-full flex justify-center place-items-center">
           <img style={{ height: '344px' }} src={NoDataImg} alt="No data" />
         </div>
-      ) : (
+      ) 
+      : 
+      (
         <Skeleton sx={{ margin: -3, paddingRight: -3 }} animation="wave" variant="rounded" width={'120%'} height={392} />
-      )}
+      )
+      
+      }
     </>
   );
 };

@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from 'react';
 
 // API imports
-import { GetRadarChartData, GetCapProg, GetPopHistogramData } from 'api';
+import { GetRadarChartData, GetCapProg, GetPopHistogramData, seven_day_anomalies, testerPercentAndOsaScoreHistogram } from 'api';
 // import { useHistory } from 'react-router-dom';
 
 // Apex chart import
@@ -9,7 +9,20 @@ import Chart from 'react-apexcharts';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
-import { Grid, Card, CardContent, Typography, LinearProgress, Box, Stack, TextField, MenuItem, Skeleton, Paper } from '@mui/material';
+import {
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  LinearProgress,
+  Box,
+  Stack,
+  TextField,
+  MenuItem,
+  Skeleton,
+  Paper,
+  Select
+} from '@mui/material';
 
 //project import
 import statisticsChartsData from 'data/statistics-charts-data';
@@ -58,7 +71,7 @@ const Insights = () => {
   const [capProgress, setCapProgress] = useState(false);
   const [avgCapProgress, setAvgCapProgress] = useState(false);
   const [fullness, setFullness] = useState(false);
-
+  const [histo, sethisto] = useState(null);
   const [brandNames, setBrandNames] = useState([]);
   const [brandChartOptions, setBrandChartOptions] = useState(BrandChartData.options);
   const [brandFullness, setBrandFullness] = useState(false);
@@ -66,7 +79,37 @@ const Insights = () => {
   const [anomaliesCount, setAnomaliesCount] = useState([]);
   const [anomaliesLoading, setAnomaliesLoading] = useState(true);
   const [openZone, setOpenZone] = useState({});
+  const [osascorehistogram, setosascorehistogram] = useState(true);
+  const [testerpercenthistogram, settesterpercenthistogram] = useState(false);
+  const [dropdown, setdropdown] = useState("Osa Score");
+
   // const [anchorEl, setAnchorEl] = useState(null);
+  const handleclickOnOsa = () => {
+    if (osascorehistogram == true) return;
+    settesterpercenthistogram(false);
+    setosascorehistogram(true);
+  };
+  const handleclickontester = () => {
+    if (testerpercenthistogram == true) return;
+    setosascorehistogram(false);
+    settesterpercenthistogram(true);
+  };
+  const getHistogramdata = async () => {
+    const data = {
+      user_id: '666fef1bdbf527b634e95c0b', /// hard coded
+      date: '2024-06-19' // hard coded
+    };
+    try {
+      const res = selectedDate && (await testerPercentAndOsaScoreHistogram(data));
+      console.log('here from getHistogram data ', res);
+    } catch (e) {
+      console.log('error in historgram data', e);
+    }
+  };
+  // useEffect(()=>{
+  //     getHistogramdata();
+  // },[])
+
   const handleZoneCaptureProgressMenuOpen = (key) => {
     setOpenZone((prevState) => ({
       ...prevState,
@@ -173,7 +216,10 @@ const Insights = () => {
           date: selectedDate.toString(),
           user_id: user_id
         };
-
+        const dataa = {
+          user_id: '666fef1bdbf527b634e95c0b',
+          date: '2024-06-19'
+        };
         console.log('donutBody', donutBody);
         // const anomlayBody = {
         //   date: selectedDate.toString(),
@@ -192,7 +238,10 @@ const Insights = () => {
           console.log('bebo', brandDonutData);
           const CapData = await GetCapProg(capBody);
           console.log('thala', CapData);
-          const histogramData = await GetPopHistogramData(popKpiCardBody);
+          //const histogramData = await GetPopHistogramData(popKpiCardBody);
+          const histogramData = selectedDate && (await testerPercentAndOsaScoreHistogram(dataa));
+          console.log(histogramData);
+          sethisto(histogramData);
           const anomalies = await GetRadarChartData(donutBody);
           if (anomalies) {
             setAnomaliesLoading(false);
@@ -233,7 +282,8 @@ const Insights = () => {
           }
 
           if (histogramData) {
-            setBarChartData(histogramData.data);
+            setBarChartData(histogramData.data[0].OSA_Score_histogram);
+
             setFullness(true);
             console.log('histogramData', barChartData);
           }
@@ -256,12 +306,24 @@ const Insights = () => {
   // console.log('Current anomaly', anomaliesPercentage);
   console.log('jaii', brandFullness);
   const allZero = brandFullness && brandFullness.length === 0;
-
+  useEffect(() => {
+    if (histo) {
+      if (dropdown === "Osa Score") {
+        setBarChartData(histo.data[0].OSA_Score_histogram);
+      } else {
+        setBarChartData(histo.data[0].testers_present_histogram);
+      }
+      setFullness(true);
+      console.log('histogramData', barChartData);
+    }
+  }, [dropdown]);
   useEffect(
     () => {
       if (barChartData) {
         setSelected(histogramChartRequirements.selectOptions[0].value);
-        let chart = barChartData[0].data;
+        let chart = barChartData;
+        //let chart = barChartData[0].data;
+        console.log(barChartData);
         console.log('chartsss', chart);
         let allRanges = chart.map((item) => item.range);
         let allCount = chart.map((item) => item.count);
@@ -313,7 +375,7 @@ const Insights = () => {
         max: 100,
         tickAmount: 10,
 
-        categories: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        categories: [0, 0, 0, 0, 0, 0, 0],
 
         labels: {
           show: true,
@@ -533,7 +595,7 @@ const Insights = () => {
               <Grid item xs={12} md={7}>
                 <Grid container spacing={gridSpacing}>
                   <Grid item xs={12}>
-                    <Card>
+                    <Card style={{position: "relative"}}>
                       {
                         // histogramData
                         seriesData.length > 0 ? (
@@ -542,13 +604,41 @@ const Insights = () => {
                               <Grid container justifyContent="space-between" alignItems="center">
                                 <Grid item>
                                   <Grid container spacing={1}>
-                                    <Stack direction={'row'} spacing={1}>
+                                    <Stack direction={'row'} spacing={1} >
                                       <Typography sx={{ paddingLeft: 2, visibility: 'hidden' }} variant="h2" color="inherit">
                                         {barChartData?.totalGroups}
                                       </Typography>
                                       <Typography paddingBottom={0.6} className="self-end" variant="h5" color="inherit">
                                         Goodness Histogram
                                       </Typography>
+                                      {/* <div style={{display: "flex", alignItems:"center", gap : "7px", marginLeft: "40px", cursor:"pointer"}} onClick={()=>{handleclickontester()}}>
+                                      <div className='' style={{height:"12px",width: "12px" , background: "red", borderRadius:"50%"}}>
+
+                                      </div>
+                                      <div className=''> 
+                                              Tester Percent
+                                      </div>
+                                      </div>
+                                      <div style={{display: "flex", alignItems:"center", gap : "7px", marginLeft: "9px",  cursor:"pointer"}} onClick={()=>{handleclickOnOsa()}}>
+                                      <div className=' bg-red-300' style={{height:"12px",width: "12px" , borderRadius:"50%"}}>
+
+                                      </div>
+                                      <div className=''>
+                                              Osa Score
+                                      </div>
+                                      </div> */}
+                                      <Select
+                                        style={{position: "absolute" , right: "20px", top: "9px", background: "#fff", height : "40px" , outline:"hidden" }}
+                                        value={dropdown}
+                                        onChange={(e) => {
+                                      
+                                          setdropdown(e.target.value);
+                                          
+                                        }}
+                                      >
+                                        <MenuItem onClick={()=>{handleclickOnOsa()}} value="Osa Score">Osa Score</MenuItem>
+                                        <MenuItem onClick={()=>{handleclickontester()}} value="Tester Score">Tester Score</MenuItem>
+                                      </Select>
                                     </Stack>
                                   </Grid>
                                 </Grid>
@@ -1018,6 +1108,7 @@ const Insights = () => {
                         );
                       })
                     ) : // ))
+
                     capProgress.length === 0 ? (
                       <div className="w-full h-full flex justify-center place-items-center">
                         <img style={{ width: '100%' }} src={NoDataPng} alt="No data" />
