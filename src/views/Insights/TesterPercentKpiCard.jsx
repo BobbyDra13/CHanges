@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import KpiCard from './KpiCard/index';
-import { GetAnomalies, seven_day_anomalies } from 'api';
+import { GetAnomalies, testerPercentSevenDayMultistore } from 'api';
 import { useTheme, Skeleton, Card, Stack, Grid, Typography } from '@mui/material';
 
-function AnomalyKPICard({ date }) {
+function TesterPercentKpiCard({ date }) {
   const theme = useTheme();
 
   const [anomalyData, setAnomalyData] = useState([]);
@@ -47,16 +47,17 @@ function AnomalyKPICard({ date }) {
       user_id: '66795cbe1d905892a4256692'
     };
     try {
-      const res = date && (await seven_day_anomalies(data));
+      const res = date && (await testerPercentSevenDayMultistore(data));
       console.log(res);
-      const anomaly = res && res.data.length > 0 && res.data.map((item) => item.anomaly_count || 0);
-      if (res.data.length > 0) setIsDataAvailable(true);
+      const anomaly = res && res.data.TesterScore.length > 0 && res.data.TesterScore.map((item) => (item ? item.tofixed(2) : 0));
+      if (res.data.TesterScore.length > 0) setIsDataAvailable(true);
       const stat = [];
       //eslint-disable-next-line
       const anomaly1 =
         res &&
-        res.data.length > 0 &&
-        res.data.map((item, index) => (item.anomaly_count > 0 ? (stat[index] = true) : (stat[index] = false)));
+        res.data &&
+        res.data.TesterScore.length > 0 &&
+        res.data.TesterScore.map((item, index) => (item > 0 ? (stat[index] = true) : (stat[index] = false)));
 
       setStatus(stat);
 
@@ -74,7 +75,7 @@ function AnomalyKPICard({ date }) {
   }, [date]);
   const dummyData = {
     data: [0, 0, 0, 0, 0, 0, 0],
-    capture_status: [true, true, true, true, true, true, true],
+    capture_status: [true, true, true, true, true, true, false],
     categories: getLastWeekDates(date)
   };
 
@@ -149,7 +150,7 @@ function AnomalyKPICard({ date }) {
     height: 100,
     series: [
       {
-        name: 'Exceptions',
+        name: 'Tester Percent',
         data: anomalyData
       }
     ],
@@ -308,7 +309,7 @@ function AnomalyKPICard({ date }) {
         <KpiCard
           isLoaded={true}
           chart={chartConfig}
-          title="Exceptions Found"
+          title="Tester Score"
           count={isDataAvailable ? anomalyPercentage : 'N/A'}
           percentage={isDataAvailable ? Math.abs(anomalyChipData) : 'NA'}
           chipColor={!capStatus ? '#9CA3AF' : anomalyChipData >= 0 ? '#FF6761' : '#10B981'}
@@ -320,4 +321,4 @@ function AnomalyKPICard({ date }) {
   );
 }
 
-export default AnomalyKPICard;
+export default TesterPercentKpiCard;

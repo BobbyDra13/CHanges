@@ -63,7 +63,7 @@ export default function ShelfView({ date, groups }) {
   const [isBrandName, setIsBrandName] = useState([]);
   //eslint-disable-next-line
   const [isBrandId, setIsBrandId] = useState(null);
-  const [active, setActive] = useState((isBrandData && isBrandData.length > 0) ? isBrandData[0].brand_id : null);
+  const [active, setActive] = useState(isBrandData && isBrandData.length > 0 ? isBrandData[0].brand_id : null);
   const theme = useTheme();
   const success = theme.palette.success.main;
   const error = theme.palette.error.main;
@@ -219,9 +219,10 @@ export default function ShelfView({ date, groups }) {
     GetZoneDetailees(brand_id);
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     handleOpen(active);
-  },[active])
+    //eslint-disable-next-line
+  }, [active]);
 
   useEffect(() => {
     console.log('latestZoneId fetched from store in shelfView:', latestZoneId);
@@ -403,9 +404,9 @@ export default function ShelfView({ date, groups }) {
   //         }
   //     });
   // }
-  useEffect(()=>{
-      (isBrandData && isBrandData.length  >  0) && setActive(isBrandData[0].brand_id)
-  },[isBrandData])
+  useEffect(() => {
+    isBrandData && isBrandData.length > 0 && setActive(isBrandData[0].brand_id);
+  }, [isBrandData]);
   console.log('yut', brandNames);
   isBrandData.map((name) => {
     console.log(name.brand_name);

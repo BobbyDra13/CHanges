@@ -625,7 +625,7 @@ function Overview() {
       console.log('getbrandwiseosaandtesterscore score kpi', result1);
       result1 && result1.length > 0 && result1.sort((a, b) => a.OSA_Score - b.OSA_Score);
       setbrandwiseosaandtester_osa(result1);
-      result2 && result2.length > 0 && result2.sort((a, b) => a.testers_present_percent - b.testers_present_percent);
+      result2 && result2.length > 0 && result2.sort((a, b) => a.testers_score - b.testers_score);
 
       setbrandwiseosaandtester_tester(result2);
     } catch (error) {
@@ -839,11 +839,9 @@ function Overview() {
                       <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
                         {brandwiseosaandtester_tester.length > 0 ? (
                           brandwiseosaandtester_tester.map((item, index) => {
-                            console.log('item', item.testers_present_percent);
+                            console.log('item', item.testers_score);
                             const percentage =
-                              Math.round(parseFloat(item.testers_present_percent)) > 100
-                                ? 100
-                                : Math.round(parseFloat(item.testers_present_percent));
+                              Math.round(parseFloat(item.testers_score)) > 100 ? 100 : Math.round(parseFloat(item.testers_score));
                             const barcolor = percentage >= 99 ? '#00ac69' : percentage >= 95 ? '#f4a100' : '#ff413a';
                             // const capturedZone = item.zones.map((i) => {
                             //   return i._id.zone;

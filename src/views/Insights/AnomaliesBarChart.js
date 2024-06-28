@@ -148,12 +148,13 @@ const AnomaliesBarChart = ({ selectedDate }) => {
       const finalDate = selectedDate ? selectedDate : todayDate;
       const body = {
         date: finalDate,
-        user_id: "666fef1bdbf527b634e95c0b"
+        user_id: '66795cbe1d905892a4256692'
+        // user_id: "666fef1bdbf527b634e95c0b"
       };
 
       try {
-        const data =  selectedDate && await seven_day_anomalies(body);
-        console.log("data from data" , data);
+        const data = selectedDate && (await seven_day_anomalies(body));
+        console.log('data from data', data);
 
         if (data) {
           if (data.data.length > 0) {
@@ -165,35 +166,31 @@ const AnomaliesBarChart = ({ selectedDate }) => {
             // console.log('BarDATA', extractedFound);
             console.log(extractedDates);
             console.log(extractedResolved);
-            console.log(extractedFound)
+            console.log(extractedFound);
             console.log(chartData);
             setOptions({
               ...columnChartOptions,
               xaxis: {
-                  categories: getLastWeekDates(selectedDate)
+                categories: getLastWeekDates(selectedDate)
               }
             });
             setSeries([
               {
                 name: 'Anomalies Count',
                 data: extractedResolved
-              },
+              }
               // {
               //   name: 'Capture Status',
               //   data: extractedFound
               // }
             ]);
-           
           }
-            
         }
-       
       } catch (error) {
-        console.log("error from seven day anomalies", error);
+        console.log('error from seven day anomalies', error);
       }
     }
 
-    
     fetchBarChartData();
     // return () => {
     //   setChartData(null);
@@ -203,22 +200,17 @@ const AnomaliesBarChart = ({ selectedDate }) => {
   console.log('chartData', chartData);
   return (
     <>
-      {(chartData && chartData.length > 0) ? (
+      {chartData && chartData.length > 0 ? (
         <div id="chart">
           <ReactApexChart options={options} series={series} type={options.chart.type} height={options.chart.height} />
         </div>
-      ) 
-      : chartData === null ? (
+      ) : chartData === null ? (
         <div className="w-full h-full flex justify-center place-items-center">
           <img style={{ height: '344px' }} src={NoDataImg} alt="No data" />
         </div>
-      ) 
-      : 
-      (
+      ) : (
         <Skeleton sx={{ margin: -3, paddingRight: -3 }} animation="wave" variant="rounded" width={'120%'} height={392} />
-      )
-      
-      }
+      )}
     </>
   );
 };

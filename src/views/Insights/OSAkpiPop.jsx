@@ -1,98 +1,143 @@
 import React, { useState, useEffect } from 'react';
-import KpiCard from './index';
-import { getOSAScoreDataKPI } from 'api';
+import KpiCard from './KpiCard/index';
+import { GetAnomalies, OsaScoreMultistoreSevenday } from 'api';
 import { useTheme, Skeleton, Card, Stack, Grid, Typography } from '@mui/material';
 
 function OSAkpiPop({ date }) {
   const theme = useTheme();
 
-  const [popData, setPopData] = useState([]);
+  const [anomalyData, setAnomalyData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [popChipData, setPopChipData] = useState('');
+  const [anomalyChipData, setAnomalyChipData] = useState('');
   const [capStatus, setCapStatus] = useState(true);
-  const [popPercentage, setPopPercentage] = useState('0');
-  // const [status, setStatus] = useState([]);
+  const [anomalyPercentage, setAnomalyPercentage] = useState('0');
+  const [status, setStatus] = useState([]);
   const [dates, setDates] = useState([]);
-  const [isDataAvailable, setIsDataAvailable] = useState(false);
-  const user_id = JSON.parse(localStorage.getItem('userData')).data._id;
-  console.log('yyaa', user_id);
+  const [isDataAvailable, setIsDataAvailable] = useState(true);
+  function getLastWeekDates(dateString) {
+    // Try parsing the date string
+    try {
+      const date = new Date(dateString);
 
+      // Ensure the parsed date is valid
+      if (isNaN(date.getTime())) {
+        throw new Error('Invalid date format. Please provide a valid date string.');
+      }
+
+      const lastWeekDates = [];
+      for (let i = 0; i < 7; i++) {
+        const day = new Date(date.getTime() - i * 24 * 60 * 60 * 1000);
+        const year = day.getFullYear();
+        const month = String(day.getMonth() + 1).padStart(2, '0'); // Pad with leading zero
+        const dayStr = String(day.getDate()).padStart(2, '0');
+        lastWeekDates.push(`${year}-${month}-${dayStr}`);
+      }
+      lastWeekDates.reverse();
+      return lastWeekDates;
+    } catch (error) {
+      console.error('Error getting last week dates:', error.message);
+      return []; // Return empty array on error
+    }
+  }
+
+  const getsevendaysdata = async () => {
+    const data = {
+      date: date,
+      //  user_id : "666fef1bdbf527b634e95c0b"
+      user_id: '66795cbe1d905892a4256692'
+    };
+    try {
+      const res = date && (await OsaScoreMultistoreSevenday(data));
+      console.log(res);
+      const anomaly = res && res.data && res.data.OSA.length > 0 && res.data.OSA.map((item) => (item ? item.toFixed(2) : 0));
+      if (res.data.OSA.length > 0) setIsDataAvailable(true);
+      const stat = [];
+      //eslint-disable-next-line
+      const anomaly1 =
+        res &&
+        res.data.OSA.length > 0 &&
+        res.data.OSA.map((item, index) => (item.toFixed(1) > 0 ? (stat[index] = true) : (stat[index] = false)));
+
+      setStatus(stat);
+      const lastdaypercent = anomaly.length > 0 ? anomaly[anomaly.length - 1] : 0;
+      setAnomalyPercentage(lastdaypercent);
+
+      console.log('animalt from anamoly', anomaly);
+      setAnomalyData(anomaly);
+    } catch (e) {
+      console.log('error in getsevendays', e);
+    }
+  };
+  useEffect(() => {
+    getsevendaysdata();
+    //eslint-disable-next-line
+  }, [date]);
   const dummyData = {
     data: [0, 0, 0, 0, 0, 0, 0],
-    capture_status: [false, false, false, false, false, false, false],
-    categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
+    capture_status: [true, true, true, true, true, true, true],
+    categories: getLastWeekDates(date)
   };
 
   useEffect(() => {
     async function getData() {
       const body = {
         date: date.toString(),
-        user_id: "666fef1bdbf527b634e95c0b" // hard coded to show sample data
-        // user_id: user_id
+        user_id: '66795cbe1d905892a4256692'
       };
 
       try {
         setLoading(true);
-        const data = await getOSAScoreDataKPI(body);
-        console.log('fhk', data);
+        const data = await GetAnomalies(body);
         if (data === undefined) {
           setIsDataAvailable(false);
-          // setStatus(dummyData.capture_status);
+          setStatus(dummyData.capture_status);
           setDates(dummyData.categories);
-          setPopData(dummyData.data);
-          setPopChipData('NA%');
-          setPopPercentage('NA');
+          setAnomalyData(dummyData.data);
+          setAnomalyChipData('NA');
+          setAnomalyPercentage('NA');
           setCapStatus(false);
           setLoading(false);
         }
-        const popScoreFullnessLine = data.data.averagedResults;
+        const popScoreFullnessLine = data.data;
         setIsDataAvailable(true);
-        const popScoreFullness = popScoreFullnessLine.map((item) => {
-          // if (item && item.averageOSAScore != 'No data found') {
-          if(item) {
-            // const percentage = parseFloat(item.averageOSAScore.replace('%', ''));
-            const percentage = item.averageOSAScore;
-            return `${percentage.toFixed(2)}%`;
+        const anomaliesDetectedLine = popScoreFullnessLine.map((item) => {
+          if (item.anomaliesFound) {
+            const percentage = item.anomaliesFound;
+            return percentage;
           } else {
-            return '0%';
+            return 0;
           }
         });
-        setPopData(popScoreFullness);
-        const lastElement = parseFloat(popScoreFullness[popScoreFullness.length - 1].replace('%', '')) || 0;
-        const secondLastElement = parseFloat(popScoreFullness[popScoreFullness.length - 2].replace('%', '')) || 0;
-        const difference = `${(lastElement - secondLastElement).toFixed(1)}`;
-        setPopChipData(difference);
+        setAnomalyData(anomaliesDetectedLine);
+        const lastElement = anomaliesDetectedLine[anomaliesDetectedLine.length - 1] || 0;
+        const secondLastElement = anomaliesDetectedLine[anomaliesDetectedLine.length - 2] || 0;
+        const difference = lastElement - secondLastElement;
+        console.log('difference', difference);
+        setAnomalyChipData(difference);
 
         const Dates = popScoreFullnessLine.map((item) => {
-          // let date = item.capture_status ? item.date : ${item.date} (Data not captured);
-          let date = item.date;
+          let date = item.capture_status ? item.date : `${item.date} (Data not captured)`;
           return date;
-        }).reverse();
+        });
         console.log('Dates', Dates);
         setDates(Dates);
 
-        // const CaptureStatus = popScoreFullnessLine.map((i) => {
-        //   return i.capture_status;
-        // });
-        // setStatus(CaptureStatus);
+        const CaptureStatus = popScoreFullnessLine.map((i) => {
+          return i.capture_status;
+        });
+        setStatus(CaptureStatus);
 
         if (data.data === null) {
-          setPopPercentage('0');
+          setAnomalyPercentage('0%');
         } else {
-          let percentage = `${parseFloat(popScoreFullnessLine[6].averageOSAScore).toFixed(1)}%`;
-          setPopPercentage(percentage);
-          // setCapStatus(data.data[6].capture_status);
+          setAnomalyPercentage(anomaliesDetectedLine[anomaliesDetectedLine.length - 1]);
+          setCapStatus(data.data[6].capture_status);
         }
-        
-    }
 
-       catch (error) {
+        setLoading(false);
+      } catch (error) {
         console.log(error);
       }
-      finally{
-        setLoading(false);
-      }
-
     }
 
     getData();
@@ -104,8 +149,8 @@ function OSAkpiPop({ date }) {
     height: 100,
     series: [
       {
-        name: 'OSA Score%',
-        data: popData
+        name: 'Osa Score',
+        data: anomalyData
       }
     ],
     options: {
@@ -114,55 +159,55 @@ function OSAkpiPop({ date }) {
           show: false
         }
       },
-      colors: [isDataAvailable ? '#10b981' : '#dadada'],
+      colors: [isDataAvailable ? '#ff413a' : '#dadada'],
       markers: {
         discrete: [
           {
             seriesIndex: 0,
             dataPointIndex: 0,
-            fillColor: !isDataAvailable ? '#dadada' : status[0] ? '#10b981' : '#dadada',
+            fillColor: !isDataAvailable ? '#dadada' : status[0] ? '#ff413a' : '#dadada',
             strokeColor: 'white',
             size: 7
           },
           {
             seriesIndex: 0,
             dataPointIndex: 1,
-            fillColor: !isDataAvailable ? '#dadada' : status[1] ? '#10b981' : '#dadada',
+            fillColor: !isDataAvailable ? '#dadada' : status[1] ? '#ff413a' : '#dadada',
             strokeColor: 'white',
             size: 7
           },
           {
             seriesIndex: 0,
             dataPointIndex: 2,
-            fillColor: !isDataAvailable ? '#dadada' : status[2] ? '#10b981' : '#dadada',
+            fillColor: !isDataAvailable ? '#dadada' : status[2] ? '#ff413a' : '#dadada',
             strokeColor: 'white',
             size: 7
           },
           {
             seriesIndex: 0,
             dataPointIndex: 3,
-            fillColor: !isDataAvailable ? '#dadada' : status[3] ? '#10b981' : '#dadada',
+            fillColor: !isDataAvailable ? '#dadada' : status[3] ? '#ff413a' : '#dadada',
             strokeColor: 'white',
             size: 7
           },
           {
             seriesIndex: 0,
             dataPointIndex: 4,
-            fillColor: !isDataAvailable ? '#dadada' : status[4] ? '#10b981' : '#dadada',
+            fillColor: !isDataAvailable ? '#dadada' : status[4] ? '#ff413a' : '#dadada',
             strokeColor: 'white',
             size: 7
           },
           {
             seriesIndex: 0,
             dataPointIndex: 5,
-            fillColor: !isDataAvailable ? '#dadada' : status[5] ? '#10b981' : '#dadada',
+            fillColor: !isDataAvailable ? '#dadada' : status[5] ? '#ff413a' : '#dadada',
             strokeColor: 'white',
             size: 7
           },
           {
             seriesIndex: 0,
             dataPointIndex: 6,
-            fillColor: !isDataAvailable ? '#dadada' : status[6] ? '#10b981' : '#dadada',
+            fillColor: !isDataAvailable ? '#dadada' : status[6] ? '#ff413a' : '#dadada',
             strokeColor: 'white',
             size: 7
           }
@@ -228,6 +273,7 @@ function OSAkpiPop({ date }) {
       },
       tooltip: {
         theme: 'dark',
+
         y: {
           formatter: (val) => (val === 0 ? 'NILL' : val)
         }
@@ -262,16 +308,16 @@ function OSAkpiPop({ date }) {
         <KpiCard
           isLoaded={true}
           chart={chartConfig}
-          title="OSA Score"
-          count={`${!isDataAvailable ? 'NA' : parseFloat(popPercentage) === 0 ? '0%' : popPercentage}`}
-          percentage={`${isDataAvailable ? Math.abs(popChipData) : 'NA'}%`}
-          // chipColor={!capStatus ? '#9CA3AF' : +popChipData < 0 ? '#FF6761' : '#10B981'}
-          isLoss={+popChipData < 0}
-          // color={!isDataAvailable ? '#9ca3af' : capStatus ? theme.palette.success.main : '#9ca3af'}
+          title="OSA"
+          count={isDataAvailable ? anomalyPercentage : 'N/A'}
+          percentage={isDataAvailable ? Math.abs(anomalyChipData) : 'OSA'}
+          chipColor={!capStatus ? '#9CA3AF' : anomalyChipData >= 0 ? '#FF6761' : '#10B981'}
+          isLoss={anomalyChipData < 0}
+          color={isDataAvailable ? theme.palette.error.main : '#9CA3AF'}
         />
       )}
     </>
   );
 }
 
-export default OSAkpiPop
+export default OSAkpiPop;

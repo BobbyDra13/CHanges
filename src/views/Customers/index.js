@@ -48,8 +48,7 @@ import {
   Divider,
   TextField,
   Snackbar,
-  Alert,
-  ClickAwayListener
+  Alert
 } from '@mui/material';
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -70,7 +69,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import { CgSpinner } from 'react-icons/cg';
 import { FaAngleDoubleRight } from 'react-icons/fa';
 import { FaAngleDoubleLeft } from 'react-icons/fa';
-
+//eslint-disable-next-line
 const totalParts = 142;
 
 // Dummy Data
@@ -147,7 +146,7 @@ const dummyStoreData = [
   }
   // Add more dummy store data as needed
 ];
-//eslint-disable-next-line
+
 const dummyAnomaliesData = {
   Store123: {
     anomalies_detected: 15,
@@ -177,9 +176,9 @@ const Customers = () => {
   const [anomalyType, setAnomalyType] = useState('');
   const [loading, setLoading] = useState(false);
   const [clickedBar, setClickedBar] = useState({
-    isUpKeep: false,
-    isVm: false,
-    isPop: false
+    isOSAScore: false,
+    isMT: false,
+    isPog: false
   });
 
   const [imageLoading, setImageLoading] = useState(false);
@@ -236,8 +235,8 @@ const Customers = () => {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const ITEM_HEIGHT = 48;
-
-  //const user_id = 'dummyUserId';
+  //eslint-disable-next-line
+  const user_id = 'dummyUserId';
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -251,26 +250,28 @@ const Customers = () => {
   //   setClickedBar((prevState) => ({ ...prevState, isUpKeep: !prevState.isUpKeep }));
   // };
   //eslint-disable-next-line
-  const upKeepClicked = () => {
-    if (!clickedBar.isUpKeep) {
-      setClickedBar({ isUpKeep: true, isVm: false, isPop: false });
+  const osaClicked = () => {
+    if (!clickedBar.isOSAScore) {
+      setClickedBar({ isOSAScore: true, isMT: false, isPog: false });
     } else {
-      setClickedBar({ isUpKeep: false, isVm: false, isPop: false });
+      setClickedBar({ isOSAScore: true, isMT: false, isPog: false });
     }
   };
   //eslint-disable-next-line
   const vMClicked = () => {
-    if (!clickedBar.isVm) {
-      setClickedBar({ isUpKeep: false, isVm: true, isPop: false });
+    if (!clickedBar.isMT) {
+      setClickedBar({ isOSAScore: true, isMT: false, isPog: false });
     } else {
-      setClickedBar({ isUpKeep: false, isVm: false, isPop: false });
+      setClickedBar({ isOSAScore: true, isMT: false, isPog: false });
     }
   };
   // const vMClicked = () => {
   //   setClickedBar((prevState) => ({ ...prevState, isVm: !prevState.isVm }));
   // };
-  // const [map, setmap] = useState(null);
-  //const [mapindex, setmapindex] = useState(0);
+  //eslint-disable-next-line
+  const [map, setmap] = useState(null);
+  //eslint-disable-next-line
+  const [mapindex, setmapindex] = useState(0);
 
   useEffect(() => {
     console.log('here is storesData', storesData);
@@ -284,7 +285,7 @@ const Customers = () => {
       }
     }
     console.log('map', map);
-    //setmap(map);
+    setmap(map);
   }, [storesData]);
 
   const handleImageClick = async (url, id, anomaly, time) => {
@@ -294,6 +295,7 @@ const Customers = () => {
     };
 
     try {
+      if (!id) return;
       const response = await fetch(link, {
         method: 'POST',
         headers: {
@@ -415,8 +417,8 @@ const Customers = () => {
       // Update anomalyDetails state if needed
     }, 1000);
   };
-
-  // const unique_anomalies = 1;
+  //eslint-disable-next-line
+  const unique_anomalies = 1;
 
   function formatDate(dateString) {
     const date = new Date(dateString);
@@ -436,8 +438,8 @@ const Customers = () => {
     // Simulate API call delay
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/get-store-details';
     const data = {
-      user_id: '66238a99c40c738627f33735',
-      date: '2024-06-18'
+      user_id: '66795cbe1d905892a4256693',
+      date: '2024-06-27'
     };
 
     try {
@@ -818,7 +820,7 @@ const Customers = () => {
                             </Typography>
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'start' }}>
                               {/* here we have linearProgress showing the PoP */}
-                              {item.capture_percentage}
+                              {/* {item.capture_percentage} */}
                               {/* marker 1 */}
                               <LinearProgress
                                 sx={{
@@ -832,20 +834,20 @@ const Customers = () => {
                                 }}
                                 variant="determinate"
                                 // value={item.capture_count ? Math.min(Math.floor((item.capture_count / totalParts) * 100), 100) : 0}
-                                value={item.fullness_score ? parseFloat(item.fullness_score) : 0}
+                                value={item.capturePercent ? parseFloat(item.capturePercent) : 0}
                                 // color="secondary"
                               />
                               <button className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center">
                                 <Typography sx={{ color: 'black' }} variant="subtitle1">
                                   {/* {item.capture_count ? Math.min(Math.floor((item.capture_count / totalParts) * 100), 100) : 0} % */}
-                                  Fullness : {item.fullness_score ? parseFloat(item.fullness_score).toFixed(1) : '0'}%
+                                  Capture : {item.capturePercent ? parseFloat(item.capturePercent).toFixed(1) : '0'}%
                                 </Typography>
                               </button>
                             </Box>
                           </Stack>
                           <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
-                            <Typography sx={{ width: 120 }} variant={clickedBar.isUpKeep ? 'h5' : 'h6'}>
-                              Up-Keep Score
+                            <Typography sx={{ width: 120 }} variant={clickedBar.isOSAScore ? 'h5' : 'h6'}>
+                              OSA Score %
                             </Typography>
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
                               {/* marker 2 */}
@@ -855,22 +857,22 @@ const Customers = () => {
                                 sx={{
                                   width: '100%',
                                   borderRadius: 3,
-                                  height: clickedBar.isUpKeep ? 25 : 20,
+                                  height: clickedBar.isOSAScore ? 25 : 20,
                                   // '& .MuiLinearProgress-bar': {
                                   //   backgroundColor: warning
                                   // }
                                   backgroundColor: '#e5e7eb',
                                   '& .MuiLinearProgress-bar': {
                                     backgroundColor:
-                                      Math.floor(item.store_fullness) >= 80 && !clickedBar.isUpKeep
+                                      Math.floor(item.OSA_score) >= 80 && !clickedBar.isOSAScore
                                         ? success
-                                        : Math.floor(item.store_fullness) >= 80 && clickedBar.isUpKeep
+                                        : Math.floor(item.OSA_score) >= 80 && clickedBar.isOSAScore
                                         ? successDark
-                                        : Math.floor(item.store_fullness) < 50 && !clickedBar.isUpKeep
+                                        : Math.floor(item.OSA_score) < 50 && !clickedBar.isOSAScore
                                         ? error
-                                        : Math.floor(item.store_fullness) < 50 && clickedBar.isUpKeep
+                                        : Math.floor(item.OSA_score) < 50 && clickedBar.isOSAScore
                                         ? errorDark
-                                        : !clickedBar.isUpKeep
+                                        : !clickedBar.isOSAScore
                                         ? warning
                                         : warningDark
                                   }
@@ -878,7 +880,8 @@ const Customers = () => {
                                 variant="determinate"
                                 // value={78}
                                 // value={Math.floor(item.store_fullness) || 0}
-                                value={0}
+                                // value={0}
+                                value={Math.floor(item.OSA_score)}
                                 // color="secondary"
                               />
                               <button
@@ -886,14 +889,14 @@ const Customers = () => {
                                 className="absolute hover:cursor-not-allowed w-full h-full flex justify-center place-items-center"
                               >
                                 <Typography sx={{ color: 'black' }} variant="subtitle1">
-                                  Up-Keep Score: NA
+                                  OSA Score: {item.OSA_score ? parseFloat(item.OSA_score).toFixed(1) : '0'}%
                                 </Typography>
                               </button>
                             </Box>
                           </Stack>
                           <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
-                            <Typography sx={{ width: 120 }} variant={clickedBar.isVm ? 'h5' : 'h6'}>
-                              VM Score
+                            <Typography sx={{ width: 120 }} variant={clickedBar.isMT ? 'h5' : 'h6'}>
+                              MT Score %
                             </Typography>
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
                               {/* marker 3 */}
@@ -902,19 +905,19 @@ const Customers = () => {
                                 sx={{
                                   width: '100%',
                                   borderRadius: 3,
-                                  height: clickedBar.isVm ? 25 : 20,
+                                  height: clickedBar.isMT ? 25 : 20,
                                   backgroundColor: '#e5e7eb',
                                   '& .MuiLinearProgress-bar': {
                                     backgroundColor:
-                                      Math.floor((anomalies_count / totalParts) * 100) >= 80 && !clickedBar.isVm
+                                      Math.floor(item.tester_fullness_score) >= 80 && !clickedBar.isMT
                                         ? success
-                                        : Math.floor((anomalies_count / totalParts) * 100) >= 80 && clickedBar.isVm
+                                        : Math.floor(item.tester_fullness_score) >= 80 && clickedBar.isMT
                                         ? successDark
-                                        : Math.floor((anomalies_count / totalParts) * 100) < 50 && !clickedBar.isVm
+                                        : Math.floor(item.tester_fullness_score) < 50 && !clickedBar.isMT
                                         ? error
-                                        : Math.floor((anomalies_count / totalParts) * 100) < 50 && clickedBar.isVm
+                                        : Math.floor(item.tester_fullness_score) < 50 && clickedBar.isMT
                                         ? errorDark
-                                        : !clickedBar.isVm
+                                        : !clickedBar.isMT
                                         ? warning
                                         : warningDark
                                   }
@@ -925,7 +928,7 @@ const Customers = () => {
                                 //     ? 100
                                 //     : Math.floor((anomalies_count / totalParts) * 100)
                                 // }
-                                value={0}
+                                value={Math.floor(item.tester_fullness_score)}
                                 // color="secondary"
                               />
                               <button
@@ -937,28 +940,36 @@ const Customers = () => {
                                     ? 100
                                     : Math.floor((anomalies_count / totalParts) * 100)}{' '}
                                   %  */}
-                                  VM Score: NA
+                                  MT Score: {item.tester_fullness_score ? parseFloat(item.tester_fullness_score).toFixed(1) : '0'}%
                                 </Typography>
                               </button>
                             </Box>
                           </Stack>
                           <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
-                            <Typography sx={{ width: 120 }} variant={clickedBar.isPop ? 'h5' : 'h6'}>
-                              PoP Score
+                            <Typography sx={{ width: 120 }} variant={clickedBar.isPog ? 'h5' : 'h6'}>
+                              PoG Score %
                             </Typography>
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
                               <LinearProgress
                                 sx={{
                                   width: '100%',
                                   borderRadius: 3,
-                                  height: 20,
+                                  height: clickedBar.isPog ? 25 : 20,
                                   backgroundColor: '#e5e7eb',
                                   '& .MuiLinearProgress-bar': {
-                                    backgroundColor: clickedBar.isPop ? successDark : success
+                                    backgroundColor:
+                                      Math.floor(item.pop_percentage) >= 80 && !clickedBar.isPog
+                                        ? success
+                                        : Math.floor(item.pop_percentage) >= 80 && clickedBar.isPog
+                                        ? successDark
+                                        : Math.floor(item.pop_percentage) < 50 && !clickedBar.isPog
+                                        ? error
+                                        : Math.floor(item.pop_percentage) < 50 && clickedBar.isPog
+                                        ? errorDark
+                                        : !clickedBar.isPog
+                                        ? warning
+                                        : warningDark
                                   }
-                                  // '& .MuiLinearProgress-bar': {
-                                  //   backgroundColor: item.kpiValues.pop >= 80 ? success : item.kpiValues.pop < 50 ? error : warning
-                                  // }
                                 }}
                                 variant="determinate"
                                 // value={0}
@@ -971,7 +982,7 @@ const Customers = () => {
                               >
                                 <Typography sx={{ color: 'black' }} variant="subtitle1">
                                   {/* pop percentage is being shown  */}
-                                  PoP Score: {item.pop_percentage ? parseFloat(item.pop_percentage).toFixed(2) : '0'}%
+                                  PoG Score: {item.pop_percentage ? parseFloat(item.pop_percentage).toFixed(2) : '0'}%
                                 </Typography>
                               </button>
                             </Box>
@@ -1117,8 +1128,7 @@ const Customers = () => {
           <l-bouncy size="45" speed="1" color="black"></l-bouncy>
         </div>
       ) : (
-       
-        <Dialog fullScreen={isSmallScreen ? true : false} maxWidth={200} open={isImageDialogOpen} onClose={()=>{handleImageClick();handleImageClick()}}>
+        <Dialog fullScreen={isSmallScreen ? true : false} maxWidth={200} open={isImageDialogOpen} onClose={handleImageClick}>
           <DialogContent>
             {/* {anomalyDetails.length > 0 && */}
             {
@@ -1382,8 +1392,6 @@ const Customers = () => {
             }
           </DialogContent>
         </Dialog>
-  
-        
       )}
       <Snackbar
         open={snackbarOpen}
