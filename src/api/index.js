@@ -844,59 +844,88 @@ export const GetAllBrands = async (data) => {
 };
 
 ////////////////////////////////////////////////////////insights page ////////////////////////////////////////////////////
-export const seven_day_anomalies  = async (data) => {
-  try {
-  //   const data = {
-  //     // store_id:String(store),
-  //     date: "2024-06-20",
-  //     user_id: "666fef1bdbf527b634e95c0b"
-  // };
-    const response = await axios.post(
-      'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/7-days-anomalies',
-      data,
-      {
-        headers: {
-          Accept: 'application/json',
-          Authorization: await token()
-        }
-      }
-    );
-    console.log('data from backedn of 7daysAnomaleis ', response.data);
-    // const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.id }));
-    return response;
-  } catch (error) {
-    console.log('Error Calling seven_days_anomalies API: ', error);
-  }
-}
-
-export const testerPercentAndOsaScoreHistogram = async(data)=>{
+export const seven_day_anomalies = async (data) => {
   try {
     //   const data = {
     //     // store_id:String(store),
     //     date: "2024-06-20",
     //     user_id: "666fef1bdbf527b634e95c0b"
     // };
-      const response = await axios.post(
-        'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/insight/histogram',
-        data,
-        {
-          headers: {
-            Accept: 'application/json',
-            Authorization: await token()
-          }
-        }
-      );
-      console.log('data from backedn of  histogram for insightspage ', response.data);
-      // const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.id }));
-      return response;
-    } catch (error) {
-      console.log('Error Calling histogram for insights page API: ', error);
-    }
-}
+    const response = await axios.post('https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/7-days-anomalies', data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    console.log('data from backedn of 7daysAnomaleis ', response.data);
+    // const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.id }));
+    return response;
+  } catch (error) {
+    console.log('Error Calling seven_days_anomalies API: ', error);
+  }
+};
 
+export const testerPercentAndOsaScoreHistogram = async (data) => {
+  try {
+    //   const data = {
+    //     // store_id:String(store),
+    //     date: "2024-06-20",
+    //     user_id: "666fef1bdbf527b634e95c0b"
+    // };
+    const response = await axios.post('https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/insight/histogram', data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    console.log('data from backedn of  histogram for insightspage ', response.data);
+    // const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.id }));
+    return response;
+  } catch (error) {
+    console.log('Error Calling histogram for insights page API: ', error);
+  }
+};
 
-
-
+export const OsaScoreMultistoreSevenday = async (data) => {
+  try {
+    //   const data = {
+    //     // store_id:String(store),
+    //     date: "2024-06-20",
+    //     user_id: "666fef1bdbf527b634e95c0b"
+    // };
+    const response = await axios.post('https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/7-day-osa-score', data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    console.log('data from backedn of OsaScoreMultistoreSevenday ', response.data);
+    // const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.id }));
+    return response;
+  } catch (error) {
+    console.log('Error Calling OsaScoreMultistoreSevenday for insights page API: ', error);
+  }
+};
+export const testerPercentSevenDayMultistore = async (data) => {
+  try {
+    //   const data = {
+    //     // store_id:String(store),
+    //     date: "2024-06-20",
+    //     user_id: "666fef1bdbf527b634e95c0b"
+    // };
+    const response = await axios.post('https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/7-day-tester-score', data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    console.log('data from backedn of testerPercentSevenDayMultistore ', response.data);
+    // const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.id }));
+    return response;
+  } catch (error) {
+    console.log('Error Calling testerPercentSevenDayMultistore for insights page API: ', error);
+  }
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

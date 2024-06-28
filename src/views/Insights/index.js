@@ -1,7 +1,15 @@
 import { React, useState, useEffect } from 'react';
 
 // API imports
-import { GetRadarChartData, GetCapProg, GetPopHistogramData, seven_day_anomalies, testerPercentAndOsaScoreHistogram } from 'api';
+import {
+  GetRadarChartData,
+  GetCapProg,
+  //eslint-disable-next-line
+  GetPopHistogramData,
+  //eslint-disable-next-line
+  seven_day_anomalies,
+  testerPercentAndOsaScoreHistogram
+} from 'api';
 // import { useHistory } from 'react-router-dom';
 
 // Apex chart import
@@ -25,10 +33,12 @@ import {
 } from '@mui/material';
 
 //project import
+//eslint-disable-next-line
 import statisticsChartsData from 'data/statistics-charts-data';
 import DatePickerComp from './DatePicker';
 import BrandDonutChart from './BrandDonutChart';
 import BrandChartData from './chart/brand-chart';
+//eslint-disable-next-line
 import KpiPop from './KpiCard/kpiPop';
 import { gridSpacing } from 'config.js';
 import AnomaliesBarChart from './AnomaliesBarChart';
@@ -41,6 +51,8 @@ import NoDataImg from '../../assets/images/No_data-amico.svg';
 import PoPScoreKPICard from './PoPScoreKPICard';
 import AnomalyKPICard from './AnomalyKPICard';
 import PopUp from './PopUp';
+import OSAkpiPop from './OSAkpiPop';
+import TesterPercentKpiCard from './TesterPercentKpiCard';
 // import { useDispatch } from 'react-redux';
 
 const histogramChartRequirements = {
@@ -70,6 +82,7 @@ const Insights = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [capProgress, setCapProgress] = useState(false);
   const [avgCapProgress, setAvgCapProgress] = useState(false);
+  //eslint-disable-next-line
   const [fullness, setFullness] = useState(false);
   const [histo, sethisto] = useState(null);
   const [brandNames, setBrandNames] = useState([]);
@@ -81,7 +94,7 @@ const Insights = () => {
   const [openZone, setOpenZone] = useState({});
   const [osascorehistogram, setosascorehistogram] = useState(true);
   const [testerpercenthistogram, settesterpercenthistogram] = useState(false);
-  const [dropdown, setdropdown] = useState("Osa Score");
+  const [dropdown, setdropdown] = useState('Osa Score');
 
   // const [anchorEl, setAnchorEl] = useState(null);
   const handleclickOnOsa = () => {
@@ -94,9 +107,11 @@ const Insights = () => {
     setosascorehistogram(false);
     settesterpercenthistogram(true);
   };
+  //eslint-disable-next-line
   const getHistogramdata = async () => {
     const data = {
-      user_id: '666fef1bdbf527b634e95c0b', /// hard coded
+      // user_id: '666fef1bdbf527b634e95c0b', /// hard coded
+      user_id: '66795cbe1d905892a4256692', /// hard coded
       date: '2024-06-19' // hard coded
     };
     try {
@@ -208,6 +223,7 @@ const Insights = () => {
           date: selectedDate.toString(),
           user_id: user_id
         };
+        //eslint-disable-next-line
         const popKpiCardBody = {
           date: selectedDate.toString(),
           user_id: user_id
@@ -217,8 +233,10 @@ const Insights = () => {
           user_id: user_id
         };
         const dataa = {
-          user_id: '666fef1bdbf527b634e95c0b',
-          date: '2024-06-19'
+          // user_id: '666fef1bdbf527b634e95c0b',
+          user_id: '66795cbe1d905892a4256692',
+          //date: '2024-06-27'
+          date: selectedDate
         };
         console.log('donutBody', donutBody);
         // const anomlayBody = {
@@ -308,14 +326,15 @@ const Insights = () => {
   const allZero = brandFullness && brandFullness.length === 0;
   useEffect(() => {
     if (histo) {
-      if (dropdown === "Osa Score") {
+      if (dropdown === 'Osa Score') {
         setBarChartData(histo.data[0].OSA_Score_histogram);
       } else {
-        setBarChartData(histo.data[0].testers_present_histogram);
+        setBarChartData(histo.data[0].testers_score_histogram);
       }
       setFullness(true);
       console.log('histogramData', barChartData);
     }
+    //eslint-disable-next-line
   }, [dropdown]);
   useEffect(
     () => {
@@ -515,6 +534,12 @@ const Insights = () => {
       <Grid item xs={12}>
         <Grid container spacing={gridSpacing}>
           {/* shows pop score */}
+          <Grid item lg={3} sm={6} xs={12}>
+            <OSAkpiPop date={selectedDate} />
+          </Grid>
+          <Grid item lg={3} sm={6} xs={12}>
+            <TesterPercentKpiCard date={selectedDate} />
+          </Grid>
           <Grid
             item
             lg={3}
@@ -530,7 +555,7 @@ const Insights = () => {
 
           {/* <div className="w-full"> */}
 
-          {!showPopUp && (
+          {/* {!showPopUp && (
             <Grid item lg={3} sm={6} xs={12}>
               <KpiPop
                 isLoaded={fullness}
@@ -546,25 +571,25 @@ const Insights = () => {
                 // color={theme.palette.success.main}
               />
             </Grid>
-          )}
+          )} */}
 
           {/* </div> */}
 
-          <Grid item lg={3} sm={6} xs={12}>
-            {/* KPI VIEW */}
-            {/* OSA */}
-            <KpiPop
-              isLoaded={fullness}
-              chart={statisticsChartsData[2].chart}
-              title="OSA"
-              count="NA"
-              percentage="NA"
-              // isLoss
-              // chipColor="success"
-              color={'#9CA3AF'}
-              // color={theme.palette.success.main}
-            />
-          </Grid>
+          {/* <Grid item lg={3} sm={6} xs={12}> */}
+          {/* KPI VIEW */}
+          {/* OSA */}
+          {/* <KpiPop */}
+          {/* isLoaded={fullness} */}
+          {/* chart={statisticsChartsData[2].chart} */}
+          {/* title="OSA" */}
+          {/* count="NA" */}
+          {/* percentage="NA" */}
+          {/* // isLoss */}
+          {/* // chipColor="success" */}
+          {/* color={'#9CA3AF'} */}
+          {/* // color={theme.palette.success.main} */}
+          {/* /> */}
+          {/* </Grid> */}
 
           {showPopUp && (
             <Grid
@@ -595,7 +620,7 @@ const Insights = () => {
               <Grid item xs={12} md={7}>
                 <Grid container spacing={gridSpacing}>
                   <Grid item xs={12}>
-                    <Card style={{position: "relative"}}>
+                    <Card style={{ position: 'relative' }}>
                       {
                         // histogramData
                         seriesData.length > 0 ? (
@@ -604,7 +629,7 @@ const Insights = () => {
                               <Grid container justifyContent="space-between" alignItems="center">
                                 <Grid item>
                                   <Grid container spacing={1}>
-                                    <Stack direction={'row'} spacing={1} >
+                                    <Stack direction={'row'} spacing={1}>
                                       <Typography sx={{ paddingLeft: 2, visibility: 'hidden' }} variant="h2" color="inherit">
                                         {barChartData?.totalGroups}
                                       </Typography>
@@ -628,16 +653,35 @@ const Insights = () => {
                                       </div>
                                       </div> */}
                                       <Select
-                                        style={{position: "absolute" , right: "20px", top: "9px", background: "#fff", height : "40px" , outline:"hidden" }}
+                                        style={{
+                                          position: 'absolute',
+                                          right: '20px',
+                                          top: '9px',
+                                          background: '#fff',
+                                          height: '40px',
+                                          outline: 'hidden'
+                                        }}
                                         value={dropdown}
                                         onChange={(e) => {
-                                      
                                           setdropdown(e.target.value);
-                                          
                                         }}
                                       >
-                                        <MenuItem onClick={()=>{handleclickOnOsa()}} value="Osa Score">Osa Score</MenuItem>
-                                        <MenuItem onClick={()=>{handleclickontester()}} value="Tester Score">Tester Score</MenuItem>
+                                        <MenuItem
+                                          onClick={() => {
+                                            handleclickOnOsa();
+                                          }}
+                                          value="Osa Score"
+                                        >
+                                          Osa Score
+                                        </MenuItem>
+                                        <MenuItem
+                                          onClick={() => {
+                                            handleclickontester();
+                                          }}
+                                          value="Tester Score"
+                                        >
+                                          Tester Score
+                                        </MenuItem>
                                       </Select>
                                     </Stack>
                                   </Grid>
