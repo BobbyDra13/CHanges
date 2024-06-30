@@ -673,7 +673,7 @@ function Overview() {
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <div style={{ height: '276px' }} className="flex flex-col">
                 <Card className="border border-gray-300" sx={{ height: '276px' }}>
-                  {brandwiseosaandtester_osa.length > 0 ? (
+                  {brandwiseosaandtester_osa && brandwiseosaandtester_osa.length > 0 ? (
                     <div className="flex  w-full  flex-col gap-1 p-3">
                       <div className="flex items-center justify-center gap-2 w-full">
                         <img src={associate} alt="pop" className="h-14 w-14" />
@@ -696,7 +696,7 @@ function Overview() {
                         </>
                       </div>
                       <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
-                        {brandwiseosaandtester_osa.length > 0 ? (
+                        { brandwiseosaandtester_osa && brandwiseosaandtester_osa.length > 0 ? (
                           brandwiseosaandtester_osa.map((item, index) => {
                             console.log('item', item.OSA_Score);
                             const percentage = Math.round(parseFloat(item.OSA_Score)) > 100 ? 100 : Math.round(parseFloat(item.OSA_Score));
@@ -812,7 +812,7 @@ function Overview() {
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <div style={{ height: '276px' }} className="flex flex-col">
                 <Card className="border border-gray-300" sx={{ height: '276px' }}>
-                  {brandwiseosaandtester_tester.length > 0 ? (
+                  {brandwiseosaandtester_tester && brandwiseosaandtester_tester.length > 0 ? (
                     <div className="flex  w-full  flex-col gap-1 p-3">
                       <div className="flex items-center justify-center gap-2 w-full">
                         <img src={associate} alt="pop" className="h-14 w-14" />
@@ -837,7 +837,7 @@ function Overview() {
                         </>
                       </div>
                       <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
-                        {brandwiseosaandtester_tester.length > 0 ? (
+                        {brandwiseosaandtester_tester && brandwiseosaandtester_tester.length > 0 ? (
                           brandwiseosaandtester_tester.map((item, index) => {
                             console.log('item', item.testers_score);
                             const percentage =
@@ -975,7 +975,7 @@ function Overview() {
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <div style={{ height: '276px' }} className="flex flex-col">
                 <Card className="border border-gray-300" sx={{ height: '276px' }}>
-                  {associatescore.length > 0 ? (
+                  {associatescore &&  associatescore.length > 0 ? (
                     <div className="flex  w-full  flex-col gap-1 p-3">
                       <div className="flex items-center justify-center gap-2 w-full">
                         <img src={associate} alt="pop" className="h-14 w-14" />
@@ -1178,7 +1178,7 @@ function Overview() {
                       {!anomaliesLoading && anomalycount !== null ? (
                         <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
                           {console.log('dds', anomalycount)}
-                          {anomalycount.missingTesterCount}
+                          {anomalycount && anomalycount.missingTesterCount}
                         </span>
                       ) : (
                         <Skeleton variant="rectangular" height={184} className="rounded-md" />
@@ -1188,7 +1188,7 @@ function Overview() {
                       <span className="text-center text-white  text-sm font-semibold">Empty Tray</span>
                       {!anomaliesLoading && anomalycount !== null ? (
                         <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                          {anomalycount.emptyTrayCount}
+                          {anomalycount && anomalycount.emptyTrayCount}
                         </span>
                       ) : (
                         <Skeleton variant="rectangular" height={184} className="rounded-md" />

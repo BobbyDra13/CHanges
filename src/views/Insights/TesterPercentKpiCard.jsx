@@ -3,7 +3,7 @@ import KpiCard from './KpiCard/index';
 import { GetAnomalies, testerPercentSevenDayMultistore } from 'api';
 import { useTheme, Skeleton, Card, Stack, Grid, Typography } from '@mui/material';
 
-function TesterPercentKpiCard({ date }) {
+function TesterPercentKpiCard({ date, testerMultiScore }) {
   const theme = useTheme();
 
   const [anomalyData, setAnomalyData] = useState([]);
@@ -41,30 +41,40 @@ function TesterPercentKpiCard({ date }) {
   }
 
   const getsevendaysdata = async () => {
-    const data = {
-      date: date,
-      //  user_id : "666fef1bdbf527b634e95c0b"
-      user_id: '66795cbe1d905892a4256692'
-    };
+    // const data = {
+    //   date: date,
+    //   //  user_id : "666fef1bdbf527b634e95c0b"
+    //   user_id: '66795cbe1d905892a4256692'
+    // };
     try {
-      const res = date && (await testerPercentSevenDayMultistore(data));
-      console.log(res);
-      const anomaly = res && res.data.TesterScore.length > 0 && res.data.TesterScore.map((item) => (item ? item.tofixed(2) : 0));
-      if (res.data.TesterScore.length > 0) setIsDataAvailable(true);
+      //   const res = date && (await OsaScoreMultistoreSevenday(data));
+      // console.log(res);
+      // const anomaly = res && res.data && res.data.OSA.length > 0 && res.data.OSA.map((item) => (item ? item.toFixed(2) : 0));
+      //if (res.data.OSA.length > 0) setIsDataAvailable(true);
+      if (testerMultiScore && testerMultiScore.length > 0) setIsDataAvailable(true);
+
       const stat = [];
       //eslint-disable-next-line
+      // const anomaly1 =
+      //   res &&
+      //   res.data.OSA.length > 0 &&
+      //   res.data.OSA.map((item, index) => (item.toFixed(1) > 0 ? (stat[index] = true) : (stat[index] = false)));
+      //eslint-disable-next-line
       const anomaly1 =
-        res &&
-        res.data &&
-        res.data.TesterScore.length > 0 &&
-        res.data.TesterScore.map((item, index) => (item > 0 ? (stat[index] = true) : (stat[index] = false)));
+        testerMultiScore &&
+        testerMultiScore > 0 &&
+        testerMultiScore.map((item, index) => (item.toFixed(1) > 0 ? (stat[index] = true) : (stat[index] = false)));
 
       setStatus(stat);
-
-      console.log('animalt from anamoly', anomaly);
-      setAnomalyData(anomaly);
-      const lastdaypercent = anomaly.length > 0 ? anomaly[anomaly.length - 1] : 0;
+      // const lastdaypercent = anomaly.length > 0 ? anomaly[anomaly.length - 1] : 0;
+      // const lastdaypercent = anomaly.length > 0 ? anomaly[anomaly.length - 1] : 0;
+      const lastdaypercent = testerMultiScore.length > 0 ? testerMultiScore[testerMultiScore.length - 1] : 0;
       setAnomalyPercentage(lastdaypercent);
+
+      // console.log('animalt from anamoly', anomaly);
+      console.log('animalt from anamoly', testerMultiScore);
+      // setAnomalyData(anomaly);
+      setAnomalyData(testerMultiScore);
     } catch (e) {
       console.log('error in getsevendays', e);
     }
@@ -72,7 +82,7 @@ function TesterPercentKpiCard({ date }) {
   useEffect(() => {
     getsevendaysdata();
     //eslint-disable-next-line
-  }, [date]);
+  }, [testerMultiScore]);
   const dummyData = {
     data: [0, 0, 0, 0, 0, 0, 0],
     capture_status: [true, true, true, true, true, true, false],

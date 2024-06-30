@@ -8,7 +8,9 @@ import {
   GetPopHistogramData,
   //eslint-disable-next-line
   seven_day_anomalies,
-  testerPercentAndOsaScoreHistogram
+  testerPercentAndOsaScoreHistogram,
+  OsaScoreMultistoreSevenday,
+  testerPercentSevenDayMultistore
 } from 'api';
 // import { useHistory } from 'react-router-dom';
 
@@ -106,6 +108,34 @@ const Insights = () => {
     if (testerpercenthistogram == true) return;
     setosascorehistogram(false);
     settesterpercenthistogram(true);
+  };
+
+  const [osaMultiScore, setosaMultiScore] = useState(null);
+  const [testerMultiScore, settesterMultiScore] = useState(null);
+  const getsevendaysdataForOsaAndTester = async () => {
+    const data = {
+      date: selectedDate,
+      //  user_id : "666fef1bdbf527b634e95c0b"
+      user_id: '66795cbe1d905892a4256692'
+    };
+    const data1 = {
+      start_date: selectedDate,
+      //  user_id : "666fef1bdbf527b634e95c0b"
+      user_id: '66795cbe1d905892a4256692'
+    };
+    try {
+      const res = selectedDate && (await OsaScoreMultistoreSevenday(data));
+      const res2 = selectedDate && (await testerPercentSevenDayMultistore(data1));
+      console.log(res);
+      const anomaly = res && res.data && res.data.OSA.length > 0 && res.data.OSA.map((item) => (item ? item.toFixed(2) : 0));
+      const anomaly2 =
+        res2 && res2.data && res2.data.TesterScore.length > 0 && res2.data.TesterScore.map((item) => (item ? item.toFixed(2) : 0));
+      console.log(anomaly);
+      anomaly && setosaMultiScore(anomaly);
+      anomaly2 && settesterMultiScore(anomaly2);
+    } catch (e) {
+      console.log('error in getsevendays', e);
+    }
   };
   //eslint-disable-next-line
   const getHistogramdata = async () => {
@@ -300,7 +330,14 @@ const Insights = () => {
           }
 
           if (histogramData) {
-            setBarChartData(histogramData.data[0].OSA_Score_histogram);
+            //    if(dropdown === "")
+            //  setBarChartData(histogramData.data[0].OSA_Score_histogram);
+
+            if (dropdown === 'Osa Score') {
+              setBarChartData(histogramData.data[0].OSA_Score_histogram);
+            } else {
+              setBarChartData(histogramData.data[0].testers_score_histogram);
+            }
 
             setFullness(true);
             console.log('histogramData', barChartData);
@@ -311,6 +348,7 @@ const Insights = () => {
       }
       fetchDashboardData();
     }
+    getsevendaysdataForOsaAndTester();
     //eslint-disable-next-line
     console.log('selectedDate', selectedDate);
     //eslint-disable-next-line
@@ -535,10 +573,10 @@ const Insights = () => {
         <Grid container spacing={gridSpacing}>
           {/* shows pop score */}
           <Grid item lg={3} sm={6} xs={12}>
-            <OSAkpiPop date={selectedDate} />
+            <OSAkpiPop date={selectedDate} osaMultiScore={osaMultiScore} />
           </Grid>
           <Grid item lg={3} sm={6} xs={12}>
-            <TesterPercentKpiCard date={selectedDate} />
+            <TesterPercentKpiCard date={selectedDate} testerMultiScore={testerMultiScore} />
           </Grid>
           <Grid
             item
@@ -623,7 +661,7 @@ const Insights = () => {
                     <Card style={{ position: 'relative' }}>
                       {
                         // histogramData
-                        seriesData.length > 0 ? (
+                        seriesData.length > 0 || seriesData.length == 0 ? (
                           <CardContent sx={{ padding: 0, paddingBottom: '0 !important' }}>
                             <Box color="#fff" bgcolor={theme.palette.primary.main} p={3}>
                               <Grid container justifyContent="space-between" alignItems="center">
