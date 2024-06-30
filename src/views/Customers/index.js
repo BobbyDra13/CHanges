@@ -1029,7 +1029,7 @@ const Customers = () => {
                             // all anomalies
                             item.anomalies_details.map((anomaly, index) => (
                               <div
-                                onClick={() => handleImageClick(anomaly.bay_img_urls, anomaly.metadata_id, anomaly)}
+                                onClick={() => handleImageClick(anomaly.bay_img, anomaly.metadata_id, anomaly)}
                                 key={index}
                                 className="rounded-md border shadow-md h-[147px]"
                               >
@@ -1038,7 +1038,7 @@ const Customers = () => {
                                   style={{ width: '100%', objectFit: 'cover' }}
                                   className="rounded-md shadow-md h-full hover:cursor-pointer"
                                   // src={anomaly.img_url}
-                                  src={anomaly.bay_img_urls}
+                                  src={anomaly.bay_img}
                                   alt="no Img"
                                   loading="lazy"
                                 />

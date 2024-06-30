@@ -200,7 +200,7 @@ export default function ShelfView({ date, groups }) {
       };
       console.log('tyh', body);
       const Zonedata = store && date && (await getZonedetails(body));
-      console.log(Zonedata);
+      console.log('llm', Zonedata);
       const shelvesData = Zonedata.data;
       console.log('Zonedata:', shelvesData);
       setData(shelvesData);
@@ -233,21 +233,28 @@ export default function ShelfView({ date, groups }) {
     // console.log('hatt', isGroup, date);
 
     async function getallbrandsname() {
-      const body = {
-        store_id: [store], // hard coded
-        //  store_id: ["6623a893c40c738627f3373f"], // hard coded
-        date: '2024-06-19'
-        //  date: date.toString()
-      };
-      console.log('y12', body);
-      const brandres = date && store && (await GetAllBrands(body));
-      const branddata = brandres.data;
-      console.log('te1', branddata[0].brand_name);
-      setIsBrandData(branddata);
-      console.log('here is branddata', isBrandData);
-      setIsBrandName(branddata[0].brand_name);
-      console.log('hello frin herere', isBrandName);
+      try {
+        const body = {
+          store_id: [store], // hard coded
+          //  store_id: ["6623a893c40c738627f3373f"], // hard coded
+          date: '2024-06-28'
+          //  date: date.toString()
+        };
+        console.log('y12', body);
+        const brandres = date && store && (await GetAllBrands(body));
+        console.log('brandres:', brandres);
+
+        const branddata = brandres && brandres.data && brandres.data.data.brands;
+        console.log('te1', branddata[0].brand_name);
+        setIsBrandData(branddata);
+        console.log('here is branddata', isBrandData);
+        setIsBrandName(branddata[0].brand_name);
+        console.log('hello frin herere', isBrandName);
+      } catch (e) {
+        console.log('error in gelallbrands', e);
+      }
     }
+
     getallbrandsname();
     // eslint-disable-next-line
   }, [date, groups, store, zoneIds]);
