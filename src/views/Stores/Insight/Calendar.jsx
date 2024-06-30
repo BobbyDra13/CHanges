@@ -6,9 +6,10 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Badge from '@mui/material/Badge';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
+import { useParams } from 'react-router-dom';
 // import dates from 'views/Stores/Table/dateSelect';
-// import { GetDates } from 'api';
-// import dayjs from 'dayjs';
+import { GetDates } from 'api';
+import dayjs from 'dayjs';
 
 function ServerDay(props) {
   const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
@@ -34,6 +35,8 @@ function DatePickerComp({ SetSelectedDate }) {
   const [calender, setCalender] = useState(new Date());
   const [events, setEvents] = useState([]);
   const [highlightedDays, setHighlightedDays] = useState([]);
+  const { store } = useParams();
+  console.log('storeId is : ', store);
 
   useEffect(() => {
     async function getEventsdata() {
@@ -49,17 +52,28 @@ function DatePickerComp({ SetSelectedDate }) {
         //   const eventdate = new Date(item);
         //   return eventdate;
         // });
-        const Edata = { data: [] };
+        // const Edata = { data: [] };
 
-        const daysOnly =
-          Edata && Edata.data
-            ? Edata.data.map((item) => {
-                const eventdate = new Date(item);
-                return eventdate;
-              })
-            : [];
-        setEvents(daysOnly);
+        // const daysOnly =
+        //   Edata && Edata.data
+        //     ? Edata.data.map((item) => {
+        //         const eventdate = new Date(item);
+        //         return eventdate;
+        //       })
+        //     : [];
+        // setEvents(daysOnly);
         // setIsLoading(false)
+        const body = {
+          store_ids: [store],
+          user_id: '66795cbe1d905892a4256694'
+        };
+        const Edata = await GetDates(body);
+        // console.log('ghuy',Edata.data[0].dates[0]);
+        const daysOnly = Edata.data[0].dates.map((item) => {
+          const eventdate = new Date(item);
+          return eventdate;
+        });
+        setEvents(daysOnly);
       } catch (error) {
         console.log(error);
       }

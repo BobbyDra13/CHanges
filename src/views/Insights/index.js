@@ -221,7 +221,8 @@ const Insights = () => {
       async function fetchDashboardData() {
         const capBody = {
           date: selectedDate.toString(),
-          user_id: user_id
+          user_id: "66795cbe1d905892a4256694"
+          // user_id: user_id
         };
         //eslint-disable-next-line
         const popKpiCardBody = {
@@ -270,7 +271,7 @@ const Insights = () => {
             if (CapData.data.length > 0) {
               let sum = 0;
               for (let i = 0; i < CapData.data.length; i++) {
-                sum += CapData.data[i].storeCapturePercentage;
+                sum += CapData.data[i].captureProgress;
               }
               const average = sum / CapData.data.length;
               setAvgCapProgress(average);
