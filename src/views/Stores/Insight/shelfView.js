@@ -201,7 +201,7 @@ export default function ShelfView({ date, groups }) {
       };
       console.log('tyh', body);
       const Zonedata = store && date && (await getZonedetails(body));
-      console.log(Zonedata);
+      console.log('llm', Zonedata);
       const shelvesData = Zonedata.data;
       console.log('Zonedata:', shelvesData);
       setData(shelvesData);

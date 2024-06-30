@@ -295,7 +295,7 @@ export const GetAnomaliesCount = async (data) => {
 
 export const GetCapProg = async (data) => {
   try {
-    const res = await axios.post(`${lambUrl}dashboard/capture-progress-2`, data, {
+    const res = await axios.post('https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/get-capture-progress', data, {
       headers: {
         Accept: 'application/json',
         Authorization: await token()
@@ -443,19 +443,19 @@ export const GetRadarChartData = async (data) => {
   }
 };
 
-// export const GetDates = async (data) => {
-//   try {
-//     const res = await axios.post(`${lambUrl}calender`, data, {
-//       headers: {
-//         Accept: 'application/json',
-//         Authorization: await token()
-//       }
-//     });
-//     return res;
-//   } catch (error) {
-//     console.log('Error Calling GetDates API: ', error);
-//   }
-// };
+export const GetDates = async (data) => {
+  try {
+    const res = await axios.post('https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/calender', data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetDates API: ', error);
+  }
+};
 
 export const GetPopHistogramData = async (data) => {
   try {

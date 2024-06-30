@@ -7,9 +7,9 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Badge from '@mui/material/Badge';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 // import dates from 'views/Stores/Table/dateSelect';
-// import { GetDates } from 'api';
-// import { useSelector } from 'react-redux';
-// import dayjs from 'dayjs';
+import { GetDates } from 'api';
+import { useSelector } from 'react-redux';
+import dayjs from 'dayjs';
 
 function ServerDay(props) {
   const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
@@ -44,11 +44,12 @@ function DatePickerComp({ SetSelectedDate }) {
     async function getEventsdata() {
       try {
         const body = {
-          store_id: store_ids
+          store_ids: ['6623a893c40c738627f3373f', '667d47b6035631c3eac93a47'],
+          user_id: '66795cbe1d905892a4256694'
         };
         const Edata = await GetDates(body);
-
-        const daysOnly = Edata.data.map((item) => {
+        // console.log('ghuy',Edata.data[0].dates[0]);
+        const daysOnly = Edata.data[0].dates.map((item) => {
           const eventdate = new Date(item);
           return eventdate;
         });

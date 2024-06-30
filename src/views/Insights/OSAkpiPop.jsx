@@ -19,7 +19,6 @@ function OSAkpiPop({ date, osaMultiScore }) {
     // Try parsing the date string
     try {
       const date = new Date(dateString);
-
       // Ensure the parsed date is valid
       if (isNaN(date.getTime())) {
         throw new Error('Invalid date format. Please provide a valid date string.');

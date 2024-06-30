@@ -1,7 +1,10 @@
 import { React, useEffect, useState } from 'react';
 
 // APIs
-import { GetAnomalies, seven_day_anomalies } from 'api';
+import {
+  // GetAnomalies,
+  seven_day_anomalies
+} from 'api';
 
 // material-ui
 // import { useTheme } from '@mui/material/styles';
@@ -195,7 +198,7 @@ const AnomaliesBarChart = ({ selectedDate }) => {
     // return () => {
     //   setChartData(null);
     // };
-    // //eslint-disable-next-line
+    //eslint-disable-next-line
   }, [selectedDate]);
   console.log('chartData', chartData);
   return (

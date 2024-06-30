@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import KpiCard from './KpiCard/index';
+//eslint-disable-next-line
 import { GetAnomalies, testerPercentSevenDayMultistore } from 'api';
 import { useTheme, Skeleton, Card, Stack, Grid, Typography } from '@mui/material';
 
@@ -18,7 +19,6 @@ function TesterPercentKpiCard({ date, testerMultiScore }) {
     // Try parsing the date string
     try {
       const date = new Date(dateString);
-
       // Ensure the parsed date is valid
       if (isNaN(date.getTime())) {
         throw new Error('Invalid date format. Please provide a valid date string.');
@@ -311,7 +311,7 @@ function TesterPercentKpiCard({ date, testerMultiScore }) {
               <Skeleton sx={{ marginTop: 1.75 }} animation="wave" variant="rounded" width={55} height={26} />
             </Grid>
             <Typography sx={{ paddingLeft: 2.25, paddingRight: 2.25 }} variant="h5" color="textSecondary">
-              Exceptions Found
+              Tester Score
             </Typography>
           </Stack>
         </Card>

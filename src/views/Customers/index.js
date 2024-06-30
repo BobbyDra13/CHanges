@@ -1212,7 +1212,7 @@ const Customers = () => {
                         <Typography variant="h3" className="">
                           {/* {details.store_id} - {details.store_name} */}
                           {/* {cData[0].brand_id} - */}
-                           {cData[0].brand_name}
+                          {cData[0].brand_name}
                         </Typography>
                         <button onClick={handleImageClick} className="md:static absolute top-5 right-5 ">
                           <IoIosClose className="md:text-4xl text-2xl" />
@@ -1221,7 +1221,7 @@ const Customers = () => {
                       <Divider />
                       <Typography paddingBottom={1.5} width={'100%'} variant="h5">
                         {/* / {details.bay_id} / {details.shelf_id} */}
-                         {/* Bay ID : {cData[0].bay_id} */}
+                        {/* Bay ID : {cData[0].bay_id} */}
                       </Typography>
                       <Typography width={'100%'} variant="h3">
                         Date & Time of Capture
