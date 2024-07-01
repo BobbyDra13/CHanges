@@ -588,18 +588,15 @@ function Overview() {
   const getanomalydetails = async () => {
     try {
       const res = store && date && (await storeanomalycount(date, store));
-      setanomalycount(res);
+    res &&  setanomalycount(res);
       setAnomaliesLoading(false);
-      console.log('tty', res);
-      console.log('uuop', res.missingTesterCount);
+      res &&    console.log('tty', res);
+      console.log('uuop', res[0].missingTesterCount);
     } catch (error) {
       console.log('error:', error);
     }
   };
-  useEffect(() => {
-    getanomalydetails();
-    //eslint-disable-next-line
-  }, []);
+
   useEffect(() => {
     getanomalydetails();
     //eslint-disable-next-line
@@ -608,7 +605,8 @@ function Overview() {
   const [associatescore, setassociatescore] = useState([]);
   const getassociatescore = async () => {
     try {
-      const result = store && date && (await associatescoreaforkpi(date, store));
+      const category = "fragrances";
+      const result = store && date && (await associatescoreaforkpi(date, store, category));
       console.log('assocaite score kpi', result);
       setassociatescore(result);
       result && result.length > 0 && console.log('result', result[0].osa_score);
@@ -640,6 +638,20 @@ function Overview() {
     // getanomalydetails();
     //eslint-disable-next-line
   }, [store, date]);
+
+//eslint-disable-next-line
+  const [capture7day,setcapture7day] = useState(null);
+  //eslint-disable-next-line
+  const [Osa7day,setOsa7day] = useState(null);
+  //eslint-disable-next-line
+  const [testfullness7day,settestfullness7day] = useState(null);
+  //eslint-disable-next-line
+useEffect(()=>{
+    setcapture7day(capture7days);
+    setOsa7day(Osa7days);
+    settestfullness7day(testfullness7days);
+    //eslint-disable-next-line
+},[testfullness7days,Osa7days,capture7days])
 
   return (
     <div className="w-full">
@@ -1001,8 +1013,9 @@ function Overview() {
                         {associatescore.length > 0 ? (
                           associatescore.map((item, index) => {
                             console.log('item', item.associate_score);
+                            const prepercent = ((item.no_of_bays_assigned - item.no_of_bays_with_anomalies)/item.no_of_bays_assigned)*100
                             const percentage =
-                              Math.round(parseFloat(item.associate_score)) > 100 ? 100 : Math.round(parseFloat(item.associate_score));
+                              Math.round(parseFloat( prepercent )) > 100 ? 100 : Math.round(parseFloat(prepercent));
                             const barcolor = percentage >= 99 ? '#00ac69' : percentage >= 95 ? '#f4a100' : '#ff413a';
                             // const capturedZone = item.zones.map((i) => {
                             //   return i._id.zone;
@@ -1177,8 +1190,8 @@ function Overview() {
                       <span className="text-center text-white text-sm font-semibold">Missing Tester</span>
                       {!anomaliesLoading && anomalycount !== null ? (
                         <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                          {console.log('dds', anomalycount)}
-                          {anomalycount && anomalycount.missingTesterCount}
+                          {anomalycount && console.log('dds', anomalycount)}
+                          {anomalycount && anomalycount.length > 0 && anomalycount[0].missingTesterCount}
                         </span>
                       ) : (
                         <Skeleton variant="rectangular" height={184} className="rounded-md" />
@@ -1188,7 +1201,7 @@ function Overview() {
                       <span className="text-center text-white  text-sm font-semibold">Empty Tray</span>
                       {!anomaliesLoading && anomalycount !== null ? (
                         <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                          {anomalycount && anomalycount.emptyTrayCount}
+                          {anomalycount &&  anomalycount.length > 0 && anomalycount[0].emptyTrayCount}
                         </span>
                       ) : (
                         <Skeleton variant="rectangular" height={184} className="rounded-md" />

@@ -63,7 +63,7 @@ function OSAkpiPop({ date, osaMultiScore }) {
       const anomaly1 =
         osaMultiScore &&
         osaMultiScore > 0 &&
-        osaMultiScore.map((item, index) => (item.toFixed(1) > 0 ? (stat[index] = true) : (stat[index] = false)));
+        osaMultiScore.map((item, index) => (item.toFixed(1) > 0 ? stat[index] = true : stat[index] = false));
 
       setStatus(stat);
       // const lastdaypercent = anomaly.length > 0 ? anomaly[anomaly.length - 1] : 0;
@@ -136,7 +136,7 @@ function OSAkpiPop({ date, osaMultiScore }) {
         const CaptureStatus = popScoreFullnessLine.map((i) => {
           return i.capture_status;
         });
-        setStatus(CaptureStatus);
+       setStatus(CaptureStatus);
 
         if (data.data === null) {
           setAnomalyPercentage('0%');
@@ -170,7 +170,8 @@ function OSAkpiPop({ date, osaMultiScore }) {
           show: false
         }
       },
-      colors: [isDataAvailable ? '#ff413a' : '#dadada'],
+      //colors: [isDataAvailable ? '#ff413a' : '#dadada'],
+      colors: [isDataAvailable ? '#4eff3a' : '#dadada'],
       markers: {
         discrete: [
           {
