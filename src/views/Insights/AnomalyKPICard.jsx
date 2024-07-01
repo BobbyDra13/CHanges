@@ -50,6 +50,7 @@ function AnomalyKPICard({ date }) {
       const res = date && (await seven_day_anomalies(data));
       console.log(res);
       const anomaly = res && res.data.length > 0 && res.data.map((item) => item.anomaly_count || 0);
+      const resolved = res && res.data.length > 0 && res.data.map((item) => item.resolved_anomaly_count || 0);
       if (res.data.length > 0) setIsDataAvailable(true);
       const stat = [];
       //eslint-disable-next-line
@@ -62,7 +63,8 @@ function AnomalyKPICard({ date }) {
 
       console.log('animalt from anamoly', anomaly);
       setAnomalyData(anomaly);
-      const lastdaypercent = anomaly.length > 0 ? anomaly[anomaly.length - 1] : 0;
+      const lastdaypercent = anomaly.length > 0 ? anomaly[anomaly.length - 1] - resolved[resolved.length - 1] : 0;
+      console.log('jija', lastdaypercent);
       setAnomalyPercentage(lastdaypercent);
     } catch (e) {
       console.log('error in getsevendays', e);
@@ -300,7 +302,7 @@ function AnomalyKPICard({ date }) {
               <Skeleton sx={{ marginTop: 1.75 }} animation="wave" variant="rounded" width={55} height={26} />
             </Grid>
             <Typography sx={{ paddingLeft: 2.25, paddingRight: 2.25 }} variant="h5" color="textSecondary">
-              Exceptions Found
+              Unresolved Exceptions
             </Typography>
           </Stack>
         </Card>
@@ -308,7 +310,7 @@ function AnomalyKPICard({ date }) {
         <KpiCard
           isLoaded={true}
           chart={chartConfig}
-          title="Exceptions Found"
+          title="Unresolved Exceptions"
           count={isDataAvailable ? anomalyPercentage : 'N/A'}
           percentage={isDataAvailable ? Math.abs(anomalyChipData) : 'NA'}
           chipColor={!capStatus ? '#9CA3AF' : anomalyChipData >= 0 ? '#FF6761' : '#10B981'}
