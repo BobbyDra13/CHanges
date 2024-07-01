@@ -162,8 +162,8 @@ const AnomaliesBarChart = ({ selectedDate }) => {
         if (data) {
           if (data.data.length > 0) {
             const extractedDates = data.data.map((item) => item.date);
-            const extractedResolved = data.data.map((item) => parseInt(item.anomaly_count) || 0);
-            const extractedFound = data.data.map((item) => parseInt(item.capture_status) || 0);
+            const extractedFound = data.data.map((item) => parseInt(item.anomaly_count) || 0);
+            const extractedResolved = data.data.map((item) => parseInt(item.resolved_anomaly_count) || 0);
             console.log(extractedDates);
             setChartData(data.data);
             // console.log('BarDATA', extractedFound);
@@ -179,7 +179,11 @@ const AnomaliesBarChart = ({ selectedDate }) => {
             });
             setSeries([
               {
-                name: 'Anomalies Count',
+                name: 'Anomalies Found',
+                data: extractedFound
+              },
+              {
+                name: 'Anomalies Resolved',
                 data: extractedResolved
               }
               // {

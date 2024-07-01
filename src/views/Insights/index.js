@@ -44,6 +44,7 @@ import BrandChartData from './chart/brand-chart';
 import KpiPop from './KpiCard/kpiPop';
 import { gridSpacing } from 'config.js';
 import AnomaliesBarChart from './AnomaliesBarChart';
+//eslint-disable-next-line
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import CaptureProgressCard from './CaptureProgressCard';
 
@@ -93,7 +94,7 @@ const Insights = () => {
   const [barChartData, setBarChartData] = useState(false);
   const [anomaliesCount, setAnomaliesCount] = useState([]);
   const [anomaliesLoading, setAnomaliesLoading] = useState(true);
-  const [openZone, setOpenZone] = useState({});
+  // const [openZone, setOpenZone] = useState({});
   const [osascorehistogram, setosascorehistogram] = useState(true);
   const [testerpercenthistogram, settesterpercenthistogram] = useState(false);
   const [dropdown, setdropdown] = useState('Osa Score');
@@ -155,20 +156,20 @@ const Insights = () => {
   //     getHistogramdata();
   // },[])
 
-  const handleZoneCaptureProgressMenuOpen = (key) => {
-    setOpenZone((prevState) => ({
-      ...prevState,
-      [key]: true
-    }));
-    // setAnchorEl(event.currentTarget);
-  };
-  const handleZoneCaptureProgressMenuClose = (key) => {
-    setOpenZone((prevState) => ({
-      ...prevState,
-      [key]: false
-    }));
-    // setAnchorEl(null);
-  };
+  // const handleZoneCaptureProgressMenuOpen = (key) => {
+  //   setOpenZone((prevState) => ({
+  //     ...prevState,
+  //     [key]: true
+  //   }));
+  // setAnchorEl(event.currentTarget);
+  // };
+  // const handleZoneCaptureProgressMenuClose = (key) => {
+  //   setOpenZone((prevState) => ({
+  //     ...prevState,
+  //     [key]: false
+  //   }));
+  //   // setAnchorEl(null);
+  // };
 
   const progressChart = {
     options: {
@@ -1085,7 +1086,7 @@ const Insights = () => {
                               </Grid>
 
                               <Grid item xs={12}>
-                                <div className="flex items-center justify-between">
+                                {/* <div className="flex items-center justify-between">
                                   <div style={{ width: '88%' }}>
                                     <LinearProgress
                                       className="cursor-pointer"
@@ -1105,14 +1106,14 @@ const Insights = () => {
 
                                       // onScroll={()=>setOpenZone(false)}
                                     />
-                                  </div>
-                                  {openZone[key] ? (
+                                  </div> */}
+                                {/* {openZone[key] ? (
                                     <FaEyeSlash className="cursor-pointer" onClick={() => handleZoneCaptureProgressMenuClose(key)} />
                                   ) : (
                                     <FaEye className="cursor-pointer" onClick={() => handleZoneCaptureProgressMenuOpen(key)} />
-                                  )}
-                                </div>
-                                {openZone[key] && (
+                                  )} */}
+                                {/* </div> */}
+                                {false && (
                                   <Paper className="mt-10 p-5 max-h-96 overflow-y-auto" elevation={10}>
                                     <Typography variant="h4">Zone wise Capture Progress</Typography>
                                     {/* {item.length > 0 && */}

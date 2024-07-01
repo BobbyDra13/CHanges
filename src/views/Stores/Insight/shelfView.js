@@ -223,7 +223,7 @@ export default function ShelfView({ date, groups }) {
   useEffect(() => {
     handleOpen(active);
     //eslint-disable-next-line
-  }, [active,date]);
+  }, [active, date]);
   const [brandempty, setbrandempty] = useState(0);
   useEffect(() => {
     console.log('latestZoneId fetched from store in shelfView:', latestZoneId);
