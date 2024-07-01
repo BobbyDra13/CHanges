@@ -8,7 +8,9 @@ import Badge from '@mui/material/Badge';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 // import dates from 'views/Stores/Table/dateSelect';
 import { GetDates } from 'api';
+// eslint-disable-next-line
 import { useSelector } from 'react-redux';
+// eslint-disable-next-line
 import dayjs from 'dayjs';
 
 function ServerDay(props) {
@@ -37,6 +39,7 @@ function DatePickerComp({ SetSelectedDate }) {
   const [highlightedDays, setHighlightedDays] = useState([]);
 
   // const storeId = useSelector((state) => state.customization.date);
+  // eslint-disable-next-line
   const store_ids = JSON.parse(localStorage.getItem('userData')).data.stores;
   console.log('Insight page', JSON.parse(localStorage.getItem('userData')));
 
