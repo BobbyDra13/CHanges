@@ -9,6 +9,7 @@ import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import { useParams } from 'react-router-dom';
 // import dates from 'views/Stores/Table/dateSelect';
 import { GetDates } from 'api';
+//eslint-disable-next-line
 import dayjs from 'dayjs';
 
 function ServerDay(props) {
@@ -79,6 +80,7 @@ function DatePickerComp({ SetSelectedDate }) {
       }
     }
     getEventsdata();
+    //eslint-disable-next-line
   }, []);
 
   useEffect(() => {

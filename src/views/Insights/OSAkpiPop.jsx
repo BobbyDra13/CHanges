@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import KpiCard from './KpiCard/index';
+//eslint-disable-next-line
 import { GetAnomalies, OsaScoreMultistoreSevenday } from 'api';
 import { useTheme, Skeleton, Card, Stack, Grid, Typography } from '@mui/material';
 
-function OSAkpiPop({ date }) {
+function OSAkpiPop({ date, osaMultiScore }) {
   const theme = useTheme();
 
   const [anomalyData, setAnomalyData] = useState([]);
@@ -40,29 +41,40 @@ function OSAkpiPop({ date }) {
   }
 
   const getsevendaysdata = async () => {
-    const data = {
-      date: date,
-      //  user_id : "666fef1bdbf527b634e95c0b"
-      user_id: '66795cbe1d905892a4256692'
-    };
+    // const data = {
+    //   date: date,
+    //   //  user_id : "666fef1bdbf527b634e95c0b"
+    //   user_id: '66795cbe1d905892a4256692'
+    // };
     try {
-      const res = date && (await OsaScoreMultistoreSevenday(data));
-      console.log(res);
-      const anomaly = res && res.data && res.data.OSA.length > 0 && res.data.OSA.map((item) => (item ? item.toFixed(2) : 0));
-      if (res.data.OSA.length > 0) setIsDataAvailable(true);
+      //   const res = date && (await OsaScoreMultistoreSevenday(data));
+      // console.log(res);
+      // const anomaly = res && res.data && res.data.OSA.length > 0 && res.data.OSA.map((item) => (item ? item.toFixed(2) : 0));
+      //if (res.data.OSA.length > 0) setIsDataAvailable(true);
+      if (osaMultiScore && osaMultiScore.length > 0) setIsDataAvailable(true);
+
       const stat = [];
       //eslint-disable-next-line
+      // const anomaly1 =
+      //   res &&
+      //   res.data.OSA.length > 0 &&
+      //   res.data.OSA.map((item, index) => (item.toFixed(1) > 0 ? (stat[index] = true) : (stat[index] = false)));
+      //eslint-disable-next-line
       const anomaly1 =
-        res &&
-        res.data.OSA.length > 0 &&
-        res.data.OSA.map((item, index) => (item.toFixed(1) > 0 ? (stat[index] = true) : (stat[index] = false)));
+        osaMultiScore &&
+        osaMultiScore > 0 &&
+        osaMultiScore.map((item, index) => (item.toFixed(1) > 0 ? (stat[index] = true) : (stat[index] = false)));
 
       setStatus(stat);
-      const lastdaypercent = anomaly.length > 0 ? anomaly[anomaly.length - 1] : 0;
+      // const lastdaypercent = anomaly.length > 0 ? anomaly[anomaly.length - 1] : 0;
+      // const lastdaypercent = anomaly.length > 0 ? anomaly[anomaly.length - 1] : 0;
+      const lastdaypercent = osaMultiScore.length > 0 ? osaMultiScore[osaMultiScore.length - 1] : 0;
       setAnomalyPercentage(lastdaypercent);
 
-      console.log('animalt from anamoly', anomaly);
-      setAnomalyData(anomaly);
+      // console.log('animalt from anamoly', anomaly);
+      console.log('animalt from anamoly', osaMultiScore);
+      // setAnomalyData(anomaly);
+      setAnomalyData(osaMultiScore);
     } catch (e) {
       console.log('error in getsevendays', e);
     }
@@ -70,7 +82,7 @@ function OSAkpiPop({ date }) {
   useEffect(() => {
     getsevendaysdata();
     //eslint-disable-next-line
-  }, [date]);
+  }, [osaMultiScore]);
   const dummyData = {
     data: [0, 0, 0, 0, 0, 0, 0],
     capture_status: [true, true, true, true, true, true, true],

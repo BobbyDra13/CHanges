@@ -33,6 +33,7 @@ import { FaAngleDoubleRight } from 'react-icons/fa';
 import { FaAngleDoubleLeft } from 'react-icons/fa';
 import { BsSearch } from 'react-icons/bs';
 import { useSelector } from 'react-redux';
+import NoDataImg from '../../../assets/images/No_data-amico.svg';
 bouncy.register();
 
 // const imgURLs = {
@@ -222,8 +223,8 @@ export default function ShelfView({ date, groups }) {
   useEffect(() => {
     handleOpen(active);
     //eslint-disable-next-line
-  }, [active]);
-
+  }, [active,date]);
+  const [brandempty, setbrandempty] = useState(0);
   useEffect(() => {
     console.log('latestZoneId fetched from store in shelfView:', latestZoneId);
     setSearchQuery(latestZoneId.toString());
@@ -237,24 +238,24 @@ export default function ShelfView({ date, groups }) {
         const body = {
           store_id: [store], // hard coded
           //  store_id: ["6623a893c40c738627f3373f"], // hard coded
-          date: '2024-06-28'
+          date: date
           //  date: date.toString()
         };
         console.log('y12', body);
         const brandres = date && store && (await GetAllBrands(body));
-        console.log('brandres:', brandres);
-
-        const branddata = brandres && brandres.data && brandres.data.data.brands;
+        console.log(brandres);
+        const branddata = brandres && brandres.data.data.brands;
+        if (branddata && branddata.length > 0) setbrandempty(1);
+        else setbrandempty(2);
         console.log('te1', branddata[0].brand_name);
         setIsBrandData(branddata);
         console.log('here is branddata', isBrandData);
         setIsBrandName(branddata[0].brand_name);
         console.log('hello frin herere', isBrandName);
       } catch (e) {
-        console.log('error in gelallbrands', e);
+        console.log('error in getall brands', e);
       }
     }
-
     getallbrandsname();
     // eslint-disable-next-line
   }, [date, groups, store, zoneIds]);
@@ -512,15 +513,19 @@ export default function ShelfView({ date, groups }) {
                           () => {
                             // setActive(d.name);
                             // zoneDetails(d.id);
-                            setActive(d.brand_id);
-                            handleOpen(d.brand_id);
+                            d.capture_status === 1 && setActive(d.brand_id);
+                            d.capture_status === 1 && handleOpen(d.brand_id);
                           }
                           // : undefined
                         }
                         style={{
-                          backgroundColor: active === d.brand_id ? 'black' : 'white',
+                          //  backgroundColor: active === d.brand_id ? 'black' : 'white',
+                          backgroundColor: d.capture_status === 0 ? '#f5f5f5' : active === d.brand_id ? 'black' : 'white',
+                          opacity: d.capture_status === 0 ? '0.4' : '1',
                           color: active === d.brand_id ? 'white' : 'black',
-                          fontWeight: 'bolder'
+                          //color: active === d.brand_id ? 'white' : 'black',
+                          fontWeight: 'bolder',
+                          cursor: d.capture_status === 0 ? 'not-allowed' : 'pointer'
                         }}
                         // style={style}
                       >
@@ -554,7 +559,7 @@ export default function ShelfView({ date, groups }) {
               className="scrollbar inline-block "
             >
               {/* <Grid item md={12} sm={12} key={index}> */}
-              {data ? (
+              {data && data.length > 0 ? (
                 data.map((item, index) => {
                   const highlightStyle3 = {
                     position: 'absolute',
@@ -602,7 +607,7 @@ export default function ShelfView({ date, groups }) {
                               </Typography>
                               {/* <Divider /> */}
                               <Typography paddingBottom={1.5} width={'100%'} variant="h5">
-                                {formatDate(item.timestamps)}
+                                {formatDate(item.timestamp)}
                               </Typography>
                               <Typography width={'100%'} variant="h3">
                                 Anomalies
@@ -743,7 +748,10 @@ export default function ShelfView({ date, groups }) {
                   );
                 })
               ) : (
-                <h1 className="text-center text-4xl">Please Choose A Brand</h1>
+                // <h1 className="text-center text-4xl">Please Choose A Brand</h1>
+                <div className="w-full h-full flex justify-center place-items-center">
+                  <img style={{ height: '310px' }} src={NoDataImg} alt="No data" />
+                </div>
               )}
 
               {/* </Grid> */}
@@ -752,7 +760,8 @@ export default function ShelfView({ date, groups }) {
         </div>
       ) : (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '500px' }}>
-          <l-bouncy size="45" speed="1" color="black"></l-bouncy>
+          {brandempty === 0 && <l-bouncy size="45" speed="1" color="black"></l-bouncy>}
+          {brandempty === 2 && <img style={{ height: '310px' }} src={NoDataImg} alt="No data" />}
           {/* <h1>No data</h1> */}
         </div>
       )}

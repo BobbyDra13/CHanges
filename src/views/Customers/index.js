@@ -295,7 +295,7 @@ const Customers = () => {
     };
 
     try {
-      if (!id) return;
+      //if (!id) return;
       const response = await fetch(link, {
         method: 'POST',
         headers: {
@@ -575,7 +575,7 @@ const Customers = () => {
   const handlexnextclick = () => {
     console.log(cData);
     let index = 0;
-    const current = cData && cData[0].metadata_id;
+    const current = cData && cData[0]._id;
     console.log(current);
     for (var i = 0; i < storesData[0].anomalies_details.length; i++) {
       if (String(storesData[0].anomalies_details[i].metadata_id) === String(current)) {
@@ -589,12 +589,12 @@ const Customers = () => {
     let anomaly = storesData[0].anomalies_details[index];
     console.log(anomaly);
 
-    handleImageClickfromnext(anomaly.bay_img_urls, anomaly.metadata_id, anomaly);
+    handleImageClickfromnext(anomaly.bay_img, anomaly.metadata_id, anomaly);
   };
   const handleprevclick = () => {
     console.log(cData);
     let index = 0;
-    const current = cData && cData[0].metadata_id;
+    const current = cData && cData[0]._id;
     console.log(current);
     for (var i = 0; i < storesData[0].anomalies_details.length; i++) {
       if (String(storesData[0].anomalies_details[i].metadata_id) === String(current)) {
@@ -609,7 +609,7 @@ const Customers = () => {
     let anomaly = storesData[0].anomalies_details[index];
     console.log(anomaly);
 
-    handleImageClickfromnext(anomaly.bay_img_urls, anomaly.metadata_id, anomaly);
+    handleImageClickfromnext(anomaly.bay_img, anomaly.metadata_id, anomaly);
   };
   //eslint-disable-next-line
   const handlePrevClick = () => {
@@ -695,14 +695,14 @@ const Customers = () => {
 
     return uniqueObjects;
   };
-
-  const [uniqueArray, setUniqueArray] = useState([]);
+  //eslint-disable-next-line
+  const [uniqueArrayy, setUniqueArrayy] = useState([]);
 
   useEffect(() => {
     if (cData) {
       const uniqueObjects = cData && cData.length > 0 && cData[0].anomaly_details && findUniqueObjects(cData[0].anomaly_details);
       console.log('unique array of anomalies ', uniqueObjects);
-      setUniqueArray(uniqueObjects);
+      setUniqueArrayy(uniqueObjects);
     }
   }, [cData]);
 
@@ -1030,6 +1030,7 @@ const Customers = () => {
                             item.anomalies_details.map((anomaly, index) => (
                               <div
                                 onClick={() => handleImageClick(anomaly.bay_img, anomaly.metadata_id, anomaly)}
+                                // onClick={() => handleImageClick(anomaly.bay_img_urls, anomaly.metadata_id, anomaly)}
                                 key={index}
                                 className="rounded-md border shadow-md h-[147px]"
                               >
@@ -1039,6 +1040,7 @@ const Customers = () => {
                                   className="rounded-md shadow-md h-full hover:cursor-pointer"
                                   // src={anomaly.img_url}
                                   src={anomaly.bay_img}
+                                  //src={anomaly.bay_img_urls}
                                   alt="no Img"
                                   loading="lazy"
                                 />
@@ -1209,7 +1211,8 @@ const Customers = () => {
                       <div className="w-full flex justify-between place-items-center">
                         <Typography variant="h3" className="">
                           {/* {details.store_id} - {details.store_name} */}
-                          {cData[0].brand_id} - {cData[0].brand_name}
+                          {/* {cData[0].brand_id} - */}
+                          {cData[0].brand_name}
                         </Typography>
                         <button onClick={handleImageClick} className="md:static absolute top-5 right-5 ">
                           <IoIosClose className="md:text-4xl text-2xl" />
@@ -1217,7 +1220,8 @@ const Customers = () => {
                       </div>
                       <Divider />
                       <Typography paddingBottom={1.5} width={'100%'} variant="h5">
-                        {/* / {details.bay_id} / {details.shelf_id} */} Bay ID : {cData[0].bay_id}
+                        {/* / {details.bay_id} / {details.shelf_id} */}
+                        {/* Bay ID : {cData[0].bay_id} */}
                       </Typography>
                       <Typography width={'100%'} variant="h3">
                         Date & Time of Capture
@@ -1263,55 +1267,60 @@ const Customers = () => {
                           // cData.anomaly_details.map((item, index) =>
 
                           // cData[0].anomaly_details.map((itm, ind) => (
-                          uniqueArray.length > 0 &&
-                          uniqueArray.map((itm, ind) => (
-                            <Tooltip
-                              key={0 + ind}
-                              // title={
-                              //   <div>
-                              //     {console.log(itm, ind)}
-                              //     <Typography variant="body1">
-                              //       Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
-                              //     </Typography>
-                              //     <Typography variant="body1">
-                              //       <span>Description :</span>
-                              //       {itm.anomaly_type === 'alien_pop'
-                              //         ? itm.print_tag
-                              //           ? itm.print_tag
-                              //           : 'No Data Found'
-                              //         : itm.article_description
-                              //         ? itm.article_description
-                              //         : 'No Data Found'}
-                              //     </Typography>
-                              //     <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
-                              //   </div>
-                              // }
-                            >
-                              <Box
-                                key={ind}
-                                paddingX={0.2}
-                                paddingY={0.04}
-                                className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                onMouseOver={() => {
-                                  calculate(itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
-                                  //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
-                                  setAntn(true);
-                                }}
-                                onMouseOut={() => {
-                                  if (antn) {
-                                    setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                    setAntn(false);
-                                  }
-                                }}
-                              >
-                                <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
-                                <Typography paddingRight={2} variant="h6">
-                                  {removeAfterLastUnderscore(itm.type)}
-                                  {/* {cData[0].unique_anomaly_array.map((anomaly) => removeAfterLastUnderscore(anomaly) )} */}
-                                </Typography>
-                              </Box>
-                            </Tooltip>
-                          ))
+                          cData &&
+                          cData.length > 0 &&
+                          cData[0].shelves &&
+                          cData[0].shelves.map(
+                            (itm, ind) =>
+                              itm.anomaly_type !== '' && (
+                                <Tooltip
+                                  key={0 + ind}
+                                  // title={
+                                  //   <div>
+                                  //     {console.log(itm, ind)}
+                                  //     <Typography variant="body1">
+                                  //       Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
+                                  //     </Typography>
+                                  //     <Typography variant="body1">
+                                  //       <span>Description :</span>
+                                  //       {itm.anomaly_type === 'alien_pop'
+                                  //         ? itm.print_tag
+                                  //           ? itm.print_tag
+                                  //           : 'No Data Found'
+                                  //         : itm.article_description
+                                  //         ? itm.article_description
+                                  //         : 'No Data Found'}
+                                  //     </Typography>
+                                  //     <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
+                                  //   </div>
+                                  // }
+                                >
+                                  <Box
+                                    key={ind}
+                                    paddingX={0.2}
+                                    paddingY={0.04}
+                                    className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                    onMouseOver={() => {
+                                      calculate(itm.coord.xmin, itm.coord.ymin, itm.coord.xmax, itm.coord.ymax);
+                                      //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
+                                      setAntn(true);
+                                    }}
+                                    onMouseOut={() => {
+                                      if (antn) {
+                                        setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                        setAntn(false);
+                                      }
+                                    }}
+                                  >
+                                    <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
+                                    <Typography paddingRight={2} variant="h6">
+                                      {removeAfterLastUnderscore(itm.anomaly_type)}
+                                      {/* {cData[0].unique_anomaly_array.map((anomaly) => removeAfterLastUnderscore(anomaly) )} */}
+                                    </Typography>
+                                  </Box>
+                                </Tooltip>
+                              )
+                          )
                           // )
                         )}
                       </div>
