@@ -1,7 +1,7 @@
 import { Box, CircularProgress } from '@mui/material';
 // import { getsevendaydata } from 'api';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 // import { useParams } from 'react-router';f
 // import { footfallGraph } from 'api/sentinelAPI';
@@ -90,72 +90,11 @@ const Areachart = ({
   //   get7daysdata(date);
   // }, [date, store]);
 
-  useEffect(() => {
-    async function getData() {
-      console.log(date);
-      // const body = {
-      //   date: date,
-      //   store_id: storeId
-      // };
-      try {
-        setLoading(true);
-        // const data = await GetFullnessPop(body);
-        const data = { data: [testfullness7days] };
-        // console.log("data", data);
-        if (data) {
-          const catagorydata = data.data.map((d) => d);
-          console.log(catagorydata);
-          // console.log("catagorydata", catagorydata);
-          const custdata = data.data.map((d) => (d != 'Data not found' ? parseFloat(d).toFixed(1) : 0));
-          console.log('custdata', custdata);
-
-          setCategory(catagorydata);
-          setCustCount(custdata);
-          setLoading(false);
-        }
-        // return data;
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    async function getCaptureData() {
-      console.log('date', date);
-      // const captureBody = {
-      //   date: date,
-      //   store_id: storeId
-      // };
-      try {
-        setLoading(true);
-        // const capData = await GetSevenDayCapProgress(captureBody);
-        const capData = { data: [capture7days] };
-        console.log('capture_data', capData);
-        if (capData) {
-          const capturedata = capData.data.map((d) => d);
-          // console.log("capturedata", capturedata);
-          const capture = capData.data.map((d) => (d != 'Data not found' ? parseFloat(d).toFixed(1) : 0));
-          console.log('capture', capture);
-          // const statusArray = capData.data.map((d) => d.capture_status);
-          // console.log('statusArray', statusArray);
-          setCategory(capturedata);
-          setCapProgress(capture);
-          setLoading(false);
-          // setStatus(statusArray);
-        }
-        // return data;
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    getData();
-    getCaptureData();
-    // eslint-disable-next-line
-  }, [date, capture7days, testfullness7days]);
   // console.log("capturesss", capProgress);
   // console.log("pop", custCount);
   //graph options start
 
-  const state = {
+  const [state, setstate] = useState({
     series: [
       {
         name: 'Capture Progress',
@@ -179,6 +118,7 @@ const Areachart = ({
 
       // }
     ],
+
     options: {
       chart: {
         type: 'area',
@@ -358,7 +298,7 @@ const Areachart = ({
         // categories : [
         //   'mon' , 'tue' , 'wed' , 'thur', 'fri', 'sat' , 'sun'
         // ],
-        categories: getLastWeekDates(date),
+        categories: date && getLastWeekDates(date),
         // categories: [
         //   '2018-09-19T15:30:00.000Z',
         //   '2018-09-19T16:00:00.000Z',
@@ -390,8 +330,30 @@ const Areachart = ({
       },
       colors: ['#10b981', '#06b6d4', '#e97451']
     }
-  };
+  });
+  useEffect(() => {
+    const newSeries = [
+      // Update data for each series based on your logic
+      { name: 'Capture Progress', data: capture7days && capture7days },
+      { name: 'Tester Fulless', data: testfullness7days && testfullness7days },
+      { name: 'OSA Score', data: Osa7days && Osa7days }
+    ];
 
+    const newCategories = date && getLastWeekDates(date); // Replace with your date logic
+
+    setstate((prevState) => ({
+      ...prevState,
+      series: newSeries,
+      options: {
+        ...prevState.options,
+        xaxis: {
+          ...prevState.options.xaxis,
+          categories: newCategories
+        }
+      }
+    }));
+    
+  }, [date,Osa7days,testfullness7days,capture7days]);
   //graph options end
 
   // console.log(footfalldata);
@@ -408,7 +370,7 @@ const Areachart = ({
         <Box display="flex" justifyContent="center" alignItems="center" height="300px">
           <CircularProgress />
         </Box>
-      ) : custCount.length > 0 ? (
+      ) : Osa7days.length > 0 ? (
         <Box sx={{ overflow: 'hidden' }}>
           <ReactApexChart options={state.options} series={state.series} type="line" width="100%" height={400} />
         </Box>

@@ -62,8 +62,8 @@ function TesterPercentKpiCard({ date, testerMultiScore }) {
       //eslint-disable-next-line
       const anomaly1 =
         testerMultiScore &&
-        testerMultiScore > 0 &&
-        testerMultiScore.map((item, index) => (item.toFixed(1) > 0 ? (stat[index] = true) : (stat[index] = false)));
+        testerMultiScore.length > 0 &&
+        testerMultiScore.map((item, index) => (item > 0 ? (stat[index] = true) : (stat[index] = false)));
 
       setStatus(stat);
       // const lastdaypercent = anomaly.length > 0 ? anomaly[anomaly.length - 1] : 0;
@@ -176,49 +176,49 @@ function TesterPercentKpiCard({ date, testerMultiScore }) {
           {
             seriesIndex: 0,
             dataPointIndex: 0,
-            fillColor: !isDataAvailable ? '#dadada' : status[0] ? '#ff413a' : '#dadada',
+            fillColor: !isDataAvailable ? '#dadada' : status[0] ? '#4eff3a' : '#dadada',
             strokeColor: 'white',
             size: 7
           },
           {
             seriesIndex: 0,
             dataPointIndex: 1,
-            fillColor: !isDataAvailable ? '#dadada' : status[1] ? '#ff413a' : '#dadada',
+            fillColor: !isDataAvailable ? '#dadada' : status[1] ? '#4eff3a' : '#dadada',
             strokeColor: 'white',
             size: 7
           },
           {
             seriesIndex: 0,
             dataPointIndex: 2,
-            fillColor: !isDataAvailable ? '#dadada' : status[2] ? '#ff413a' : '#dadada',
+            fillColor: !isDataAvailable ? '#dadada' : status[2] ? '#4eff3a' : '#dadada',
             strokeColor: 'white',
             size: 7
           },
           {
             seriesIndex: 0,
             dataPointIndex: 3,
-            fillColor: !isDataAvailable ? '#dadada' : status[3] ? '#ff413a' : '#dadada',
+            fillColor: !isDataAvailable ? '#dadada' : status[3] ? '#4eff3a' : '#dadada',
             strokeColor: 'white',
             size: 7
           },
           {
             seriesIndex: 0,
             dataPointIndex: 4,
-            fillColor: !isDataAvailable ? '#dadada' : status[4] ? '#ff413a' : '#dadada',
+            fillColor: !isDataAvailable ? '#dadada' : status[4] ? '#4eff3a' : '#dadada',
             strokeColor: 'white',
             size: 7
           },
           {
             seriesIndex: 0,
             dataPointIndex: 5,
-            fillColor: !isDataAvailable ? '#dadada' : status[5] ? '#ff413a' : '#dadada',
+            fillColor: !isDataAvailable ? '#dadada' : status[5] ? '#4eff3a' : '#dadada',
             strokeColor: 'white',
             size: 7
           },
           {
             seriesIndex: 0,
             dataPointIndex: 6,
-            fillColor: !isDataAvailable ? '#dadada' : status[6] ? '#ff413a' : '#dadada',
+            fillColor: !isDataAvailable ? '#dadada' : status[6] ? '#4eff3a' : '#dadada',
             strokeColor: 'white',
             size: 7
           }
@@ -324,7 +324,7 @@ function TesterPercentKpiCard({ date, testerMultiScore }) {
           percentage={isDataAvailable ? Math.abs(anomalyChipData) : 'NA'}
           chipColor={!capStatus ? '#9CA3AF' : anomalyChipData >= 0 ? '#FF6761' : '#10B981'}
           isLoss={anomalyChipData < 0}
-          color={isDataAvailable ? theme.palette.error.main : '#9CA3AF'}
+          color={isDataAvailable ? theme.palette.success.main : '#9CA3AF'}
         />
       )}
     </>

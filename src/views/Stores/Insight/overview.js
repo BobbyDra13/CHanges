@@ -162,9 +162,9 @@ function Overview() {
   const [anomaliesCount, setAnomaliesCount] = useState([]);
   const [anomaliesLoading, setAnomaliesLoading] = useState(true);
   // const [sevendaydata, setsevendaydata] = useState(null);
-  const [capture7days, setcapture7days] = useState(null);
-  const [Osa7days, setOsa7days] = useState(null);
-  const [testfullness7days, settestfullness7days] = useState(null);
+  const [capture7days, setcapture7days] = useState([]);
+  const [Osa7days, setOsa7days] = useState([]);
+  const [testfullness7days, settestfullness7days] = useState([]);
 
   const get7daysdata = async (date) => {
     try {
@@ -348,7 +348,7 @@ function Overview() {
       }
       // labels: ['Progress']
     },
-    series: [capture7days ? capture7days[capture7days.length - 1] : 0],
+    series: [capture7days.length>0 ? capture7days[capture7days.length - 1] : 0],
     labels: ['A']
   };
 
@@ -1174,7 +1174,7 @@ useEffect(()=>{
                     </div>
                     <div className="flex gap-1 flex-col">
                       {/* <div className="text-4xl font-semibold">{capProgressValue ? parseFloat(capProgressValue).toFixed(1) : 0}%</div> */}
-                      <div className="text-4xl font-semibold">{capture7days ? capture7days[capture7days.length - 1].toFixed(1) : 0}%</div>
+                      <div className="text-4xl font-semibold">{capture7days.length > 0 ? capture7days[capture7days.length - 1].toFixed(1) : 0}%</div>
                       <div className="text-sm font-semibold">Capture Progress</div>
                     </div>
                   </div>

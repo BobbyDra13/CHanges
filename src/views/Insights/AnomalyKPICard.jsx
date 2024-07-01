@@ -3,7 +3,7 @@ import KpiCard from './KpiCard/index';
 import { GetAnomalies, seven_day_anomalies } from 'api';
 import { useTheme, Skeleton, Card, Stack, Grid, Typography } from '@mui/material';
 
-function AnomalyKPICard({ date }) {
+function AnomalyKPICard({ date, anomalycount7days }) {
   const theme = useTheme();
 
   const [anomalyData, setAnomalyData] = useState([]);
@@ -47,33 +47,43 @@ function AnomalyKPICard({ date }) {
       user_id: '66795cbe1d905892a4256692'
     };
     try {
-      const res = date && (await seven_day_anomalies(data));
-      console.log(res);
-      const anomaly = res && res.data.length > 0 && res.data.map((item) => item.anomaly_count || 0);
-      const resolved = res && res.data.length > 0 && res.data.map((item) => item.resolved_anomaly_count || 0);
-      if (res.data.length > 0) setIsDataAvailable(true);
+      //   const res = date && (await OsaScoreMultistoreSevenday(data));
+      // console.log(res);
+      // const anomaly = res && res.data && res.data.OSA.length > 0 && res.data.OSA.map((item) => (item ? item.toFixed(2) : 0));
+      //if (res.data.OSA.length > 0) setIsDataAvailable(true);
+      console.log("ann" , anomalycount7days);
+      if (anomalycount7days && anomalycount7days.length > 0) setIsDataAvailable(true);
+
       const stat = [];
       //eslint-disable-next-line
+      // const anomaly1 =
+      //   res &&
+      //   res.data.OSA.length > 0 &&
+      //   res.data.OSA.map((item, index) => (item.toFixed(1) > 0 ? (stat[index] = true) : (stat[index] = false)));
+      //eslint-disable-next-line
       const anomaly1 =
-        res &&
-        res.data.length > 0 &&
-        res.data.map((item, index) => (item.anomaly_count > 0 ? (stat[index] = true) : (stat[index] = false)));
+        anomalycount7days &&
+        anomalycount7days.length > 0 &&
+        anomalycount7days.map((item, index) => ( item > 0 ? (stat[index] = true) : (stat[index] = false)));
 
       setStatus(stat);
-
-      console.log('animalt from anamoly', anomaly);
-      setAnomalyData(anomaly);
-      const lastdaypercent = anomaly.length > 0 ? anomaly[anomaly.length - 1] - resolved[resolved.length - 1] : 0;
-      console.log('jija', lastdaypercent);
+      // const lastdaypercent = anomaly.length > 0 ? anomaly[anomaly.length - 1] : 0;
+      // const lastdaypercent = anomaly.length > 0 ? anomaly[anomaly.length - 1] : 0;
+      const lastdaypercent = anomalycount7days.length > 0 ? anomalycount7days[anomalycount7days.length - 1] : 0;
       setAnomalyPercentage(lastdaypercent);
+
+      // console.log('animalt from anamoly', anomaly);
+      console.log('animalt from anamoly', anomalycount7days);
+      // setAnomalyData(anomaly);
+      setAnomalyData(anomalycount7days);
     } catch (e) {
-      console.log('error in getsevendays', e);
+      console.log('error in getsevendays hell', e);
     }
   };
   useEffect(() => {
     getsevendaysdata();
     //eslint-disable-next-line
-  }, [date]);
+  }, [anomalycount7days]);
   const dummyData = {
     data: [0, 0, 0, 0, 0, 0, 0],
     capture_status: [true, true, true, true, true, true, true],
@@ -311,7 +321,7 @@ function AnomalyKPICard({ date }) {
           isLoaded={true}
           chart={chartConfig}
           title="Unresolved Exceptions"
-          count={isDataAvailable ? anomalyPercentage : 'N/A'}
+          count={isDataAvailable ? parseInt(anomalyPercentage) : 'N/A'}
           percentage={isDataAvailable ? Math.abs(anomalyChipData) : 'NA'}
           chipColor={!capStatus ? '#9CA3AF' : anomalyChipData >= 0 ? '#FF6761' : '#10B981'}
           isLoss={anomalyChipData < 0}
