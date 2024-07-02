@@ -214,7 +214,7 @@ function OSAkpiPop({ date, osaMultiScore }) {
           {
             seriesIndex: 0,
             dataPointIndex: 5,
-            fillColor: !isDataAvailable ? '#dadada' : status[5] ?'#4eff3a': '#dadada',
+            fillColor: !isDataAvailable ? '#dadada' : status[5] ? '#4eff3a' : '#dadada',
             strokeColor: 'white',
             size: 7
           },

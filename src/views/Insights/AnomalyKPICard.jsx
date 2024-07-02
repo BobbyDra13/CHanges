@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import KpiCard from './KpiCard/index';
-import { GetAnomalies, seven_day_anomalies } from 'api';
+import {
+  GetAnomalies,
+  //eslint-disable-next-line
+  seven_day_anomalies
+} from 'api';
 import { useTheme, Skeleton, Card, Stack, Grid, Typography } from '@mui/material';
 
 function AnomalyKPICard({ date, anomalycount7days }) {
@@ -41,6 +45,7 @@ function AnomalyKPICard({ date, anomalycount7days }) {
   }
 
   const getsevendaysdata = async () => {
+    //eslint-disable-next-line
     const data = {
       date: date,
       //  user_id : "666fef1bdbf527b634e95c0b"
@@ -51,7 +56,7 @@ function AnomalyKPICard({ date, anomalycount7days }) {
       // console.log(res);
       // const anomaly = res && res.data && res.data.OSA.length > 0 && res.data.OSA.map((item) => (item ? item.toFixed(2) : 0));
       //if (res.data.OSA.length > 0) setIsDataAvailable(true);
-      console.log("ann" , anomalycount7days);
+      console.log('ann', anomalycount7days);
       if (anomalycount7days && anomalycount7days.length > 0) setIsDataAvailable(true);
 
       const stat = [];
@@ -64,7 +69,7 @@ function AnomalyKPICard({ date, anomalycount7days }) {
       const anomaly1 =
         anomalycount7days &&
         anomalycount7days.length > 0 &&
-        anomalycount7days.map((item, index) => ( item > 0 ? (stat[index] = true) : (stat[index] = false)));
+        anomalycount7days.map((item, index) => (item > 0 ? (stat[index] = true) : (stat[index] = false)));
 
       setStatus(stat);
       // const lastdaypercent = anomaly.length > 0 ? anomaly[anomaly.length - 1] : 0;

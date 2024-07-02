@@ -266,7 +266,7 @@ const Insights = () => {
         };
         const donutBody = {
           date: selectedDate.toString(),
-          user_id: user_id
+          user_id: '66795cbe1d905892a4256694'
         };
         const dataa = {
           // user_id: '666fef1bdbf527b634e95c0b',
@@ -303,28 +303,26 @@ const Insights = () => {
             console.log('abc', anomalies.data);
           }
           if (CapData) {
-            if (CapData.data.length > 0) {
-              let sum = 0;
-              for (let i = 0; i < CapData.data.length; i++) {
-                sum += CapData.data[i].captureProgress;
-              }
-              const average = sum / CapData.data.length;
+            if (CapData.data.results.length > 0) {
+              // let sum = 0;
+              // for (let i = 0; i < CapData.data.length; i++) {
+              //   sum += CapData.data[i].captureProgress;
+              // }
+              // const average = sum / CapData.data.length;
+              const average = CapData.data.avgCaptureProgress;
               setAvgCapProgress(average);
             } else {
               setAvgCapProgress('');
             }
-            console.log('thik', CapData.data);
-            setCapProgress(CapData.data);
+            console.log('thik', CapData.data.results);
+            console.log('uii', avgCapProgress);
+            setCapProgress(CapData.data.results);
           }
           if (brandDonutData) {
             if (brandDonutData.data.length > 0) {
               console.log('Donut chart data', brandDonutData);
-              const extractedFullness = brandDonutData.data.map((item) => [
-                item.totalMissingPopCount,
-                item.totalAlienPopCount,
-                item.totalIncorrectPopCount
-              ]);
-              const extractedBrandNames = ['Missing pop', 'Alien pop', 'Incorrect pop'];
+              const extractedFullness = brandDonutData.data.map((item) => [item.missing_tester, item.empty_tray, item.correct]);
+              const extractedBrandNames = ['Missing tester', 'Empty Tray', 'Correct'];
               setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
               setBrandFullness(extractedFullness);
               console.log('Brand Fullness', extractedFullness);
@@ -1000,27 +998,27 @@ const Insights = () => {
                     <span className="text-center text-white text-sm font-semibold">Missing</span>
                     {!anomaliesLoading ? (
                       <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                        {anomaliesCount[0].totalMissingPopCount}
+                        {anomaliesCount[0].missing_tester}
                       </span>
                     ) : (
                       <Skeleton variant="rectangular" height={45} className="rounded-md" />
                     )}
                   </div>
                   <div className="w-2/6 h-full flex flex-col border-2 border-t-0 border-b-0 border-l-white border-r-white">
-                    <span className="text-center text-white  text-sm font-semibold">Alien</span>
+                    <span className="text-center text-white  text-sm font-semibold">Empty Tray</span>
                     {!anomaliesLoading ? (
                       <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                        {anomaliesCount[0].totalAlienPopCount}
+                        {anomaliesCount[0].empty_tray}
                       </span>
                     ) : (
                       <Skeleton variant="rectangular" height={45} className="rounded-md" />
                     )}
                   </div>
                   <div className="w-2/6 h-full flex flex-col">
-                    <span className="text-center text-white  text-sm font-semibold">Incorrect</span>
+                    <span className="text-center text-white  text-sm font-semibold">Correct</span>
                     {!anomaliesLoading ? (
                       <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                        {anomaliesCount[0].totalIncorrectPopCount}
+                        {anomaliesCount[0].correct}
                       </span>
                     ) : (
                       <Skeleton variant="rectangular" height={45} className="rounded-md" />
@@ -1085,12 +1083,12 @@ const Insights = () => {
                               <Grid item>
                                 <Typography variant="body2" align="right">
                                   {/* {Math.floor(item.capture_percentage)}% */}
-                                  {parseFloat(item.storeCapturePercentage).toFixed(1)}
+                                  {parseFloat(item.captureProgress).toFixed(1)}
                                 </Typography>
                               </Grid>
 
                               <Grid item xs={12}>
-                                {/* <div className="flex items-center justify-between">
+                                <div className="flex items-center justify-between">
                                   <div style={{ width: '88%' }}>
                                     <LinearProgress
                                       className="cursor-pointer"
@@ -1105,18 +1103,18 @@ const Insights = () => {
                                       variant="determinate"
                                       aria-label="direct"
                                       // value={Math.floor(item.capture_percentage)}
-                                      value={parseFloat(item.storeCapturePercentage)}
+                                      value={parseFloat(item.captureProgress)}
                                       color="primary"
 
                                       // onScroll={()=>setOpenZone(false)}
                                     />
-                                  </div> */}
-                                {/* {openZone[key] ? (
+                                  </div>
+                                  {/* {openZone[key] ? (
                                     <FaEyeSlash className="cursor-pointer" onClick={() => handleZoneCaptureProgressMenuClose(key)} />
                                   ) : (
                                     <FaEye className="cursor-pointer" onClick={() => handleZoneCaptureProgressMenuOpen(key)} />
                                   )} */}
-                                {/* </div> */}
+                                </div>
                                 {false && (
                                   <Paper className="mt-10 p-5 max-h-96 overflow-y-auto" elevation={10}>
                                     <Typography variant="h4">Zone wise Capture Progress</Typography>
