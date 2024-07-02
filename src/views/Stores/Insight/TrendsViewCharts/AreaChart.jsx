@@ -1,7 +1,7 @@
 import { Box, CircularProgress } from '@mui/material';
 // import { getsevendaydata } from 'api';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 // import { useParams } from 'react-router';f
 // import { footfallGraph } from 'api/sentinelAPI';
@@ -20,9 +20,11 @@ const Areachart = ({
   // const { store } = useParams();
   //eslint-disable-next-line
   const [category, setCategory] = useState([]);
+  //eslint-disable-next-line
   const [custCount, setCustCount] = useState([]);
   //eslint-disable-next-line
   const [capProgress, setCapProgress] = useState([]);
+  //eslint-disable-next-line
   const [loading, setLoading] = useState(false);
   const [
     status
@@ -111,12 +113,6 @@ const Areachart = ({
         name: 'OSA Score',
         data: Osa7days && Osa7days
       }
-      // {
-
-      //         name: 'Female',
-      //         data: [2, 4, 3, 10, 9, 62, 51,40, 20 ,18, 15,10,6,4,2]
-
-      // }
     ],
 
     options: {
@@ -352,8 +348,8 @@ const Areachart = ({
         }
       }
     }));
-    
-  }, [date,Osa7days,testfullness7days,capture7days]);
+    //eslint-disable-next-line
+  }, [date, Osa7days, testfullness7days, capture7days]);
   //graph options end
 
   // console.log(footfalldata);

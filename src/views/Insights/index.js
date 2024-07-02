@@ -113,7 +113,7 @@ const Insights = () => {
 
   const [osaMultiScore, setosaMultiScore] = useState(null);
   const [testerMultiScore, settesterMultiScore] = useState(null);
-  const [anomalycount7days,setanomalycount7days] = useState(null);
+  const [anomalycount7days, setanomalycount7days] = useState(null);
   const getsevendaysdataForOsaAndTester = async () => {
     const data = {
       date: selectedDate,
@@ -133,13 +133,11 @@ const Insights = () => {
       const anomaly = res && res.data && res.data.OSA.length > 0 && res.data.OSA.map((item) => (item ? item.toFixed(2) : 0));
       const anomaly2 =
         res2 && res2.data && res2.data.TesterScore.length > 0 && res2.data.TesterScore.map((item) => (item ? item.toFixed(2) : 0));
-        const anomaly3 =
-        res3 && res3.data && res3.data.length > 0 && res3.data.map((item) => (item ? item.anomaly_count.toFixed(2) : 0));
+      const anomaly3 = res3 && res3.data && res3.data.length > 0 && res3.data.map((item) => (item ? item.anomaly_count.toFixed(2) : 0));
       console.log(anomaly);
       anomaly && setosaMultiScore(anomaly);
       anomaly2 && settesterMultiScore(anomaly2);
-      anomaly3 &&  setanomalycount7days(anomaly3);
-      
+      anomaly3 && setanomalycount7days(anomaly3);
     } catch (e) {
       console.log('error in getsevendays', e);
     }
@@ -655,7 +653,7 @@ const Insights = () => {
           {showPopUp && <PopUp open={popupOpen} onClose={handleClosePopup} value={val} selectedDate={selectedDate} />}
 
           <Grid item lg={3} sm={6} xs={12}>
-            <AnomalyKPICard date={selectedDate} anomalycount7days = {anomalycount7days} />
+            <AnomalyKPICard date={selectedDate} anomalycount7days={anomalycount7days} />
           </Grid>
         </Grid>
       </Grid>
