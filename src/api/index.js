@@ -425,17 +425,12 @@ export const GetPopWeekLineData = async (data) => {
 
 export const GetRadarChartData = async (data) => {
   try {
-    const res = await axios.post(
-      `${lambUrl}dashboard/anomalies-group
-    `,
-      data,
-      {
-        headers: {
-          Accept: 'application/json',
-          Authorization: await token()
-        }
+    const res = await axios.post('https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/insight/goodness-score', data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
       }
-    );
+    });
     console.log('result', res);
     return res;
   } catch (error) {
