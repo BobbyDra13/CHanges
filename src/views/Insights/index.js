@@ -93,7 +93,8 @@ const Insights = () => {
   const [brandChartOptions, setBrandChartOptions] = useState(BrandChartData.options);
   const [brandFullness, setBrandFullness] = useState(false);
   const [barChartData, setBarChartData] = useState(false);
-  const [anomaliesCount, setAnomaliesCount] = useState(false);
+  //eslint-disable-next-line
+  // const [anomaliesCount,setAnomaliesCount] = useState(false);
   const [anomaliesLoading, setAnomaliesLoading] = useState(true);
   // const [openZone, setOpenZone] = useState({});
   const [osascorehistogram, setosascorehistogram] = useState(true);
@@ -144,28 +145,25 @@ const Insights = () => {
     }
   };
   const [anoCount, setAnoCount] = useState(null);
-  const getAnomalyCount = async () => {
-    const data = {
-      date: selectedDate.toString(),
-      //  user_id : "666fef1bdbf527b634e95c0b"
-      user_id: '66795cbe1d905892a4256694'
-    };
-    try {
-      const anomalyCount = await getAnomalyCountInsights(data);
-      if (anomalyCount) {
-        console.log('before', anoCount);
-        setAnoCount(anomalyCount);
-        console.log('after', anoCount);
-      } else {
-        setAnoCount('');
-      }
-      console.log('anomaly count insights', res);
-    } catch (e) {
-      console.log('error in anomaly count data', e);
-    }
-  };
-
   useEffect(() => {
+    const getAnomalyCount = async () => {
+      const data = {
+        date: selectedDate.toString(),
+        //  user_id : "666fef1bdbf527b634e95c0b"
+        user_id: '66795cbe1d905892a4256694'
+      };
+      try {
+        const anomalyCount = await getAnomalyCountInsights(data);
+        if (anomalyCount) {
+          setAnoCount(anomalyCount);
+        } else {
+          setAnoCount('');
+        }
+        console.log('anomaly count insights', res);
+      } catch (e) {
+        console.log('error in anomaly count data', e);
+      }
+    };
     getAnomalyCount();
   }, [selectedDate]);
   //eslint-disable-next-line
