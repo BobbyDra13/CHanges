@@ -10,7 +10,8 @@ import {
   seven_day_anomalies,
   testerPercentAndOsaScoreHistogram,
   OsaScoreMultistoreSevenday,
-  testerPercentSevenDayMultistore
+  testerPercentSevenDayMultistore,
+  getAnomalyCountInsights
 } from 'api';
 // import { useHistory } from 'react-router-dom';
 
@@ -92,7 +93,7 @@ const Insights = () => {
   const [brandChartOptions, setBrandChartOptions] = useState(BrandChartData.options);
   const [brandFullness, setBrandFullness] = useState(false);
   const [barChartData, setBarChartData] = useState(false);
-  const [anomaliesCount, setAnomaliesCount] = useState([]);
+  const [anomaliesCount, setAnomaliesCount] = useState(false);
   const [anomaliesLoading, setAnomaliesLoading] = useState(true);
   // const [openZone, setOpenZone] = useState({});
   const [osascorehistogram, setosascorehistogram] = useState(true);
@@ -142,6 +143,31 @@ const Insights = () => {
       console.log('error in getsevendays', e);
     }
   };
+  const [anoCount, setAnoCount] = useState(null);
+  const getAnomalyCount = async () => {
+    const data = {
+      date: selectedDate.toString(),
+      //  user_id : "666fef1bdbf527b634e95c0b"
+      user_id: '66795cbe1d905892a4256694'
+    };
+    try {
+      const anomalyCount = await getAnomalyCountInsights(data);
+      if (anomalyCount) {
+        console.log('before', anoCount);
+        setAnoCount(anomalyCount);
+        console.log('after', anoCount);
+      } else {
+        setAnoCount('');
+      }
+      console.log('anomaly count insights', res);
+    } catch (e) {
+      console.log('error in anomaly count data', e);
+    }
+  };
+
+  useEffect(() => {
+    getAnomalyCount();
+  }, [selectedDate]);
   //eslint-disable-next-line
   const getHistogramdata = async () => {
     const data = {
@@ -277,11 +303,11 @@ const Insights = () => {
         console.log('donutBody', donutBody);
         // const anomlayBody = {
         //   date: selectedDate.toString(),
-        //   store_id: '65c74d4112465588b7a4984c'
+        //   user_id: '66795cbe1d905892a4256694'
         //   // date: selectedDate.toString(),
         //   // user_id: user_id
         // };
-
+        // console.log('anomlybody', anomlayBody);
         setAvgCapProgress(false);
         setCapProgress(false);
         setFullness(false);
@@ -297,11 +323,20 @@ const Insights = () => {
           console.log(histogramData);
           sethisto(histogramData);
           const anomalies = await GetRadarChartData(donutBody);
+          // const anomalyCount = await getAnomalyCountInsights(anomlayBody);
+          // console.log('jiop',anomalyCount);
           if (anomalies) {
             setAnomaliesLoading(false);
             setAnomaliesCount(anomalies.data);
             console.log('abc', anomalies.data);
           }
+          // if(anomalyCount) {
+          //   console.log('before',anoCount);
+          //   setAnoCount(anomalyCount);
+          //   console.log('after',anoCount);
+          // } else {
+          //   setAnoCount('');
+          // }
           if (CapData) {
             if (CapData.data.results.length > 0) {
               // let sum = 0;
@@ -988,33 +1023,33 @@ const Insights = () => {
           <Grid item lg={3} xs={12} className="invisible lg:visible">
             <Stack spacing={gridSpacing}>
               <Card
-                className="border border-gray-300 bg-[#ff413a]"
+                className="border border-gray-300 bg-[#ff413a] h-1/3"
                 style={{
                   padding: '10px'
                 }}
               >
                 <div className="flex w-full h-full">
-                  <div className="w-2/6 h-full flex flex-col">
+                  <div className="w-1/2 h-full flex flex-col">
                     <span className="text-center text-white text-sm font-semibold">Missing</span>
                     {!anomaliesLoading ? (
                       <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                        {anomaliesCount[0].missing_tester}
+                        {anoCount ? anoCount.unresolvedMissingTesterCount : 'NA'}
                       </span>
                     ) : (
-                      <Skeleton variant="rectangular" height={45} className="rounded-md" />
+                      <Skeleton variant="rectangular" height={42} className="rounded-md" />
                     )}
                   </div>
-                  <div className="w-2/6 h-full flex flex-col border-2 border-t-0 border-b-0 border-l-white border-r-white">
+                  <div className="w-1/2 h-full flex flex-col border-l-2 border-t-0 border-b-0 border-l-white">
                     <span className="text-center text-white  text-sm font-semibold">Empty Tray</span>
                     {!anomaliesLoading ? (
                       <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                        {anomaliesCount[0].empty_tray}
+                        {anoCount ? anoCount.unresolvedEmptyTrayCount : 'NA'}
                       </span>
                     ) : (
-                      <Skeleton variant="rectangular" height={45} className="rounded-md" />
+                      <Skeleton variant="rectangular" height={42} className="rounded-md" />
                     )}
                   </div>
-                  <div className="w-2/6 h-full flex flex-col">
+                  {/* <div className="w-2/6 h-full flex flex-col">
                     <span className="text-center text-white  text-sm font-semibold">Correct</span>
                     {!anomaliesLoading ? (
                       <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
@@ -1023,7 +1058,7 @@ const Insights = () => {
                     ) : (
                       <Skeleton variant="rectangular" height={45} className="rounded-md" />
                     )}
-                  </div>
+                  </div> */}
                 </div>
               </Card>
               <Card>
