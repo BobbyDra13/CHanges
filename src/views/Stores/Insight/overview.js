@@ -169,6 +169,7 @@ function Overview() {
   const get7daysdata = async (date) => {
     try {
       const result = store && date && (await getsevendaydata(date, store));
+      console.log('st',store);
       console.log('result from get7daysdata', result);
       result && setcapture7days(result.capture7days);
       result && settestfullness7days(result.testerFullness7days);
