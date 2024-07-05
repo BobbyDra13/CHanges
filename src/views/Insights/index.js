@@ -93,8 +93,6 @@ const Insights = () => {
   const [brandChartOptions, setBrandChartOptions] = useState(BrandChartData.options);
   const [brandFullness, setBrandFullness] = useState(false);
   const [barChartData, setBarChartData] = useState(false);
-  //eslint-disable-next-line
-  // const [anomaliesCount,setAnomaliesCount] = useState(false);
   const [anomaliesLoading, setAnomaliesLoading] = useState(true);
   // const [openZone, setOpenZone] = useState({});
   const [osascorehistogram, setosascorehistogram] = useState(true);
