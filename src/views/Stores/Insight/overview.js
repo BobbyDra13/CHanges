@@ -169,6 +169,7 @@ function Overview() {
   const get7daysdata = async (date) => {
     try {
       const result = store && date && (await getsevendaydata(date, store));
+      console.log('st',store);
       console.log('result from get7daysdata', result);
       result && setcapture7days(result.capture7days);
       result && settestfullness7days(result.testerFullness7days);
@@ -348,7 +349,7 @@ function Overview() {
       }
       // labels: ['Progress']
     },
-    series: [capture7days.length>0 ? capture7days[capture7days.length - 1] : 0],
+    series: [capture7days.length > 0 ? capture7days[capture7days.length - 1] : 0],
     labels: ['A']
   };
 
@@ -588,9 +589,9 @@ function Overview() {
   const getanomalydetails = async () => {
     try {
       const res = store && date && (await storeanomalycount(date, store));
-    res &&  setanomalycount(res);
+      res && setanomalycount(res);
       setAnomaliesLoading(false);
-      res &&    console.log('tty', res);
+      res && console.log('tty', res);
       console.log('uuop', res[0].missingTesterCount);
     } catch (error) {
       console.log('error:', error);
@@ -605,7 +606,7 @@ function Overview() {
   const [associatescore, setassociatescore] = useState([]);
   const getassociatescore = async () => {
     try {
-      const category = "fragrances";
+      const category = 'fragrances';
       const result = store && date && (await associatescoreaforkpi(date, store, category));
       console.log('assocaite score kpi', result);
       setassociatescore(result);
@@ -639,19 +640,19 @@ function Overview() {
     //eslint-disable-next-line
   }, [store, date]);
 
-//eslint-disable-next-line
-  const [capture7day,setcapture7day] = useState(null);
   //eslint-disable-next-line
-  const [Osa7day,setOsa7day] = useState(null);
+  const [capture7day, setcapture7day] = useState(null);
   //eslint-disable-next-line
-  const [testfullness7day,settestfullness7day] = useState(null);
+  const [Osa7day, setOsa7day] = useState(null);
   //eslint-disable-next-line
-useEffect(()=>{
+  const [testfullness7day, settestfullness7day] = useState(null);
+  //eslint-disable-next-line
+  useEffect(() => {
     setcapture7day(capture7days);
     setOsa7day(Osa7days);
     settestfullness7day(testfullness7days);
     //eslint-disable-next-line
-},[testfullness7days,Osa7days,capture7days])
+  }, [testfullness7days, Osa7days, capture7days]);
 
   return (
     <div className="w-full">
@@ -1013,9 +1014,9 @@ useEffect(()=>{
                         {associatescore.length > 0 ? (
                           associatescore.map((item, index) => {
                             console.log('item', item.associate_score);
-                            const prepercent = ((item.no_of_bays_assigned - item.no_of_bays_with_anomalies)/item.no_of_bays_assigned)*100
-                            const percentage =
-                              Math.round(parseFloat( prepercent )) > 100 ? 100 : Math.round(parseFloat(prepercent));
+                            const prepercent =
+                              ((item.no_of_bays_assigned - item.no_of_bays_with_anomalies) / item.no_of_bays_assigned) * 100;
+                            const percentage = Math.round(parseFloat(prepercent)) > 100 ? 100 : Math.round(parseFloat(prepercent));
                             const barcolor = percentage >= 99 ? '#00ac69' : percentage >= 95 ? '#f4a100' : '#ff413a';
                             // const capturedZone = item.zones.map((i) => {
                             //   return i._id.zone;
@@ -1174,7 +1175,9 @@ useEffect(()=>{
                     </div>
                     <div className="flex gap-1 flex-col">
                       {/* <div className="text-4xl font-semibold">{capProgressValue ? parseFloat(capProgressValue).toFixed(1) : 0}%</div> */}
-                      <div className="text-4xl font-semibold">{capture7days.length > 0 ? capture7days[capture7days.length - 1].toFixed(1) : 0}%</div>
+                      <div className="text-4xl font-semibold">
+                        {capture7days.length > 0 ? capture7days[capture7days.length - 1].toFixed(1) : 0}%
+                      </div>
                       <div className="text-sm font-semibold">Capture Progress</div>
                     </div>
                   </div>
@@ -1201,7 +1204,7 @@ useEffect(()=>{
                       <span className="text-center text-white  text-sm font-semibold">Empty Tray</span>
                       {!anomaliesLoading && anomalycount !== null ? (
                         <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                          {anomalycount &&  anomalycount.length > 0 && anomalycount[0].emptyTrayCount}
+                          {anomalycount && anomalycount.length > 0 && anomalycount[0].emptyTrayCount}
                         </span>
                       ) : (
                         <Skeleton variant="rectangular" height={184} className="rounded-md" />

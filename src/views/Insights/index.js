@@ -10,7 +10,8 @@ import {
   seven_day_anomalies,
   testerPercentAndOsaScoreHistogram,
   OsaScoreMultistoreSevenday,
-  testerPercentSevenDayMultistore
+  testerPercentSevenDayMultistore,
+  getAnomalyCountInsights
 } from 'api';
 // import { useHistory } from 'react-router-dom';
 
@@ -92,7 +93,8 @@ const Insights = () => {
   const [brandChartOptions, setBrandChartOptions] = useState(BrandChartData.options);
   const [brandFullness, setBrandFullness] = useState(false);
   const [barChartData, setBarChartData] = useState(false);
-  const [anomaliesCount, setAnomaliesCount] = useState([]);
+  //eslint-disable-next-line
+  const [anomaliesCount,setAnomaliesCount] = useState(false);
   const [anomaliesLoading, setAnomaliesLoading] = useState(true);
   // const [openZone, setOpenZone] = useState({});
   const [osascorehistogram, setosascorehistogram] = useState(true);
@@ -142,6 +144,28 @@ const Insights = () => {
       console.log('error in getsevendays', e);
     }
   };
+  const [anoCount, setAnoCount] = useState(null);
+  useEffect(() => {
+    const getAnomalyCount = async () => {
+      const data = {
+        date: selectedDate.toString(),
+        //  user_id : "666fef1bdbf527b634e95c0b"
+        user_id: '66795cbe1d905892a4256694'
+      };
+      try {
+        const anomalyCount = await getAnomalyCountInsights(data);
+        if (anomalyCount) {
+          setAnoCount(anomalyCount);
+        } else {
+          setAnoCount('');
+        }
+        console.log('anomaly count insights', res);
+      } catch (e) {
+        console.log('error in anomaly count data', e);
+      }
+    };
+    getAnomalyCount();
+  }, [selectedDate]);
   //eslint-disable-next-line
   const getHistogramdata = async () => {
     const data = {
@@ -266,7 +290,7 @@ const Insights = () => {
         };
         const donutBody = {
           date: selectedDate.toString(),
-          user_id: user_id
+          user_id: '66795cbe1d905892a4256694'
         };
         const dataa = {
           // user_id: '666fef1bdbf527b634e95c0b',
@@ -277,11 +301,11 @@ const Insights = () => {
         console.log('donutBody', donutBody);
         // const anomlayBody = {
         //   date: selectedDate.toString(),
-        //   store_id: '65c74d4112465588b7a4984c'
+        //   user_id: '66795cbe1d905892a4256694'
         //   // date: selectedDate.toString(),
         //   // user_id: user_id
         // };
-
+        // console.log('anomlybody', anomlayBody);
         setAvgCapProgress(false);
         setCapProgress(false);
         setFullness(false);
@@ -297,34 +321,41 @@ const Insights = () => {
           console.log(histogramData);
           sethisto(histogramData);
           const anomalies = await GetRadarChartData(donutBody);
+          // const anomalyCount = await getAnomalyCountInsights(anomlayBody);
+          // console.log('jiop',anomalyCount);
           if (anomalies) {
             setAnomaliesLoading(false);
             setAnomaliesCount(anomalies.data);
             console.log('abc', anomalies.data);
           }
+          // if(anomalyCount) {
+          //   console.log('before',anoCount);
+          //   setAnoCount(anomalyCount);
+          //   console.log('after',anoCount);
+          // } else {
+          //   setAnoCount('');
+          // }
           if (CapData) {
-            if (CapData.data.length > 0) {
-              let sum = 0;
-              for (let i = 0; i < CapData.data.length; i++) {
-                sum += CapData.data[i].captureProgress;
-              }
-              const average = sum / CapData.data.length;
+            if (CapData.data.results.length > 0) {
+              // let sum = 0;
+              // for (let i = 0; i < CapData.data.length; i++) {
+              //   sum += CapData.data[i].captureProgress;
+              // }
+              // const average = sum / CapData.data.length;
+              const average = CapData.data.avgCaptureProgress;
               setAvgCapProgress(average);
             } else {
               setAvgCapProgress('');
             }
-            console.log('thik', CapData.data);
-            setCapProgress(CapData.data);
+            console.log('thik', CapData.data.results);
+            console.log('uii', avgCapProgress);
+            setCapProgress(CapData.data.results);
           }
           if (brandDonutData) {
             if (brandDonutData.data.length > 0) {
               console.log('Donut chart data', brandDonutData);
-              const extractedFullness = brandDonutData.data.map((item) => [
-                item.totalMissingPopCount,
-                item.totalAlienPopCount,
-                item.totalIncorrectPopCount
-              ]);
-              const extractedBrandNames = ['Missing pop', 'Alien pop', 'Incorrect pop'];
+              const extractedFullness = brandDonutData.data.map((item) => [item.missing_tester, item.empty_tray, item.correct]);
+              const extractedBrandNames = ['Missing tester', 'Empty Tray', 'Correct'];
               setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
               setBrandFullness(extractedFullness);
               console.log('Brand Fullness', extractedFullness);
@@ -990,42 +1021,42 @@ const Insights = () => {
           <Grid item lg={3} xs={12} className="invisible lg:visible">
             <Stack spacing={gridSpacing}>
               <Card
-                className="border border-gray-300 bg-[#ff413a]"
+                className="border border-gray-300 bg-[#ff413a] h-1/3"
                 style={{
                   padding: '10px'
                 }}
               >
                 <div className="flex w-full h-full">
-                  <div className="w-2/6 h-full flex flex-col">
+                  <div className="w-1/2 h-full flex flex-col">
                     <span className="text-center text-white text-sm font-semibold">Missing</span>
                     {!anomaliesLoading ? (
                       <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                        {anomaliesCount[0].totalMissingPopCount}
+                        {anoCount ? anoCount.unresolvedMissingTesterCount : 'NA'}
                       </span>
                     ) : (
-                      <Skeleton variant="rectangular" height={45} className="rounded-md" />
+                      <Skeleton variant="rectangular" height={42} className="rounded-md" />
                     )}
                   </div>
-                  <div className="w-2/6 h-full flex flex-col border-2 border-t-0 border-b-0 border-l-white border-r-white">
-                    <span className="text-center text-white  text-sm font-semibold">Alien</span>
+                  <div className="w-1/2 h-full flex flex-col border-l-2 border-t-0 border-b-0 border-l-white">
+                    <span className="text-center text-white  text-sm font-semibold">Empty Tray</span>
                     {!anomaliesLoading ? (
                       <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                        {anomaliesCount[0].totalAlienPopCount}
+                        {anoCount ? anoCount.unresolvedEmptyTrayCount : 'NA'}
                       </span>
                     ) : (
-                      <Skeleton variant="rectangular" height={45} className="rounded-md" />
+                      <Skeleton variant="rectangular" height={42} className="rounded-md" />
                     )}
                   </div>
-                  <div className="w-2/6 h-full flex flex-col">
-                    <span className="text-center text-white  text-sm font-semibold">Incorrect</span>
+                  {/* <div className="w-2/6 h-full flex flex-col">
+                    <span className="text-center text-white  text-sm font-semibold">Correct</span>
                     {!anomaliesLoading ? (
                       <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                        {anomaliesCount[0].totalIncorrectPopCount}
+                        {anomaliesCount[0].correct}
                       </span>
                     ) : (
                       <Skeleton variant="rectangular" height={45} className="rounded-md" />
                     )}
-                  </div>
+                  </div> */}
                 </div>
               </Card>
               <Card>
@@ -1085,12 +1116,12 @@ const Insights = () => {
                               <Grid item>
                                 <Typography variant="body2" align="right">
                                   {/* {Math.floor(item.capture_percentage)}% */}
-                                  {parseFloat(item.storeCapturePercentage).toFixed(1)}
+                                  {parseFloat(item.captureProgress).toFixed(1)}
                                 </Typography>
                               </Grid>
 
                               <Grid item xs={12}>
-                                {/* <div className="flex items-center justify-between">
+                                <div className="flex items-center justify-between">
                                   <div style={{ width: '88%' }}>
                                     <LinearProgress
                                       className="cursor-pointer"
@@ -1105,18 +1136,18 @@ const Insights = () => {
                                       variant="determinate"
                                       aria-label="direct"
                                       // value={Math.floor(item.capture_percentage)}
-                                      value={parseFloat(item.storeCapturePercentage)}
+                                      value={parseFloat(item.captureProgress)}
                                       color="primary"
 
                                       // onScroll={()=>setOpenZone(false)}
                                     />
-                                  </div> */}
-                                {/* {openZone[key] ? (
+                                  </div>
+                                  {/* {openZone[key] ? (
                                     <FaEyeSlash className="cursor-pointer" onClick={() => handleZoneCaptureProgressMenuClose(key)} />
                                   ) : (
                                     <FaEye className="cursor-pointer" onClick={() => handleZoneCaptureProgressMenuOpen(key)} />
                                   )} */}
-                                {/* </div> */}
+                                </div>
                                 {false && (
                                   <Paper className="mt-10 p-5 max-h-96 overflow-y-auto" elevation={10}>
                                     <Typography variant="h4">Zone wise Capture Progress</Typography>

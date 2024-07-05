@@ -425,17 +425,12 @@ export const GetPopWeekLineData = async (data) => {
 
 export const GetRadarChartData = async (data) => {
   try {
-    const res = await axios.post(
-      `${lambUrl}dashboard/anomalies-group
-    `,
-      data,
-      {
-        headers: {
-          Accept: 'application/json',
-          Authorization: await token()
-        }
+    const res = await axios.post('https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/insight/goodness-score', data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
       }
-    );
+    });
     console.log('result', res);
     return res;
   } catch (error) {
@@ -515,6 +510,35 @@ export const SendAlert = async (data, apiKey, apiUrl) => {
 //   }
 // };
 
+export const getAnomalyCountInsights = async (data) => {
+  try {
+    const res = await axios.post('https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/insight/anomaly-count', data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    console.log('iouu', res.data[0]);
+    return res.data[0];
+  } catch (error) {
+    console.log('Error Calling getAnomalyCountInsights API: ', error);
+  }
+};
+
+export const getStoreWiseRadarChart = async (data) => {
+  try {
+    const res = await axios.post('https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/spider-chart', data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    console.log('nopll', res);
+    return res;
+  } catch (error) {
+    console.log('Error Calling getStoreWiseRadarChart API: ', error);
+  }
+};
 export const getUpdatedStatus = async (data) => {
   try {
     const res = await axios.post(`${lambUrl}store-view/update-status`, data, {
