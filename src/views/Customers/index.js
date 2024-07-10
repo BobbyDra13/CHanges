@@ -438,8 +438,9 @@ const Customers = () => {
     // Simulate API call delay
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/get-store-details';
     const data = {
-      user_id: '66795cbe1d905892a4256693',
-      date: new Date().toISOString().split('T')[0]
+      user_id: '66795cbe1d905892a4256692',
+      //date: new Date().toISOString().split('T')[0]
+      date: '2024-07-02'
     };
 
     try {
