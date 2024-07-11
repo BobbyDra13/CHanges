@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef,useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import {
@@ -423,10 +423,11 @@ export default function ShelfView({ date, groups }) {
   // const brandNames = data.filter((d) => d?.name).map((d) => d.name);
   // const brandNames = data.length > 0 ? data.map((d) => d.name) : [];
   // const brandNames = data.map((d) => d.name);
-  // const filteredData = useMemo(() => {
-  //   return Array.isArray(data) ? data.filter((d) => d.name.toLowerCase().includes(searchQuery.toLowerCase())) : [];
-  // }, [data, searchQuery]);
-  // console.log('vb', filteredData);
+  console.log("hhhop",data);
+  const filteredData = useMemo(() => {
+    return Array.isArray(isBrandData) ? isBrandData.filter((d) => d.brand_name.toLowerCase().includes(searchQuery.toLowerCase())) : [];
+  }, [data, searchQuery]);
+  console.log('vb', filteredData);
 
   return (
     <>
@@ -452,7 +453,7 @@ export default function ShelfView({ date, groups }) {
               </Grid>
               {isBrandData &&
                 isBrandData.length > 0 &&
-                isBrandData
+                filteredData
                   .sort((a, b) => {
                     // Custom sorting function for alphanumeric sorting
                     const nameA = a.brand_name.toLowerCase();
@@ -575,7 +576,7 @@ export default function ShelfView({ date, groups }) {
                   };
                   return (
                     <>
-                      <Grid item md={12} sm={12} key={index} style={{ marginBottom: '10px' }}>
+                      <Grid item md={12} sm={12} key={index} style={{ marginBottom: '10px' }} className='flex'>
                         {item.img_url ? (
                           <div className="flex w-full h-full justify-around">
                             <div className=" h-full relative">
@@ -593,7 +594,7 @@ export default function ShelfView({ date, groups }) {
                               />
                               {antn && <div style={highlightStyle3}></div>}
                             </div>
-                            <div style={{ width: '85%', padding: '7px' }}>
+                            <div style={{ width: '50%', padding: '7px' }}>
                               <Typography variant="h3" className="">
                                 {/* {details.store_id} - {details.store_name} */}
                                 {item.brand_name}
@@ -731,6 +732,11 @@ export default function ShelfView({ date, groups }) {
                               {/* </div>
                       </div>
                       </div> */}
+                            </div>
+                            <div className='w-fit'>
+                            <Typography variant="h3">OSA Score: {item.OSA_Score}%</Typography>
+                            <Typography variant="h3">Tester Score: {item.testers_score}%</Typography>
+                            <Typography variant="h3">Category: {item.category}</Typography>
                             </div>
                           </div>
                         ) : (

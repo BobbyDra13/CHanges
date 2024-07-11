@@ -173,55 +173,55 @@ function OSAkpiPop({ date, osaMultiScore }) {
         }
       },
       //colors: [isDataAvailable ? '#ff413a' : '#dadada'],
-      colors: [isDataAvailable ? '#4eff3a' : '#dadada'],
+      colors: [isDataAvailable ? theme.palette.success.main : '#dadada'],
       markers: {
         discrete: [
           {
             seriesIndex: 0,
             dataPointIndex: 0,
-            fillColor: !isDataAvailable ? '#dadada' : status[0] ? '#4eff3a' : '#dadada',
+            fillColor: !isDataAvailable ? '#dadada' : status[0] ? theme.palette.success.main : '#dadada',
             strokeColor: 'white',
             size: 7
           },
           {
             seriesIndex: 0,
             dataPointIndex: 1,
-            fillColor: !isDataAvailable ? '#dadada' : status[1] ? '#4eff3a' : '#dadada',
+            fillColor: !isDataAvailable ? '#dadada' : status[1] ? theme.palette.success.main : '#dadada',
             strokeColor: 'white',
             size: 7
           },
           {
             seriesIndex: 0,
             dataPointIndex: 2,
-            fillColor: !isDataAvailable ? '#dadada' : status[2] ? '#4eff3a' : '#dadada',
+            fillColor: !isDataAvailable ? '#dadada' : status[2] ? theme.palette.success.main : '#dadada',
             strokeColor: 'white',
             size: 7
           },
           {
             seriesIndex: 0,
             dataPointIndex: 3,
-            fillColor: !isDataAvailable ? '#dadada' : status[3] ? '#4eff3a' : '#dadada',
+            fillColor: !isDataAvailable ? '#dadada' : status[3] ? theme.palette.success.main : '#dadada',
             strokeColor: 'white',
             size: 7
           },
           {
             seriesIndex: 0,
             dataPointIndex: 4,
-            fillColor: !isDataAvailable ? '#dadada' : status[4] ? '#4eff3a' : '#dadada',
+            fillColor: !isDataAvailable ? '#dadada' : status[4] ? theme.palette.success.main : '#dadada',
             strokeColor: 'white',
             size: 7
           },
           {
             seriesIndex: 0,
             dataPointIndex: 5,
-            fillColor: !isDataAvailable ? '#dadada' : status[5] ? '#4eff3a' : '#dadada',
+            fillColor: !isDataAvailable ? '#dadada' : status[5] ? theme.palette.success.main : '#dadada',
             strokeColor: 'white',
             size: 7
           },
           {
             seriesIndex: 0,
             dataPointIndex: 6,
-            fillColor: !isDataAvailable ? '#dadada' : status[6] ? '#4eff3a' : '#dadada',
+            fillColor: !isDataAvailable ? '#dadada' : status[6] ? theme.palette.success.main : '#dadada',
             strokeColor: 'white',
             size: 7
           }
@@ -324,8 +324,8 @@ function OSAkpiPop({ date, osaMultiScore }) {
           chart={chartConfig}
           title="OSA"
           count={isDataAvailable ? anomalyPercentage : 'N/A'}
-          percentage={isDataAvailable ? Math.abs(anomalyChipData) : 'OSA'}
-          chipColor={!capStatus ? '#9CA3AF' : anomalyChipData >= 0 ? '#FF6761' : '#10B981'}
+          percentage={isDataAvailable ? Math.abs(anomalyPercentage) : 'OSA'}
+          chipColor={!capStatus ? '#9CA3AF' : anomalyPercentage >= 0 ? '#FF6761' : '#10B981'}
           isLoss={anomalyChipData < 0}
           color={isDataAvailable ? theme.palette.success.main : '#9CA3AF'}
         />
