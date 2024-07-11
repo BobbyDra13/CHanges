@@ -438,6 +438,33 @@ export const GetRadarChartData = async (data) => {
   }
 };
 
+export const GetSignedImagesAllStores = async (data) => {
+  try {
+    const res = await axios.post('https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/sign-image-url', data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetInsightsDates API: ', error);
+  }
+};
+
+export const GetInsightsDates = async (data) => {
+  try {
+    const res = await axios.post('https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/insight/calender', data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    return res;
+  } catch (error) {
+    console.log('Error Calling GetInsightsDates API: ', error);
+  }
+};
 export const GetDates = async (data) => {
   try {
     const res = await axios.post('https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/calender', data, {

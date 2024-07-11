@@ -7,7 +7,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Badge from '@mui/material/Badge';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 // import dates from 'views/Stores/Table/dateSelect';
-import { GetDates } from 'api';
+import { GetInsightsDates } from 'api';
 // eslint-disable-next-line
 import { useSelector } from 'react-redux';
 // eslint-disable-next-line
@@ -47,10 +47,9 @@ function DatePickerComp({ SetSelectedDate }) {
     async function getEventsdata() {
       try {
         const body = {
-          store_ids: ['6623a893c40c738627f3373f', '667d47b6035631c3eac93a47'],
-          user_id: '66795cbe1d905892a4256694'
+          user_id: '66795cbe1d905892a4256694',
         };
-        const Edata = await GetDates(body);
+        const Edata = await GetInsightsDates(body);
         // console.log('ghuy',Edata.data[0].dates[0]);
         const daysOnly = Edata.data[0].dates.map((item) => {
           const eventdate = new Date(item);
@@ -76,6 +75,7 @@ function DatePickerComp({ SetSelectedDate }) {
       return;
     });
     setHighlightedDays(daysToHighlight);
+    console.log('new api',events);
   }, [events]);
 
   const handleMonthChange = (date) => {
