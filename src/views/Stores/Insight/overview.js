@@ -689,7 +689,7 @@ function Overview() {
                   {brandwiseosaandtester_osa && brandwiseosaandtester_osa.length > 0 ? (
                     <div className="flex  w-full  flex-col gap-1 p-3">
                       <div className="flex items-center justify-center gap-2 w-full">
-                        <img src={associate} alt="pop" className="h-14 w-14" />
+                        <img src={popIcon} alt="pop" className="h-14 w-14" />
                         <div className="w-full">
                           <p className="text-3xl text-gray-500 ">{Osa7days ? Osa7days[Osa7days.length - 1] : 0}%</p>
                           <p className="text-lg font-semibold">OSA</p>
@@ -765,6 +765,7 @@ function Overview() {
                                         </div> */}
                                       </div>
                                     }
+                                    disableHoverListener={true}
                                   >
                                     <IconButton>
                                       <FaCircleInfo className="text-xs" />
@@ -828,7 +829,7 @@ function Overview() {
                   {brandwiseosaandtester_tester && brandwiseosaandtester_tester.length > 0 ? (
                     <div className="flex  w-full  flex-col gap-1 p-3">
                       <div className="flex items-center justify-center gap-2 w-full">
-                        <img src={associate} alt="pop" className="h-14 w-14" />
+                        <img src={popIcon} alt="pop" className="h-14 w-14" />
                         <div className="w-full">
                           <p className="text-3xl text-gray-500 ">
                             {testfullness7days ? testfullness7days[testfullness7days.length - 1] : 0}%
@@ -907,6 +908,7 @@ function Overview() {
                                         </div> */}
                                       </div>
                                     }
+                                    disableHoverListener={true}
                                   >
                                     <IconButton>
                                       <FaCircleInfo className="text-xs" />
@@ -993,7 +995,7 @@ function Overview() {
                       <div className="flex items-center justify-center gap-2 w-full">
                         <img src={associate} alt="pop" className="h-14 w-14" />
                         <div className="w-full">
-                          <p className="text-3xl text-gray-500 ">NA</p>
+                          <p className="text-3xl text-gray-500 "></p>
                           <p className="text-lg font-semibold">Associate Score</p>
                         </div>
                         <>
@@ -1069,6 +1071,7 @@ function Overview() {
                                         </div> */}
                                       </div>
                                     }
+                                    disableHoverListener={true}
                                   >
                                     <IconButton>
                                       <FaCircleInfo className="text-xs" />
@@ -1100,7 +1103,7 @@ function Overview() {
                       <div className="flex items-center justify-center gap-2 w-full">
                         <img src={popIcon} alt="pop" className="h-14 w-14" />
                         <div className="w-full">
-                          <p className="text-3xl text-gray-500 ">NA</p>
+                          <p className="text-3xl text-gray-500 "></p>
                           <p className="text-lg font-semibold">Associate Score</p>
                         </div>
                         <>
@@ -1194,7 +1197,7 @@ function Overview() {
                       {!anomaliesLoading && anomalycount !== null ? (
                         <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
                           {anomalycount && console.log('dds', anomalycount)}
-                          {anomalycount && anomalycount.length > 0 && anomalycount[0].missingTesterCount}
+                          {anomalycount.length > 0 ? anomalycount[0].missingTesterCount : 'NA'}
                         </span>
                       ) : (
                         <Skeleton variant="rectangular" height={184} className="rounded-md" />
@@ -1204,7 +1207,7 @@ function Overview() {
                       <span className="text-center text-white  text-sm font-semibold">Empty Tray</span>
                       {!anomaliesLoading && anomalycount !== null ? (
                         <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                          {anomalycount && anomalycount.length > 0 && anomalycount[0].emptyTrayCount}
+                          {anomalycount.length > 0 ? anomalycount[0].emptyTrayCount : 'NA'}
                         </span>
                       ) : (
                         <Skeleton variant="rectangular" height={184} className="rounded-md" />

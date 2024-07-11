@@ -69,6 +69,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import { CgSpinner } from 'react-icons/cg';
 import { FaAngleDoubleRight } from 'react-icons/fa';
 import { FaAngleDoubleLeft } from 'react-icons/fa';
+import { GetSignedImagesAllStores } from 'api';
 //eslint-disable-next-line
 const totalParts = 142;
 
@@ -244,6 +245,49 @@ const Customers = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const [bayImages, setBayImages] = useState([]);
+  const [signedUrls, setSignedUrls] = useState([]);
+    useEffect(() => {
+      if(updatedData.length > 0) {
+        const extractBayImages = () => {
+          const images = [];
+          updatedData.forEach((item,storeIndex) => {
+            item.anomalies_details.forEach((anomaly,anomalyIndex) => {
+              const uniqueKey = `${storeIndex}-${anomalyIndex}`;
+            images.push({ url: anomaly.bay_img, key: uniqueKey });
+            });
+          });
+          setBayImages(images);
+        };
+        extractBayImages();
+      }
+    }, [updatedData]);
+console.log("updated dta",updatedData);
+  // const body = {
+  //   "imageUrls": bayImages
+  // }
+  // console.log("body is",body);
+  useEffect(() => {
+    const fetchSignedUrls = async () => {
+      try {
+        for (const { url, key } of bayImages) {
+          const body = { imageUrls: [url] };
+          const res = await GetSignedImagesAllStores(body);
+          console.log("response is", res);
+          setSignedUrls(prevState => ({
+            ...prevState,
+            [key]: res.data[0] // Assuming res.data is an array with a single signed URL
+          }));
+          console.log("body is", body);
+        }
+      } catch (error) {
+        console.log("error fetching image urls", error);
+      }
+    };
+    if (bayImages.length > 0) {
+      fetchSignedUrls();
+    }
+  },[bayImages])
 
   // console.log(storeAnomalies['Store123']);
   // const upKeepClicked = () => {
@@ -293,7 +337,7 @@ const Customers = () => {
     const data = {
       metadata_id: id
     };
-
+console.log("urlop",url);
     try {
       //if (!id) return;
       const response = await fetch(link, {
@@ -309,10 +353,20 @@ const Customers = () => {
       }
 
       const result = await response.json();
-      console.log('For each Image ', result);
-      setCdata(result);
-      setLCdata(!lcData);
-      cData && console.log(cData[0]);
+      // result[0].img_url = url;
+      // console.log('For each Image ', result[0]);
+      // setCdata(result);
+      // setLCdata(!lcData);
+      // cData && console.log(cData[0]);
+      let updatedResult = { ...result[0], img_url: url };
+  console.log('Updated Image:', updatedResult);
+  setCdata([updatedResult]);
+
+  // Toggle lcData state
+  setLCdata(prevLcData => !prevLcData);
+
+  // Log updated cData
+  console.log(cData && cData[0]);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -340,12 +394,16 @@ const Customers = () => {
     setIsImageDialogOpen(!isImageDialogOpen);
   };
 
+  // useEffect(() => {
+  //   handleImageClick();
+  // },[url]);
+
   const handleImageClickfromnext = async (url, id, anomaly, time) => {
     const link = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/getanomlie-detail';
     const data = {
       metadata_id: id
     };
-
+console.log("yuri",url);
     try {
       const response = await fetch(link, {
         method: 'POST',
@@ -360,8 +418,15 @@ const Customers = () => {
       }
 
       const result = await response.json();
-      console.log('For each Image ', result);
-      setCdata(result);
+      // console.log('For each Image ', result);
+      // setCdata(result);
+      let updatedResult = { ...result[0], img_url: url };
+  console.log('Updated Image:', updatedResult);
+  setCdata([updatedResult]);
+
+  // Toggle lcData state
+  setLCdata(prevLcData => !prevLcData);
+
       // setLCdata(!lcData);
       cData && console.log(cData[0]);
     } catch (error) {
@@ -573,25 +638,38 @@ const Customers = () => {
     setCdata(current);
   };
 
+  let unkey = [];
+  let currentUnkeyIndex = 0;
   const handlexnextclick = () => {
     console.log(cData);
-    let index = 0;
+    // let index = 0;
     const current = cData && cData[0]._id;
     console.log(current);
-    for (var i = 0; i < storesData[0].anomalies_details.length; i++) {
-      if (String(storesData[0].anomalies_details[i].metadata_id) === String(current)) {
-        index = i;
-      }
-    }
-    console.log(storesData[0].anomalies_details.length);
+    // for (var i = 0; i < storesData[0].anomalies_details.length; i++) {
+    //   if (String(storesData[0].anomalies_details[i].metadata_id) === String(current)) {
+    //     index = i;
+    //   }
+    // }
+    // console.log(storesData[0].anomalies_details.length);
 
-    index = (index + 1) % storesData[0].anomalies_details.length;
+    // index = (index + 1) % storesData[0].anomalies_details.length;
 
-    let anomaly = storesData[0].anomalies_details[index];
-    console.log(anomaly);
-
-    handleImageClickfromnext(anomaly.bay_img, anomaly.metadata_id, anomaly);
-  };
+    // let anomaly = storesData[0].anomalies_details[index];
+    // console.log("hkl",anomaly);
+    // handleImageClickfromnext(anomaly.bay_img, anomaly.metadata_id, anomaly);
+    updatedData.map((item,index) => {
+      item.anomalies_details.map((anomaly, anomalyIndex) => {
+        unkey.push(`${index}-${anomalyIndex}`);
+    })
+  });
+  const currentKey = unkey[currentUnkeyIndex];
+  console.log("Current key:", currentKey);
+  console.log("Signed key:", signedUrls[currentKey]);
+  handleImageClickfromnext(signedUrls[currentKey], anomaly.metadata_id, anomaly);
+  currentUnkeyIndex = (currentUnkeyIndex + 1) % unkey.length;
+  console.log("all keys",unkey);
+  console.log("Next index:", currentUnkeyIndex);
+};
   const handleprevclick = () => {
     console.log(cData);
     let index = 0;
@@ -897,7 +975,7 @@ const Customers = () => {
                           </Stack>
                           <Stack direction={{ xs: 'column', md: 'row' }} justifyContent={'space-between'}>
                             <Typography sx={{ width: 120 }} variant={clickedBar.isMT ? 'h5' : 'h6'}>
-                              MT Score %
+                              Tester Score %
                             </Typography>
                             <Box className="relative" sx={{ marginLeft: 2, display: 'flex', flex: 1, alignItems: 'center' }}>
                               {/* marker 3 */}
@@ -941,7 +1019,7 @@ const Customers = () => {
                                     ? 100
                                     : Math.floor((anomalies_count / totalParts) * 100)}{' '}
                                   %  */}
-                                  MT Score: {item.tester_fullness_score ? parseFloat(item.tester_fullness_score).toFixed(1) : '0'}%
+                                  Tester Score: {item.tester_fullness_score ? parseFloat(item.tester_fullness_score).toFixed(1) : '0'}%
                                 </Typography>
                               </button>
                             </Box>
@@ -1023,16 +1101,18 @@ const Customers = () => {
                     <div className="w-full px-4 flex flex-col justify-center h-full">
                       {console.log(item.store_anomalies)}
                       {!clickedBar.isUpKeep && !clickedBar.isVm && !clickedBar.isPop ? (
-                        <Slider {...settings}>
+                        <Slider {...settings} key={index}>
                           {/* {item.store_anomalies.map((anomaly, index) => (  */}
                           {item.anomalies_details.length ? (
                             // marker
                             // all anomalies
-                            item.anomalies_details.map((anomaly, index) => (
-                              <div
-                                onClick={() => handleImageClick(anomaly.bay_img, anomaly.metadata_id, anomaly)}
+                            item.anomalies_details.map((anomaly, anomalyIndex) => {
+                              const uniqueKey = `${index}-${anomalyIndex}`;
+                              return (
+                                <div
+                              key={uniqueKey}
+                                onClick={() => {handleImageClick(signedUrls[uniqueKey], anomaly.metadata_id, anomaly)}}
                                 // onClick={() => handleImageClick(anomaly.bay_img_urls, anomaly.metadata_id, anomaly)}
-                                key={index}
                                 className="rounded-md border shadow-md h-[147px]"
                               >
                                 {/* {console.log(anomaly.raw_img_url, anomaly.metadata_id, anomaly)} */}
@@ -1040,13 +1120,15 @@ const Customers = () => {
                                   style={{ width: '100%', objectFit: 'cover' }}
                                   className="rounded-md shadow-md h-full hover:cursor-pointer"
                                   // src={anomaly.img_url}
-                                  src={anomaly.bay_img}
+                                  src={signedUrls[uniqueKey] || anomaly.bay_img}
                                   //src={anomaly.bay_img_urls}
                                   alt="no Img"
                                   loading="lazy"
                                 />
                               </div>
-                            ))
+                              )
+                              
+})
                           ) : (
                             <div> No anomalies found.</div>
                           )}
@@ -1131,7 +1213,7 @@ const Customers = () => {
           <l-bouncy size="45" speed="1" color="black"></l-bouncy>
         </div>
       ) : (
-        <Dialog fullScreen={isSmallScreen ? true : false} maxWidth={200} open={isImageDialogOpen} onClose={handleImageClick}>
+        <Dialog fullScreen={isSmallScreen ? true : false} maxWidth={200} open={isImageDialogOpen} onClose={() => { handleImageClick(); handleImageClick();}}>
           <DialogContent>
             {/* {anomalyDetails.length > 0 && */}
             {

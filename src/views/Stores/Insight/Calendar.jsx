@@ -65,7 +65,7 @@ function DatePickerComp({ SetSelectedDate }) {
         // setEvents(daysOnly);
         // setIsLoading(false)
         const body = {
-          store_ids: [store],
+          store_id: store,
           user_id: '66795cbe1d905892a4256694'
         };
         const Edata = await GetDates(body);
