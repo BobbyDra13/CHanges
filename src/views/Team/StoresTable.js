@@ -1,4 +1,5 @@
 import React, {
+  useEffect,
   // useEffect,
   useState
 } from 'react';
@@ -93,7 +94,8 @@ const StoresTable = ({
     const amPm = hours >= 12 ? 'PM' : 'AM';
     const modifiedHours = hours % 12 || 12; // Convert to 12-hour format (12 for midnight/noon)
 
-    return `${year}-${month}-${day}  ${modifiedHours}:${minutes} ${amPm}`;
+    return `${year}-${month}-${day} 
+    / ${modifiedHours}:${minutes} ${amPm}`;
   }
 
   // const handleConfirmDialogOpen = (userId) => {
@@ -178,10 +180,10 @@ const StoresTable = ({
   const [editRowId, setEditRowId] = useState(null);
 
   const [showEditUserDialog, setShowEditUserDialog] = useState(false);
-  // const handleEditUserDialogOpen = (rowId) => {
-  //   setEditRowId(rowId);
-  //   setShowEditUserDialog(true);
-  // };
+  const handleEditUserDialogOpen = (rowId) => {
+    setEditRowId(rowId);
+    setShowEditUserDialog(true);
+  };
 
   const handleEditUserDialogClose = () => {
     setEditRowId(null);
@@ -208,7 +210,7 @@ const StoresTable = ({
               }}
             >
               <TableCell padding="checkbox"></TableCell>
-              <HeaderCellWithSortIcon2 align="left" onClick={() => requestSort('user_dept')} sortedKey="user_dept" label="Department" />
+              <HeaderCellWithSortIcon2 align="left" onClick={() => requestSort('user_dept')} sortedKey="user_dept" label="User ID" />
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_role')} sortedKey="user_role" label="Role" />
               {/* <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_id')} sortedKey="user_id" label="ID" /> */}
               <HeaderCellWithSortIcon align="left" onClick={() => requestSort('user_name')} sortedKey="user_name" label="Name" />
@@ -245,26 +247,27 @@ const StoresTable = ({
                 <TableCell align="left">{row.email}</TableCell>
                 <TableCell align="left">{row.number}</TableCell>
                 <TableCell align="left">
-                  {row.logs && row.logs[0].last_login ? formatDate(row.logs[0].last_login) : 'Not Logged In'}
+                  {row.logs && row.logs[0].first_login ? formatDate(row.logs[0].first_login) : 'Not Logged In'}
                 </TableCell>
                 <TableCell align="left">
                   <ButtonGroup variant="text" aria-label="user actions" sx={{ display: 'flex', gap: '8px' }}>
                     <IconButton
-                      className="cursor-not-allowed"
-                      // onClick={() => handleEditUserDialogOpen(row.id)}
-                      // color="primary"
-                      color="#6ee7b7"
+                      //className="cursor-not-allowed"
+                      onClick={() => handleEditUserDialogOpen(row.id)}
+                      //color="primary"
+                      //color="#6ee7b7"
                       component={Link}
                       // to={`/team/edit/${row.id}`}
                       aria-label="edit"
                       sx={{
-                        // color: theme.palette.success.main,
-                        color: '#6ee7b7',
+                         color: theme.palette.success.main,
+                        //color: '#6ee7b7',
                         fontSize: '14px',
                         lineHeight: '17px',
                         textTransform: 'none',
+                        
                         '&:hover': {
-                          // color: theme.palette.success.light
+                         //  color: theme.palette.success.light
                           color: '#6ee7b7'
                         },
                         '&:focus': {
@@ -276,11 +279,11 @@ const StoresTable = ({
                     </IconButton>
 
                     <Dialog key={row.id} open={editRowId === row.id && showEditUserDialog} onClose={() => handleEditUserDialogClose()}>
-                      <EditStore rowId={row.id} handleEditUserDialogClose={handleEditUserDialogClose} />
+                      <EditStore rows={rows} rowId={row.id} handleEditUserDialogClose={handleEditUserDialogClose} />
                     </Dialog>
 
                     <IconButton
-                      className="cursor-not-allowed"
+                      //className="cursor-not-allowed"
                       color="secondary"
                       aria-label="delete"
                       // onClick={() => handleConfirmDialogOpen(row.id)}

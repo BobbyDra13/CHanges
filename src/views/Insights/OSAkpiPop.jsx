@@ -111,7 +111,7 @@ function OSAkpiPop({ date, osaMultiScore }) {
           setCapStatus(false);
           setLoading(false);
         }
-        const popScoreFullnessLine = data.data;
+        const popScoreFullnessLine = data &&  data.data;
         setIsDataAvailable(true);
         const anomaliesDetectedLine = popScoreFullnessLine.map((item) => {
           if (item.anomaliesFound) {

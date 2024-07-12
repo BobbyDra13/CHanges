@@ -24,18 +24,18 @@ const AllStores = () => {
   const [page, setPage] = useState(0);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [
-    loading
-    // , setLoading
-  ] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const getAllUsers = async () => {
     try {
+      setLoading(true);
       const response = await getusers();
       console.log('get all users', response);
       rowchange(response);
+      setLoading(false);
     } catch (e) {
       console.log('error in get all users', e);
+      setLoading(false);
     }
   };
   const isSmallScreen = useMediaQuery(theme.breakpoints.up('sm'));
