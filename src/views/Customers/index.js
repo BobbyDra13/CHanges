@@ -360,10 +360,11 @@ const Customers = () => {
       // cData && console.log(cData[0]);
       let updatedResult = { ...result[0], img_url: url, store_id };
       console.log('Updated Image:', updatedResult);
-      setCdata([updatedResult]);
+      updatedResult && setCdata([updatedResult]);
 
       // Toggle lcData state
-      setLCdata((prevLcData) => !prevLcData);
+      //setLCdata((prevLcData) => !prevLcData);
+      setLCdata(true);
 
       // Log updated cData
       console.log(cData && cData[0]);
@@ -662,6 +663,7 @@ const Customers = () => {
 
     console.log('from next click', nextData.bay_img);
     handleImageClickfromnext(nextData.bay_img, nextData.metadata_id, nextData, cData[0].store_id);
+
     // setCdata(current);
   };
 
@@ -780,10 +782,7 @@ const Customers = () => {
     }
   };
 
-  //console.log('storeAnomalies', storeAnomalies);
   cData && console.log('cdata', cData);
-  // cData && cData[0].anomaly_details && console.log(cData[0].anomaly_details[0].coords);
-  //cData &&  calculate(cData[0].anomaly_details[0].coords[0], cData[0].anomaly_details[0].coords[1],cData[0].anomaly_details[0].coords[2],cData[0].anomaly_details[0].coords[3])
 
   useEffect(() => {
     //   cData && console.log(cData[0].anomaly_details);
@@ -1165,6 +1164,7 @@ const Customers = () => {
                                     console.log('from current', signedUrls[uniqueKey]);
                                     console.log('from current normal', anomaly.bay_img);
                                     handleImageClick(signedUrls[uniqueKey], anomaly.metadata_id, anomaly, item._id);
+                                    //  handleImageClick(signedUrls[anomaly.bay_img], anomaly.metadata_id, anomaly, item._id);
                                   }}
                                   // onClick={() => handleImageClick(anomaly.bay_img_urls, anomaly.metadata_id, anomaly)}
                                   className="rounded-md border shadow-md h-[147px]"
