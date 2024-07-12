@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef,useMemo } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import {
@@ -423,7 +423,7 @@ export default function ShelfView({ date, groups }) {
   // const brandNames = data.filter((d) => d?.name).map((d) => d.name);
   // const brandNames = data.length > 0 ? data.map((d) => d.name) : [];
   // const brandNames = data.map((d) => d.name);
-  console.log("hhhop",data);
+  console.log('hhhop', data);
   const filteredData = useMemo(() => {
     return Array.isArray(isBrandData) ? isBrandData.filter((d) => d.brand_name.toLowerCase().includes(searchQuery.toLowerCase())) : [];
   }, [data, searchQuery]);
@@ -576,7 +576,7 @@ export default function ShelfView({ date, groups }) {
                   };
                   return (
                     <>
-                      <Grid item md={12} sm={12} key={index} style={{ marginBottom: '10px' }} className='flex'>
+                      <Grid item md={12} sm={12} key={index} style={{ marginBottom: '10px' }} className="flex">
                         {item.img_url ? (
                           <div className="flex w-full h-full justify-around">
                             <div className=" h-full relative">
@@ -733,10 +733,10 @@ export default function ShelfView({ date, groups }) {
                       </div>
                       </div> */}
                             </div>
-                            <div className='w-fit'>
-                            <Typography variant="h3">OSA Score: {item.OSA_Score}%</Typography>
-                            <Typography variant="h3">Tester Score: {item.testers_score}%</Typography>
-                            <Typography variant="h3">Category: {item.category}</Typography>
+                            <div className="w-fit">
+                              <Typography variant="h3">OSA Score: {item.OSA_Score}%</Typography>
+                              <Typography variant="h3">Tester Score: {item.testers_score}%</Typography>
+                              <Typography variant="h3">Category: {item.category}</Typography>
                             </div>
                           </div>
                         ) : (

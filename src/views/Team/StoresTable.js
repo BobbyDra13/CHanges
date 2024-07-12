@@ -1,4 +1,5 @@
 import React, {
+  //eslint-disable-next-line
   useEffect,
   // useEffect,
   useState
@@ -260,14 +261,14 @@ const StoresTable = ({
                       // to={`/team/edit/${row.id}`}
                       aria-label="edit"
                       sx={{
-                         color: theme.palette.success.main,
+                        color: theme.palette.success.main,
                         //color: '#6ee7b7',
                         fontSize: '14px',
                         lineHeight: '17px',
                         textTransform: 'none',
-                        
+
                         '&:hover': {
-                         //  color: theme.palette.success.light
+                          //  color: theme.palette.success.light
                           color: '#6ee7b7'
                         },
                         '&:focus': {

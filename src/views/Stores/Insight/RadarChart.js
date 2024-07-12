@@ -18,7 +18,7 @@ const RadarChart = ({ storeId, date }) => {
         data: [0, 0, 0]
       }
     ],
-    labels: ['Correct','Empty Tray','Missing Tester']
+    labels: ['Correct', 'Empty Tray', 'Missing Tester']
   };
 
   useEffect(() => {
@@ -33,7 +33,7 @@ const RadarChart = ({ storeId, date }) => {
         const data = response.data[0];
         if (data) {
           setRadarData(data);
-          const labels = ['Correct','Empty Tray','Missing Tester'];
+          const labels = ['Correct', 'Empty Tray', 'Missing Tester'];
           const seriesData = [data.correct, data.empty_tray, data.missing_tester];
           setOptions({
             chart: {

@@ -19,7 +19,13 @@ import {
   Radio,
   FormLabel
 } from '@mui/material';
-import { allStoresId, checkId, getOneUser, updateUser } from 'api';
+import {
+  allStoresId,
+  checkId,
+  //eslint-disable-next-line
+  getOneUser,
+  updateUser
+} from 'api';
 import { Link } from 'react-router-dom';
 import { bouncy } from 'ldrs';
 bouncy.register();
@@ -33,7 +39,7 @@ const initialValue = {
   email: '',
   number: '',
   whatsapp: '',
-  status : ''
+  status: ''
 };
 const roles = ['Agent', 'Department Manager', 'Store Manager', 'Cluster Manager', 'NHQ'];
 const depts = ['Operations', 'VM', 'Marketing', 'Analysis'];
@@ -42,8 +48,11 @@ const EditStore = ({ rows, rowId, handleEditUserDialogClose }) => {
   const theme = useTheme();
   const [user, setUser] = useState(initialValue);
   const { user_dept, role, id, name, store_id, number, status } = user;
+  const handleStatusChange = (newStatus) => {
+    setUser((prevUser) => ({ ...prevUser, status: newStatus }));
+  };
   var { whatsapp } = user;
- // var { status } = user;
+  // var { status } = user;
   const [isEmailEditable, setIsEmailEditable] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(true);
@@ -137,7 +146,7 @@ const EditStore = ({ rows, rowId, handleEditUserDialogClose }) => {
         setEmail(response.email);
         // eslint-disable-next-line
         whatsapp = response.data.whatsapp;
-       // status = response.status;
+        // status = response.status;
         setLoading(false);
         setCurrentUserId(response.data.id);
       } catch (error) {
@@ -149,6 +158,7 @@ const EditStore = ({ rows, rowId, handleEditUserDialogClose }) => {
   }, [rowId]);
 
   useEffect(() => {
+    //eslint-disable-next-line
     const fetchData = async () => {
       try {
         const fetchedStoreIDs = await allStoresId();
@@ -609,7 +619,7 @@ const EditStore = ({ rows, rowId, handleEditUserDialogClose }) => {
                     control={<Radio />}
                     label="active"
                     onClick={() => {
-                      status = true;
+                      () => handleStatusChange(true);
                     }}
                   />
                   <FormControlLabel
@@ -618,7 +628,7 @@ const EditStore = ({ rows, rowId, handleEditUserDialogClose }) => {
                     control={<Radio />}
                     label="Inactive"
                     onClick={() => {
-                      status = true;
+                      () => handleStatusChange(true);
                     }}
                   />
                 </RadioGroup>

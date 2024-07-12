@@ -17,13 +17,13 @@ const KpiCard = ({ isLoaded, color, chipColor, title, count, percentage, isLoss,
   return (
     <Card sx={{ paddingTop: isLoaded ? 2.25 : 0, paddingBottom: 2.25 }}>
       <Stack spacing={0.5}>
-          <Box>
-            {isLoaded ? (
-              <div>{chart && <Chart width={'100%'} {...chart} />}</div> //className='pb-10'
-            ) : (
-              <Skeleton animation="wave" variant="rectangular" width={'100%'} height={133} />
-            )}
-          </Box>
+        <Box>
+          {isLoaded ? (
+            <div>{chart && <Chart width={'100%'} {...chart} />}</div> //className='pb-10'
+          ) : (
+            <Skeleton animation="wave" variant="rectangular" width={'100%'} height={133} />
+          )}
+        </Box>
         <Grid container alignItems="center">
           <Grid item>
             {isLoaded ? (
