@@ -26,22 +26,24 @@ bouncy.register();
 
 const initialValue = {
   user_dept: '',
-  user_role: '',
-  user_id: '',
-  user_name: '',
+  role: '',
+  id: '',
+  name: '',
   store_id: '',
   email: '',
   number: '',
-  whatsapp: ''
+  whatsapp: '',
+  status : ''
 };
-const roles = ['Agent', 'Department Manager', 'Store Manager', 'Cluster Manager', 'NHK Super User'];
+const roles = ['Agent', 'Department Manager', 'Store Manager', 'Cluster Manager', 'NHQ'];
 const depts = ['Operations', 'VM', 'Marketing', 'Analysis'];
 
-const EditStore = ({ rowId, handleEditUserDialogClose }) => {
+const EditStore = ({ rows, rowId, handleEditUserDialogClose }) => {
   const theme = useTheme();
   const [user, setUser] = useState(initialValue);
-  const { user_dept, user_role, user_id, user_name, store_id, number } = user;
+  const { user_dept, role, id, name, store_id, number, status } = user;
   var { whatsapp } = user;
+ // var { status } = user;
   const [isEmailEditable, setIsEmailEditable] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(true);
@@ -77,24 +79,24 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
       formErrors = { ...formErrors, user_dept: 'User Department is required' };
     }
 
-    if (!user_role) {
-      formErrors = { ...formErrors, user_role: 'User Role is required' };
+    if (!role) {
+      formErrors = { ...formErrors, role: 'User Role is required' };
     }
 
-    if (!user_id) {
-      formErrors = { ...formErrors, user_id: 'User ID is required' };
-    } else if (user_id.length < 4) {
-      formErrors = { ...formErrors, user_id: 'User ID must be at least 4 characters' };
+    if (!id) {
+      formErrors = { ...formErrors, id: 'User ID is required' };
+    } else if (id.length < 4) {
+      formErrors = { ...formErrors, id: 'User ID must be at least 4 characters' };
     } else {
-      const response = await checkId(user_id);
-      console.log(response.user_id);
-      if (response != null && response.user_id !== currentUserId) {
-        formErrors = { ...formErrors, user_id: 'This ID is already taken. User ID must be unique.' };
+      const response = await checkId(id);
+      console.log(response.id);
+      if (response != null && response.id !== currentUserId) {
+        formErrors = { ...formErrors, id: 'This ID is already taken. User ID must be unique.' };
       }
     }
 
-    if (!user_name) {
-      formErrors = { ...formErrors, user_name: 'User Name is required' };
+    if (!name) {
+      formErrors = { ...formErrors, name: 'User Name is required' };
     }
 
     if (!store_id) {
@@ -123,17 +125,21 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
     setErrors(formErrors);
     return Object.keys(formErrors).length === 0;
   };
-
+  console.log('rows from  indi page', rows);
   useEffect(() => {
     const loadUserDetails = async () => {
       try {
-        const response = await getOneUser(rowId);
-        setUser(response.data);
-        setEmail(response.data.email);
+        const responsee = rows.filter((item) => item.id === rowId);
+        console.log('responsee', responsee);
+        const response = responsee[0];
+
+        setUser(response);
+        setEmail(response.email);
         // eslint-disable-next-line
         whatsapp = response.data.whatsapp;
+       // status = response.status;
         setLoading(false);
-        setCurrentUserId(response.data.user_id);
+        setCurrentUserId(response.data.id);
       } catch (error) {
         console.error('Error Fetching user details:', error);
         setLoading(false);
@@ -156,7 +162,7 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
       }
     };
 
-    fetchData();
+    // fetchData();
   }, []);
 
   const editUserDetails = async () => {
@@ -187,26 +193,26 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
       setUser({ ...user, [name]: value });
     }
 
-    if (name === 'user_role') {
+    if (name === 'role') {
       setIsEmailEditable(value != 'Agent');
     }
     let fieldError = '';
     switch (name) {
-      case 'user_role':
+      case 'role':
         fieldError = !value ? 'User Role is required' : '';
         break;
 
-      case 'user_id':
+      case 'id':
         fieldError = !value ? 'User ID is required' : value.length < 4 ? 'User ID must be at least 4 characters' : '';
         if (!fieldError) {
           const response = await checkId(value);
-          if (response != null && response.user_id !== currentUserId) {
+          if (response != null && response.id !== currentUserId) {
             fieldError = 'This ID is already taken. User ID must be unique.';
           }
         }
         break;
 
-      case 'user_name':
+      case 'name':
         fieldError = !value ? 'User Name is required' : '';
         break;
 
@@ -306,8 +312,8 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
                 <TextField
                   label="User Role"
                   onChange={(e) => onValueChange(e)}
-                  name="user_role"
-                  value={user_role}
+                  name="role"
+                  value={role}
                   id="my-input"
                   variant="outlined"
                   fullWidth
@@ -333,8 +339,8 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
                       }
                     }
                   }}
-                  error={!!errors.user_role}
-                  helperText={errors.user_role}
+                  error={!!errors.role}
+                  helperText={errors.role}
                 >
                   {roles.map((name) => (
                     <MenuItem
@@ -363,8 +369,8 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
                 <TextField
                   label="User ID"
                   onChange={(e) => onValueChange(e)}
-                  name="user_id"
-                  value={user_id}
+                  name="id"
+                  value={id}
                   id="my-input"
                   variant="outlined"
                   fullWidth
@@ -389,16 +395,16 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
                       }
                     }
                   }}
-                  error={!!errors.user_id}
-                  helperText={errors.user_id}
+                  error={!!errors.id}
+                  helperText={errors.id}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   label="User Name"
                   onChange={(e) => onValueChange(e)}
-                  name="user_name"
-                  value={user_name}
+                  name="name"
+                  value={name}
                   id="my-input"
                   variant="outlined"
                   fullWidth
@@ -423,8 +429,8 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
                       }
                     }
                   }}
-                  error={!!errors.user_name}
-                  helperText={errors.user_name}
+                  error={!!errors.name}
+                  helperText={errors.name}
                 />
               </Grid>
             </Grid>
@@ -589,6 +595,33 @@ const EditStore = ({ rowId, handleEditUserDialogClose }) => {
                   }}
                   error={!!errors.email && isEmailEditable}
                 />
+                <FormLabel id="demo-controlled-radio-buttons-group">Status of User</FormLabel>
+                <RadioGroup
+                  name="status"
+                  onChange={(e) => onValueChange(e)}
+                  row
+                  aria-labelledby="demo-controlled-radio-buttons-group"
+                  value={status}
+                >
+                  <FormControlLabel
+                    value={true}
+                    name="controlled-radio-buttons-group"
+                    control={<Radio />}
+                    label="active"
+                    onClick={() => {
+                      status = true;
+                    }}
+                  />
+                  <FormControlLabel
+                    value={false}
+                    name="controlled-radio-buttons-group"
+                    control={<Radio />}
+                    label="Inactive"
+                    onClick={() => {
+                      status = true;
+                    }}
+                  />
+                </RadioGroup>
               </Grid>
             </Grid>
           </Box>

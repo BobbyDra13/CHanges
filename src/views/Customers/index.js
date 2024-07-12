@@ -147,7 +147,7 @@ const dummyStoreData = [
   }
   // Add more dummy store data as needed
 ];
-
+//eslint-disable-next-line
 const dummyAnomaliesData = {
   Store123: {
     anomalies_detected: 15,
@@ -186,7 +186,7 @@ const Customers = () => {
   const [updatedData, setUpdateddata] = useState([]);
   const [cData, setCdata] = useState(null);
   const [lcData, setLCdata] = useState(false);
-  const [storeAnomalies, setStoreAnomalies] = useState(dummyAnomaliesData);
+  const [storeAnomalies, setStoreAnomalies] = useState();
   //eslint-disable-next-line
   const [metadata, setMetadata] = useState('');
   const [alertData, setAlertData] = useState({
@@ -247,22 +247,22 @@ const Customers = () => {
   };
   const [bayImages, setBayImages] = useState([]);
   const [signedUrls, setSignedUrls] = useState([]);
-    useEffect(() => {
-      if(updatedData.length > 0) {
-        const extractBayImages = () => {
-          const images = [];
-          updatedData.forEach((item,storeIndex) => {
-            item.anomalies_details.forEach((anomaly,anomalyIndex) => {
-              const uniqueKey = `${storeIndex}-${anomalyIndex}`;
+  useEffect(() => {
+    if (updatedData.length > 0) {
+      const extractBayImages = () => {
+        const images = [];
+        updatedData.forEach((item, storeIndex) => {
+          item.anomalies_details.forEach((anomaly, anomalyIndex) => {
+            const uniqueKey = `${storeIndex}-${anomalyIndex}`;
             images.push({ url: anomaly.bay_img, key: uniqueKey });
-            });
           });
-          setBayImages(images);
-        };
-        extractBayImages();
-      }
-    }, [updatedData]);
-console.log("updated dta",updatedData);
+        });
+        setBayImages(images);
+      };
+      extractBayImages();
+    }
+  }, [updatedData]);
+  console.log('updated dta', updatedData);
   // const body = {
   //   "imageUrls": bayImages
   // }
@@ -273,21 +273,21 @@ console.log("updated dta",updatedData);
         for (const { url, key } of bayImages) {
           const body = { imageUrls: [url] };
           const res = await GetSignedImagesAllStores(body);
-          console.log("response is", res);
-          setSignedUrls(prevState => ({
+          console.log('response is', res);
+          setSignedUrls((prevState) => ({
             ...prevState,
             [key]: res.data[0] // Assuming res.data is an array with a single signed URL
           }));
-          console.log("body is", body);
+          console.log('body is', body);
         }
       } catch (error) {
-        console.log("error fetching image urls", error);
+        console.log('error fetching image urls', error);
       }
     };
     if (bayImages.length > 0) {
       fetchSignedUrls();
     }
-  },[bayImages])
+  }, [bayImages]);
 
   // console.log(storeAnomalies['Store123']);
   // const upKeepClicked = () => {
@@ -332,12 +332,12 @@ console.log("updated dta",updatedData);
     setmap(map);
   }, [storesData]);
 
-  const handleImageClick = async (url, id, anomaly, time) => {
+  const handleImageClick = async (url, id, anomaly, store_id, time) => {
     const link = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/getanomlie-detail';
     const data = {
       metadata_id: id
     };
-console.log("urlop",url);
+    console.log('urlop', url);
     try {
       //if (!id) return;
       const response = await fetch(link, {
@@ -358,15 +358,15 @@ console.log("urlop",url);
       // setCdata(result);
       // setLCdata(!lcData);
       // cData && console.log(cData[0]);
-      let updatedResult = { ...result[0], img_url: url };
-  console.log('Updated Image:', updatedResult);
-  setCdata([updatedResult]);
+      let updatedResult = { ...result[0], img_url: url, store_id };
+      console.log('Updated Image:', updatedResult);
+      setCdata([updatedResult]);
 
-  // Toggle lcData state
-  setLCdata(prevLcData => !prevLcData);
+      // Toggle lcData state
+      setLCdata((prevLcData) => !prevLcData);
 
-  // Log updated cData
-  console.log(cData && cData[0]);
+      // Log updated cData
+      console.log(cData && cData[0]);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -398,12 +398,12 @@ console.log("urlop",url);
   //   handleImageClick();
   // },[url]);
 
-  const handleImageClickfromnext = async (url, id, anomaly, time) => {
+  const handleImageClickfromnext = async (url, id, anomaly, store_id, time) => {
     const link = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/getanomlie-detail';
     const data = {
       metadata_id: id
     };
-console.log("yuri",url);
+    console.log('yuri', url);
     try {
       const response = await fetch(link, {
         method: 'POST',
@@ -420,12 +420,12 @@ console.log("yuri",url);
       const result = await response.json();
       // console.log('For each Image ', result);
       // setCdata(result);
-      let updatedResult = { ...result[0], img_url: url };
-  console.log('Updated Image:', updatedResult);
-  setCdata([updatedResult]);
+      let updatedResult = { ...result[0], img_url: url, store_id };
+      console.log('Updated Image:', updatedResult);
+      setCdata([updatedResult]);
 
-  // Toggle lcData state
-  setLCdata(prevLcData => !prevLcData);
+      // Toggle lcData state
+      //setLCdata((prevLcData) => !prevLcData);
 
       // setLCdata(!lcData);
       cData && console.log(cData[0]);
@@ -503,9 +503,9 @@ console.log("yuri",url);
     // Simulate API call delay
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/get-store-details';
     const data = {
-      user_id: '66795cbe1d905892a4256692',
-      //date: new Date().toISOString().split('T')[0]
-      date: '2024-07-02'
+      user_id: '66795cbe1d905892a4256693',
+      date: new Date().toISOString().split('T')[0]
+      // date: '2024-07-10'
     };
 
     try {
@@ -525,12 +525,27 @@ console.log("yuri",url);
       console.log('the result is ', result);
       setStoresData(result);
       setUpdateddata(result);
+      console.log('hello');
+      console.log('resut', result);
+
+      const imagemap = new Map();
+      result.map((itm) => {
+        imagemap.set(itm._id, itm.anomalies_details);
+      });
+      console.log('imagemap', imagemap);
+      imagemap && setStoreAnomalies(imagemap);
+
+      imagemap && console.log('storeanomalies', storeAnomalies);
+
       setLoading(false);
     } catch (error) {
       console.error('Error loading tira API :', error);
       setLoading(false);
     }
   };
+  useEffect(() => {
+    console.log('storeAnomalies', storeAnomalies);
+  }, [storeAnomalies]);
 
   const imageRef = useRef(null);
   const [antn, setAntn] = useState(false);
@@ -626,20 +641,54 @@ console.log("yuri",url);
     setSnackbarOpen(false);
   };
   //eslint-disable-next-line
-  const handleNextClick = () => {
-    if (!cData || !storeAnomalies[cData._id]) return;
+  const handleNextClick1 = () => {
+    cData && console.log('storedatdtadtatdat', storeAnomalies.get(cData[0].store_id));
+    //if (!cData || !storeAnomalies[cData[0].store_id]) return;
 
-    const series = storeAnomalies[cData._id].allAnomalies.map((itm) => itm.shelf_id);
-    const currentShelf = cData.shelf_id;
-    const index = series.indexOf(currentShelf);
+    const series = storeAnomalies.get(cData[0].store_id).map((itm) => itm.metadata_id);
+    console.log('series', series);
+    const currentShelf = cData[0]._id;
+    const index = series.lastIndexOf(currentShelf);
+
+    console.log('index', index);
     const len = series.length;
+    if (index === len - 1) return;
     const nextInd = (index + 1) % len;
-    const current = storeAnomalies[cData._id].allAnomalies[nextInd];
-    setCdata(current);
+    //eslint-disable-next-line
+    const current = series[nextInd];
+
+    const nextData = storeAnomalies.get(cData[0].store_id)[nextInd];
+    console.log('nextfata', nextData);
+
+    console.log('from next click', nextData.bay_img);
+    handleImageClickfromnext(nextData.bay_img, nextData.metadata_id, nextData, cData[0].store_id);
+    // setCdata(current);
+  };
+
+  const handlePrevClick1 = () => {
+    cData && console.log('storedatdtadtatdat', storeAnomalies.get(cData[0].store_id));
+    //if (!cData || !storeAnomalies[cData[0].store_id]) return;
+
+    const series = storeAnomalies.get(cData[0].store_id).map((itm) => itm.metadata_id);
+    console.log('series', series);
+    const currentShelf = cData[0]._id;
+    const index = series.indexOf(currentShelf);
+    console.log('index', index);
+    const len = series.length;
+
+    const nextInd = (index - 1) % len;
+    //eslint-disable-next-line
+    const current = series[nextInd];
+
+    const nextData = storeAnomalies.get(cData[0].store_id)[nextInd];
+    console.log('nextfata', nextData);
+    handleImageClickfromnext(nextData.bay_img, nextData.metadata_id, nextData, cData[0].store_id);
+    // setCdata(current);
   };
 
   let unkey = [];
   let currentUnkeyIndex = 0;
+  //eslint-disable-next-line
   const handlexnextclick = () => {
     console.log(cData);
     // let index = 0;
@@ -657,19 +706,20 @@ console.log("yuri",url);
     // let anomaly = storesData[0].anomalies_details[index];
     // console.log("hkl",anomaly);
     // handleImageClickfromnext(anomaly.bay_img, anomaly.metadata_id, anomaly);
-    updatedData.map((item,index) => {
+    updatedData.map((item, index) => {
       item.anomalies_details.map((anomaly, anomalyIndex) => {
         unkey.push(`${index}-${anomalyIndex}`);
-    })
-  });
-  const currentKey = unkey[currentUnkeyIndex];
-  console.log("Current key:", currentKey);
-  console.log("Signed key:", signedUrls[currentKey]);
-  handleImageClickfromnext(signedUrls[currentKey], anomaly.metadata_id, anomaly);
-  currentUnkeyIndex = (currentUnkeyIndex + 1) % unkey.length;
-  console.log("all keys",unkey);
-  console.log("Next index:", currentUnkeyIndex);
-};
+      });
+    });
+    const currentKey = unkey[currentUnkeyIndex];
+    console.log('Current key:', currentKey);
+    console.log('Signed key:', signedUrls[currentKey]);
+    handleImageClickfromnext(signedUrls[currentKey], anomaly.metadata_id, anomaly);
+    currentUnkeyIndex = (currentUnkeyIndex + 1) % unkey.length;
+    console.log('all ', unkey);
+    console.log('Nextkeys index:', currentUnkeyIndex);
+  };
+  //eslint-disable-next-line
   const handleprevclick = () => {
     console.log(cData);
     let index = 0;
@@ -723,14 +773,14 @@ console.log("yuri",url);
         results.forEach((result) => {
           anomaliesData[result.storeId] = result.data;
         });
-        setStoreAnomalies(anomaliesData);
+        //  setStoreAnomalies(anomaliesData);
       } catch (error) {
         console.error('Error fetching anomalies for stores:', error);
       }
     }
   };
 
-  console.log('storeAnomalies', storeAnomalies);
+  //console.log('storeAnomalies', storeAnomalies);
   cData && console.log('cdata', cData);
   // cData && cData[0].anomaly_details && console.log(cData[0].anomaly_details[0].coords);
   //cData &&  calculate(cData[0].anomaly_details[0].coords[0], cData[0].anomaly_details[0].coords[1],cData[0].anomaly_details[0].coords[2],cData[0].anomaly_details[0].coords[3])
@@ -1110,25 +1160,28 @@ console.log("yuri",url);
                               const uniqueKey = `${index}-${anomalyIndex}`;
                               return (
                                 <div
-                              key={uniqueKey}
-                                onClick={() => {handleImageClick(signedUrls[uniqueKey], anomaly.metadata_id, anomaly)}}
-                                // onClick={() => handleImageClick(anomaly.bay_img_urls, anomaly.metadata_id, anomaly)}
-                                className="rounded-md border shadow-md h-[147px]"
-                              >
-                                {/* {console.log(anomaly.raw_img_url, anomaly.metadata_id, anomaly)} */}
-                                <img
-                                  style={{ width: '100%', objectFit: 'cover' }}
-                                  className="rounded-md shadow-md h-full hover:cursor-pointer"
-                                  // src={anomaly.img_url}
-                                  src={signedUrls[uniqueKey] || anomaly.bay_img}
-                                  //src={anomaly.bay_img_urls}
-                                  alt="no Img"
-                                  loading="lazy"
-                                />
-                              </div>
-                              )
-                              
-})
+                                  key={uniqueKey}
+                                  onClick={() => {
+                                    console.log('from current', signedUrls[uniqueKey]);
+                                    console.log('from current normal', anomaly.bay_img);
+                                    handleImageClick(signedUrls[uniqueKey], anomaly.metadata_id, anomaly, item._id);
+                                  }}
+                                  // onClick={() => handleImageClick(anomaly.bay_img_urls, anomaly.metadata_id, anomaly)}
+                                  className="rounded-md border shadow-md h-[147px]"
+                                >
+                                  {/* {console.log(anomaly.raw_img_url, anomaly.metadata_id, anomaly)} */}
+                                  <img
+                                    style={{ width: '100%', objectFit: 'cover' }}
+                                    className="rounded-md shadow-md h-full hover:cursor-pointer"
+                                    // src={anomaly.img_url}
+                                    src={signedUrls[uniqueKey] || anomaly.bay_img}
+                                    //src={anomaly.bay_img_urls}
+                                    alt="no Img"
+                                    loading="lazy"
+                                  />
+                                </div>
+                              );
+                            })
                           ) : (
                             <div> No anomalies found.</div>
                           )}
@@ -1213,7 +1266,14 @@ console.log("yuri",url);
           <l-bouncy size="45" speed="1" color="black"></l-bouncy>
         </div>
       ) : (
-        <Dialog fullScreen={isSmallScreen ? true : false} maxWidth={200} open={isImageDialogOpen} onClose={() => { handleImageClick(); handleImageClick();}}>
+        <Dialog
+          fullScreen={isSmallScreen ? true : false}
+          maxWidth={200}
+          open={isImageDialogOpen}
+          onClose={() => {
+            handleImageClick();
+          }}
+        >
           <DialogContent>
             {/* {anomalyDetails.length > 0 && */}
             {
@@ -1262,8 +1322,8 @@ console.log("yuri",url);
                                     borderRadius: '50%',
                                     padding: '5px'
                                   }}
-                                  //onClick={handleNextClick}
-                                  onClick={handlexnextclick}
+                                  onClick={handleNextClick1}
+                                  //onClick={handlexnextclick}
                                 >
                                   <FaAngleDoubleRight />
                                 </IconButton>
@@ -1276,7 +1336,7 @@ console.log("yuri",url);
                                     borderRadius: '50%',
                                     padding: '5px'
                                   }}
-                                  onClick={handleprevclick}
+                                  onClick={handlePrevClick1}
                                 >
                                   <FaAngleDoubleLeft />
                                 </IconButton>
