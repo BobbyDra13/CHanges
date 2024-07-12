@@ -170,7 +170,7 @@ function TesterPercentKpiCard({ date, testerMultiScore }) {
           show: false
         }
       },
-      colors: [isDataAvailable ? theme.palette.success.main: '#dadada'],
+      colors: [isDataAvailable ? theme.palette.success.main : '#dadada'],
       markers: {
         discrete: [
           {

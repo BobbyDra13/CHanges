@@ -47,7 +47,7 @@ function DatePickerComp({ SetSelectedDate }) {
     async function getEventsdata() {
       try {
         const body = {
-          user_id: '66795cbe1d905892a4256694',
+          user_id: '66795cbe1d905892a4256694'
         };
         const Edata = await GetInsightsDates(body);
         // console.log('ghuy',Edata.data[0].dates[0]);
@@ -75,7 +75,7 @@ function DatePickerComp({ SetSelectedDate }) {
       return;
     });
     setHighlightedDays(daysToHighlight);
-    console.log('new api',events);
+    console.log('new api', events);
   }, [events]);
 
   const handleMonthChange = (date) => {

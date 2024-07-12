@@ -94,7 +94,7 @@ const Insights = () => {
   const [brandFullness, setBrandFullness] = useState(false);
   const [barChartData, setBarChartData] = useState(false);
   //eslint-disable-next-line
-  const [anomaliesCount,setAnomaliesCount] = useState(false);
+  const [anomaliesCount, setAnomaliesCount] = useState(false);
   const [anomaliesLoading, setAnomaliesLoading] = useState(true);
   // const [openZone, setOpenZone] = useState({});
   const [osascorehistogram, setosascorehistogram] = useState(true);
@@ -1106,7 +1106,8 @@ const Insights = () => {
                   <Grid container spacing={gridSpacing}>
                     {capProgress ? (
                       // capProgress.map((item) => (
-                     capProgress.length > 0 &&  capProgress.map((item, key) => {
+                      capProgress.length > 0 &&
+                      capProgress.map((item, key) => {
                         return (
                           <Grid key={key} item xs={12}>
                             <Grid container justifyContent={'space-between'} alignItems="center" spacing={1}>
