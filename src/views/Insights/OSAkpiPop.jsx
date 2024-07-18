@@ -10,7 +10,7 @@ function OSAkpiPop({ date, osaMultiScore }) {
   const [anomalyData, setAnomalyData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [anomalyChipData, setAnomalyChipData] = useState('');
-  const [capStatus, setCapStatus] = useState(true);
+  // const [capStatus, setCapStatus] = useState(true);
   const [anomalyPercentage, setAnomalyPercentage] = useState('0');
   const [status, setStatus] = useState([]);
   const [dates, setDates] = useState([]);
@@ -39,7 +39,7 @@ function OSAkpiPop({ date, osaMultiScore }) {
       return []; // Return empty array on error
     }
   }
-
+  const [diff, setDiff] = useState(null);
   const getsevendaysdata = async () => {
     // const data = {
     //   date: date,
@@ -71,10 +71,15 @@ function OSAkpiPop({ date, osaMultiScore }) {
       // const lastdaypercent = anomaly.length > 0 ? anomaly[anomaly.length - 1] : 0;
       // const lastdaypercent = anomaly.length > 0 ? anomaly[anomaly.length - 1] : 0;
       const lastdaypercent = osaMultiScore.length > 0 ? osaMultiScore[osaMultiScore.length - 1] : 0;
+      const secondlastdaypercent = osaMultiScore.length > 0 ? osaMultiScore[osaMultiScore.length - 2] : 0;
+      const diff = (lastdaypercent - secondlastdaypercent).toFixed(2);
+      setDiff(diff);
+      setAnomalyChipData(diff);
       setAnomalyPercentage(lastdaypercent);
 
       // console.log('animalt from anamoly', anomaly);
       console.log('animalt from anamoly', osaMultiScore);
+      console.log('the diff', diff);
       // setAnomalyData(anomaly);
       setAnomalyData(osaMultiScore);
     } catch (e) {
@@ -108,7 +113,7 @@ function OSAkpiPop({ date, osaMultiScore }) {
           setAnomalyData(dummyData.data);
           setAnomalyChipData('NA');
           setAnomalyPercentage('NA');
-          setCapStatus(false);
+          // setCapStatus(false);
           setLoading(false);
         }
         const popScoreFullnessLine = data && data.data;
@@ -144,7 +149,7 @@ function OSAkpiPop({ date, osaMultiScore }) {
           setAnomalyPercentage('0%');
         } else {
           setAnomalyPercentage(anomaliesDetectedLine[anomaliesDetectedLine.length - 1]);
-          setCapStatus(data.data[6].capture_status);
+          // setCapStatus(data.data[6].capture_status);
         }
 
         setLoading(false);
@@ -323,10 +328,10 @@ function OSAkpiPop({ date, osaMultiScore }) {
           isLoaded={true}
           chart={chartConfig}
           title="OSA"
-          count={isDataAvailable ? anomalyPercentage : 'N/A'}
-          percentage={isDataAvailable ? Math.abs(anomalyPercentage) : 'OSA'}
-          chipColor={!capStatus ? '#9CA3AF' : anomalyPercentage >= 0 ? '#FF6761' : '#10B981'}
-          isLoss={anomalyChipData < 0}
+          count={isDataAvailable ? (anomalyPercentage > 100 ? '100%' : `${anomalyPercentage}%`) : 'N/A'}
+          percentage={isDataAvailable ? `${Math.abs(diff)}%` : 'OSA'}
+          chipColor={+anomalyChipData >= 0 ? '#10B981' : '#FF6761'}
+          isLoss={+anomalyChipData < 0}
           color={isDataAvailable ? theme.palette.success.main : '#9CA3AF'}
         />
       )}

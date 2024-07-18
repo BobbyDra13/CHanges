@@ -13,7 +13,7 @@ function AnomalyKPICard({ date, anomalycount7days }) {
   const [anomalyData, setAnomalyData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [anomalyChipData, setAnomalyChipData] = useState('');
-  const [capStatus, setCapStatus] = useState(true);
+  // const [capStatus, setCapStatus] = useState(true);
   const [anomalyPercentage, setAnomalyPercentage] = useState('0');
   const [status, setStatus] = useState([]);
   const [dates, setDates] = useState([]);
@@ -43,7 +43,7 @@ function AnomalyKPICard({ date, anomalycount7days }) {
       return []; // Return empty array on error
     }
   }
-
+  // const [diff, setDiff] = useState(null);
   const getsevendaysdata = async () => {
     //eslint-disable-next-line
     const data = {
@@ -75,6 +75,10 @@ function AnomalyKPICard({ date, anomalycount7days }) {
       // const lastdaypercent = anomaly.length > 0 ? anomaly[anomaly.length - 1] : 0;
       // const lastdaypercent = anomaly.length > 0 ? anomaly[anomaly.length - 1] : 0;
       const lastdaypercent = anomalycount7days.length > 0 ? anomalycount7days[anomalycount7days.length - 1] : 0;
+      const secondlastdaypercent = anomalycount7days.length > 0 ? anomalycount7days[anomalycount7days.length - 2] : 0;
+      const differ = lastdaypercent - secondlastdaypercent;
+      // setDiff(differ);
+      setAnomalyChipData(differ);
       setAnomalyPercentage(lastdaypercent);
 
       // console.log('animalt from anamoly', anomaly);
@@ -112,7 +116,7 @@ function AnomalyKPICard({ date, anomalycount7days }) {
           setAnomalyData(dummyData.data);
           setAnomalyChipData('NA');
           setAnomalyPercentage('NA');
-          setCapStatus(false);
+          // setCapStatus(false);
           setLoading(false);
         }
         const popScoreFullnessLine = data.data;
@@ -148,7 +152,7 @@ function AnomalyKPICard({ date, anomalycount7days }) {
           setAnomalyPercentage('0%');
         } else {
           setAnomalyPercentage(anomaliesDetectedLine[anomaliesDetectedLine.length - 1]);
-          setCapStatus(data.data[6].capture_status);
+          // setCapStatus(data.data[6].capture_status);
         }
 
         setLoading(false);
@@ -328,8 +332,8 @@ function AnomalyKPICard({ date, anomalycount7days }) {
           title="Unresolved Exceptions"
           count={isDataAvailable ? parseInt(anomalyPercentage) : 'N/A'}
           percentage={isDataAvailable ? Math.abs(anomalyChipData) : 'NA'}
-          chipColor={!capStatus ? '#9CA3AF' : anomalyChipData >= 0 ? '#FF6761' : '#10B981'}
-          isLoss={anomalyChipData < 0}
+          chipColor={+anomalyChipData >= 0 ? '#10B981' : '#FF6761'}
+          isLoss={+anomalyChipData < 0}
           color={isDataAvailable ? theme.palette.error.main : '#9CA3AF'}
         />
       )}

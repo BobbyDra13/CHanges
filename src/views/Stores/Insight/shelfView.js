@@ -1,5 +1,8 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 import Grid from '@mui/material/Grid';
 import {
   Box,
@@ -332,6 +335,49 @@ export default function ShelfView({ date, groups }) {
     console.log('oll', xmin, ymin, xmax, ymax);
   };
 
+  // const settings = {
+  //   dots: true,
+  //   infinite: false,
+  //   speed: 500,
+  //   slidesToShow: 3,
+  //   slidesToScroll: 1,
+  //   responsive: [
+  //     {
+  //       breakpoint: 1024,
+  //       settings: {
+  //         slidesToShow: 3,
+  //         slidesToScroll: 1,
+  //         infinite: true,
+  //         dots: true
+  //       }
+  //     },
+  //     {
+  //       breakpoint: 600,
+  //       settings: {
+  //         slidesToShow: 2,
+  //         slidesToScroll: 1,
+  //         initialSlide: 2
+  //       }
+  //     },
+  //     {
+  //       breakpoint: 480,
+  //       settings: {
+  //         slidesToShow: 1,
+  //         slidesToScroll: 1
+  //       }
+  //     }
+  //   ]
+  // };
+  var settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    adaptiveHeight: false,
+    fade: true,
+    waitForAnimate: false
+  };
   //////////////////////////////////////////////////////////////////////////////////////////////////////
   //eslint-disable-next-line
   const findDimensionss = (event) => {
@@ -560,7 +606,8 @@ export default function ShelfView({ date, groups }) {
               className="scrollbar inline-block "
             >
               {/* <Grid item md={12} sm={12} key={index}> */}
-              {data && data.length > 0 ? (
+              <Slider {...settings} className="w-[800px] h-[400px]">
+              {data && data.length > 0 ? (  
                 data.map((item, index) => {
                   const highlightStyle3 = {
                     position: 'absolute',
@@ -599,8 +646,8 @@ export default function ShelfView({ date, groups }) {
                                 {/* {details.store_id} - {details.store_name} */}
                                 {item.brand_name}
                               </Typography>
-                              {/* <Divider /> */}
-                              <Typography paddingBottom={1.5} width={'100%'} variant="h5">
+                              <Divider />
+                              <Typography paddingBottom={1.5} width={'100%'} variant="h3">
                                 {/* / {details.bay_id} / {details.shelf_id} */} Bay ID : {item.bay_id}
                               </Typography>
                               <Typography width={'100%'} variant="h3">
@@ -752,14 +799,15 @@ export default function ShelfView({ date, groups }) {
                       </Grid>
                     </>
                   );
-                })
+})
+                
               ) : (
                 // <h1 className="text-center text-4xl">Please Choose A Brand</h1>
                 <div className="w-full h-full flex justify-center place-items-center">
                   <img style={{ height: '310px' }} src={NoDataImg} alt="No data" />
                 </div>
               )}
-
+              </Slider>
               {/* </Grid> */}
             </Grid>
           </Grid>

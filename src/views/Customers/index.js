@@ -57,7 +57,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
 // react icons import
-import { RiErrorWarningLine } from 'react-icons/ri';
+import { RiErrorWarningLine, RiCheckboxCircleLine } from 'react-icons/ri';
 import { IoIosClose } from 'react-icons/io';
 
 // project import
@@ -377,7 +377,8 @@ const Customers = () => {
 
     if (antn) {
       setPos({ lft: false, tp: false, wdth: false, ht: false });
-      setAntn(!antn);
+      //setAntn(!antn);
+        setAntn(0);
     }
 
     const dateTime = new Date(time);
@@ -439,7 +440,8 @@ const Customers = () => {
 
     if (antn) {
       setPos({ lft: false, tp: false, wdth: false, ht: false });
-      setAntn(!antn);
+      //setAntn(!antn);
+      setAntn(0);
     }
 
     const dateTime = new Date(time);
@@ -549,17 +551,17 @@ const Customers = () => {
   }, [storeAnomalies]);
 
   const imageRef = useRef(null);
-  const [antn, setAntn] = useState(false);
+  const [antn, setAntn] = useState(0);
   const [pos, setPos] = useState({ lft: false, tp: false, wdth: false, ht: false });
   const [natural, setNaturel] = useState({ wdth: false, hght: false });
 
-  const calculate = (xmin, ymin, xmax, ymax) => {
+  const calculate = (xmin, ymin, xmax, ymax,code) => {
     const lft = (xmin / natural.wdth) * 100;
     const top = (ymin / natural.hght) * 100;
     const width = ((xmax - xmin) / natural.wdth) * 100;
     const height = ((ymax - ymin) / natural.hght) * 100;
     setPos({ lft: lft, tp: top, wdth: width, hght: height });
-    setAntn(true);
+    setAntn(code);
     console.log('calcaulte', pos);
   };
 
@@ -573,6 +575,19 @@ const Customers = () => {
     boxSizing: 'border-box',
     pointerEvents: 'none',
     backgroundColor: 'rgba(255, 0, 0, 0.6)',
+    borderRadius: '5px'
+  };
+
+  const highlightStyle2 = {
+    position: 'absolute',
+    left: `${pos.lft}%`,
+    top: `${pos.tp}%`,
+    width: `${pos.wdth}%`,
+    height: `${pos.hght}%`,
+    border: '1px solid green',
+    boxSizing: 'border-box',
+    pointerEvents: 'none',
+    backgroundColor: 'rgba(0, 255, 0, 0.6)',
     borderRadius: '5px'
   };
 
@@ -808,7 +823,7 @@ const Customers = () => {
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const findUniqueObjects = (originalArray) => {
-    const seen = new Set(); // Set to store seen combinations of name and coord
+    const seen = new Set(); // Set to store seen combinations of name and coords
 
     const uniqueObjects = [];
 
@@ -1342,7 +1357,7 @@ const Customers = () => {
                                 </IconButton>
                               </>
                             )}
-                            {antn && <div style={highlightStyle}></div>}
+                            {antn!==0 &&  <div style={antn === 1 ? highlightStyle : highlightStyle2}></div>}
                           </div>
                         </TransformComponent>
                       </div>
@@ -1415,7 +1430,7 @@ const Customers = () => {
                           cData[0].shelves &&
                           cData[0].shelves.map(
                             (itm, ind) =>
-                              itm.anomaly_type !== '' && (
+                              itm.anomaly_type !== '' ? (
                                 <Tooltip
                                   key={0 + ind}
                                   // title={
@@ -1444,20 +1459,68 @@ const Customers = () => {
                                     paddingY={0.04}
                                     className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
                                     onMouseOver={() => {
-                                      calculate(itm.coord.xmin, itm.coord.ymin, itm.coord.xmax, itm.coord.ymax);
+                                      calculate(itm.coords.xmin, itm.coords.ymin, itm.coords.xmax, itm.coords.ymax,1);
                                       //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
-                                      setAntn(true);
+                                     // setAntn(true);
                                     }}
                                     onMouseOut={() => {
                                       if (antn) {
                                         setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                        setAntn(false);
+                                        setAntn(0);
                                       }
                                     }}
                                   >
                                     <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
                                     <Typography paddingRight={2} variant="h6">
                                       {removeAfterLastUnderscore(itm.anomaly_type)}
+                                      {/* {cData[0].unique_anomaly_array.map((anomaly) => removeAfterLastUnderscore(anomaly) )} */}
+                                    </Typography>
+                                  </Box>
+                                </Tooltip>
+                              ) : (
+                                <Tooltip
+                                  key={0 + ind}
+                                  // title={
+                                  //   <div>
+                                  //     {console.log(itm, ind)}
+                                  //     <Typography variant="body1">
+                                  //       Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
+                                  //     </Typography>
+                                  //     <Typography variant="body1">
+                                  //       <span>Description :</span>
+                                  //       {itm.anomaly_type === 'alien_pop'
+                                  //         ? itm.print_tag
+                                  //           ? itm.print_tag
+                                  //           : 'No Data Found'
+                                  //         : itm.article_description
+                                  //         ? itm.article_description
+                                  //         : 'No Data Found'}
+                                  //     </Typography>
+                                  //     <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
+                                  //   </div>
+                                  // }
+                                >
+                                  <Box
+                                    key={ind}
+                                    paddingX={0.2}
+                                    paddingY={0.04}
+                                    className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                    onMouseOver={() => {
+                                      calculate(itm.coords.xmin, itm.coords.ymin, itm.coords.xmax, itm.coords.ymax,2);
+                                      //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
+                                     // setAntn(true);
+                                    }}
+                                    onMouseOut={() => {
+                                      if (antn) {
+                                        setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                        setAntn(0);
+                                      }
+                                    }}
+                                  >
+                                    <RiCheckboxCircleLine className="text-4xl mr-0.5" style={{ color: 'green' }} />
+                                    <Typography paddingRight={2} variant="h6">
+                                      No Anomaly
+                                      {/* {removeAfterLastUnderscore(itm.anomaly_type)} */}
                                       {/* {cData[0].unique_anomaly_array.map((anomaly) => removeAfterLastUnderscore(anomaly) )} */}
                                     </Typography>
                                   </Box>
@@ -1484,8 +1547,8 @@ const Customers = () => {
                                 <Typography sx={{ width: '100%', color: 'white' }} variant="h6">
                                   Agent Details
                                 </Typography>
-                                <Typography variant="subtitle2">Name: {cData[0].name}</Typography>
-                                <Typography variant="subtitle2">Number: {cData[0].number}</Typography>
+                                <Typography variant="subtitle2">Name: {cData[0].user_name}</Typography>
+                                <Typography variant="subtitle2">Number: {cData[0].user_number}</Typography>
                               </div>
                             }
                             enterTouchDelay={1}
