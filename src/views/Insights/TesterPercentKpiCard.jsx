@@ -10,7 +10,7 @@ function TesterPercentKpiCard({ date, testerMultiScore }) {
   const [anomalyData, setAnomalyData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [anomalyChipData, setAnomalyChipData] = useState('');
-  const [capStatus, setCapStatus] = useState(true);
+  // const [capStatus, setCapStatus] = useState(true);
   const [anomalyPercentage, setAnomalyPercentage] = useState('0');
   const [status, setStatus] = useState([]);
   const [dates, setDates] = useState([]);
@@ -39,7 +39,7 @@ function TesterPercentKpiCard({ date, testerMultiScore }) {
       return []; // Return empty array on error
     }
   }
-
+  const [diff, setDiff] = useState(null);
   const getsevendaysdata = async () => {
     // const data = {
     //   date: date,
@@ -69,6 +69,10 @@ function TesterPercentKpiCard({ date, testerMultiScore }) {
       // const lastdaypercent = anomaly.length > 0 ? anomaly[anomaly.length - 1] : 0;
       // const lastdaypercent = anomaly.length > 0 ? anomaly[anomaly.length - 1] : 0;
       const lastdaypercent = testerMultiScore.length > 0 ? testerMultiScore[testerMultiScore.length - 1] : 0;
+      const secondlastdaypercent = testerMultiScore.length > 0 ? testerMultiScore[testerMultiScore.length - 2] : 0;
+      const diff = (lastdaypercent - secondlastdaypercent).toFixed(2);
+      setDiff(diff);
+      setAnomalyChipData(diff);
       setAnomalyPercentage(lastdaypercent);
 
       // console.log('animalt from anamoly', anomaly);
@@ -106,7 +110,7 @@ function TesterPercentKpiCard({ date, testerMultiScore }) {
           setAnomalyData(dummyData.data);
           setAnomalyChipData('NA');
           setAnomalyPercentage('NA');
-          setCapStatus(false);
+          // setCapStatus(false);
           setLoading(false);
         }
         const popScoreFullnessLine = data.data;
@@ -142,7 +146,7 @@ function TesterPercentKpiCard({ date, testerMultiScore }) {
           setAnomalyPercentage('0%');
         } else {
           setAnomalyPercentage(anomaliesDetectedLine[anomaliesDetectedLine.length - 1]);
-          setCapStatus(data.data[6].capture_status);
+          // setCapStatus(data.data[6].capture_status);
         }
 
         setLoading(false);
@@ -320,10 +324,10 @@ function TesterPercentKpiCard({ date, testerMultiScore }) {
           isLoaded={true}
           chart={chartConfig}
           title="Tester Score"
-          count={isDataAvailable ? anomalyPercentage : 'N/A'}
-          percentage={isDataAvailable ? Math.abs(anomalyChipData) : 'NA'}
-          chipColor={!capStatus ? '#9CA3AF' : anomalyChipData >= 0 ? '#FF6761' : '#10B981'}
-          isLoss={anomalyChipData < 0}
+          count={isDataAvailable ? (anomalyPercentage > 100 ? '100%' : `${anomalyPercentage}%`) : 'N/A'}
+          percentage={isDataAvailable ? `${Math.abs(diff)}%` : 'NA'}
+          chipColor={+anomalyChipData >= 0 ? '#10B981' : '#FF6761'}
+          isLoss={+anomalyChipData < 0}
           color={isDataAvailable ? theme.palette.success.main : '#9CA3AF'}
         />
       )}

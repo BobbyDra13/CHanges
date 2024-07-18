@@ -1,5 +1,8 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 import Grid from '@mui/material/Grid';
 import {
   Box,
@@ -332,6 +335,49 @@ export default function ShelfView({ date, groups }) {
     console.log('oll', xmin, ymin, xmax, ymax);
   };
 
+  // const settings = {
+  //   dots: true,
+  //   infinite: false,
+  //   speed: 500,
+  //   slidesToShow: 3,
+  //   slidesToScroll: 1,
+  //   responsive: [
+  //     {
+  //       breakpoint: 1024,
+  //       settings: {
+  //         slidesToShow: 3,
+  //         slidesToScroll: 1,
+  //         infinite: true,
+  //         dots: true
+  //       }
+  //     },
+  //     {
+  //       breakpoint: 600,
+  //       settings: {
+  //         slidesToShow: 2,
+  //         slidesToScroll: 1,
+  //         initialSlide: 2
+  //       }
+  //     },
+  //     {
+  //       breakpoint: 480,
+  //       settings: {
+  //         slidesToShow: 1,
+  //         slidesToScroll: 1
+  //       }
+  //     }
+  //   ]
+  // };
+  var settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    adaptiveHeight: false,
+    fade: true,
+    waitForAnimate: false
+  };
   //////////////////////////////////////////////////////////////////////////////////////////////////////
   //eslint-disable-next-line
   const findDimensionss = (event) => {
@@ -426,7 +472,7 @@ export default function ShelfView({ date, groups }) {
   console.log('hhhop', data);
   const filteredData = useMemo(() => {
     return Array.isArray(isBrandData) ? isBrandData.filter((d) => d.brand_name.toLowerCase().includes(searchQuery.toLowerCase())) : [];
-  }, [data, searchQuery]);
+  }, [isBrandData, searchQuery]);
   console.log('vb', filteredData);
 
   return (
@@ -560,206 +606,207 @@ export default function ShelfView({ date, groups }) {
               className="scrollbar inline-block "
             >
               {/* <Grid item md={12} sm={12} key={index}> */}
-              {data && data.length > 0 ? (
-                data.map((item, index) => {
-                  const highlightStyle3 = {
-                    position: 'absolute',
-                    left: `${posarr[index] ? posarr[index].lft : '0'}%`,
-                    top: `${posarr[index] ? posarr[index].tp : '0'}%`,
-                    width: `${posarr[index] ? posarr[index].wdth : '0'}%`,
-                    height: `${posarr[index] ? posarr[index].hght : '0'}%`,
-                    border: '1px solid red', // Change border color as desired
-                    boxSizing: 'border-box',
-                    pointerEvents: 'none', // So clicks can still interact with the image
-                    backgroundColor: 'rgba(255, 0, 0, 0.6)',
-                    borderRadius: '5px'
-                  };
-                  return (
-                    <>
-                      <Grid item md={12} sm={12} key={index} style={{ marginBottom: '10px' }} className="flex">
-                        {item.img_url ? (
-                          <div className="flex w-full h-full justify-around">
-                            <div className=" h-full relative">
-                              <img
-                                key={index}
-                                // style={{ width: '100%', height:objectFit: 'cover' }}
-                                src={item.img_url}
-                                ref={(el) => (imageRefs.current[index] = el)}
-                                alt="img"
-                                className="image rounded-md shadow-md  hover:cursor-pointer h-96"
-                                // onLoad={findDimensionss}
-                                onLoad={handleImageLoad(index)}
-                                // style={{ height: '80%', width: '100%', borderRadius: '7px', cursor: 'pointer' }}
-                                // onClick={() => GetShelfWiseDetails(item.shelf_id)}
-                              />
-                              {antn && <div style={highlightStyle3}></div>}
-                            </div>
-                            <div style={{ width: '50%', padding: '7px' }}>
-                              <Typography variant="h3" className="">
-                                {/* {details.store_id} - {details.store_name} */}
-                                {item.brand_name}
-                              </Typography>
-                              {/* <Divider /> */}
-                              <Typography paddingBottom={1.5} width={'100%'} variant="h5">
-                                {/* / {details.bay_id} / {details.shelf_id} */} Bay ID : {item.bay_id}
-                              </Typography>
-                              <Typography width={'100%'} variant="h3">
-                                Date & Time of Capture
-                              </Typography>
-                              {/* <Divider /> */}
-                              <Typography paddingBottom={1.5} width={'100%'} variant="h5">
-                                {formatDate(item.timestamp)}
-                              </Typography>
-                              <Typography width={'100%'} variant="h3">
-                                Anomalies
-                              </Typography>
-                              {/* <Divider /> */}
-                              <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
-                                {anomalyType === 'color_assortment' ? (
-                                  <Box
-                                    paddingX={0.2}
-                                    paddingY={0.04}
-                                    className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center"
-                                  >
-                                    <RiErrorWarningLine className="text-4xl mr-0.5 text-purple-500" />
+              <Slider {...settings} className="w-[800px] h-[400px]">
+                {data && data.length > 0 ? (
+                  data.map((item, index) => {
+                    const highlightStyle3 = {
+                      position: 'absolute',
+                      left: `${posarr[index] ? posarr[index].lft : '0'}%`,
+                      top: `${posarr[index] ? posarr[index].tp : '0'}%`,
+                      width: `${posarr[index] ? posarr[index].wdth : '0'}%`,
+                      height: `${posarr[index] ? posarr[index].hght : '0'}%`,
+                      border: '1px solid red', // Change border color as desired
+                      boxSizing: 'border-box',
+                      pointerEvents: 'none', // So clicks can still interact with the image
+                      backgroundColor: 'rgba(255, 0, 0, 0.6)',
+                      borderRadius: '5px'
+                    };
+                    return (
+                      <>
+                        <Grid item md={12} sm={12} key={index} style={{ marginBottom: '10px' }} className="flex">
+                          {item.img_url ? (
+                            <div className="flex w-full h-full justify-around">
+                              <div className=" h-full relative">
+                                <img
+                                  key={index}
+                                  // style={{ width: '100%', height:objectFit: 'cover' }}
+                                  src={item.img_url}
+                                  ref={(el) => (imageRefs.current[index] = el)}
+                                  alt="img"
+                                  className="image rounded-md shadow-md  hover:cursor-pointer h-96"
+                                  // onLoad={findDimensionss}
+                                  onLoad={handleImageLoad(index)}
+                                  // style={{ height: '80%', width: '100%', borderRadius: '7px', cursor: 'pointer' }}
+                                  // onClick={() => GetShelfWiseDetails(item.shelf_id)}
+                                />
+                                {antn && <div style={highlightStyle3}></div>}
+                              </div>
+                              <div style={{ width: '50%', padding: '7px' }}>
+                                <Typography variant="h3" className="">
+                                  {/* {details.store_id} - {details.store_name} */}
+                                  {item.brand_name}
+                                </Typography>
+                                <Divider />
+                                <Typography paddingBottom={1.5} width={'100%'} variant="h3">
+                                  {/* / {details.bay_id} / {details.shelf_id} */} Bay ID : {item.bay_id}
+                                </Typography>
+                                <Typography width={'100%'} variant="h3">
+                                  Date & Time of Capture
+                                </Typography>
+                                {/* <Divider /> */}
+                                <Typography paddingBottom={1.5} width={'100%'} variant="h5">
+                                  {formatDate(item.timestamp)}
+                                </Typography>
+                                <Typography width={'100%'} variant="h3">
+                                  Anomalies
+                                </Typography>
+                                {/* <Divider /> */}
+                                <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
+                                  {anomalyType === 'color_assortment' ? (
+                                    <Box
+                                      paddingX={0.2}
+                                      paddingY={0.04}
+                                      className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center"
+                                    >
+                                      <RiErrorWarningLine className="text-4xl mr-0.5 text-purple-500" />
 
-                                    <Typography paddingRight={2} variant="h6">
-                                      Colour
-                                    </Typography>
-                                  </Box>
-                                ) : (
-                                  // cData.anomaly_details.map((item, index) =>
+                                      <Typography paddingRight={2} variant="h6">
+                                        Colour
+                                      </Typography>
+                                    </Box>
+                                  ) : (
+                                    // cData.anomaly_details.map((item, index) =>
 
-                                  item.shelves.map(
-                                    (itm, ind) =>
-                                      // itm.shelves.coords && (
-                                      itm.anomaly_found > 0 && (
-                                        <Tooltip
-                                          key={0 + ind}
-                                          // title={
-                                          //   <div>
-                                          //     {console.log(itm, ind)}
-                                          //     <Typography variant="body1">
-                                          //       Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
-                                          //     </Typography>
-                                          //     <Typography variant="body1">
-                                          //       <span>Description :</span>
-                                          //       {itm.anomaly_type === 'alien_pop'
-                                          //         ? itm.print_tag
-                                          //           ? itm.print_tag
-                                          //           : 'No Data Found'
-                                          //         : itm.article_description
-                                          //         ? itm.article_description
-                                          //         : 'No Data Found'}
-                                          //     </Typography>
-                                          //     <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
-                                          //   </div>
-                                          // }
-                                        >
-                                          <Box
-                                            key={ind}
-                                            paddingX={0.2}
-                                            paddingY={0.04}
-                                            className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                            onMouseOver={() => {
-                                              itm.anomaly_found > 0 &&
-                                                // calculate(itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
-                                                calculate3(index, itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
-                                              //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
-                                              console.log('here', itm.coords);
-                                              setAntn(true);
-                                            }}
-                                            onMouseOut={() => {
-                                              if (antn) {
-                                                const arr = [...posarr];
-                                                arr[index] = { lft: 0, tp: 0, wdth: 0, ht: 0 };
-                                                setposarr(arr);
-                                                setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                                setAntn(false);
-                                              }
-                                            }}
+                                    item.shelves.map(
+                                      (itm, ind) =>
+                                        // itm.shelves.coords && (
+                                        itm.anomaly_found > 0 && (
+                                          <Tooltip
+                                            key={0 + ind}
+                                            // title={
+                                            //   <div>
+                                            //     {console.log(itm, ind)}
+                                            //     <Typography variant="body1">
+                                            //       Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
+                                            //     </Typography>
+                                            //     <Typography variant="body1">
+                                            //       <span>Description :</span>
+                                            //       {itm.anomaly_type === 'alien_pop'
+                                            //         ? itm.print_tag
+                                            //           ? itm.print_tag
+                                            //           : 'No Data Found'
+                                            //         : itm.article_description
+                                            //         ? itm.article_description
+                                            //         : 'No Data Found'}
+                                            //     </Typography>
+                                            //     <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
+                                            //   </div>
+                                            // }
                                           >
-                                            {console.log('poppp', itm.coords)}
-                                            <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
-                                            <Typography paddingRight={2} variant="h6">
-                                              {removeAfterLastUnderscore(String(itm.type))} - {itm.shelf_index}
-                                              {/* {itm.type.map((anomaly) => removeAfterLastUnderscore(anomaly))} */}
-                                            </Typography>
-                                          </Box>
-                                        </Tooltip>
-                                      )
+                                            <Box
+                                              key={ind}
+                                              paddingX={0.2}
+                                              paddingY={0.04}
+                                              className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                              onMouseOver={() => {
+                                                itm.anomaly_found > 0 &&
+                                                  // calculate(itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
+                                                  calculate3(index, itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
+                                                //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
+                                                console.log('here', itm.coords);
+                                                setAntn(true);
+                                              }}
+                                              onMouseOut={() => {
+                                                if (antn) {
+                                                  const arr = [...posarr];
+                                                  arr[index] = { lft: 0, tp: 0, wdth: 0, ht: 0 };
+                                                  setposarr(arr);
+                                                  setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                                  setAntn(false);
+                                                }
+                                              }}
+                                            >
+                                              {console.log('poppp', itm.coords)}
+                                              <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
+                                              <Typography paddingRight={2} variant="h6">
+                                                {removeAfterLastUnderscore(String(itm.type))} - {itm.shelf_index}
+                                                {/* {itm.type.map((anomaly) => removeAfterLastUnderscore(anomaly))} */}
+                                              </Typography>
+                                            </Box>
+                                          </Tooltip>
+                                        )
+                                      // )
+                                    )
                                     // )
-                                  )
-                                  // )
-                                )}
-                              </div>
-                              {/* <Divider /> */}
-                              <Typography width={'100%'} variant="h3">
-                                Team
-                              </Typography>
-                              {/* <Divider /> */}
-                              {/* here the anomaly goes */}
+                                  )}
+                                </div>
+                                {/* <Divider /> */}
+                                <Typography width={'100%'} variant="h3">
+                                  Team
+                                </Typography>
+                                {/* <Divider /> */}
+                                {/* here the anomaly goes */}
 
-                              <div style={{ paddingBottom: 13 }} className="w-full flex justify-start">
-                                <AvatarGroup
-                                  sx={{
-                                    '& .MuiAvatar-root': { width: 40, height: 40, fontSize: 24 }
-                                  }}
-                                  max={2}
-                                >
-                                  <Tooltip
-                                    title={
-                                      <div className="w-[200px] p-2 flex flex-col space-y-2">
-                                        <Typography sx={{ width: '100%', color: 'white' }} variant="h6">
-                                          Agent Details
-                                        </Typography>
-                                        <Typography variant="subtitle2">Name: {item.user[0].name}</Typography>
-                                        <Typography variant="subtitle2">Number: {item.user[0].number}</Typography>
-                                      </div>
-                                    }
-                                    enterTouchDelay={1}
-                                    leaveTouchDelay={100000}
+                                <div style={{ paddingBottom: 13 }} className="w-full flex justify-start">
+                                  <AvatarGroup
+                                    sx={{
+                                      '& .MuiAvatar-root': { width: 40, height: 40, fontSize: 24 }
+                                    }}
+                                    max={2}
                                   >
-                                    <Avatar
-                                      className="hover:cursor-pointer"
-                                      sx={{ bgcolor: success }}
-                                      alt={item.user[0].name}
-                                      src="/example.jpg"
-                                    />
-                                  </Tooltip>
-                                </AvatarGroup>
-                              </div>
-                              {/* </div>
+                                    <Tooltip
+                                      title={
+                                        <div className="w-[200px] p-2 flex flex-col space-y-2">
+                                          <Typography sx={{ width: '100%', color: 'white' }} variant="h6">
+                                            Agent Details
+                                          </Typography>
+                                          <Typography variant="subtitle2">Name: {item.user[0].name}</Typography>
+                                          <Typography variant="subtitle2">Number: {item.user[0].number}</Typography>
+                                        </div>
+                                      }
+                                      enterTouchDelay={1}
+                                      leaveTouchDelay={100000}
+                                    >
+                                      <Avatar
+                                        className="hover:cursor-pointer"
+                                        sx={{ bgcolor: success }}
+                                        alt={item.user[0].name}
+                                        src="/example.jpg"
+                                      />
+                                    </Tooltip>
+                                  </AvatarGroup>
+                                </div>
+                                {/* </div>
                       </div>
                       </div> */}
+                              </div>
+                              <div className="w-fit">
+                                <Typography variant="h3">OSA Score: {item.OSA_Score}%</Typography>
+                                <Typography variant="h3">Tester Score: {item.testers_score}%</Typography>
+                                <Typography variant="h3">Category: {item.category}</Typography>
+                              </div>
                             </div>
-                            <div className="w-fit">
-                              <Typography variant="h3">OSA Score: {item.OSA_Score}%</Typography>
-                              <Typography variant="h3">Tester Score: {item.testers_score}%</Typography>
-                              <Typography variant="h3">Category: {item.category}</Typography>
+                          ) : (
+                            <div className="flex w-full h-full">
+                              <img
+                                src={noData}
+                                alt="img"
+                                style={{ height: '50%', width: '100%', borderRadius: '7px', cursor: 'pointer' }}
+                                // onClick={() => GetShelfWiseDetails(item.shelf_id)}
+                              />
                             </div>
-                          </div>
-                        ) : (
-                          <div className="flex w-full h-full">
-                            <img
-                              src={noData}
-                              alt="img"
-                              style={{ height: '50%', width: '100%', borderRadius: '7px', cursor: 'pointer' }}
-                              // onClick={() => GetShelfWiseDetails(item.shelf_id)}
-                            />
-                          </div>
-                        )}
-                      </Grid>
-                    </>
-                  );
-                })
-              ) : (
-                // <h1 className="text-center text-4xl">Please Choose A Brand</h1>
-                <div className="w-full h-full flex justify-center place-items-center">
-                  <img style={{ height: '310px' }} src={NoDataImg} alt="No data" />
-                </div>
-              )}
-
+                          )}
+                        </Grid>
+                      </>
+                    );
+                  })
+                ) : (
+                  // <h1 className="text-center text-4xl">Please Choose A Brand</h1>
+                  <div className="w-full h-full flex justify-center place-items-center">
+                    <img style={{ height: '310px' }} src={NoDataImg} alt="No data" />
+                  </div>
+                )}
+              </Slider>
               {/* </Grid> */}
             </Grid>
           </Grid>

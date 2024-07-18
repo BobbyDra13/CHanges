@@ -695,7 +695,10 @@ function Overview() {
                           <p className="text-lg font-semibold">OSA</p>
                         </div>
                         <>
-                          <IoMdSettings className="text-5xl" onClick={handleClickAssociateScoreModal} />
+                          <IoMdSettings
+                            className="text-5xl cursor-not-allowed"
+                            //  onClick={handleClickAssociateScoreModal}
+                          />
                           <Modal
                             open={openAssociateScoreModal}
                             onClose={handleCloseAssociateScoreModal}
@@ -837,7 +840,10 @@ function Overview() {
                           <p className="text-lg font-semibold">Tester Score</p>
                         </div>
                         <>
-                          <IoMdSettings className="text-5xl" onClick={handleClickAssociateScoreModal} />
+                          <IoMdSettings
+                            className="text-5xl cursor-not-allowed"
+                            //  onClick={handleClickAssociateScoreModal}
+                          />
                           <Modal
                             open={openAssociateScoreModal}
                             onClose={handleCloseAssociateScoreModal}
@@ -999,7 +1005,10 @@ function Overview() {
                           <p className="text-lg font-semibold">Associate Score</p>
                         </div>
                         <>
-                          <IoMdSettings className="text-5xl" onClick={handleClickAssociateScoreModal} />
+                          <IoMdSettings
+                            className="text-5xl cursor-not-allowed"
+                            // onClick={handleClickAssociateScoreModal}
+                          />
                           <Modal
                             open={openAssociateScoreModal}
                             onClose={handleCloseAssociateScoreModal}

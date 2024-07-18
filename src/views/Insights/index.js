@@ -280,7 +280,7 @@ const Insights = () => {
       async function fetchDashboardData() {
         const capBody = {
           date: selectedDate.toString(),
-          user_id: '66795cbe1d905892a4256694'
+          user_id: '66795cbe1d905892a4256693'
           // user_id: user_id
         };
         //eslint-disable-next-line
