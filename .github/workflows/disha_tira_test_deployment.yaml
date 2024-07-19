@@ -18,7 +18,7 @@
           - name: 🔨 Install dependencies
             run: |
               pwd
-              npm i --force
+              npm i 
           - name: Building the react js project
             run: |
               npm run build
