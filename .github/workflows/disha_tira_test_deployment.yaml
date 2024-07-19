@@ -18,7 +18,7 @@
           - name: 🔨 Install dependencies
             run: |
               pwd
-              npm i --force
+              npm i --legacy-peer-deps
           - name: Building the react js project
             run: |
               npm run build
