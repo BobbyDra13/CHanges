@@ -481,7 +481,7 @@ export default function ShelfView({ date, groups }) {
         <div style={{ margin: '20px', overflowY: 'scroll' }} className="scrollbar">
           <Grid container spacing={4}>
             <Grid item md={3.5} sm={3.4} style={{ height: '500px', marginBottom: '50px', overflowY: 'scroll' }} className="scrollbar">
-              <Grid item xs={9}>
+              <Grid item xs={12} className="sticky top-0 bg-white z-10">
                 <Grid container alignItems="center" className="mb-4">
                   <Grid item>
                     <BsSearch className="text-black text-lg cursor-pointer" />
