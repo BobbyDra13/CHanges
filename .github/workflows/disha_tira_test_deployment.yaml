@@ -14,10 +14,11 @@
           - name: Use Node.js 16
             uses: actions/setup-node@v4
             with:
-              node-version: 'latest'
+              node-version: 20
           - name: 🔨 Install dependencies
             run: |
               pwd
+              npm -v
               npm i --force
           - name: Building the react js project
             run: |
