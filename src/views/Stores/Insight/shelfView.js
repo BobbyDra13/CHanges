@@ -25,12 +25,12 @@ import { FaCamera } from 'react-icons/fa';
 // import src1 from '../../../assets/images/heatmap.jpg';
 // import src2 from '../../../assets/images/heatmap2.jpg';
 //eslint-disable-next-line
-import { GetShelfData, GetShelvesData, GetZonedetails, GetAllBrands, getZonedetails } from 'api';
+import { GetShelfData, GetShelvesData, GetZonedetails, GetAllBrands, getZonedetails, GetSingleBrandDetails } from 'api';
 import { bouncy } from 'ldrs';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { IoIosClose } from 'react-icons/io';
 import '../../Customers/zoom-card-item.css';
-import { RiErrorWarningLine } from 'react-icons/ri';
+import { RiErrorWarningLine, RiCheckboxCircleLine } from 'react-icons/ri';
 import noData from '../../../assets/images/No_data-amico.svg';
 import { FaAngleDoubleRight } from 'react-icons/fa';
 import { FaAngleDoubleLeft } from 'react-icons/fa';
@@ -49,13 +49,16 @@ export default function ShelfView({ date, groups }) {
   console.log('hello i am her');
   const { store } = useParams();
   const zoneIds = useSelector((state) => state.zone);
-
+  const imageRef = useRef(null);
   const [data, setData] = useState(null);
   const [shelves, setShelves] = useState(false);
+  const [brands, setBrands] = useState(false);
   //eslint-disable-next-line
   const [loading, setloading] = useState(true);
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const [loadDialog, setLoadDialog] = useState(true);
+  const [load, setLoad] = useState(true);
+  const [brandsLoadData, setBrandsLoadData] = useState(false);
   const [cData, setCdata] = useState(false);
   const [imageLoading, setImageLoading] = useState(false);
   const [nextClickLoad, setNextClickLoad] = useState(false);
@@ -65,6 +68,8 @@ export default function ShelfView({ date, groups }) {
   const [anomalyType, setAnomalyType] = useState('');
   const [isBrandData, setIsBrandData] = useState([]);
   const [isBrandName, setIsBrandName] = useState([]);
+  const [brand, setBrand] = useState(null);
+  const [msg, setMsg] = useState('');
   //eslint-disable-next-line
   const [isBrandId, setIsBrandId] = useState(null);
   const [active, setActive] = useState(isBrandData && isBrandData.length > 0 ? isBrandData[0].brand_id : null);
@@ -144,13 +149,16 @@ export default function ShelfView({ date, groups }) {
   }
 
   function handleImageClick(anomaly) {
+    console.log('i am clicked');
+    console.log('anomaly', anomaly);
     if (antn) {
       setPos({ lft: false, tp: false, wdth: false, ht: false });
       setAntn(!antn);
     }
-    setPosArr([]);
+    // setPosArr([]);
     if (!isImageDialogOpen) {
-      setCdata(anomaly);
+      // setCdata(anomaly);
+      setBrandsLoadData(anomaly);
       // setSelectedImage(url);
       // setCdata(anomaly);
       // getAnomalyDetails(id);
@@ -160,9 +168,10 @@ export default function ShelfView({ date, groups }) {
     setIsImageDialogOpen(!isImageDialogOpen);
     setImageLoading(false);
     // setLoadDialog(!loadDialog)
-    setLoadDialog(!loadDialog);
+    // setLoadDialog(!loadDialog);
+    setLoad(!load);
     setloading(false);
-    console.log('current Data :', cData);
+    console.log('current Data :', brandsLoadData);
   }
   //eslint-disable-next-line
   async function GetShelfWiseDetails(id) {
@@ -176,7 +185,7 @@ export default function ShelfView({ date, groups }) {
     const data = await GetShelfData(body);
     console.log('This is the data', data.data);
 
-    handleImageClick(data.data[0]);
+    // handleImageClick(data.data[0]);
   }
 
   async function GetShelf(id) {
@@ -197,6 +206,7 @@ export default function ShelfView({ date, groups }) {
 
   const GetZoneDetailees = async (brand_id) => {
     try {
+      console.log('brand_id', brand_id);
       const body = {
         date: date.toString(),
         // brand_id: '6664320b8b4922abc9b0951c' // hard coded
@@ -208,6 +218,7 @@ export default function ShelfView({ date, groups }) {
       const shelvesData = Zonedata.data;
       console.log('Zonedata:', shelvesData);
       setData(shelvesData);
+      // handleImageClick(Zonedata.data[0]);
       console.log(data);
       setloading(false);
     } catch (e) {
@@ -217,10 +228,37 @@ export default function ShelfView({ date, groups }) {
     // setActive(Zonedata[0].name);
     // zoneDetails(Zonedata[0].id);
   };
+
+  const GetBrandWiseDetails = async (brand_id) => {
+    try {
+      console.log('brand_id', brand_id);
+      const body = {
+        brand_id: brand_id
+      };
+      console.log('bodyy', body);
+      const brandData = await GetSingleBrandDetails(body);
+      console.log('brand', brandData);
+      const brandWiseData = brandData.data;
+      console.log('brandWiseData:', brandWiseData[0]);
+      setBrand(brandWiseData[0]);
+      handleImageClick(brandData.data[0]);
+      // handleImageClick(brandWiseData);
+      setloading(false);
+      setBrands(brandData.data);
+      return brandData.data[0];
+    } catch (e) {
+      console.log('error in BrandWiseDetails', e);
+      setloading(false);
+    }
+    // setActive(Zonedata[0].name);
+    // zoneDetails(Zonedata[0].id);
+  };
+  console.log('brandDat', brand);
   const handleOpen = (brand_id) => {
     console.log('heelo from onclick', brand_id);
     setloading(true);
     GetZoneDetailees(brand_id);
+    // GetBrandWiseDetails(brand_id);
   };
 
   useEffect(() => {
@@ -269,16 +307,16 @@ export default function ShelfView({ date, groups }) {
 
   const [natural, setNaturel] = useState({ wdth: false, hght: false });
 
-  const calculate = (xmin, ymin, xmax, ymax) => {
-    const lft = (xmin / natural.wdth) * 100;
-    const top = (ymin / natural.hght) * 100;
-    const width = ((xmax - xmin) / natural.wdth) * 100;
-    const height = ((ymax - ymin) / natural.hght) * 100;
-    setPos({ lft: lft, tp: top, wdth: width, hght: height });
-    setAntn(true);
-    // console.log('oll',pos);
-    console.log('oll', xmin, ymin, xmax, ymax);
-  };
+  // const calculate = (xmin, ymin, xmax, ymax) => {
+  //   const lft = (xmin / natural.wdth) * 100;
+  //   const top = (ymin / natural.hght) * 100;
+  //   const width = ((xmax - xmin) / natural.wdth) * 100;
+  //   const height = ((ymax - ymin) / natural.hght) * 100;
+  //   setPos({ lft: lft, tp: top, wdth: width, hght: height });
+  //   setAntn(true);
+  //   // console.log('oll',pos);
+  //   console.log('oll', xmin, ymin, xmax, ymax);
+  // };
 
   const calculate2 = (xmin, ymin, xmax, ymax, type, naturalWidth, naturalHeight) => {
     console.log('natural width is', naturalWidth, naturalHeight);
@@ -295,10 +333,23 @@ export default function ShelfView({ date, groups }) {
     top: `${pos.tp}%`,
     width: `${pos.wdth}%`,
     height: `${pos.hght}%`,
-    border: '1px solid red', // Change border color as desired
+    border: '1px solid red',
     boxSizing: 'border-box',
-    pointerEvents: 'none', // So clicks can still interact with the image
+    pointerEvents: 'none',
     backgroundColor: 'rgba(255, 0, 0, 0.6)',
+    borderRadius: '5px'
+  };
+
+  const highlightStyle2 = {
+    position: 'absolute',
+    left: `${pos.lft}%`,
+    top: `${pos.tp}%`,
+    width: `${pos.wdth}%`,
+    height: `${pos.hght}%`,
+    border: '1px solid green',
+    boxSizing: 'border-box',
+    pointerEvents: 'none',
+    backgroundColor: 'rgba(0, 255, 0, 0.6)',
     borderRadius: '5px'
   };
   const [posArr, setPosArr] = useState(false);
@@ -318,6 +369,16 @@ export default function ShelfView({ date, groups }) {
         console.log('hello from 292', imageDimensions);
       }
     };
+  };
+
+  const calculate = (xmin, ymin, xmax, ymax, code) => {
+    const lft = (xmin / natural.wdth) * 100;
+    const top = (ymin / natural.hght) * 100;
+    const width = ((xmax - xmin) / natural.wdth) * 100;
+    const height = ((ymax - ymin) / natural.hght) * 100;
+    setPos({ lft: lft, tp: top, wdth: width, hght: height });
+    setAntn(code);
+    console.log('calcaulte', pos);
   };
   const calculate3 = (index, xmin, ymin, xmax, ymax) => {
     const curr = imageDimensions[index];
@@ -405,29 +466,39 @@ export default function ShelfView({ date, groups }) {
     setNextClickLoad(false);
     // setScaleFactor(width / naturalWidth);
   };
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleNextClick = async () => {
+    console.log('clicked');
     setNextbtn(false);
     setNextClickLoad(true);
     setPosArr([]);
-    const series = shelves.map((itm) => itm.shelf_id);
-    const currentShelf = cData.shelf_id;
+    const series = brands.map((itm) => itm.brand_id);
+    // console.log("series", series);
+    const currentShelf = brands[0].brand_id;
+    // console.log("series", currentShelf);
     const index = series.indexOf(currentShelf);
+    // console.log("series", index);
     const len = series.length;
-    const nextInd = (index + 1) % len;
+    // console.log("series", (index + 1));
+    // const nextInd = (index + 1) % len;
+    const nextInd = index + 1;
+    console.log('series', series[nextInd]);
 
-    const current = await GetShelf(series[nextInd]);
-    console.log(current);
-    setCdata(current);
+    const current = await GetSingleBrandDetails(series[nextInd]);
+    console.log('current', current);
+    // setCdata(current);
+    // setBrandsLoadData(current);
+    setBrands(current);
     setNextClickLoad(false);
   };
 
   const handlePrevClick = async () => {
     setNextbtn(false);
     setNextClickLoad(true);
-    const series = shelves.map((itm) => itm.shelf_id);
+    const series = brands.map((itm) => itm.brand_id);
 
-    const currentShelf = cData.shelf_id;
+    const currentShelf = brands[0].brand_id;
 
     const index = series.indexOf(currentShelf);
 
@@ -435,14 +506,16 @@ export default function ShelfView({ date, groups }) {
 
     const nextInd = (index - 1 + len) % len;
 
-    const current = await GetShelf(series[nextInd]);
-    setCdata(current);
+    const current = await GetSingleBrandDetails(series[nextInd]);
+    // setCdata(current);
+    setBrandsLoadData(current);
     setNextClickLoad(false);
   };
 
   // const brandName = data.map((d) => )
   console.log('uuu', data);
   console.log('y76', isBrandName);
+  console.log('brands loaded', brandsLoadData);
 
   const brandNames = Array.isArray(isBrandData) && isBrandData.length > 0 ? isBrandData.map((d) => d?.brand_name || '') : [];
   //   if (Array.isArray(data) && data.length > 0) {
@@ -513,6 +586,7 @@ export default function ShelfView({ date, groups }) {
                   // .map((name) => (name.brand_name).trim())
                   .filter((name, index, self) => self.indexOf(name) === index)
                   .map((d, ind) => {
+                    // console.log("d", d);
                     // Check if there is a matching zone_id in the groups data
                     // const match = isGroup ? isGroup.find((group) => group.zone_id === d.name) : [];
                     // console.log('thu', match);
@@ -631,15 +705,16 @@ export default function ShelfView({ date, groups }) {
                                   key={index}
                                   // style={{ width: '100%', height:objectFit: 'cover' }}
                                   src={item.img_url}
-                                  ref={(el) => (imageRefs.current[index] = el)}
+                                  // ref={(el) => (imageRefs.current[index] = el)}
+                                  ref={imageRef}
                                   alt="img"
                                   className="image rounded-md shadow-md  hover:cursor-pointer h-96"
                                   // onLoad={findDimensionss}
-                                  onLoad={handleImageLoad(index)}
+                                  // onLoad={handleImageLoad(index)}
                                   // style={{ height: '80%', width: '100%', borderRadius: '7px', cursor: 'pointer' }}
-                                  // onClick={() => GetShelfWiseDetails(item.shelf_id)}
+                                  onClick={() => GetBrandWiseDetails(item.brand_id)}
                                 />
-                                {antn && <div style={highlightStyle3}></div>}
+                                {/* {antn && <div style={highlightStyle3}></div>} */}
                               </div>
                               <div style={{ width: '50%', padding: '7px' }}>
                                 <Typography variant="h3" className="">
@@ -660,7 +735,8 @@ export default function ShelfView({ date, groups }) {
                                 <Typography width={'100%'} variant="h3">
                                   Anomalies
                                 </Typography>
-                                {/* <Divider /> */}
+                                <Divider />
+
                                 <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
                                   {anomalyType === 'color_assortment' ? (
                                     <Box
@@ -677,12 +753,53 @@ export default function ShelfView({ date, groups }) {
                                   ) : (
                                     // cData.anomaly_details.map((item, index) =>
 
+                                    // brands[0].shelves.map(
+                                    //   (itm, ind) =>
+                                    // itm.shelves.coords && (
+                                    item.shelves &&
+                                    item.shelves.length > 0 &&
                                     item.shelves.map(
                                       (itm, ind) =>
-                                        // itm.shelves.coords && (
-                                        itm.anomaly_found > 0 && (
+                                        itm.anomaly_type !== '' ? (
+                                          <Tooltip>
+                                            <Box
+                                              // key={ind}
+                                              paddingX={0.2}
+                                              paddingY={0.04}
+                                              className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                              // onMouseOver={() => {
+                                              //   // itm.anomaly_found > 0 &&
+                                              //   // calculate(itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
+                                              //   calculate(itm.coords.xmin, itm.coords.ymin, itm.coords.xmax, itm.coords.ymax, 1);
+                                              //   //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
+                                              //   // console.log('here', itm.coords);
+                                              //   // setAntn(true);
+                                              // }}
+                                              // onMouseOut={() => {
+                                              //   // if (antn) {
+                                              //   //   const arr = [...posarr];
+                                              //   //   arr[index] = { lft: 0, tp: 0, wdth: 0, ht: 0 };
+                                              //   //   setposarr(arr);
+                                              //   //   setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                              //   //   setAntn(false);
+                                              //   // }
+                                              //   if (antn) {
+                                              //     setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                              //     setAntn(0);
+                                              //   }
+                                              // }}
+                                            >
+                                              {/* {console.log('poppp', itm.coords)} */}
+                                              <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
+                                              <Typography paddingRight={2} variant="h6">
+                                                {removeAfterLastUnderscore(itm.anomaly_type)}
+                                                {/* {itm.type.map((anomaly) => removeAfterLastUnderscore(anomaly))} */}
+                                              </Typography>
+                                            </Box>
+                                          </Tooltip>
+                                        ) : (
                                           <Tooltip
-                                            key={0 + ind}
+                                            // key={0 + ind}
                                             // title={
                                             //   <div>
                                             //     {console.log(itm, ind)}
@@ -708,29 +825,23 @@ export default function ShelfView({ date, groups }) {
                                               paddingX={0.2}
                                               paddingY={0.04}
                                               className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                              onMouseOver={() => {
-                                                itm.anomaly_found > 0 &&
-                                                  // calculate(itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
-                                                  calculate3(index, itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
-                                                //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
-                                                console.log('here', itm.coords);
-                                                setAntn(true);
-                                              }}
-                                              onMouseOut={() => {
-                                                if (antn) {
-                                                  const arr = [...posarr];
-                                                  arr[index] = { lft: 0, tp: 0, wdth: 0, ht: 0 };
-                                                  setposarr(arr);
-                                                  setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                                  setAntn(false);
-                                                }
-                                              }}
+                                              // onMouseOver={() => {
+                                              //   calculate(itm.coords.xmin, itm.coords.ymin, itm.coords.xmax, itm.coords.ymax, 2);
+                                              //   //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
+                                              //   // setAntn(true);
+                                              // }}
+                                              // onMouseOut={() => {
+                                              //   if (antn) {
+                                              //     setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                              //     setAntn(0);
+                                              //   }
+                                              // }}
                                             >
-                                              {console.log('poppp', itm.coords)}
-                                              <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
+                                              <RiCheckboxCircleLine className="text-4xl mr-0.5" style={{ color: 'green' }} />
                                               <Typography paddingRight={2} variant="h6">
-                                                {removeAfterLastUnderscore(String(itm.type))} - {itm.shelf_index}
-                                                {/* {itm.type.map((anomaly) => removeAfterLastUnderscore(anomaly))} */}
+                                                No Anomaly
+                                                {/* {removeAfterLastUnderscore(itm.anomaly_type)} */}
+                                                {/* {cData[0].unique_anomaly_array.map((anomaly) => removeAfterLastUnderscore(anomaly) )} */}
                                               </Typography>
                                             </Box>
                                           </Tooltip>
@@ -740,7 +851,7 @@ export default function ShelfView({ date, groups }) {
                                     // )
                                   )}
                                 </div>
-                                {/* <Divider /> */}
+                                <Divider />
                                 <Typography width={'100%'} variant="h3">
                                   Team
                                 </Typography>
@@ -819,7 +930,7 @@ export default function ShelfView({ date, groups }) {
         </div>
       )}
 
-      {loadDialog ? (
+      {load ? (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minheight: '500px' }}>
           <l-bouncy size="45" speed="1" color="black"></l-bouncy>
         </div>
@@ -849,40 +960,37 @@ export default function ShelfView({ date, groups }) {
             </DialogContent>
           ) : (
             <DialogContent>
-              {
-                isImageDialogOpen && (
-                  // updatedData[0].allAnomalies.map((details, index) => (
-                  <div className="zoom-container">
-                    <div className="image-container flex justify-center items-center lg:mb-0 mb-10 relative">
-                      <TransformWrapper>
-                        <div className="image-wrapper rounded-md md:w-full w-full" style={{ marginTop: isSmallScreen ? '200px' : '0' }}>
-                          <TransformComponent>
-                            {imageLoading && (
-                              <div className="flex justify-center items-center absolute top-0 left-0 z-10  overflow-x-hidden bg-white w-full h-full">
-                                <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
-                              </div>
-                            )}
-                            <div
-                              style={{ position: 'relative' }}
-                              onMouseOver={() => {
-                                setNextbtn(true);
-                              }}
-                              onMouseOut={() => {
-                                setNextbtn(false);
-                              }}
-                            >
-                              <img
-                                className="image rounded-md"
-                                // src={liveAnomalyImg ? selectedImage : anomalyDetails[0]?.reference_img}
-                                src={cData.img_url}
-                                alt="No img found"
-                                //onLoad={findDimensionss}
-                                //   () => {
-                                //   setImageLoading(false);
-                                // }}
-                              />
+              {/* {anomalyDetails.length > 0 && */}
+              {isImageDialogOpen && (
+                // updatedData[0].allAnomalies.map((details, index) => (
+                <div className="zoom-container ">
+                  <div className="image-container flex justify-center items-center lg:mb-0 mb-10 relative">
+                    <TransformWrapper>
+                      <div className="image-wrapper rounded-md md:w-full w-4/5">
+                        <TransformComponent>
+                          {imageLoading && (
+                            <div className="flex justify-center items-center absolute top-0 left-0 z-10  overflow-x-hidden bg-white w-full h-full">
+                              <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
+                            </div>
+                          )}
+                          <div
+                            style={{ position: 'relative' }}
+                            onMouseOver={() => {
+                              setNextbtn(true);
+                            }}
+                            onMouseOut={() => {
+                              setNextbtn(false);
+                            }}
+                          >
+                            <img
+                              className="image rounded-md"
+                              src={brands[0].img_url}
+                              alt="No img found"
+                              onLoad={findDimensions}
+                              ref={imageRef}
+                            />
 
-                              {nextBtn && (
+                            {/* {nextBtn && (
                                 <>
                                   <IconButton
                                     className="absolute top-1/2 right-0"
@@ -911,191 +1019,241 @@ export default function ShelfView({ date, groups }) {
                                     <FaAngleDoubleLeft />
                                   </IconButton>
                                 </>
-                              )}
-                              {posArr &&
-                                posArr.map((item, index) => (
-                                  <div
-                                    key={index}
-                                    style={{
-                                      position: 'absolute',
-                                      left: `${item.lft}%`,
-                                      top: `${item.tp}%`,
-                                      width: `${item.wdth}%`,
-                                      height: `${item.hght}%`,
-                                      border:
-                                        item.typ === 'incorrect_pop'
-                                          ? '3px solid red'
-                                          : item.typ === 'alien_pop'
-                                          ? '3px solid #ffbf00'
-                                          : '3px solid green', // Change border color as desired
-                                      boxSizing: 'border-box',
-                                      pointerEvents: 'none', // So clicks can still interact with the image
-                                      // backgroundColor: 'rgba(255, 0, 0, 0.6)',
-                                      borderRadius: '5px'
-                                    }}
-                                  ></div>
-                                ))}
+                              )} */}
 
-                              {antn && <div style={highlightStyle}></div>}
-                            </div>
-
-                            {/* <ImageListItemBar title={`Date: ${timestamps?.date}`} subtitle={`Time: ${timestamps?.time}`} /> */}
-                          </TransformComponent>
-                        </div>
-                      </TransformWrapper>
-                    </div>
-
-                    <div className="md:w-[30vw] md:ml-[1.5vw] h-[80vh] flex flex-col w-full">
-                      <div className="flex-grow flex flex-col space-y-1.5 overflow-y-auto scrollbar">
-                        <div className="w-full flex justify-between place-items-center">
-                          <Typography variant="h3" className="">
-                            {/* {details.store_id} - {details.store_name} */}
-                            {cData.store_id} - {cData.store_name}
-                          </Typography>
-                          <button onClick={handleImageClick} className="md:static absolute top-5 right-5 ">
-                            <IoIosClose className="md:text-4xl text-2xl" />
-                          </button>
-                        </div>
-                        <Divider />
-                        <Typography paddingBottom={1.5} width={'100%'} variant="h5">
-                          {cData.zone_id} / {cData.shelf_name}
-                        </Typography>
-                        <Typography width={'100%'} variant="h3">
-                          Groups
-                        </Typography>
-                        <Divider />
-                        <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
-                          <div className="bg-[#002F01] rounded-full">
-                            <Typography color={'white'} paddingY={1} paddingX={2} variant="h5">
-                              {cData.group_id}
-                            </Typography>
+                            {antn !== 0 && <div style={antn === 1 ? highlightStyle : highlightStyle2}></div>}
                           </div>
-                        </div>
-                        <Typography width={'100%'} variant="h3">
-                          Anomalies
-                        </Typography>
-                        <Divider />
-                        <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
-                          {cData.anomalies.length === 0 && (
-                            <Typography width={'100%'} variant="body1">
-                              No Anomaly
-                            </Typography>
-                          )}
 
-                          {cData.anomalies.length > 0 &&
-                            cData.anomalies.map(
-                              (itm, index) =>
-                                itm.anomaly_type != 'no_read_pop' && (
-                                  <Tooltip
-                                    key={index}
-                                    title={
-                                      <div>
-                                        <Typography variant="body1">
-                                          Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
-                                        </Typography>
-                                        <Typography variant="body1">
-                                          <span>Description :</span>
-                                          {itm.anomaly_type === 'alien_pop'
-                                            ? itm.print_tag
-                                              ? itm.print_tag
-                                              : 'No Data Found'
-                                            : itm.article_description
-                                            ? itm.article_description
-                                            : 'No Data Found'}
-                                        </Typography>
-                                        <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
-                                      </div>
-                                    }
-                                  >
-                                    <Box
-                                      key={index}
-                                      paddingX={0.2}
-                                      paddingY={0.04}
-                                      className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                      onMouseOver={() => {
-                                        calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
-                                      }}
-                                      onMouseOut={() => {
-                                        if (antn) {
-                                          setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                          setAntn(!antn);
-                                        }
-                                      }}
-                                    >
-                                      <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: 'red' }} />
-                                      <Typography paddingRight={2} variant="h6">
-                                        {itm.anomaly_type}
-                                      </Typography>
-                                    </Box>
-                                  </Tooltip>
-                                )
-                            )}
-                        </div>
-                        <Typography width={'100%'} variant="h3">
-                          Team
+                          {/* <ImageListItemBar title={`Date: ${timestamps?.date}`} subtitle={`Time: ${timestamps?.time}`} /> */}
+                        </TransformComponent>
+                      </div>
+                    </TransformWrapper>
+                  </div>
+
+                  <div className="md:w-[30vw] md:ml-[1.5vw] h-[80vh] flex flex-col w-full">
+                    <div className="flex-grow flex flex-col space-y-1.5 overflow-y-auto scrollbar">
+                      <div className="w-full flex justify-between place-items-center">
+                        <Typography variant="h3" className="">
+                          {/* {details.store_id} - {details.store_name} */}
+                          {brands[0].bay_id} - {brands[0].bay_info.brand_name}
                         </Typography>
-                        <Divider />
-                        <div style={{ paddingBottom: 13 }} className="w-full flex justify-start">
-                          <AvatarGroup
-                            sx={{
-                              '& .MuiAvatar-root': { width: 40, height: 40, fontSize: 24 }
-                            }}
-                            max={2}
+                        <button onClick={handleImageClick} className="md:static absolute top-5 right-5 ">
+                          <IoIosClose className="md:text-4xl text-2xl" />
+                        </button>
+                      </div>
+                      <Divider />
+                      <Typography width={'100%'} variant="h3">
+                        Date & Time of Capture
+                      </Typography>
+                      <Typography paddingBottom={1.5} width={'100%'} variant="h5">
+                        {formatDate(data.map((itm) => itm.timestamp))}
+                      </Typography>
+                      <Divider />
+                      <Typography width={'100%'} variant="h3">
+                        Anomalies
+                      </Typography>
+                      <Divider />
+
+                      <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
+                        {anomalyType === 'color_assortment' ? (
+                          <Box
+                            paddingX={0.2}
+                            paddingY={0.04}
+                            className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center"
                           >
-                            <Tooltip
-                              title={
-                                <div className="w-[200px] p-2 flex flex-col space-y-2">
-                                  <Typography sx={{ width: '100%', color: 'white' }} variant="h6">
-                                    Agent Details
-                                  </Typography>
-                                  <Typography variant="subtitle2">Name: {cData.user_name}</Typography>
-                                  <Typography variant="subtitle2">Number: {cData.user_number}</Typography>
-                                </div>
-                              }
-                              enterTouchDelay={1}
-                              leaveTouchDelay={100000}
-                            >
-                              <Avatar className="hover:cursor-pointer" sx={{ bgcolor: success }} alt={cData.user_name} src="/example.jpg" />
-                            </Tooltip>
-                          </AvatarGroup>
-                        </div>
-                        <Typography sx={{ paddingBottom: 1 }} width={'100%'} variant="h3">
-                          Comments
-                        </Typography>
-                        {/* <Divider /> */}
-                        <TextField
-                          // sx={{ paddingTop: 2 }}
-                          id="outlined-textarea"
-                          label="Add a comment"
-                          placeholder="Give your Comments"
-                          multiline
-                          rows={4}
-                        />
+                            <RiErrorWarningLine className="text-4xl mr-0.5 text-purple-500" />
+
+                            <Typography paddingRight={2} variant="h6">
+                              Colour
+                            </Typography>
+                          </Box>
+                        ) : (
+                          // cData.anomaly_details.map((item, index) =>
+
+                          // brands[0].shelves.map(
+                          //   (itm, ind) =>
+                          // itm.shelves.coords && (
+                          brands &&
+                          brands.length > 0 &&
+                          brands[0].shelves &&
+                          brands[0].shelves.map(
+                            (itm, ind) =>
+                              itm.anomaly_type !== '' ? (
+                                <Tooltip key={0 + ind}>
+                                  <Box
+                                    key={ind}
+                                    paddingX={0.2}
+                                    paddingY={0.04}
+                                    className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                    onMouseOver={() => {
+                                      // itm.anomaly_found > 0 &&
+                                      // calculate(itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
+                                      calculate(itm.coords.xmin, itm.coords.ymin, itm.coords.xmax, itm.coords.ymax, 1);
+                                      //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
+                                      // console.log('here', itm.coords);
+                                      // setAntn(true);
+                                    }}
+                                    onMouseOut={() => {
+                                      // if (antn) {
+                                      //   const arr = [...posarr];
+                                      //   arr[index] = { lft: 0, tp: 0, wdth: 0, ht: 0 };
+                                      //   setposarr(arr);
+                                      //   setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                      //   setAntn(false);
+                                      // }
+                                      if (antn) {
+                                        setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                        setAntn(0);
+                                      }
+                                    }}
+                                  >
+                                    {console.log('poppp', itm.coords)}
+                                    <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
+                                    <Typography paddingRight={2} variant="h6">
+                                      {removeAfterLastUnderscore(itm.anomaly_type)}
+                                      {/* {itm.type.map((anomaly) => removeAfterLastUnderscore(anomaly))} */}
+                                    </Typography>
+                                  </Box>
+                                </Tooltip>
+                              ) : (
+                                <Tooltip
+                                  key={0 + ind}
+                                  // title={
+                                  //   <div>
+                                  //     {console.log(itm, ind)}
+                                  //     <Typography variant="body1">
+                                  //       Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
+                                  //     </Typography>
+                                  //     <Typography variant="body1">
+                                  //       <span>Description :</span>
+                                  //       {itm.anomaly_type === 'alien_pop'
+                                  //         ? itm.print_tag
+                                  //           ? itm.print_tag
+                                  //           : 'No Data Found'
+                                  //         : itm.article_description
+                                  //         ? itm.article_description
+                                  //         : 'No Data Found'}
+                                  //     </Typography>
+                                  //     <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
+                                  //   </div>
+                                  // }
+                                >
+                                  <Box
+                                    key={ind}
+                                    paddingX={0.2}
+                                    paddingY={0.04}
+                                    className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                    onMouseOver={() => {
+                                      calculate(itm.coords.xmin, itm.coords.ymin, itm.coords.xmax, itm.coords.ymax, 2);
+                                      //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
+                                      // setAntn(true);
+                                    }}
+                                    onMouseOut={() => {
+                                      if (antn) {
+                                        setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                        setAntn(0);
+                                      }
+                                    }}
+                                  >
+                                    <RiCheckboxCircleLine className="text-4xl mr-0.5" style={{ color: 'green' }} />
+                                    <Typography paddingRight={2} variant="h6">
+                                      No Anomaly
+                                      {/* {removeAfterLastUnderscore(itm.anomaly_type)} */}
+                                      {/* {cData[0].unique_anomaly_array.map((anomaly) => removeAfterLastUnderscore(anomaly) )} */}
+                                    </Typography>
+                                  </Box>
+                                </Tooltip>
+                              )
+                            // )
+                          )
+                          // )
+                        )}
                       </div>
-                      <div className="w-full bg-white mt-5 flex flex-row-reverse gap-3">
-                        <button className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 hover:cursor-not-allowed border-2 border-gray-300">
-                          <Typography className="text-gray-400">Ignore</Typography>
-                        </button>
-                        <button
-                          className="lg:rounded-full rounded-xl md:w-[125px]  hover:cursor-not-allowed text-lg lg:text-2xl p-2.5"
-                          // style={{ backgroundColor: success }}
-                          style={{ backgroundColor: '#6ee7b7' }}
+                      <Divider />
+                      <Typography width={'100%'} variant="h3">
+                        Team
+                      </Typography>
+                      <div style={{ paddingBottom: 13 }} className="w-full flex justify-start">
+                        <AvatarGroup
+                          sx={{
+                            '& .MuiAvatar-root': { width: 40, height: 40, fontSize: 24 }
+                          }}
+                          max={2}
                         >
-                          <Typography color={'white'}>Solved</Typography>
-                        </button>
-                        <button
-                          className="lg:rounded-full rounded-xl md:w-[125px] hover:cursor-not-allowed text-lg lg:text-2xl p-2.5"
-                          // style={{ backgroundColor: error }}
-                          style={{ backgroundColor: '#fca5a5' }}
-                        >
-                          <Typography color={'white'}>Alert Store</Typography>
-                        </button>
+                          <Tooltip
+                            title={
+                              <div className="w-[200px] p-2 flex flex-col space-y-2">
+                                <Typography sx={{ width: '100%', color: 'white' }} variant="h6">
+                                  Agent Details
+                                </Typography>
+                                <Typography variant="subtitle2">Name: {brands[0].user[0].name}</Typography>
+                                <Typography variant="subtitle2">Number: {brands[0].user[0].number}</Typography>
+                              </div>
+                            }
+                            enterTouchDelay={1}
+                            leaveTouchDelay={100000}
+                          >
+                            <Avatar
+                              className="hover:cursor-pointer"
+                              sx={{ bgcolor: success }}
+                              alt={brands[0].user[0].name}
+                              src="/example.jpg"
+                            />
+                          </Tooltip>
+                        </AvatarGroup>
                       </div>
+                      <Divider />
+                      <div className="w-fit">
+                        <Typography variant="h3">OSA Score: {brands[0].OSA_Score}%</Typography>
+                        <Typography variant="h3">Tester Score: {brands[0].testers_score}%</Typography>
+                        <Typography variant="h3">Category: {brands[0].category}</Typography>
+                      </div>
+                      <Divider />
+                      <Typography sx={{ paddingBottom: 1 }} width={'100%'} variant="h3">
+                        Comments
+                      </Typography>
+                      {/* <Divider /> */}
+                      <TextField
+                        // sx={{ paddingTop: 2 }}
+                        id="outlined-textarea"
+                        label="Add a comment"
+                        placeholder="Give your Comments"
+                        multiline
+                        rows={4}
+                        onChange={(e) => setMsg(e.target.value)}
+                      />
+                      {/* <Divider /> */}
+                    </div>
+                    <div className="w-full bg-white mt-5 flex flex-row-reverse gap-3">
+                      <button
+                        className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 border-2 border-gray-300 flex align-middle justify-center"
+                        // onClick={() => handleIgnored()}
+                      >
+                        {/* {ignoreLoad && <CgSpinner className="animate-spin" />} */}
+                        <Typography className="text-gray-400">Ignore</Typography>
+                      </button>
+                      <button
+                        className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 flex align-middle justify-center"
+                        // style={{ backgroundColor: success }}
+                        style={{ backgroundColor: success }}
+                        // onClick={() => handleSolved()}
+                      >
+                        {/* {solvedLoad && <CgSpinner className="animate-spin" />} */}
+                        <Typography color={'white'}>Solved</Typography>
+                      </button>
+
+                      <button
+                        className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 flex align-middle justify-center"
+                        style={{ backgroundColor: error }}
+                        // onClick={() => handelAlertClick()}
+                        // style={{ backgroundColor: '#fca5a5' }}
+                      >
+                        <Typography color={'white'}>Alert Store</Typography>
+                      </button>
                     </div>
                   </div>
-                )
-                // ))}
-              }
+                </div>
+              )}
             </DialogContent>
           )}
         </Dialog>

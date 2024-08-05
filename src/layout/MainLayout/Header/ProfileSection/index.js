@@ -73,9 +73,9 @@ const ProfileSection = () => {
     return null; // or render a loading/error message
   }
 
-  const name = users.data.name;
-  const number = users.data.number;
-  const email = users.data.email;
+  const name = users.data[0].name;
+  const number = users.data[0].number;
+  const email = users.data[0].email;
   // console.log(name, number, email);
 
   return (

@@ -23,6 +23,7 @@ import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import './zoom-card-item.css';
 import { bouncy } from 'ldrs';
 import MapComponent from './map';
+// import DatePickerComp from 'views/Insights/DatePicker';
 
 bouncy.register();
 
@@ -70,6 +71,7 @@ import { CgSpinner } from 'react-icons/cg';
 import { FaAngleDoubleRight } from 'react-icons/fa';
 import { FaAngleDoubleLeft } from 'react-icons/fa';
 import { GetSignedImagesAllStores } from 'api';
+import { useSelector } from 'react-redux';
 //eslint-disable-next-line
 const totalParts = 142;
 
@@ -176,6 +178,7 @@ const Customers = () => {
   //eslint-disable-next-line
   const [anomalyType, setAnomalyType] = useState('');
   const [loading, setLoading] = useState(false);
+  // const [selectedDate, setSelectedDate] = useState(new Date());
   const [clickedBar, setClickedBar] = useState({
     isOSAScore: false,
     isMT: false,
@@ -239,6 +242,22 @@ const Customers = () => {
   //eslint-disable-next-line
   const user_id = 'dummyUserId';
   const open = Boolean(anchorEl);
+  // const datess = useSelector((state) => state.customization.selectedDate)
+  // .toISOString()
+  // .slice(0, 10);
+
+  const toLocalDateString = (date) => {
+    const tzOffset = date.getTimezoneOffset() * 60000; // offset in milliseconds
+    const localISOTime = new Date(date.getTime() - tzOffset).toISOString().slice(0, 10);
+    return localISOTime;
+  };
+  
+  // const selectedDate = useSelector((state) => state.customization.selectedDate)
+  // .toISOString()
+  // .slice(0, 10);
+
+  const datess = toLocalDateString(useSelector((state) => state.customization.selectedDate));
+  console.log("datesbabe", datess);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -506,10 +525,13 @@ const Customers = () => {
     // Simulate API call delay
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/get-store-details';
     const data = {
-      user_id: '66795cbe1d905892a4256693',
-      date: new Date().toISOString().split('T')[0]
+      user_id: '66795cbe1d905892a4256691',
+      // date: new Date().toISOString().split('T')[0]
+      date: datess
       // date: '2024-07-10'
     };
+
+
 
     try {
       const response = await fetch(url, {
@@ -599,7 +621,7 @@ const Customers = () => {
   //calling the getStoresData() function
   useEffect(() => {
     getStoresData();
-  }, []);
+  }, [datess]);
 
   const settingAnalysisStoreDetails = (storeName, lat, lng, store, id) => {
     localStorage.setItem('analysisStoreDetails', JSON.stringify({ storeName, lat, lng, store, id }));
@@ -889,6 +911,7 @@ const Customers = () => {
                                 onClick={() => {
                                   settingAnalysisStoreDetails(item.store_name, item.lat, item.long, item._id);
                                   navigate(`/main/stores/storeinsight/overview/${item._id}`);
+                                  localStorage.setItem('analysisStoreId', JSON.stringify(item._id));
                                 }}
                               >
                                 {item.id} - {item.store_name}
@@ -1148,16 +1171,6 @@ const Customers = () => {
                         <Typography className="drop-shadow-md" align="center" variant="h6">
                           Anomalies solved
                         </Typography>
-
-                        <Typography className="drop-shadow-md" align="center" variant="h2">
-                          {/* 0/ */}
-                          {/* {item.anomalies_details.length > 0 ? item.anomalies_details.length : '...'} */}
-                          {item.no_of_brands_captured_today}
-                          {/* { console.log(storeAnomalies)} */}
-                        </Typography>
-                        <Typography className="drop-shadow-md" align="center" variant="h6">
-                          Brands Captured
-                        </Typography>
                       </Stack>
                     </div>
                   </Grid>
@@ -1325,7 +1338,7 @@ const Customers = () => {
                               //   setImageLoading(false);
                               // }}
                             />
-
+{/* 
                             {nextBtn && (
                               <>
                                 <IconButton
@@ -1356,7 +1369,7 @@ const Customers = () => {
                                   <FaAngleDoubleLeft />
                                 </IconButton>
                               </>
-                            )}
+                            )} */}
                             {antn !== 0 && <div style={antn === 1 ? highlightStyle : highlightStyle2}></div>}
                           </div>
                         </TransformComponent>

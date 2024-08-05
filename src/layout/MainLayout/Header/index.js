@@ -1,15 +1,13 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useState} from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
-import { Box, Grid, IconButton, Typography } from '@mui/material';
+import { Box, Grid, IconButton, Stack, Typography, useMediaQuery, Button } from '@mui/material';
 
 // third party
-import {
-  // useSelector,
-  useDispatch
-} from 'react-redux';
+
+import { useSelector, useDispatch } from 'react-redux';
 
 // project import
 // import SearchSection from './SearchSection';
@@ -22,6 +20,7 @@ import * as actionTypes from 'store/actions';
 import MenuTwoToneIcon from '@mui/icons-material/MenuTwoTone';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
+import DatePickerComp from '../../../views/Insights/DatePicker/index';
 // import { TopNavItems } from 'top-nav-items';
 // import topNavItems from 'top-nav-items';
 // import logo from 'assets/images/logo.svg';
@@ -31,9 +30,20 @@ import { useLocation } from 'react-router-dom';
 
 const Header = ({ drawerToggle }) => {
   const theme = useTheme();
+  const isMobile = useMediaQuery('(max-width:600px)');
+  const isLayoutOpen = useSelector((state) => state.customization.isLayoutOpen);
   // const customization = useSelector((state) => state.customization);
   const dispatch = useDispatch();
   let location = useLocation();
+
+  console.log('IS_LAYOUT_OPEN', isLayoutOpen);
+  if (window.location.pathname === '/main/insights') {
+    // Your code for when the user is on the insights page
+    console.log('You are on the insights page');
+  }
+  const ftypeget = useSelector((state) => state.customization.flType);
+  console.log('all filter data is', ftypeget);
+
 
   return (
     <>
@@ -150,6 +160,15 @@ const Header = ({ drawerToggle }) => {
       </Box>
       {/* <SearchSection theme="light" /> */}
       {/* <NotificationSection /> */}
+      {/* <DatePickerComp /> */}
+      <Box sx={{ marginBottom: isMobile ? 2 : 0, position: 'relative' }} className="calendar">
+          {' '}
+          {/* Adjust margin for mobile view */}
+          {/* {!showDatePicker && (
+             <Tooltip title={'calender is not active for this page'}> <div className='cursor-not-allowed' style={{position:"absolute", height:"50px", width:'230px',zIndex:"10000", top:'-5px'}}></div></Tooltip>
+            )}  */}
+          <DatePickerComp />
+        </Box>
       <ProfileSection />
     </>
   );

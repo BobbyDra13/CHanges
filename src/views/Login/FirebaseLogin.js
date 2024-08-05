@@ -67,9 +67,9 @@ const FirebaseLogin = () => {
     setLoading(true);
     try {
       const response = await GetVerifiedUsers(phoneNumber);
-      console.log('data', response.data.data.number);
+      console.log('data', response.data.data[0].number);
       setVerifyData(response.data);
-      if (response.data.data.number === phoneNumber) {
+      if (response.data.data[0].number === phoneNumber) {
         console.log('entered if');
         onSignup();
       } else {

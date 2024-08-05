@@ -17,6 +17,7 @@ import {
 
 // Apex chart import
 import Chart from 'react-apexcharts';
+import { useSelector, useDispatch } from 'react-redux';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -78,12 +79,25 @@ const Insights = () => {
   const accentColLight = theme.palette.success.light;
   const accentColMain = theme.palette.success.main;
 
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
+  const toLocalDateString = (date) => {
+    const tzOffset = date.getTimezoneOffset() * 60000; // offset in milliseconds
+    const localISOTime = new Date(date.getTime() - tzOffset).toISOString().slice(0, 10);
+    return localISOTime;
+  };
+  
+  // const selectedDate = useSelector((state) => state.customization.selectedDate)
+  // .toISOString()
+  // .slice(0, 10);
+
+  const selectedDate = toLocalDateString(useSelector((state) => state.customization.selectedDate));
+
+  console.log("getDate", selectedDate);
 
   const { selectOptions } = histogramChartRequirements;
   const [selected, setSelected] = useState(selectOptions[0].value);
   const [seriesData, setSeriesData] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  // const [selectedDate, setSelectedDate] = useState(new Date());
   const [capProgress, setCapProgress] = useState(false);
   const [avgCapProgress, setAvgCapProgress] = useState(false);
   //eslint-disable-next-line
@@ -128,6 +142,7 @@ const Insights = () => {
       user_id: '66795cbe1d905892a4256692'
     };
     try {
+      console.log("sel", selectedDate);
       const res = selectedDate && (await OsaScoreMultistoreSevenday(data));
       const res2 = selectedDate && (await testerPercentSevenDayMultistore(data1));
       const res3 = selectedDate && (await seven_day_anomalies(data));
@@ -148,7 +163,7 @@ const Insights = () => {
   useEffect(() => {
     const getAnomalyCount = async () => {
       const data = {
-        date: selectedDate.toString(),
+        date: selectedDate,
         //  user_id : "666fef1bdbf527b634e95c0b"
         user_id: '66795cbe1d905892a4256694'
       };
@@ -269,122 +284,228 @@ const Insights = () => {
     };
   }, []);
   // ------------------------
+  async function fetchDashboardData() {
+    const capBody = {
+      date: selectedDate,
+      user_id: '66795cbe1d905892a4256693'
+      // user_id: user_id
+    };
+    //eslint-disable-next-line
+    const popKpiCardBody = {
+      date: selectedDate,
+      user_id: user_id
+    };
+    const donutBody = {
+      date: selectedDate,
+      user_id: '66795cbe1d905892a4256694'
+    };
+    const dataa = {
+      // user_id: '666fef1bdbf527b634e95c0b',
+      user_id: '66795cbe1d905892a4256692',
+      //date: '2024-06-27'
+      date: selectedDate
+    };
+    console.log('donutBody', donutBody);
+    // const anomlayBody = {
+    //   date: selectedDate.toString(),
+    //   user_id: '66795cbe1d905892a4256694'
+    //   // date: selectedDate.toString(),
+    //   // user_id: user_id
+    // };
+    // console.log('anomlybody', anomlayBody);
+    setAvgCapProgress(false);
+    setCapProgress(false);
+    setFullness(false);
+    setBarChartData(false);
+    console.log('abc date', selectedDate);
+    try {
+      const brandDonutData = await GetRadarChartData(donutBody);
+      console.log('bebo', brandDonutData);
+      const CapData = await GetCapProg(capBody);
+      console.log('thala', CapData);
+      //const histogramData = await GetPopHistogramData(popKpiCardBody);
+      const histogramData = selectedDate && (await testerPercentAndOsaScoreHistogram(dataa));
+      console.log(histogramData);
+      sethisto(histogramData);
+      const anomalies = await GetRadarChartData(donutBody);
+      // const anomalyCount = await getAnomalyCountInsights(anomlayBody);
+      // console.log('jiop',anomalyCount);
+      if (anomalies) {
+        setAnomaliesLoading(false);
+        setAnomaliesCount(anomalies.data);
+        console.log('abc', anomalies.data);
+      }
+      // if(anomalyCount) {
+      //   console.log('before',anoCount);
+      //   setAnoCount(anomalyCount);
+      //   console.log('after',anoCount);
+      // } else {
+      //   setAnoCount('');
+      // }
+      if (CapData) {
+        if (CapData.data.results.length > 0) {
+          // let sum = 0;
+          // for (let i = 0; i < CapData.data.length; i++) {
+          //   sum += CapData.data[i].captureProgress;
+          // }
+          // const average = sum / CapData.data.length;
+          const average = CapData.data.avgCaptureProgress;
+          setAvgCapProgress(average);
+        } else {
+          setAvgCapProgress('');
+        }
+        console.log('thik', CapData.data.results);
+        console.log('uii', avgCapProgress);
+        setCapProgress(CapData.data.results);
+      }
+      if (brandDonutData) {
+        if (brandDonutData.data.length > 0) {
+          console.log('Donut chart data', brandDonutData);
+          const extractedFullness = brandDonutData.data.map((item) => [item.missing_tester, item.empty_tray, item.correct]);
+          const extractedBrandNames = ['Missing tester', 'Empty Tray', 'Correct'];
+          setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
+          setBrandFullness(extractedFullness);
+          console.log('Brand Fullness', extractedFullness);
+          setBrandNames(extractedBrandNames);
+          console.log('Brand Names', brandNames);
+        } else {
+          setBrandFullness([]);
+        }
+      }
 
+      if (histogramData) {
+        //    if(dropdown === "")
+        //  setBarChartData(histogramData.data[0].OSA_Score_histogram);
+
+        if (dropdown === 'Osa Score') {
+          setBarChartData(histogramData.data[0].OSA_Score_histogram);
+        } else {
+          setBarChartData(histogramData.data[0].testers_score_histogram);
+        }
+
+        setFullness(true);
+        console.log('histogramData', barChartData);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
   const user_id = JSON.parse(localStorage.getItem('userData')).data._id;
   console.log('brooo', user_id);
   useEffect(() => {
     // const storeIds = JSON.parse(localStorage.getItem('userData')).data.stores;
     // dispatch({ type: 'DATE', date: storeIds });
     /* eslint-disable no-inner-declarations */
-    if (isMounted) {
-      async function fetchDashboardData() {
-        const capBody = {
-          date: selectedDate.toString(),
-          user_id: '66795cbe1d905892a4256693'
-          // user_id: user_id
-        };
-        //eslint-disable-next-line
-        const popKpiCardBody = {
-          date: selectedDate.toString(),
-          user_id: user_id
-        };
-        const donutBody = {
-          date: selectedDate.toString(),
-          user_id: '66795cbe1d905892a4256694'
-        };
-        const dataa = {
-          // user_id: '666fef1bdbf527b634e95c0b',
-          user_id: '66795cbe1d905892a4256692',
-          //date: '2024-06-27'
-          date: selectedDate
-        };
-        console.log('donutBody', donutBody);
-        // const anomlayBody = {
-        //   date: selectedDate.toString(),
-        //   user_id: '66795cbe1d905892a4256694'
-        //   // date: selectedDate.toString(),
-        //   // user_id: user_id
-        // };
-        // console.log('anomlybody', anomlayBody);
-        setAvgCapProgress(false);
-        setCapProgress(false);
-        setFullness(false);
-        setBarChartData(false);
-        console.log('abc date', selectedDate);
-        try {
-          const brandDonutData = await GetRadarChartData(donutBody);
-          console.log('bebo', brandDonutData);
-          const CapData = await GetCapProg(capBody);
-          console.log('thala', CapData);
-          //const histogramData = await GetPopHistogramData(popKpiCardBody);
-          const histogramData = selectedDate && (await testerPercentAndOsaScoreHistogram(dataa));
-          console.log(histogramData);
-          sethisto(histogramData);
-          const anomalies = await GetRadarChartData(donutBody);
-          // const anomalyCount = await getAnomalyCountInsights(anomlayBody);
-          // console.log('jiop',anomalyCount);
-          if (anomalies) {
-            setAnomaliesLoading(false);
-            setAnomaliesCount(anomalies.data);
-            console.log('abc', anomalies.data);
-          }
-          // if(anomalyCount) {
-          //   console.log('before',anoCount);
-          //   setAnoCount(anomalyCount);
-          //   console.log('after',anoCount);
-          // } else {
-          //   setAnoCount('');
-          // }
-          if (CapData) {
-            if (CapData.data.results.length > 0) {
-              // let sum = 0;
-              // for (let i = 0; i < CapData.data.length; i++) {
-              //   sum += CapData.data[i].captureProgress;
-              // }
-              // const average = sum / CapData.data.length;
-              const average = CapData.data.avgCaptureProgress;
-              setAvgCapProgress(average);
-            } else {
-              setAvgCapProgress('');
-            }
-            console.log('thik', CapData.data.results);
-            console.log('uii', avgCapProgress);
-            setCapProgress(CapData.data.results);
-          }
-          if (brandDonutData) {
-            if (brandDonutData.data.length > 0) {
-              console.log('Donut chart data', brandDonutData);
-              const extractedFullness = brandDonutData.data.map((item) => [item.missing_tester, item.empty_tray, item.correct]);
-              const extractedBrandNames = ['Missing tester', 'Empty Tray', 'Correct'];
-              setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
-              setBrandFullness(extractedFullness);
-              console.log('Brand Fullness', extractedFullness);
-              setBrandNames(extractedBrandNames);
-              console.log('Brand Names', brandNames);
-            } else {
-              setBrandFullness([]);
-            }
-          }
+    // if (isMounted) {
+    //   async function fetchDashboardData() {
+    //     const capBody = {
+    //       date: selectedDates,
+    //       user_id: '66795cbe1d905892a4256693'
+    //       // user_id: user_id
+    //     };
+    //     //eslint-disable-next-line
+    //     const popKpiCardBody = {
+    //       date: selectedDates,
+    //       user_id: user_id
+    //     };
+    //     const donutBody = {
+    //       date: selectedDates,
+    //       user_id: '66795cbe1d905892a4256694'
+    //     };
+    //     const dataa = {
+    //       // user_id: '666fef1bdbf527b634e95c0b',
+    //       user_id: '66795cbe1d905892a4256692',
+    //       //date: '2024-06-27'
+    //       date: selectedDates
+    //     };
+    //     console.log('donutBody', donutBody);
+    //     // const anomlayBody = {
+    //     //   date: selectedDate.toString(),
+    //     //   user_id: '66795cbe1d905892a4256694'
+    //     //   // date: selectedDate.toString(),
+    //     //   // user_id: user_id
+    //     // };
+    //     // console.log('anomlybody', anomlayBody);
+    //     setAvgCapProgress(false);
+    //     setCapProgress(false);
+    //     setFullness(false);
+    //     setBarChartData(false);
+    //     console.log('abc date', selectedDates);
+    //     try {
+    //       const brandDonutData = await GetRadarChartData(donutBody);
+    //       console.log('bebo', brandDonutData);
+    //       const CapData = await GetCapProg(capBody);
+    //       console.log('thala', CapData);
+    //       //const histogramData = await GetPopHistogramData(popKpiCardBody);
+    //       const histogramData = selectedDates.toString() && (await testerPercentAndOsaScoreHistogram(dataa));
+    //       console.log(histogramData);
+    //       sethisto(histogramData);
+    //       const anomalies = await GetRadarChartData(donutBody);
+    //       // const anomalyCount = await getAnomalyCountInsights(anomlayBody);
+    //       // console.log('jiop',anomalyCount);
+    //       if (anomalies) {
+    //         setAnomaliesLoading(false);
+    //         setAnomaliesCount(anomalies.data);
+    //         console.log('abc', anomalies.data);
+    //       }
+    //       // if(anomalyCount) {
+    //       //   console.log('before',anoCount);
+    //       //   setAnoCount(anomalyCount);
+    //       //   console.log('after',anoCount);
+    //       // } else {
+    //       //   setAnoCount('');
+    //       // }
+    //       if (CapData) {
+    //         if (CapData.data.results.length > 0) {
+    //           // let sum = 0;
+    //           // for (let i = 0; i < CapData.data.length; i++) {
+    //           //   sum += CapData.data[i].captureProgress;
+    //           // }
+    //           // const average = sum / CapData.data.length;
+    //           const average = CapData.data.avgCaptureProgress;
+    //           setAvgCapProgress(average);
+    //         } else {
+    //           setAvgCapProgress('');
+    //         }
+    //         console.log('thik', CapData.data.results);
+    //         console.log('uii', avgCapProgress);
+    //         setCapProgress(CapData.data.results);
+    //       }
+    //       if (brandDonutData) {
+    //         if (brandDonutData.data.length > 0) {
+    //           console.log('Donut chart data', brandDonutData);
+    //           const extractedFullness = brandDonutData.data.map((item) => [item.missing_tester, item.empty_tray, item.correct]);
+    //           const extractedBrandNames = ['Missing tester', 'Empty Tray', 'Correct'];
+    //           setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
+    //           setBrandFullness(extractedFullness);
+    //           console.log('Brand Fullness', extractedFullness);
+    //           setBrandNames(extractedBrandNames);
+    //           console.log('Brand Names', brandNames);
+    //         } else {
+    //           setBrandFullness([]);
+    //         }
+    //       }
 
-          if (histogramData) {
-            //    if(dropdown === "")
-            //  setBarChartData(histogramData.data[0].OSA_Score_histogram);
+    //       if (histogramData) {
+    //         //    if(dropdown === "")
+    //         //  setBarChartData(histogramData.data[0].OSA_Score_histogram);
 
-            if (dropdown === 'Osa Score') {
-              setBarChartData(histogramData.data[0].OSA_Score_histogram);
-            } else {
-              setBarChartData(histogramData.data[0].testers_score_histogram);
-            }
+    //         if (dropdown === 'Osa Score') {
+    //           setBarChartData(histogramData.data[0].OSA_Score_histogram);
+    //         } else {
+    //           setBarChartData(histogramData.data[0].testers_score_histogram);
+    //         }
 
-            setFullness(true);
-            console.log('histogramData', barChartData);
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      }
-      fetchDashboardData();
-    }
+    //         setFullness(true);
+    //         console.log('histogramData', barChartData);
+    //       }
+    //     } catch (error) {
+    //       console.log(error);
+    //     }
+    //   }
+    //   fetchDashboardData();
+    // }
+    fetchDashboardData();
     getsevendaysdataForOsaAndTester();
     //eslint-disable-next-line
     console.log('selectedDate', selectedDate);
@@ -601,9 +722,9 @@ const Insights = () => {
       >
         <Stack direction={'row'} justifyContent={'space-between'}>
           <Typography variant="h3">Insights</Typography>
-          <Box>
+          {/* <Box>
             <DatePickerComp SetSelectedDate={setSelectedDate} />
-          </Box>
+          </Box> */}
         </Stack>
       </Grid>
       <Grid item xs={12}>
