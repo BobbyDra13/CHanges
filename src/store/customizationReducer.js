@@ -11,9 +11,9 @@ export const initialState = {
     storeName: '',
     lat: '',
     lng: ''
-  }
+  },
+  selectedDate: new Date(),
 };
-
 const customizationReducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.MENU_OPEN:
@@ -36,6 +36,12 @@ const customizationReducer = (state = initialState, action) => {
         ...state,
         analysisStoreDetails: action.analysisStoreDetails
       };
+      case 'selectedDate':
+        console.log("state", action.payload);
+        return {
+          ...state,
+          selectedDate: action.payload
+        };
     default:
       return state;
   }

@@ -68,6 +68,7 @@ import { FaCircleInfo } from 'react-icons/fa6';
 
 import pog from '../../../assets/images/pog.jpeg';
 import associate from '../../../assets/images/profile-user.png';
+import { useSelector } from 'react-redux';
 
 function Overview() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -165,10 +166,26 @@ function Overview() {
   const [capture7days, setcapture7days] = useState([]);
   const [Osa7days, setOsa7days] = useState([]);
   const [testfullness7days, settestfullness7days] = useState([]);
+  // const selectedDates = useSelector((state) => state.customization.selectedDate)
+  // .toISOString()
+  // .slice(0, 10);
 
-  const get7daysdata = async (date) => {
+  const toLocalDateString = (date) => {
+    const tzOffset = date.getTimezoneOffset() * 60000; // offset in milliseconds
+    const localISOTime = new Date(date.getTime() - tzOffset).toISOString().slice(0, 10);
+    return localISOTime;
+  };
+  
+  // const selectedDate = useSelector((state) => state.customization.selectedDate)
+  // .toISOString()
+  // .slice(0, 10);
+
+  const selectedDates = toLocalDateString(useSelector((state) => state.customization.selectedDate));
+  const finalDate = selectedDates;
+
+  const get7daysdata = async (finalDate) => {
     try {
-      const result = store && date && (await getsevendaydata(date, store));
+      const result = store && finalDate && (await getsevendaydata(finalDate, store));
       console.log('st', store);
       console.log('result from get7daysdata', result);
       result && setcapture7days(result.capture7days);
@@ -180,13 +197,13 @@ function Overview() {
   };
 
   useEffect(() => {
-    get7daysdata(date);
+    get7daysdata(finalDate);
     //eslint-disable-next-line
   }, []);
   useEffect(() => {
-    get7daysdata(date);
+    get7daysdata(finalDate);
     //eslint-disable-next-line
-  }, [date, store]);
+  }, [finalDate, store]);
   const handleClickAssociateScoreModal = () => {
     setOpenAssociateScoreModal((prev) => !prev);
     setIsSnackbarOpen(false);
@@ -234,11 +251,11 @@ function Overview() {
   const handleDownload = async () => {
     setIsDownloading(true);
 
-    const selectedDate = new Date(date);
+    const selectedDate = new Date(finalDate);
     selectedDate.setDate(selectedDate.getDate() + 1);
     const tomorrow = selectedDate.toISOString().split('T')[0];
 
-    const startDate = date + 'T00:00:00';
+    const startDate = finalDate + 'T00:00:00';
     const endDate = tomorrow + 'T00:00:00';
 
     const body = {
@@ -275,7 +292,7 @@ function Overview() {
   ] = useState(0);
   const getviewcaptureprogress = async () => {
     try {
-      const response = store && date && (await storeviewcaptureprogress(date, store));
+      const response = store && finalDate && (await storeviewcaptureprogress(finalDate, store));
 
       console.log(response);
       setstoreviewcaptureprogres(response.captureProgress);
@@ -286,7 +303,7 @@ function Overview() {
   useEffect(() => {
     getviewcaptureprogress();
     //eslint-disable-next-line
-  }, [testfullness7days, date, store]);
+  }, [testfullness7days, finalDate, store]);
   useEffect(() => {
     getviewcaptureprogress();
     //eslint-disable-next-line
@@ -388,7 +405,7 @@ function Overview() {
   useEffect(() => {
     if (isMounted) {
       const commonBody = {
-        start_date: date,
+        start_date: finalDate,
         storeId: store
       };
       // const popBody = {
@@ -524,7 +541,7 @@ function Overview() {
       //eslint-disable-next-line
       async function getAssociateScore() {
         const body = {
-          date: date,
+          date: finalDate,
           store_id: store
         };
         console.log('Body', body);
@@ -549,7 +566,7 @@ function Overview() {
     }
 
     // eslint-disable-next-line
-  }, [date]);
+  }, [finalDate]);
   // console.log('Anomalies ', anomaliesCount);
   // const handleOpenCameraView = () => {
   //   setIsCamOpen(true);
@@ -560,7 +577,7 @@ function Overview() {
 
   useEffect(() => {
     console.log('date from dasda', date);
-  }, [date]);
+  }, [finalDate]);
 
   const [
     // osascore,
@@ -572,7 +589,7 @@ function Overview() {
   ] = useState(0);
   const getosascoreforkpi = async () => {
     try {
-      const result = store && date && (await OsaScoreForKpi(date, store));
+      const result = store && finalDate && (await OsaScoreForKpi(finalDate, store));
       console.log(result);
       //   result && console.log("osa score" , result[0].osa_score.avg_osa_score);
       //  result &&  console.log("and the result is", result);
@@ -588,7 +605,7 @@ function Overview() {
   const [anomalycount, setanomalycount] = useState(null);
   const getanomalydetails = async () => {
     try {
-      const res = store && date && (await storeanomalycount(date, store));
+      const res = store && finalDate && (await storeanomalycount(finalDate, store));
       res && setanomalycount(res);
       setAnomaliesLoading(false);
       res && console.log('tty', res);
@@ -601,13 +618,13 @@ function Overview() {
   useEffect(() => {
     getanomalydetails();
     //eslint-disable-next-line
-  }, [date, store]);
+  }, [finalDate, store]);
 
   const [associatescore, setassociatescore] = useState([]);
   const getassociatescore = async () => {
     try {
       const category = 'fragrances';
-      const result = store && date && (await associatescoreaforkpi(date, store, category));
+      const result = store && finalDate && (await associatescoreaforkpi(finalDate, store, category));
       console.log('assocaite score kpi', result);
       setassociatescore(result);
       result && result.length > 0 && console.log('result', result[0].osa_score);
@@ -619,8 +636,8 @@ function Overview() {
   const [brandwiseosaandtester_tester, setbrandwiseosaandtester_tester] = useState([]);
   const getbrandwiseosaandtesterscore = async () => {
     try {
-      const result1 = store && date && (await brandWiseOsaAndTesterScore(date, store));
-      const result2 = store && date && (await brandWiseOsaAndTesterScore(date, store));
+      const result1 = store && finalDate && (await brandWiseOsaAndTesterScore(finalDate, store));
+      const result2 = store && finalDate && (await brandWiseOsaAndTesterScore(finalDate, store));
       console.log('getbrandwiseosaandtesterscore score kpi', result1);
       result1 && result1.length > 0 && result1.sort((a, b) => a.OSA_Score - b.OSA_Score);
       setbrandwiseosaandtester_osa(result1);
@@ -638,7 +655,7 @@ function Overview() {
     getbrandwiseosaandtesterscore();
     // getanomalydetails();
     //eslint-disable-next-line
-  }, [store, date]);
+  }, [store, finalDate]);
 
   //eslint-disable-next-line
   const [capture7day, setcapture7day] = useState(null);
@@ -662,7 +679,7 @@ function Overview() {
             <Typography variant="h3">Overview </Typography>
             {storeID ? <Typography variant="h6">Store ID: {storeID}</Typography> : <></>}
             <div className="flex space-x-2 sm:mt-2">
-              <DatePickerStore SetSelectedDate={setSelectedDate} style={{ borderRadius: '15px' }} />
+              {/* <DatePickerStore SetSelectedDate={setSelectedDate} style={{ borderRadius: '15px' }} /> */}
               <div>
                 <button
                   onClick={isDownloading ? null : handleDownload}
@@ -1160,7 +1177,7 @@ function Overview() {
                   Osa7days={Osa7days}
                   testfullness7days={testfullness7days}
                   storeId={store}
-                  date={date}
+                  date={finalDate}
                   groups={isGroup}
                   activeButton={activeButton}
                   handleButtonClick={handleButtonClick}

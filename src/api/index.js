@@ -624,7 +624,7 @@ export const createUser = async (user) => {
 
 export const GetVerifiedUsers = async (phoneNumber) => {
   try {
-    const res = await axios.get(`https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/mob_api/check_userid?number=${phoneNumber}`, {
+    const res = await axios.get(`https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/mob_api/check_userid?number=${phoneNumber}`, {
       headers: {
         Accept: 'application/json'
       }
@@ -799,13 +799,13 @@ export const associatescoreaforkpi = async (date, store, category) => {
   }
 };
 
-export const brandWiseOsaAndTesterScore = async (date, store) => {
+export const brandWiseOsaAndTesterScore = async (finalDate, store) => {
   try {
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/brand-wise-score';
     const data = {
       store_id: String(store),
       // store_id:"6623a893c40c738627f3373f",
-      date: String(date)
+      date: finalDate
       // date:"2024-06-13"
     };
 
@@ -868,6 +868,26 @@ export const getZonedetails = async (data) => {
         headers: {
           Accept: 'application/json',
           Authorization: await token()
+        }
+      }
+    );
+    console.log('aur', response.data);
+    // const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.id }));
+    return response;
+  } catch (error) {
+    console.log('Error Calling GetZonedetails API: ', error);
+  }
+};
+
+export const GetSingleBrandDetails = async (data) => {
+  try {
+    const response = await axios.post(
+      'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/brand/get-single-brand-info',
+      data,
+      {
+        headers: {
+          Accept: 'application/json',
+          // Authorization: await token()
         }
       }
     );
