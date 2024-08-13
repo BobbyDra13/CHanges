@@ -886,7 +886,7 @@ export const GetSingleBrandDetails = async (data) => {
       data,
       {
         headers: {
-          Accept: 'application/json',
+          Accept: 'application/json'
           // Authorization: await token()
         }
       }

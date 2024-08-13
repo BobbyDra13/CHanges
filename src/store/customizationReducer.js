@@ -12,7 +12,7 @@ export const initialState = {
     lat: '',
     lng: ''
   },
-  selectedDate: new Date(),
+  selectedDate: new Date()
 };
 const customizationReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -36,12 +36,12 @@ const customizationReducer = (state = initialState, action) => {
         ...state,
         analysisStoreDetails: action.analysisStoreDetails
       };
-      case 'selectedDate':
-        console.log("state", action.payload);
-        return {
-          ...state,
-          selectedDate: action.payload
-        };
+    case 'selectedDate':
+      console.log('state', action.payload);
+      return {
+        ...state,
+        selectedDate: action.payload
+      };
     default:
       return state;
   }

@@ -79,20 +79,20 @@ const Insights = () => {
   const accentColLight = theme.palette.success.light;
   const accentColMain = theme.palette.success.main;
 
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const toLocalDateString = (date) => {
     const tzOffset = date.getTimezoneOffset() * 60000; // offset in milliseconds
     const localISOTime = new Date(date.getTime() - tzOffset).toISOString().slice(0, 10);
     return localISOTime;
   };
-  
+
   // const selectedDate = useSelector((state) => state.customization.selectedDate)
   // .toISOString()
   // .slice(0, 10);
 
   const selectedDate = toLocalDateString(useSelector((state) => state.customization.selectedDate));
 
-  console.log("getDate", selectedDate);
+  console.log('getDate', selectedDate);
 
   const { selectOptions } = histogramChartRequirements;
   const [selected, setSelected] = useState(selectOptions[0].value);
@@ -142,7 +142,7 @@ const Insights = () => {
       user_id: '66795cbe1d905892a4256692'
     };
     try {
-      console.log("sel", selectedDate);
+      console.log('sel', selectedDate);
       const res = selectedDate && (await OsaScoreMultistoreSevenday(data));
       const res2 = selectedDate && (await testerPercentSevenDayMultistore(data1));
       const res3 = selectedDate && (await seven_day_anomalies(data));
