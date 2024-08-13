@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import { ChevronLeftRounded, ChevronRightRounded } from '@mui/icons-material';
+import { ImCross } from 'react-icons/im';
 import Grid from '@mui/material/Grid';
 import {
   Box,
@@ -149,7 +151,7 @@ export default function ShelfView({ date, groups }) {
   }
 
   function handleImageClick(anomaly) {
-    console.log('i am clicked');
+    console.log('i am clicked', isImageDialogOpen);
     console.log('anomaly', anomaly);
     if (antn) {
       setPos({ lft: false, tp: false, wdth: false, ht: false });
@@ -157,6 +159,7 @@ export default function ShelfView({ date, groups }) {
     }
     // setPosArr([]);
     if (!isImageDialogOpen) {
+      console.log('i am clicked inside', isImageDialogOpen);
       // setCdata(anomaly);
       setBrandsLoadData(anomaly);
       // setSelectedImage(url);
@@ -164,8 +167,10 @@ export default function ShelfView({ date, groups }) {
       // getAnomalyDetails(id);
       // setAnomalyType(type);
       // setTimestamps({ date: formattedDate, time: formattedTime });
+      // setIsImageDialogOpen(true);
     }
-    setIsImageDialogOpen(!isImageDialogOpen);
+    setIsImageDialogOpen(true);
+
     setImageLoading(false);
     // setLoadDialog(!loadDialog)
     // setLoadDialog(!loadDialog);
@@ -228,7 +233,13 @@ export default function ShelfView({ date, groups }) {
     // setActive(Zonedata[0].name);
     // zoneDetails(Zonedata[0].id);
   };
-
+  // console.log("i am clicked also");
+  const handleCloseImageDialog = () => {
+    setPos({ lft: false, tp: false, wdth: false, hght: false });
+    setAntn(false);
+    // console.log("i am clicked also");
+    setIsImageDialogOpen(false);
+  };
   const GetBrandWiseDetails = async (brand_id) => {
     try {
       console.log('brand_id', brand_id);
@@ -517,6 +528,8 @@ export default function ShelfView({ date, groups }) {
   console.log('y76', isBrandName);
   console.log('brands loaded', brandsLoadData);
 
+  console.log('brandsss', brands);
+
   const brandNames = Array.isArray(isBrandData) && isBrandData.length > 0 ? isBrandData.map((d) => d?.brand_name || '') : [];
   //   if (Array.isArray(data) && data.length > 0) {
   //     data.forEach((d, index) => {
@@ -677,30 +690,30 @@ export default function ShelfView({ date, groups }) {
               md={8}
               sm={8.6}
               style={{ height: '460px', marginBottom: '50px', overflowY: 'scroll', marginTop: '35px' }}
-              className="scrollbar inline-block "
+              className="inline-block w-[550px]"
             >
               {/* <Grid item md={12} sm={12} key={index}> */}
-              <Slider {...settings} className="w-[800px] h-[400px]">
+              <Slider {...settings} className="w-[600px] h-[400px]">
                 {data && data.length > 0 ? (
                   data.map((item, index) => {
-                    const highlightStyle3 = {
-                      position: 'absolute',
-                      left: `${posarr[index] ? posarr[index].lft : '0'}%`,
-                      top: `${posarr[index] ? posarr[index].tp : '0'}%`,
-                      width: `${posarr[index] ? posarr[index].wdth : '0'}%`,
-                      height: `${posarr[index] ? posarr[index].hght : '0'}%`,
-                      border: '1px solid red', // Change border color as desired
-                      boxSizing: 'border-box',
-                      pointerEvents: 'none', // So clicks can still interact with the image
-                      backgroundColor: 'rgba(255, 0, 0, 0.6)',
-                      borderRadius: '5px'
-                    };
+                    // const highlightStyle3 = {
+                    //   position: 'absolute',
+                    //   left: `${posarr[index] ? posarr[index].lft : '0'}%`,
+                    //   top: `${posarr[index] ? posarr[index].tp : '0'}%`,
+                    //   // width: `${posarr[index] ? posarr[index].wdth : '0'}%`,
+                    //   height: `${posarr[index] ? posarr[index].hght : '0'}%`,
+                    //   border: '1px solid red', // Change border color as desired
+                    //   boxSizing: 'border-box',
+                    //   pointerEvents: 'none', // So clicks can still interact with the image
+                    //   backgroundColor: 'rgba(255, 0, 0, 0.6)',
+                    //   borderRadius: '5px'
+                    // };
                     return (
                       <>
-                        <Grid item md={12} sm={12} key={index} style={{ marginBottom: '10px' }} className="flex">
+                        <Grid item key={index} style={{ marginBottom: '10px' }} className="w-full flex">
                           {item.img_url ? (
-                            <div className="flex w-full h-full justify-around">
-                              <div className=" h-full relative">
+                            <div className="flex w-full h-full">
+                              <div className="h-full relative">
                                 <img
                                   key={index}
                                   // style={{ width: '100%', height:objectFit: 'cover' }}
@@ -712,27 +725,31 @@ export default function ShelfView({ date, groups }) {
                                   // onLoad={findDimensionss}
                                   // onLoad={handleImageLoad(index)}
                                   // style={{ height: '80%', width: '100%', borderRadius: '7px', cursor: 'pointer' }}
-                                  onClick={() => GetBrandWiseDetails(item.brand_id)}
+                                  onClick={() => {
+                                    // setIsImageDialogOpen(true);
+                                    console.log('i am clicked too');
+                                    GetBrandWiseDetails(item.brand_id);
+                                  }}
                                 />
                                 {/* {antn && <div style={highlightStyle3}></div>} */}
                               </div>
-                              <div style={{ width: '50%', padding: '7px' }}>
+                              <div className="ml-3" style={{ padding: '7px' }}>
                                 <Typography variant="h3" className="">
                                   {/* {details.store_id} - {details.store_name} */}
                                   {item.brand_name}
                                 </Typography>
                                 <Divider />
-                                <Typography paddingBottom={1.5} width={'100%'} variant="h3">
+                                <Typography paddingBottom={1.5} width={'100%'} variant="h5">
                                   {/* / {details.bay_id} / {details.shelf_id} */} Bay ID : {item.bay_id}
                                 </Typography>
-                                <Typography width={'100%'} variant="h3">
+                                <Typography width={'100%'} variant="h5">
                                   Date & Time of Capture
                                 </Typography>
                                 {/* <Divider /> */}
                                 <Typography paddingBottom={1.5} width={'100%'} variant="h5">
                                   {formatDate(item.timestamp)}
                                 </Typography>
-                                <Typography width={'100%'} variant="h3">
+                                <Typography width={'100%'} variant="h5">
                                   Anomalies
                                 </Typography>
                                 <Divider />
@@ -799,26 +816,26 @@ export default function ShelfView({ date, groups }) {
                                           </Tooltip>
                                         ) : (
                                           <Tooltip
-                                            // key={0 + ind}
-                                            // title={
-                                            //   <div>
-                                            //     {console.log(itm, ind)}
-                                            //     <Typography variant="body1">
-                                            //       Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
-                                            //     </Typography>
-                                            //     <Typography variant="body1">
-                                            //       <span>Description :</span>
-                                            //       {itm.anomaly_type === 'alien_pop'
-                                            //         ? itm.print_tag
-                                            //           ? itm.print_tag
-                                            //           : 'No Data Found'
-                                            //         : itm.article_description
-                                            //         ? itm.article_description
-                                            //         : 'No Data Found'}
-                                            //     </Typography>
-                                            //     <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
-                                            //   </div>
-                                            // }
+                                          // key={0 + ind}
+                                          // title={
+                                          //   <div>
+                                          //     {console.log(itm, ind)}
+                                          //     <Typography variant="body1">
+                                          //       Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
+                                          //     </Typography>
+                                          //     <Typography variant="body1">
+                                          //       <span>Description :</span>
+                                          //       {itm.anomaly_type === 'alien_pop'
+                                          //         ? itm.print_tag
+                                          //           ? itm.print_tag
+                                          //           : 'No Data Found'
+                                          //         : itm.article_description
+                                          //         ? itm.article_description
+                                          //         : 'No Data Found'}
+                                          //     </Typography>
+                                          //     <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
+                                          //   </div>
+                                          // }
                                           >
                                             <Box
                                               key={ind}
@@ -852,7 +869,7 @@ export default function ShelfView({ date, groups }) {
                                   )}
                                 </div>
                                 <Divider />
-                                <Typography width={'100%'} variant="h3">
+                                <Typography width={'100%'} variant="h5">
                                   Team
                                 </Typography>
                                 {/* <Divider /> */}
@@ -891,11 +908,11 @@ export default function ShelfView({ date, groups }) {
                       </div>
                       </div> */}
                               </div>
-                              <div className="w-fit">
+                              {/* <div className="w-fit">
                                 <Typography variant="h3">OSA Score: {item.OSA_Score}%</Typography>
                                 <Typography variant="h3">Tester Score: {item.testers_score}%</Typography>
                                 <Typography variant="h3">Category: {item.category}</Typography>
-                              </div>
+                              </div> */}
                             </div>
                           ) : (
                             <div className="flex w-full h-full">
@@ -935,15 +952,20 @@ export default function ShelfView({ date, groups }) {
           <l-bouncy size="45" speed="1" color="black"></l-bouncy>
         </div>
       ) : (
-        <Dialog maxWidth={600} fullScreen={isSmallScreen ? true : false} open={isImageDialogOpen} onClose={handleImageClick}>
+        <Dialog
+          fullScreen
+          open={isImageDialogOpen}
+          PaperProps={{
+            sx: {
+              width: '100%',
+              maxHeight: '1300px',
+              background: 'rgba(0, 0, 0, 0.8)',
+              boxShadow: 'none'
+            }
+          }}
+        >
           {nextClickLoad ? (
-            <DialogContent
-              style={{
-                minHeight: '500px',
-                width: 'full',
-                height: 'full'
-              }}
-            >
+            <DialogContent className="w-full h-full flex justify-center relative overflow-hidden">
               <div
                 style={{
                   width: '90vw',
@@ -959,38 +981,51 @@ export default function ShelfView({ date, groups }) {
               </div>
             </DialogContent>
           ) : (
-            <DialogContent>
+            <DialogContent className="w-full h-full flex justify-center relative overflow-hidden">
+              {/* <ChevronLeftRounded
+                    onClick={handlePrevPart}
+                    className="text-gray-400 opacity-100 hover:opacity-100 text-7xl absolute z-10 cursor-pointer lg:left-[2%] top-[45%] left-0"
+                    onKeyDown={handleKeyDownPart}
+                    tabIndex="0"
+                  />
+                  <ChevronRightRounded
+                    onClick={handleNextPart}
+                    className="text-gray-400 opacity-100 hover:opacity-100 text-7xl absolute z-10 cursor-pointer lg:right-[2%] top-[45%] right-0"
+                    onKeyDown={handleKeyDownPart}
+                    tabIndex="0"
+                  /> */}
               {/* {anomalyDetails.length > 0 && */}
-              {isImageDialogOpen && (
-                // updatedData[0].allAnomalies.map((details, index) => (
-                <div className="zoom-container ">
-                  <div className="image-container flex justify-center items-center lg:mb-0 mb-10 relative">
-                    <TransformWrapper>
-                      <div className="image-wrapper rounded-md md:w-full w-4/5">
-                        <TransformComponent>
-                          {imageLoading && (
-                            <div className="flex justify-center items-center absolute top-0 left-0 z-10  overflow-x-hidden bg-white w-full h-full">
-                              <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
-                            </div>
-                          )}
-                          <div
-                            style={{ position: 'relative' }}
-                            onMouseOver={() => {
-                              setNextbtn(true);
-                            }}
-                            onMouseOut={() => {
-                              setNextbtn(false);
-                            }}
-                          >
-                            <img
-                              className="image rounded-md"
-                              src={brands[0].img_url}
-                              alt="No img found"
-                              onLoad={findDimensions}
-                              ref={imageRef}
-                            />
+              <div className="self-center ">
+                <ImCross
+                  onClick={handleImageClick}
+                  className="z-20 text-lg cursor-pointer text-white opacity-60 hover:opacity-100 absolute"
+                  style={{
+                    right: '4%',
+                    top: '4%'
+                  }}
+                />
+                {isImageDialogOpen && (
+                  // updatedData[0].allAnomalies.map((details, index) => (
+                  <div className="zoom-container ">
+                    <div className="image-container flex justify-center items-center lg:mb-0 mb-10 relative">
+                      <TransformWrapper>
+                        <div className="image-wrapper rounded-md md:w-full w-4/5">
+                          <TransformComponent>
+                            {imageLoading && (
+                              <div className="flex justify-center items-center absolute top-0 left-0 z-10  overflow-x-hidden bg-white w-full h-full">
+                                <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
+                              </div>
+                            )}
+                            <div className="w-full h-full relative">
+                              <img
+                                className="self-center lg:max-h-[95vh] lg:max-w-[95vw] max-h-[80vh] md:max-h-[85vh] mt-10 md:mt-0 text-white"
+                                src={brands[0].img_url}
+                                alt="No img found"
+                                onLoad={findDimensions}
+                                ref={imageRef}
+                              />
 
-                            {/* {nextBtn && (
+                              {/* {nextBtn && (
                                 <>
                                   <IconButton
                                     className="absolute top-1/2 right-0"
@@ -1021,40 +1056,83 @@ export default function ShelfView({ date, groups }) {
                                 </>
                               )} */}
 
-                            {antn !== 0 && <div style={antn === 1 ? highlightStyle : highlightStyle2}></div>}
-                          </div>
+                              {antn !== 0 && <div style={antn === 1 ? highlightStyle : highlightStyle2}></div>}
+                            </div>
 
-                          {/* <ImageListItemBar title={`Date: ${timestamps?.date}`} subtitle={`Time: ${timestamps?.time}`} /> */}
-                        </TransformComponent>
-                      </div>
-                    </TransformWrapper>
-                  </div>
-
-                  <div className="md:w-[30vw] md:ml-[1.5vw] h-[80vh] flex flex-col w-full">
-                    <div className="flex-grow flex flex-col space-y-1.5 overflow-y-auto scrollbar">
-                      <div className="w-full flex justify-between place-items-center">
-                        <Typography variant="h3" className="">
-                          {/* {details.store_id} - {details.store_name} */}
-                          {brands[0].bay_id} - {brands[0].bay_info.brand_name}
-                        </Typography>
-                        <button onClick={handleImageClick} className="md:static absolute top-5 right-5 ">
-                          <IoIosClose className="md:text-4xl text-2xl" />
-                        </button>
-                      </div>
-                      <Divider />
-                      <Typography width={'100%'} variant="h3">
+                            {/* <ImageListItemBar title={`Date: ${timestamps?.date}`} subtitle={`Time: ${timestamps?.time}`} /> */}
+                          </TransformComponent>
+                        </div>
+                      </TransformWrapper>
+                    </div>
+                    <div
+                      className=" text-xl cursor-pointer text-white absolute hidden xl:block"
+                      style={{
+                        left: '4%',
+                        top: '3%'
+                      }}
+                    >
+                      <Typography variant="h3" className="text-white">
+                        {brands[0].bay_id} - {brands[0].bay_info.brand_name}
+                      </Typography>
+                    </div>
+                    <div
+                      className=" text-xl cursor-pointer text-white absolute hidden xl:block"
+                      style={{
+                        left: '4%',
+                        top: '20%'
+                      }}
+                    >
+                      <Typography variant="h3" className="text-white">
                         Date & Time of Capture
                       </Typography>
-                      <Typography paddingBottom={1.5} width={'100%'} variant="h5">
+                      <Divider color="white" className="mb-2" />
+                      <Typography variant="h5" className="text-white">
                         {formatDate(data.map((itm) => itm.timestamp))}
                       </Typography>
-                      <Divider />
-                      <Typography width={'100%'} variant="h3">
+                    </div>
+                    <div
+                      className=" text-xl cursor-pointer text-white absolute hidden xl:block"
+                      style={{
+                        left: '4%',
+                        top: '35%'
+                      }}
+                    >
+                      <Typography variant="h3" className="text-white">
+                        OSA Score: {brands[0].OSA_Score}%
+                      </Typography>
+                      <Typography variant="h3" className="text-white">
+                        Tester Score: {brands[0].testers_score}%{' '}
+                      </Typography>
+                      <Typography variant="h3" className="text-white">
+                        Category: {brands[0].category}
+                      </Typography>
+                    </div>
+                    <div
+                      className=" text-xl cursor-pointer text-white absolute xl:block hidden"
+                      style={{
+                        left: '4%',
+                        bottom: '3%'
+                      }}
+                    >
+                      <Typography variant="h3" className="text-white">
+                        Name: {brands[0].user[0].name}
+                      </Typography>
+                      <Typography variant="h3" className="text-white">
+                        Number: {brands[0].user[0].number}
+                      </Typography>
+                    </div>
+                    <div
+                      className=" text-xl cursor-pointer text-white absolute hidden xl:block"
+                      style={{
+                        right: '4%',
+                        top: '20%'
+                      }}
+                    >
+                      <Typography variant="h3" className="text-white">
                         Anomalies
                       </Typography>
-                      <Divider />
-
-                      <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
+                      <Divider color="white" className="mb-2" />
+                      <div className="flex flex-wrap gap-2 w-80">
                         {anomalyType === 'color_assortment' ? (
                           <Box
                             paddingX={0.2}
@@ -1068,11 +1146,6 @@ export default function ShelfView({ date, groups }) {
                             </Typography>
                           </Box>
                         ) : (
-                          // cData.anomaly_details.map((item, index) =>
-
-                          // brands[0].shelves.map(
-                          //   (itm, ind) =>
-                          // itm.shelves.coords && (
                           brands &&
                           brands.length > 0 &&
                           brands[0].shelves &&
@@ -1169,91 +1242,10 @@ export default function ShelfView({ date, groups }) {
                           // )
                         )}
                       </div>
-                      <Divider />
-                      <Typography width={'100%'} variant="h3">
-                        Team
-                      </Typography>
-                      <div style={{ paddingBottom: 13 }} className="w-full flex justify-start">
-                        <AvatarGroup
-                          sx={{
-                            '& .MuiAvatar-root': { width: 40, height: 40, fontSize: 24 }
-                          }}
-                          max={2}
-                        >
-                          <Tooltip
-                            title={
-                              <div className="w-[200px] p-2 flex flex-col space-y-2">
-                                <Typography sx={{ width: '100%', color: 'white' }} variant="h6">
-                                  Agent Details
-                                </Typography>
-                                <Typography variant="subtitle2">Name: {brands[0].user[0].name}</Typography>
-                                <Typography variant="subtitle2">Number: {brands[0].user[0].number}</Typography>
-                              </div>
-                            }
-                            enterTouchDelay={1}
-                            leaveTouchDelay={100000}
-                          >
-                            <Avatar
-                              className="hover:cursor-pointer"
-                              sx={{ bgcolor: success }}
-                              alt={brands[0].user[0].name}
-                              src="/example.jpg"
-                            />
-                          </Tooltip>
-                        </AvatarGroup>
-                      </div>
-                      <Divider />
-                      <div className="w-fit">
-                        <Typography variant="h3">OSA Score: {brands[0].OSA_Score}%</Typography>
-                        <Typography variant="h3">Tester Score: {brands[0].testers_score}%</Typography>
-                        <Typography variant="h3">Category: {brands[0].category}</Typography>
-                      </div>
-                      <Divider />
-                      <Typography sx={{ paddingBottom: 1 }} width={'100%'} variant="h3">
-                        Comments
-                      </Typography>
-                      {/* <Divider /> */}
-                      <TextField
-                        // sx={{ paddingTop: 2 }}
-                        id="outlined-textarea"
-                        label="Add a comment"
-                        placeholder="Give your Comments"
-                        multiline
-                        rows={4}
-                        onChange={(e) => setMsg(e.target.value)}
-                      />
-                      {/* <Divider /> */}
-                    </div>
-                    <div className="w-full bg-white mt-5 flex flex-row-reverse gap-3">
-                      <button
-                        className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 border-2 border-gray-300 flex align-middle justify-center"
-                        // onClick={() => handleIgnored()}
-                      >
-                        {/* {ignoreLoad && <CgSpinner className="animate-spin" />} */}
-                        <Typography className="text-gray-400">Ignore</Typography>
-                      </button>
-                      <button
-                        className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 flex align-middle justify-center"
-                        // style={{ backgroundColor: success }}
-                        style={{ backgroundColor: success }}
-                        // onClick={() => handleSolved()}
-                      >
-                        {/* {solvedLoad && <CgSpinner className="animate-spin" />} */}
-                        <Typography color={'white'}>Solved</Typography>
-                      </button>
-
-                      <button
-                        className="lg:rounded-full rounded-xl md:w-[125px]  text-lg lg:text-2xl p-2.5 flex align-middle justify-center"
-                        style={{ backgroundColor: error }}
-                        // onClick={() => handelAlertClick()}
-                        // style={{ backgroundColor: '#fca5a5' }}
-                      >
-                        <Typography color={'white'}>Alert Store</Typography>
-                      </button>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </DialogContent>
           )}
         </Dialog>

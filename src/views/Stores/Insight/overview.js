@@ -175,7 +175,7 @@ function Overview() {
     const localISOTime = new Date(date.getTime() - tzOffset).toISOString().slice(0, 10);
     return localISOTime;
   };
-  
+
   // const selectedDate = useSelector((state) => state.customization.selectedDate)
   // .toISOString()
   // .slice(0, 10);

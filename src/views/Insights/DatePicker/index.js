@@ -52,7 +52,7 @@ function DatePickerComp() {
 
   const dispatch = useDispatch();
   const selectedDate = useSelector((state) => state.customization.selectedDate);
-  console.log("ttt", selectedDate);
+  console.log('ttt', selectedDate);
 
   useEffect(() => {
     async function getEventsdata() {
@@ -67,16 +67,16 @@ function DatePickerComp() {
       // };
       try {
         const Edata = await GetInsightsDates(body);
-        console.log("Edata", Edata.data[0].dates);
+        console.log('Edata', Edata.data[0].dates);
         const dateArray = Edata.data[0].dates;
 
         const daysOnly = dateArray.map((item) => {
-          console.log("eventdate", item);
+          console.log('eventdate', item);
           const eventdate = new Date(item);
-          console.log("eventdate11", eventdate);
+          console.log('eventdate11', eventdate);
           return eventdate;
         });
-        console.log("daysonly",daysOnly);
+        console.log('daysonly', daysOnly);
         setEvents(daysOnly);
         // setIsLoading(false)
       } catch (error) {

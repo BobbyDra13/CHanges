@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
-import React, {useState} from 'react';
+import React from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
-import { Box, Grid, IconButton, Stack, Typography, useMediaQuery, Button } from '@mui/material';
+import { Box, Grid, IconButton, Typography, useMediaQuery } from '@mui/material';
 
 // third party
 
@@ -43,7 +43,6 @@ const Header = ({ drawerToggle }) => {
   }
   const ftypeget = useSelector((state) => state.customization.flType);
   console.log('all filter data is', ftypeget);
-
 
   return (
     <>
@@ -162,13 +161,13 @@ const Header = ({ drawerToggle }) => {
       {/* <NotificationSection /> */}
       {/* <DatePickerComp /> */}
       <Box sx={{ marginBottom: isMobile ? 2 : 0, position: 'relative' }} className="calendar">
-          {' '}
-          {/* Adjust margin for mobile view */}
-          {/* {!showDatePicker && (
+        {' '}
+        {/* Adjust margin for mobile view */}
+        {/* {!showDatePicker && (
              <Tooltip title={'calender is not active for this page'}> <div className='cursor-not-allowed' style={{position:"absolute", height:"50px", width:'230px',zIndex:"10000", top:'-5px'}}></div></Tooltip>
             )}  */}
-          <DatePickerComp />
-        </Box>
+        <DatePickerComp />
+      </Box>
       <ProfileSection />
     </>
   );
