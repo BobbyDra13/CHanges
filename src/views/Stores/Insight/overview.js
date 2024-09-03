@@ -30,7 +30,6 @@ import { avgDwelTime } from '../../../api/sentinelAPI';
 import { getRatio } from 'api/sentinelAPI';
 // import NoDataImg from '../../../assets/images/No_data-amico.svg';
 // import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
-import DatePickerStore from './Calendar';
 // import UpdateIcon from '@mui/icons-material/Update';
 // import Uniquejourney from './KPICards/Uniquejourney';
 // import DonutChart from './TrendsViewCharts/DonutChart';
@@ -73,7 +72,7 @@ import { useSelector } from 'react-redux';
 function Overview() {
   const urlParams = new URLSearchParams(window.location.search);
   const data = Object.fromEntries(urlParams.entries());
-  const value = JSON.stringify(data).substring(2, 12);
+  // const value = JSON.stringify(data).substring(2, 12);
   const storeID = JSON.stringify(data).substring(16, 20);
 
   // console.log(JSON.stringify(data));
@@ -140,14 +139,25 @@ function Overview() {
     setActiveButton(button);
   };
 
-  function padTo2Digits(num) {
-    return num.toString().padStart(2, '0');
-  }
-  const customDate = new Date();
-  const finalCustomDate = data
-    ? value
-    : [customDate.getFullYear(), padTo2Digits(customDate.getMonth() + 1), padTo2Digits(customDate.getDate())].join('-');
-  const [date, setSelectedDate] = useState(finalCustomDate);
+  // function padTo2Digits(num) {
+  //   return num.toString().padStart(2, '0');
+  // }
+  // const customDate = new Date();
+  // const finalCustomDate = data
+  //   ? value
+  //   : [customDate.getFullYear(), padTo2Digits(customDate.getMonth() + 1), padTo2Digits(customDate.getDate())].join('-');
+  // const [date] = useState(finalCustomDate);
+  const toLocalDateString = (date) => {
+    const tzOffset = date.getTimezoneOffset() * 60000; // offset in milliseconds
+    const localISOTime = new Date(date.getTime() - tzOffset).toISOString().slice(0, 10);
+    return localISOTime;
+  };
+
+  // const selectedDate = useSelector((state) => state.customization.selectedDate)
+  // .toISOString()
+  // .slice(0, 10);
+
+  const selectedDate = toLocalDateString(useSelector((state) => state.customization.selectedDate));
   //eslint-disable-next-line
   const [empCount, setEmpCount] = useState('');
   //eslint-disable-next-line
@@ -170,22 +180,9 @@ function Overview() {
   // .toISOString()
   // .slice(0, 10);
 
-  const toLocalDateString = (date) => {
-    const tzOffset = date.getTimezoneOffset() * 60000; // offset in milliseconds
-    const localISOTime = new Date(date.getTime() - tzOffset).toISOString().slice(0, 10);
-    return localISOTime;
-  };
-
-  // const selectedDate = useSelector((state) => state.customization.selectedDate)
-  // .toISOString()
-  // .slice(0, 10);
-
-  const selectedDates = toLocalDateString(useSelector((state) => state.customization.selectedDate));
-  const finalDate = selectedDates;
-
-  const get7daysdata = async (finalDate) => {
+  const get7daysdata = async (selectedDate) => {
     try {
-      const result = store && finalDate && (await getsevendaydata(finalDate, store));
+      const result = store && selectedDate && (await getsevendaydata(selectedDate, store));
       console.log('st', store);
       console.log('result from get7daysdata', result);
       result && setcapture7days(result.capture7days);
@@ -197,13 +194,13 @@ function Overview() {
   };
 
   useEffect(() => {
-    get7daysdata(finalDate);
+    get7daysdata(selectedDate);
     //eslint-disable-next-line
   }, []);
   useEffect(() => {
-    get7daysdata(finalDate);
+    get7daysdata(selectedDate);
     //eslint-disable-next-line
-  }, [finalDate, store]);
+  }, [selectedDate, store]);
   const handleClickAssociateScoreModal = () => {
     setOpenAssociateScoreModal((prev) => !prev);
     setIsSnackbarOpen(false);
@@ -251,11 +248,11 @@ function Overview() {
   const handleDownload = async () => {
     setIsDownloading(true);
 
-    const selectedDate = new Date(finalDate);
-    selectedDate.setDate(selectedDate.getDate() + 1);
-    const tomorrow = selectedDate.toISOString().split('T')[0];
+    const selectedDate2 = new Date(selectedDate);
+    selectedDate2.setDate(selectedDate2.getDate() + 1);
+    const tomorrow = selectedDate2.toISOString().split('T')[0];
 
-    const startDate = finalDate + 'T00:00:00';
+    const startDate = selectedDate + 'T00:00:00';
     const endDate = tomorrow + 'T00:00:00';
 
     const body = {
@@ -292,7 +289,7 @@ function Overview() {
   ] = useState(0);
   const getviewcaptureprogress = async () => {
     try {
-      const response = store && finalDate && (await storeviewcaptureprogress(finalDate, store));
+      const response = store && selectedDate && (await storeviewcaptureprogress(selectedDate, store));
 
       console.log(response);
       setstoreviewcaptureprogres(response.captureProgress);
@@ -303,7 +300,7 @@ function Overview() {
   useEffect(() => {
     getviewcaptureprogress();
     //eslint-disable-next-line
-  }, [testfullness7days, finalDate, store]);
+  }, [testfullness7days, selectedDate, store]);
   useEffect(() => {
     getviewcaptureprogress();
     //eslint-disable-next-line
@@ -405,7 +402,7 @@ function Overview() {
   useEffect(() => {
     if (isMounted) {
       const commonBody = {
-        start_date: finalDate,
+        start_date: selectedDate,
         storeId: store
       };
       // const popBody = {
@@ -541,7 +538,7 @@ function Overview() {
       //eslint-disable-next-line
       async function getAssociateScore() {
         const body = {
-          date: finalDate,
+          date: selectedDate,
           store_id: store
         };
         console.log('Body', body);
@@ -566,7 +563,7 @@ function Overview() {
     }
 
     // eslint-disable-next-line
-  }, [finalDate]);
+  }, [selectedDate]);
   // console.log('Anomalies ', anomaliesCount);
   // const handleOpenCameraView = () => {
   //   setIsCamOpen(true);
@@ -575,9 +572,9 @@ function Overview() {
   // ftfall && ftfall.sort((a, b) => b.totalCustomerZone - a.totalCustomerZone);
   // dweltimeData && dweltimeData.sort((a, b) => b.avgDwellTime - a.avgDwellTime);
 
-  useEffect(() => {
-    console.log('date from dasda', date);
-  }, [finalDate]);
+  // useEffect(() => {
+  //   console.log('date from dasda', date);
+  // }, [finalDate]);
 
   const [
     // osascore,
@@ -589,7 +586,7 @@ function Overview() {
   ] = useState(0);
   const getosascoreforkpi = async () => {
     try {
-      const result = store && finalDate && (await OsaScoreForKpi(finalDate, store));
+      const result = store && selectedDate && (await OsaScoreForKpi(selectedDate, store));
       console.log(result);
       //   result && console.log("osa score" , result[0].osa_score.avg_osa_score);
       //  result &&  console.log("and the result is", result);
@@ -605,7 +602,7 @@ function Overview() {
   const [anomalycount, setanomalycount] = useState(null);
   const getanomalydetails = async () => {
     try {
-      const res = store && finalDate && (await storeanomalycount(finalDate, store));
+      const res = store && selectedDate && (await storeanomalycount(selectedDate, store));
       res && setanomalycount(res);
       setAnomaliesLoading(false);
       res && console.log('tty', res);
@@ -618,13 +615,13 @@ function Overview() {
   useEffect(() => {
     getanomalydetails();
     //eslint-disable-next-line
-  }, [finalDate, store]);
+  }, [selectedDate, store]);
 
   const [associatescore, setassociatescore] = useState([]);
   const getassociatescore = async () => {
     try {
       const category = 'fragrances';
-      const result = store && finalDate && (await associatescoreaforkpi(finalDate, store, category));
+      const result = store && selectedDate && (await associatescoreaforkpi(selectedDate, store, category));
       console.log('assocaite score kpi', result);
       setassociatescore(result);
       result && result.length > 0 && console.log('result', result[0].osa_score);
@@ -636,8 +633,8 @@ function Overview() {
   const [brandwiseosaandtester_tester, setbrandwiseosaandtester_tester] = useState([]);
   const getbrandwiseosaandtesterscore = async () => {
     try {
-      const result1 = store && finalDate && (await brandWiseOsaAndTesterScore(finalDate, store));
-      const result2 = store && finalDate && (await brandWiseOsaAndTesterScore(finalDate, store));
+      const result1 = store && selectedDate && (await brandWiseOsaAndTesterScore(selectedDate, store));
+      const result2 = store && selectedDate && (await brandWiseOsaAndTesterScore(selectedDate, store));
       console.log('getbrandwiseosaandtesterscore score kpi', result1);
       result1 && result1.length > 0 && result1.sort((a, b) => a.OSA_Score - b.OSA_Score);
       setbrandwiseosaandtester_osa(result1);
@@ -655,7 +652,7 @@ function Overview() {
     getbrandwiseosaandtesterscore();
     // getanomalydetails();
     //eslint-disable-next-line
-  }, [store, finalDate]);
+  }, [store, selectedDate]);
 
   //eslint-disable-next-line
   const [capture7day, setcapture7day] = useState(null);
@@ -1163,7 +1160,7 @@ function Overview() {
                 }}
                 style={{ height: '275px' }}
               >
-                <RadarChart storeId={store} date={date} />
+                <RadarChart storeId={store} date={selectedDate} />
               </Card>
             </Grid>
           </Grid>
@@ -1177,7 +1174,7 @@ function Overview() {
                   Osa7days={Osa7days}
                   testfullness7days={testfullness7days}
                   storeId={store}
-                  date={finalDate}
+                  date={selectedDate}
                   groups={isGroup}
                   activeButton={activeButton}
                   handleButtonClick={handleButtonClick}

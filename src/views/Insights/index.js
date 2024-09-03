@@ -17,7 +17,7 @@ import {
 
 // Apex chart import
 import Chart from 'react-apexcharts';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -39,7 +39,6 @@ import {
 //project import
 //eslint-disable-next-line
 import statisticsChartsData from 'data/statistics-charts-data';
-import DatePickerComp from './DatePicker';
 import BrandDonutChart from './BrandDonutChart';
 import BrandChartData from './chart/brand-chart';
 //eslint-disable-next-line
@@ -274,6 +273,7 @@ const Insights = () => {
   };
 
   const [isMounted, setIsMounted] = useState(false);
+  console.log(isMounted);
   useEffect(() => {
     // Set the component to be mounted when the effect is run
     setIsMounted(true);
