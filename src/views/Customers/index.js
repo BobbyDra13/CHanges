@@ -20,11 +20,11 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { useNavigate } from 'react-router-dom';
-import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import './zoom-card-item.css';
 import { bouncy } from 'ldrs';
 import MapComponent from './map';
 import { GetSingleBrandDetails } from 'api';
+import './imageMagnifyer.css';
 // import DatePickerComp from 'views/Insights/DatePicker';
 
 bouncy.register();
@@ -53,8 +53,9 @@ import {
   Snackbar,
   Alert
 } from '@mui/material';
-import { FaAngleDoubleRight } from 'react-icons/fa';
-import { FaAngleDoubleLeft } from 'react-icons/fa';
+import MenuIcon from '@mui/icons-material/Menu';
+import { SlArrowRight } from 'react-icons/sl';
+import { SlArrowLeft } from 'react-icons/sl';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -184,7 +185,23 @@ const Customers = () => {
   const [anomalyType, setAnomalyType] = useState('');
   const [loading, setLoading] = useState(false);
   const [load, setLoad] = useState(false);
-  const [nextClickLoad, setNextClickLoad] = useState(false);
+  const [nextClickLoad] = useState(false);
+  const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const findDimensions2 = (e) => {
+    const { naturalWidth, naturalHeight } = e.target;
+    setImageDimensions({ width: naturalWidth, height: naturalHeight });
+  };
+
+  console.log('imageD', imageDimensions);
   // const [selectedDate, setSelectedDate] = useState(new Date());
   const [clickedBar, setClickedBar] = useState({
     isOSAScore: false,
@@ -192,7 +209,7 @@ const Customers = () => {
     isPog: false
   });
 
-  const [imageLoading, setImageLoading] = useState(false);
+  const [imageLoading] = useState(false);
   const [updatedData, setUpdateddata] = useState([]);
   const [cData, setCdata] = useState(null);
   const [lcData, setLCdata] = useState(false);
@@ -219,8 +236,10 @@ const Customers = () => {
   const [brands, setBrands] = useState(false);
   const [solvedLoad, setSolvedLoad] = useState(false);
   const [ignoreLoad, setIgnoreLoad] = useState(false);
-  const [nextBtn, setNextbtn] = useState(true);
+  const [nextBtn] = useState(true);
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
   const isSmallScreen = !useMediaQuery(theme.breakpoints.up('sm'));
   const success = theme.palette.success.main;
   const successDark = theme.palette.success.dark;
@@ -229,6 +248,7 @@ const Customers = () => {
   const error = theme.palette.error.main;
   const errorDark = theme.palette.error.dark;
   const navigate = useNavigate();
+  console.log(brand, imageDimensions);
   const options = [
     {
       label: 'Analysis',
@@ -266,7 +286,6 @@ const Customers = () => {
   // .slice(0, 10);
 
   const datess = toLocalDateString(useSelector((state) => state.customization.selectedDate));
-  // console.log('datesbabe', datess);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -563,7 +582,7 @@ const Customers = () => {
     // Simulate API call delay
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/get-store-details';
     const data = {
-      user_id: '66795cbe1d905892a4256691',
+      user_id: '66d05c9fe7479092e8f7e8ab',
       // date: new Date().toISOString().split('T')[0]
       date: datess
       // date: '2024-07-10'
@@ -611,7 +630,7 @@ const Customers = () => {
   const imageRef = useRef(null);
   const [antn, setAntn] = useState(0);
   const [pos, setPos] = useState({ lft: false, tp: false, wdth: false, ht: false });
-  const [natural, setNaturel] = useState({ wdth: false, hght: false });
+  const [natural] = useState({ wdth: false, hght: false });
 
   const calculate = (xmin, ymin, xmax, ymax, code) => {
     const lft = (xmin / natural.wdth) * 100;
@@ -622,7 +641,6 @@ const Customers = () => {
     setAntn(code);
     console.log('calcaulte', pos);
   };
-
   const highlightStyle = {
     position: 'absolute',
     left: `${pos.lft}%`,
@@ -649,11 +667,12 @@ const Customers = () => {
     borderRadius: '5px'
   };
 
-  const findDimensions = (event) => {
-    setImageLoading(false);
-    const { naturalWidth, naturalHeight } = event.target;
-    setNaturel({ wdth: naturalWidth, hght: naturalHeight });
-  };
+  // const findDimensions = (event) => {
+  //   setImageLoading(false);
+  //   const { naturalWidth, naturalHeight } = event.target;
+  //   setNaturel({ wdth: naturalWidth, hght: naturalHeight });
+  // };
+  console.log('natural', natural);
   //calling the getStoresData() function
   useEffect(() => {
     getStoresData();
@@ -936,6 +955,7 @@ const Customers = () => {
     // setActive(Zonedata[0].name);
     // zoneDetails(Zonedata[0].id);
   };
+
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   console.log('signedUrlsss', signedUrls);
   return (
@@ -1380,27 +1400,27 @@ const Customers = () => {
                         className="absolute top-1/2 -right-5 z-50" // Adjust the right position
                         style={{
                           fontSize: '30px',
-                          color: 'white',
-                          backgroundColor: 'black',
+                          color: 'black',
+                          backgroundColor: 'white',
                           borderRadius: '50%',
-                          padding: '5px'
+                          padding: '8px'
                         }}
                         onClick={handleNextClick1}
                       >
-                        <FaAngleDoubleRight />
+                        <SlArrowRight />
                       </IconButton>
                       <IconButton
                         className="absolute top-1/2 -left-5 z-50" // Adjust the left position
                         style={{
                           fontSize: '30px',
-                          color: 'white',
-                          backgroundColor: 'black',
+                          color: 'black',
+                          backgroundColor: 'white',
                           borderRadius: '50%',
-                          padding: '5px'
+                          padding: '8px'
                         }}
                         onClick={handlePrevClick1}
                       >
-                        <FaAngleDoubleLeft />
+                        <SlArrowLeft />
                       </IconButton>
                     </>
                   )}
@@ -1483,9 +1503,21 @@ const Customers = () => {
                                   paddingY={0.04}
                                   className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
                                   onMouseOver={() => {
+                                    // itm.anomaly_found > 0 &&
+                                    // calculate(itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
                                     calculate(itm.coords.xmin, itm.coords.ymin, itm.coords.xmax, itm.coords.ymax, 1);
+                                    //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
+                                    // console.log('here', itm.coords);
+                                    // setAntn(true);
                                   }}
                                   onMouseOut={() => {
+                                    // if (antn) {
+                                    //   const arr = [...posarr];
+                                    //   arr[index] = { lft: 0, tp: 0, wdth: 0, ht: 0 };
+                                    //   setposarr(arr);
+                                    //   setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                    //   setAntn(false);
+                                    // }
                                     if (antn) {
                                       setPos({ lft: false, tp: false, wdth: false, ht: false });
                                       setAntn(0);
@@ -1506,9 +1538,21 @@ const Customers = () => {
                                   paddingY={0.04}
                                   className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
                                   onMouseOver={() => {
-                                    calculate(itm.coords.xmin, itm.coords.ymin, itm.coords.xmax, itm.coords.ymax, 2);
+                                    // itm.anomaly_found > 0 &&
+                                    // calculate(itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
+                                    calculate(itm.coords.xmin, itm.coords.ymin, itm.coords.xmax, itm.coords.ymax, 1);
+                                    //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
+                                    // console.log('here', itm.coords);
+                                    // setAntn(true);
                                   }}
                                   onMouseOut={() => {
+                                    // if (antn) {
+                                    //   const arr = [...posarr];
+                                    //   arr[index] = { lft: 0, tp: 0, wdth: 0, ht: 0 };
+                                    //   setposarr(arr);
+                                    //   setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                    //   setAntn(false);
+                                    // }
                                     if (antn) {
                                       setPos({ lft: false, tp: false, wdth: false, ht: false });
                                       setAntn(0);
@@ -1638,21 +1682,8 @@ const Customers = () => {
               </div>
             </DialogContent>
           ) : (
-            <DialogContent className="w-full h-full flex justify-center relative overflow-hidden">
-              {/* <ChevronLeftRounded
-                    onClick={handlePrevPart}
-                    className="text-gray-400 opacity-100 hover:opacity-100 text-7xl absolute z-10 cursor-pointer lg:left-[2%] top-[45%] left-0"
-                    onKeyDown={handleKeyDownPart}
-                    tabIndex="0"
-                  />
-                  <ChevronRightRounded
-                    onClick={handleNextPart}
-                    className="text-gray-400 opacity-100 hover:opacity-100 text-7xl absolute z-10 cursor-pointer lg:right-[2%] top-[45%] right-0"
-                    onKeyDown={handleKeyDownPart}
-                    tabIndex="0"
-                  /> */}
-              {/* {anomalyDetails.length > 0 && */}
-              <div className="self-center ">
+            <DialogContent className="w-full h-full flex justify-center items-start relative overflow-hidden">
+              <div className="self-start ">
                 <ImCross
                   onClick={handleImageClickDialog}
                   className="z-20 text-lg cursor-pointer text-white opacity-60 hover:opacity-100 absolute"
@@ -1663,226 +1694,409 @@ const Customers = () => {
                 />
                 {isImageDialogOpen2 && (
                   // updatedData[0].allAnomalies.map((details, index) => (
-                  <div className="zoom-container ">
-                    <div className="image-container flex justify-center items-center lg:mb-0 mb-10 relative">
-                      <TransformWrapper>
-                        <div className="image-wrapper rounded-md md:w-full w-4/5">
-                          <TransformComponent>
-                            {imageLoading2 && (
-                              <div className="flex justify-center items-center absolute top-0 left-0 z-10  overflow-x-hidden bg-white w-full h-full">
-                                <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
-                              </div>
-                            )}
-                            <div className="w-full h-full relative">
-                              <img
-                                className="self-center lg:max-h-[95vh] lg:max-w-[95vw] max-h-[80vh] md:max-h-[85vh] mt-10 md:mt-0 text-white"
-                                src={brands[0].img_url}
-                                alt="No img found"
-                                onLoad={findDimensions}
-                                ref={imageRef}
-                              />
-
-                              {/* {nextBtn && (
-                                <>
-                                  <IconButton
-                                    className="absolute top-1/2 right-0"
-                                    style={{
-                                      fontSize: '30px',
-                                      color: 'white',
-                                      backgroundColor: 'black',
-                                      borderRadius: '50%',
-                                      padding: '5px'
-                                    }}
-                                    onClick={handleNextClick}
-                                  >
-                                    <FaAngleDoubleRight />
-                                  </IconButton>
-                                  <IconButton
-                                    className="absolute top-1/2 left-0"
-                                    style={{
-                                      fontSize: '30px',
-                                      color: 'white',
-                                      backgroundColor: 'black',
-                                      borderRadius: '50%',
-                                      padding: '5px'
-                                    }}
-                                    onClick={handlePrevClick}
-                                  >
-                                    <FaAngleDoubleLeft />
-                                  </IconButton>
-                                </>
-                              )} */}
-
-                              {antn !== 0 && <div style={antn === 1 ? highlightStyle : highlightStyle2}></div>}
-                            </div>
-
-                            {/* <ImageListItemBar title={`Date: ${timestamps?.date}`} subtitle={`Time: ${timestamps?.time}`} /> */}
-                          </TransformComponent>
-                        </div>
-                      </TransformWrapper>
-                    </div>
-                    <div
-                      className=" text-xl cursor-pointer text-white absolute hidden xl:block"
-                      style={{
-                        left: '4%',
-                        top: '3%'
-                      }}
-                    >
-                      <Typography variant="h3" className="text-white">
-                        {brands[0].bay_id} - {brands[0].bay_info.brand_name}
-                      </Typography>
-                    </div>
-                    <div
-                      className=" text-xl cursor-pointer text-white absolute hidden xl:block"
-                      style={{
-                        left: '4%',
-                        top: '20%'
-                      }}
-                    >
-                      <Typography variant="h3" className="text-white">
-                        Date & Time of Capture
-                      </Typography>
-                      <Divider color="white" className="mb-2" />
-                      <Typography variant="h5" className="text-white">
-                        {formatDate(cData[0].timestamp)}
-                      </Typography>
-                    </div>
-                    <div
-                      className=" text-xl cursor-pointer text-white absolute xl:block hidden"
-                      style={{
-                        left: '4%',
-                        bottom: '3%'
-                      }}
-                    >
-                      <Typography variant="h3" className="text-white">
-                        Name: {brands[0].user[0].name}
-                      </Typography>
-                      <Typography variant="h3" className="text-white">
-                        Number: {brands[0].user[0].number}
-                      </Typography>
-                    </div>
-                    <div
-                      className=" text-xl cursor-pointer text-white absolute hidden xl:block"
-                      style={{
-                        right: '4%',
-                        top: '20%'
-                      }}
-                    >
-                      <Typography variant="h3" className="text-white">
-                        Anomalies
-                      </Typography>
-                      <Divider color="white" className="mb-2" />
-                      <div className="flex flex-wrap gap-2 w-80">
-                        {anomalyType === 'color_assortment' ? (
-                          <Box
-                            paddingX={0.2}
-                            paddingY={0.04}
-                            className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center"
-                          >
-                            <RiErrorWarningLine className="text-4xl mr-0.5 text-purple-500" />
-
-                            <Typography paddingRight={2} variant="h6">
-                              Colour
-                            </Typography>
-                          </Box>
-                        ) : (
-                          brands &&
-                          brands.length > 0 &&
-                          brands[0].shelves &&
-                          brands[0].shelves.map(
-                            (itm, ind) =>
-                              itm.anomaly_type !== '' ? (
-                                <Tooltip key={0 + ind}>
-                                  <Box
-                                    key={ind}
-                                    paddingX={0.2}
-                                    paddingY={0.04}
-                                    className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                    onMouseOver={() => {
-                                      // itm.anomaly_found > 0 &&
-                                      // calculate(itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
-                                      calculate(itm.coords.xmin, itm.coords.ymin, itm.coords.xmax, itm.coords.ymax, 1);
-                                      //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
-                                      // console.log('here', itm.coords);
-                                      // setAntn(true);
-                                    }}
-                                    onMouseOut={() => {
-                                      // if (antn) {
-                                      //   const arr = [...posarr];
-                                      //   arr[index] = { lft: 0, tp: 0, wdth: 0, ht: 0 };
-                                      //   setposarr(arr);
-                                      //   setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                      //   setAntn(false);
-                                      // }
-                                      if (antn) {
-                                        setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                        setAntn(0);
-                                      }
-                                    }}
-                                  >
-                                    {console.log('poppp', itm.coords)}
-                                    <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
-                                    <Typography paddingRight={2} variant="h6">
-                                      {removeAfterLastUnderscore(itm.anomaly_type)}
-                                      {/* {itm.type.map((anomaly) => removeAfterLastUnderscore(anomaly))} */}
-                                    </Typography>
-                                  </Box>
-                                </Tooltip>
-                              ) : (
-                                <Tooltip
-                                  key={0 + ind}
-                                  // title={
-                                  //   <div>
-                                  //     {console.log(itm, ind)}
-                                  //     <Typography variant="body1">
-                                  //       Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
-                                  //     </Typography>
-                                  //     <Typography variant="body1">
-                                  //       <span>Description :</span>
-                                  //       {itm.anomaly_type === 'alien_pop'
-                                  //         ? itm.print_tag
-                                  //           ? itm.print_tag
-                                  //           : 'No Data Found'
-                                  //         : itm.article_description
-                                  //         ? itm.article_description
-                                  //         : 'No Data Found'}
-                                  //     </Typography>
-                                  //     <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
-                                  //   </div>
-                                  // }
-                                >
-                                  <Box
-                                    key={ind}
-                                    paddingX={0.2}
-                                    paddingY={0.04}
-                                    className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                    onMouseOver={() => {
-                                      calculate(itm.coords.xmin, itm.coords.ymin, itm.coords.xmax, itm.coords.ymax, 2);
-                                      //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
-                                      // setAntn(true);
-                                    }}
-                                    onMouseOut={() => {
-                                      if (antn) {
-                                        setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                        setAntn(0);
-                                      }
-                                    }}
-                                  >
-                                    <RiCheckboxCircleLine className="text-4xl mr-0.5" style={{ color: 'green' }} />
-                                    <Typography paddingRight={2} variant="h6">
-                                      No Anomaly
-                                      {/* {removeAfterLastUnderscore(itm.anomaly_type)} */}
-                                      {/* {cData[0].unique_anomaly_array.map((anomaly) => removeAfterLastUnderscore(anomaly) )} */}
-                                    </Typography>
-                                  </Box>
-                                </Tooltip>
-                              )
-                            // )
-                          )
-                          // )
+                  <div className="">
+                    <div className="image-container flex justify-center items-start lg:mb-0 mb-10 relative">
+                      {/* <TransformWrapper> */}
+                      <div className="rounded-md md:w-full w-4/5">
+                        {/* <TransformComponent> */}
+                        {imageLoading2 && (
+                          <div className="flex justify-center items-center absolute top-0 left-0 z-10  overflow-x-hidden bg-white w-full h-full">
+                            <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
+                          </div>
                         )}
+                        {/* <ZoomOnHover smallImageSrc={brands[0].img_url} largeImageSrc={brands[0].img_url} /> */}
+
+                        {/* <EasyZoomOnHover
+                          mainImage={{
+                            // src: 'https://m.media-amazon.com/images/I/71sgEIlSvfL._AC_SX466_.jpg',
+                            src: `${brands[0].img_url}`,
+                            // src: change,
+                            // width: 500,
+                            // height: 800,
+                            // width: 300,
+                            // height: 750,
+                            // zoomLensScale: 200,
+                            alt: 'My Product'
+                          }}
+                          zoomImage={{
+                            // src: 'https://m.media-amazon.com/images/I/71sgEIlSvfL._AC_SX1500_.jpg',
+                            src: `${brands[0].img_url}`,
+                            // src: change,
+                            alt: 'My Product Zoom',
+                            // width: '100%',
+                            // height: '100%'
+                            // width: imageDimensions.width,
+                            // height: imageDimensions.height 
+                          }}
+                        /> */}
+
+                        {/* <div>
+                          <ReactImageMagnify
+                           style={{ cursor: 'zoom-in' }}
+                            {...{
+                              smallImage: {
+                                alt: 'Wristwatch by Ted Baker London',
+                                src: `${brands[0].img_url}`,
+                                width: 300, // Set a fixed width for the small image
+                                height: 750, // Set a fixed height for the small image to make it square
+                                onLoad: findDimensions2
+                              },
+                              largeImage: {
+                                src: `${brands[0].img_url}`,
+                                // width: 520,
+                                // height: 1020
+                                // enlargedImagePosition: 'beside',
+                                width: imageDimensions.width, // Use actual width
+                                height: imageDimensions.height // Use actual height
+                                // width: 1000,
+                                // height: 1000
+                              },
+                              isHintEnabled: true,
+                              lensStyle: {
+                                width: '20px', // Set the width of the magnifier lens
+                                height: '20px' // Set the height of the magnifier lens (same as width for square)
+                              },
+                              enlargedImageContainerDimensions: {
+                                width: '100%', // Adjust the width of the enlarged image container
+                                height: '100%' // Adjust the height of the enlarged image container
+                              },
+                              shouldUsePositiveSpaceLens: true
+                            }}
+                          />
+                        </div>  */}
+                        {/* {nextBtn && (
+                    <>
+                      <IconButton
+                        className="absolute top-1/2 -right-5 z-50" // Adjust the right position
+                        style={{
+                          fontSize: '30px',
+                          color: 'black',
+                          backgroundColor: 'white',
+                          borderRadius: '50%',
+                          padding: '8px'
+                        }}
+                        onClick={handleNextClick1}
+                      >
+                        <SlArrowRight />
+                      </IconButton>
+                      <IconButton
+                        className="absolute top-1/2 -left-5 z-50" // Adjust the left position
+                        style={{
+                          fontSize: '30px',
+                          color: 'black',
+                          backgroundColor: 'white',
+                          borderRadius: '50%',
+                          padding: '8px'
+                        }}
+                        onClick={handlePrevClick1}
+                      >
+                        <SlArrowLeft />
+                      </IconButton>
+                    </>
+                  )} */}
+                        {/* <div className="w-full h-full relative "> */}
+                        {/* <div className="max-h-[15vh] max-w-[15vw] h-[10vh] mx-auto"> */}
+                        {/* <div id="imageMagnify">
+                          <ReactImageMagnify
+                            {...{
+                              smallImage: {
+                                alt: 'Wristwatch by Ted Baker London',
+                                src: `${brands[0].img_url}`,
+                                // src: `${fashionImage}`,
+                                isFluidWidth: true,
+                                onload: `${findDimensions}`
+                                // className: "self-center lg:max-h-[95vh] lg:max-w-[95vw] max-h-[80vh] md:max-h-[85vh] mt-10 md:mt-0 text-white"
+                                // className: 'object-contain h-full w-full'
+                              },
+                              largeImage: {
+                                src: `${brands[0].img_url}`,
+                                // src: `${fashionImage}`,
+                                width: 1280,
+                                height: 960
+                              },
+                              isHintEnabled: true
+                            }}
+                          />
+                        </div> */}
+                        {/* <CustomMagnifier
+                          src={`${brands[0].img_url}`}
+                          smallWidth={300}
+                          smallHeight={800}
+                          largeWidth={200}
+                          largeHeight={300}
+                        /> */}
+
+                        <img
+                          className="self-center lg:max-h-[95vh] lg:max-w-[95vw] max-h-[80vh] md:max-h-[85vh] mt-10 md:mt-0 text-white"
+                          src={brands[0].img_url}
+                          alt="No img found"
+                          onLoad={findDimensions2}
+                          ref={imageRef}
+                        />
+
+                        {/* {nextBtn && (
+                            <>
+                              <IconButton
+                                className="absolute top-1/2 -right-14 z-50" // Adjust the right position
+                                style={{
+                                  fontSize: '30px',
+                                  color: 'white',
+                                  // backgroundColor: 'white',
+                                  borderRadius: '50%',
+                                  padding: '8px'
+                                }}
+                                onClick={handleNextClick1}
+                              >
+                                <SlArrowRight />
+                              </IconButton>
+                              <IconButton
+                                className="absolute top-1/2 -left-14 z-50" // Adjust the left position
+                                style={{
+                                  fontSize: '30px',
+                                  color: 'white',
+                                  // backgroundColor: 'white',
+                                  borderRadius: '50%',
+                                  padding: '8px'
+                                }}
+                                onClick={handlePrevClick1}
+                              >
+                                <SlArrowLeft />
+                              </IconButton>
+                            </>
+                          )} */}
                       </div>
                     </div>
+                    {isMobile ? (
+                      <>
+                        <IconButton
+                          onClick={handleMenuOpen}
+                          style={{
+                            position: 'absolute',
+                            left: '4%',
+                            top: '4%',
+                            color: 'white'
+                          }}
+                        >
+                          <MenuIcon />
+                        </IconButton>
+                        <Menu
+                          anchorEl={anchorEl}
+                          open={Boolean(anchorEl)}
+                          onClose={handleMenuClose}
+                          PaperProps={{
+                            style: {
+                              backgroundColor: 'white',
+                              color: 'rgba(0, 0, 0, 0.8)',
+                              maxWidth: '80vw'
+                            }
+                          }}
+                        >
+                          <MenuItem>
+                            <Typography variant="h6">
+                              {brands[0].bay_id} - {brands[0].bay_info.brand_name}
+                            </Typography>
+                          </MenuItem>
+                          <MenuItem>
+                            <Typography variant="subtitle1">Date & Time: {formatDate(cData[0].timestamp)}</Typography>
+                          </MenuItem>
+                          <MenuItem>
+                            <Typography variant="subtitle1">Name: {brands[0].user[0].name}</Typography>
+                          </MenuItem>
+                          <MenuItem>
+                            <Typography variant="subtitle1">Number: {brands[0].user[0].number}</Typography>
+                          </MenuItem>
+                          <MenuItem>
+                            <Typography variant="h6">Anomalies</Typography>
+                          </MenuItem>
+                          {brands[0].shelves.map((itm, ind) => (
+                            <MenuItem key={ind}>
+                              <Box
+                                paddingX={0.2}
+                                paddingY={0.04}
+                                className="bg-white rounded-full flex gap-1 justify-center place-items-center"
+                              >
+                                {itm.anomaly_type !== '' ? (
+                                  <>
+                                    <RiErrorWarningLine className="text-2xl mr-0.5" style={{ color: error }} />
+                                    <Typography variant="body2">{removeAfterLastUnderscore(itm.anomaly_type)}</Typography>
+                                  </>
+                                ) : (
+                                  <>
+                                    <RiCheckboxCircleLine className="text-2xl mr-0.5" style={{ color: 'green' }} />
+                                    <Typography variant="body2">No Anomaly</Typography>
+                                  </>
+                                )}
+                              </Box>
+                            </MenuItem>
+                          ))}
+                        </Menu>
+                      </>
+                    ) : (
+                      <>
+                        <div
+                          className=" text-xl cursor-pointer text-white absolute hidden xl:block"
+                          style={{
+                            left: '4%',
+                            top: '3%'
+                          }}
+                        >
+                          <Typography variant="h3" className="text-white">
+                            {brands[0].bay_id} - {brands[0].bay_info.brand_name}
+                          </Typography>
+                        </div>
+                        <div
+                          className=" text-xl cursor-pointer text-white absolute hidden xl:block"
+                          style={{
+                            left: '4%',
+                            top: '20%'
+                          }}
+                        >
+                          <Typography variant="h3" className="text-white">
+                            Date & Time of Capture
+                          </Typography>
+                          <Divider color="white" className="mb-2" />
+                          <Typography variant="h5" className="text-white">
+                            {formatDate(cData[0].timestamp)}
+                          </Typography>
+                        </div>
+                        <div
+                          className=" text-xl cursor-pointer text-white absolute xl:block hidden"
+                          style={{
+                            left: '4%',
+                            bottom: '3%'
+                          }}
+                        >
+                          <Typography variant="h3" className="text-white">
+                            Name: {brands[0].user[0].name}
+                          </Typography>
+                          <Typography variant="h3" className="text-white">
+                            Number: {brands[0].user[0].number}
+                          </Typography>
+                        </div>
+                        <div
+                          className=" text-xl cursor-pointer text-white absolute hidden xl:block"
+                          style={{
+                            right: '4%',
+                            top: '30%'
+                          }}
+                        >
+                          <Typography variant="h3" className="text-white">
+                            Anomalies
+                          </Typography>
+                          <Divider color="white" className="mb-2" />
+                          <div className="flex flex-wrap gap-2 w-80">
+                            {anomalyType === 'color_assortment' ? (
+                              <Box
+                                paddingX={0.2}
+                                paddingY={0.04}
+                                className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center"
+                              >
+                                <RiErrorWarningLine className="text-4xl mr-0.5 text-purple-500" />
+
+                                <Typography paddingRight={2} variant="h6">
+                                  Colour
+                                </Typography>
+                              </Box>
+                            ) : (
+                              brands &&
+                              brands.length > 0 &&
+                              brands[0].shelves &&
+                              brands[0].shelves.map(
+                                (itm, ind) =>
+                                  itm.anomaly_type !== '' ? (
+                                    <Tooltip key={0 + ind}>
+                                      <Box
+                                        key={ind}
+                                        paddingX={0.2}
+                                        paddingY={0.04}
+                                        className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                        onMouseOver={() => {
+                                          // itm.anomaly_found > 0 &&
+                                          // calculate(itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
+                                          calculate(itm.coords.xmin, itm.coords.ymin, itm.coords.xmax, itm.coords.ymax, 1);
+                                          //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
+                                          // console.log('here', itm.coords);
+                                          // setAntn(true);
+                                        }}
+                                        onMouseOut={() => {
+                                          // if (antn) {
+                                          //   const arr = [...posarr];
+                                          //   arr[index] = { lft: 0, tp: 0, wdth: 0, ht: 0 };
+                                          //   setposarr(arr);
+                                          //   setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                          //   setAntn(false);
+                                          // }
+                                          if (antn) {
+                                            setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                            setAntn(0);
+                                          }
+                                        }}
+                                      >
+                                        {console.log('poppp', itm.coords)}
+                                        <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
+                                        <Typography paddingRight={2} variant="h6">
+                                          {removeAfterLastUnderscore(itm.anomaly_type)}
+                                          {/* {itm.type.map((anomaly) => removeAfterLastUnderscore(anomaly))} */}
+                                        </Typography>
+                                      </Box>
+                                    </Tooltip>
+                                  ) : (
+                                    <Tooltip
+                                      key={0 + ind}
+                                      // title={
+                                      //   <div>
+                                      //     {console.log(itm, ind)}
+                                      //     <Typography variant="body1">
+                                      //       Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
+                                      //     </Typography>
+                                      //     <Typography variant="body1">
+                                      //       <span>Description :</span>
+                                      //       {itm.anomaly_type === 'alien_pop'
+                                      //         ? itm.print_tag
+                                      //           ? itm.print_tag
+                                      //           : 'No Data Found'
+                                      //         : itm.article_description
+                                      //         ? itm.article_description
+                                      //         : 'No Data Found'}
+                                      //     </Typography>
+                                      //     <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
+                                      //   </div>
+                                      // }
+                                    >
+                                      <Box
+                                        key={ind}
+                                        paddingX={0.2}
+                                        paddingY={0.04}
+                                        className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                        onMouseOver={() => {
+                                          calculate(itm.coords.xmin, itm.coords.ymin, itm.coords.xmax, itm.coords.ymax, 2);
+                                          //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
+                                          // setAntn(true);
+                                        }}
+                                        onMouseOut={() => {
+                                          if (antn) {
+                                            setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                            setAntn(0);
+                                          }
+                                        }}
+                                      >
+                                        <RiCheckboxCircleLine className="text-4xl mr-0.5" style={{ color: 'green' }} />
+                                        <Typography paddingRight={2} variant="h6">
+                                          No Anomaly
+                                          {/* {removeAfterLastUnderscore(itm.anomaly_type)} */}
+                                          {/* {cData[0].unique_anomaly_array.map((anomaly) => removeAfterLastUnderscore(anomaly) )} */}
+                                        </Typography>
+                                      </Box>
+                                    </Tooltip>
+                                  )
+                                // )
+                              )
+                              // )
+                            )}
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 )}
               </div>

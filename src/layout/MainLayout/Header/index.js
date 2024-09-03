@@ -43,7 +43,6 @@ const Header = ({ drawerToggle }) => {
   }
   const ftypeget = useSelector((state) => state.customization.flType);
   console.log('all filter data is', ftypeget);
-
   return (
     <>
       <Box width={drawerWidth}>
