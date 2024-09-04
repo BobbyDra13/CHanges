@@ -1149,7 +1149,7 @@ const Insights = () => {
               >
                 <div className="flex w-full h-full">
                   <div className="w-1/2 h-full flex flex-col">
-                    <span className="text-center text-white text-sm font-semibold">Missing</span>
+                    <span className="text-center text-white text-sm font-semibold">Missing Tester</span>
                     {!anomaliesLoading ? (
                       <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
                         {anoCount ? anoCount.unresolvedMissingTesterCount : 'NA'}
