@@ -55,6 +55,7 @@ export default function ShelfView({ date }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
 
   // Slider settings
   const settings = {
@@ -194,14 +195,25 @@ export default function ShelfView({ date }) {
   const [pos, setPos] = useState({ lft: false, tp: false, wdth: false, ht: false });
 
   // Add this function in your component
-  const calculate = (xmin, ymin, xmax, ymax, code) => {
-    const lft = (xmin / imageDimensions.width) * 100;
-    // const top = (ymin / imageDimensions.height) * 100;
-    const width = ((xmax - xmin) / imageDimensions.width) * 100;
-    const height = ((ymax - ymin) / imageDimensions.height) * 100;
-    setPos({ lft, tp, wdth: width, hght: height });
-    setAntn(code);
-  };
+  const calculate = useCallback(
+    (xmin, ymin, xmax, ymax, code) => {
+      if (!imageDimensions.width || !imageDimensions.height) return;
+
+      const lft = (xmin / imageDimensions.width) * 100;
+      const tp = (ymin / imageDimensions.height) * 100;
+      const width = ((xmax - xmin) / imageDimensions.width) * 100;
+      const height = ((ymax - ymin) / imageDimensions.height) * 100;
+
+      setPos({ lft, tp, wdth: width, hght: height });
+      setAntn(code);
+    },
+    [imageDimensions]
+  );
+
+  const handleImageLoad = useCallback((event) => {
+    const { naturalWidth, naturalHeight } = event.target;
+    setImageDimensions({ width: naturalWidth, height: naturalHeight });
+  }, []);
   // Filter brands based on search query
   const filteredData = useMemo(() => {
     return Array.isArray(isBrandData) ? isBrandData.filter((d) => d.brand_name.toLowerCase().includes(searchQuery.toLowerCase())) : [];
@@ -437,7 +449,7 @@ export default function ShelfView({ date }) {
                           src={dialogData.img_url}
                           alt="No img found"
                           ref={imageRef}
-                          onLoad={dialogData.img_url}
+                          onLoad={handleImageLoad}
                         />
                         {antn !== 0 && (
                           <div
@@ -646,39 +658,25 @@ export default function ShelfView({ date }) {
                               itm.anomaly_type !== '' ? (
                                 <Tooltip key={0 + ind}>
                                   <Box
-                                    key={ind}
                                     paddingX={0.2}
                                     paddingY={0.04}
                                     className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                    onMouseOver={() => {
-                                      // itm.anomaly_found > 0 &&
-                                      // calculate(itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
-                                      calculate(
-                                        itm.coords.xmin,
-                                        itm.coords.ymin,
-                                        itm.coords.xmax,
-                                        itm.coords.ymax,
-                                        itm.anomaly_type !== '' ? 1 : 2
-                                      );
-                                      //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
-                                      // console.log('here', itm.coords);
-                                      // setAntn(true);
-                                    }}
-                                    onMouseOut={() => {
-                                      // if (antn) {
-                                      //   const arr = [...posarr];
-                                      //   arr[index] = { lft: 0, tp: 0, wdth: 0, ht: 0 };
-                                      //   setposarr(arr);
-                                      //   setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                      //   setAntn(false);
-                                      // }
-                                      if (antn) {
-                                        setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                        setAntn(0);
+                                    onMouseEnter={() => {
+                                      if (itm.coords) {
+                                        calculate(
+                                          itm.coords.xmin,
+                                          itm.coords.ymin,
+                                          itm.coords.xmax,
+                                          itm.coords.ymax,
+                                          itm.anomaly_type !== '' ? 1 : 2
+                                        );
                                       }
                                     }}
+                                    onMouseLeave={() => {
+                                      setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                      setAntn(0);
+                                    }}
                                   >
-                                    {console.log('poppp', itm.coords)}
                                     <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
                                     <Typography paddingRight={2} variant="h6">
                                       {removeAfterLastUnderscore(itm.anomaly_type)}
@@ -710,25 +708,23 @@ export default function ShelfView({ date }) {
                                   // }
                                 >
                                   <Box
-                                    key={ind}
                                     paddingX={0.2}
                                     paddingY={0.04}
                                     className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                    onMouseOver={() => {
-                                      calculate(
-                                        itm.coords.xmin,
-                                        itm.coords.ymin,
-                                        itm.coords.xmax,
-                                        itm.coords.ymax,
-                                        itm.anomaly_type !== '' ? 1 : 2
-                                      );
-                                      // setAntn(true);
-                                    }}
-                                    onMouseOut={() => {
-                                      if (antn) {
-                                        setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                        setAntn(0);
+                                    onMouseEnter={() => {
+                                      if (itm.coords) {
+                                        calculate(
+                                          itm.coords.xmin,
+                                          itm.coords.ymin,
+                                          itm.coords.xmax,
+                                          itm.coords.ymax,
+                                          itm.anomaly_type !== '' ? 1 : 2
+                                        );
                                       }
+                                    }}
+                                    onMouseLeave={() => {
+                                      setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                      setAntn(0);
                                     }}
                                   >
                                     <RiCheckboxCircleLine className="text-4xl mr-0.5" style={{ color: 'green' }} />

@@ -13,7 +13,7 @@
 // export default Customers;
 
 /* eslint-disable react-hooks/exhaustive-deps */
-import { React, useState, useEffect, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { ImCross } from 'react-icons/im';
 import Slider from 'react-slick';
@@ -194,11 +194,6 @@ const Customers = () => {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
-  };
-
-  const findDimensions2 = (e) => {
-    const { naturalWidth, naturalHeight } = e.target;
-    setImageDimensions({ width: naturalWidth, height: naturalHeight });
   };
 
   console.log('imageD', imageDimensions);
@@ -632,40 +627,25 @@ const Customers = () => {
   const [pos, setPos] = useState({ lft: false, tp: false, wdth: false, ht: false });
   const [natural] = useState({ wdth: false, hght: false });
 
-  const calculate = (xmin, ymin, xmax, ymax, code) => {
-    const lft = (xmin / natural.wdth) * 100;
-    const top = (ymin / natural.hght) * 100;
-    const width = ((xmax - xmin) / natural.wdth) * 100;
-    const height = ((ymax - ymin) / natural.hght) * 100;
-    setPos({ lft: lft, tp: top, wdth: width, hght: height });
-    setAntn(code);
-    console.log('calcaulte', pos);
-  };
-  const highlightStyle = {
-    position: 'absolute',
-    left: `${pos.lft}%`,
-    top: `${pos.tp}%`,
-    width: `${pos.wdth}%`,
-    height: `${pos.hght}%`,
-    border: '1px solid red',
-    boxSizing: 'border-box',
-    pointerEvents: 'none',
-    backgroundColor: 'rgba(255, 0, 0, 0.6)',
-    borderRadius: '5px'
-  };
+  const calculate = useCallback(
+    (xmin, ymin, xmax, ymax, code) => {
+      if (!imageDimensions.width || !imageDimensions.height) return;
 
-  const highlightStyle2 = {
-    position: 'absolute',
-    left: `${pos.lft}%`,
-    top: `${pos.tp}%`,
-    width: `${pos.wdth}%`,
-    height: `${pos.hght}%`,
-    border: '1px solid green',
-    boxSizing: 'border-box',
-    pointerEvents: 'none',
-    backgroundColor: 'rgba(0, 255, 0, 0.6)',
-    borderRadius: '5px'
-  };
+      const lft = (xmin / imageDimensions.width) * 100;
+      const tp = (ymin / imageDimensions.height) * 100;
+      const width = ((xmax - xmin) / imageDimensions.width) * 100;
+      const height = ((ymax - ymin) / imageDimensions.height) * 100;
+
+      setPos({ lft, tp, wdth: width, hght: height });
+      setAntn(code);
+    },
+    [imageDimensions]
+  );
+
+  const handleImageLoad = useCallback((event) => {
+    const { naturalWidth, naturalHeight } = event.target;
+    setImageDimensions({ width: naturalWidth, height: naturalHeight });
+  }, []);
 
   // const findDimensions = (event) => {
   //   setImageLoading(false);
@@ -1440,13 +1420,27 @@ const Customers = () => {
                           alt="No img found"
                           // onLoad={findDimensions}
                           ref={imageRef}
+                          onLoad={handleImageLoad}
                           onClick={() => {
                             console.log('i am clicked too');
                             GetBrandWiseDetails(cData[0].brand_id);
                           }}
                         />
 
-                        {antn !== 0 && <div style={antn === 1 ? highlightStyle : highlightStyle2}></div>}
+                        {antn !== 0 && (
+                          <div
+                            style={{
+                              position: 'absolute',
+                              left: `${pos.lft}%`,
+                              top: `${pos.tp}%`,
+                              width: `${pos.wdth}%`,
+                              height: `${pos.hght}%`,
+                              border: `2px solid ${antn === 1 ? 'red' : 'green'}`,
+                              backgroundColor: antn === 1 ? 'rgba(255, 0, 0, 0.2)' : 'rgba(0, 255, 0, 0.2)',
+                              pointerEvents: 'none'
+                            }}
+                          />
+                        )}
                       </div>
                       {/* </TransformComponent> */}
                     </div>
@@ -1498,30 +1492,23 @@ const Customers = () => {
                             itm.anomaly_type !== '' ? (
                               <Tooltip key={0 + ind}>
                                 <Box
-                                  key={ind}
                                   paddingX={0.2}
                                   paddingY={0.04}
                                   className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                  onMouseOver={() => {
-                                    // itm.anomaly_found > 0 &&
-                                    // calculate(itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
-                                    calculate(itm.coords.xmin, itm.coords.ymin, itm.coords.xmax, itm.coords.ymax, 1);
-                                    //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
-                                    // console.log('here', itm.coords);
-                                    // setAntn(true);
-                                  }}
-                                  onMouseOut={() => {
-                                    // if (antn) {
-                                    //   const arr = [...posarr];
-                                    //   arr[index] = { lft: 0, tp: 0, wdth: 0, ht: 0 };
-                                    //   setposarr(arr);
-                                    //   setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                    //   setAntn(false);
-                                    // }
-                                    if (antn) {
-                                      setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                      setAntn(0);
+                                  onMouseEnter={() => {
+                                    if (itm.coords) {
+                                      calculate(
+                                        itm.coords.xmin,
+                                        itm.coords.ymin,
+                                        itm.coords.xmax,
+                                        itm.coords.ymax,
+                                        itm.anomaly_type !== '' ? 1 : 2
+                                      );
                                     }
+                                  }}
+                                  onMouseLeave={() => {
+                                    setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                    setAntn(0);
                                   }}
                                 >
                                   <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
@@ -1533,30 +1520,23 @@ const Customers = () => {
                             ) : (
                               <Tooltip key={0 + ind}>
                                 <Box
-                                  key={ind}
                                   paddingX={0.2}
                                   paddingY={0.04}
                                   className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                  onMouseOver={() => {
-                                    // itm.anomaly_found > 0 &&
-                                    // calculate(itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
-                                    calculate(itm.coords.xmin, itm.coords.ymin, itm.coords.xmax, itm.coords.ymax, 1);
-                                    //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
-                                    // console.log('here', itm.coords);
-                                    // setAntn(true);
-                                  }}
-                                  onMouseOut={() => {
-                                    // if (antn) {
-                                    //   const arr = [...posarr];
-                                    //   arr[index] = { lft: 0, tp: 0, wdth: 0, ht: 0 };
-                                    //   setposarr(arr);
-                                    //   setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                    //   setAntn(false);
-                                    // }
-                                    if (antn) {
-                                      setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                      setAntn(0);
+                                  onMouseEnter={() => {
+                                    if (itm.coords) {
+                                      calculate(
+                                        itm.coords.xmin,
+                                        itm.coords.ymin,
+                                        itm.coords.xmax,
+                                        itm.coords.ymax,
+                                        itm.anomaly_type !== '' ? 1 : 2
+                                      );
                                     }
+                                  }}
+                                  onMouseLeave={() => {
+                                    setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                    setAntn(0);
                                   }}
                                 >
                                   <RiCheckboxCircleLine className="text-4xl mr-0.5" style={{ color: 'green' }} />
@@ -1830,10 +1810,24 @@ const Customers = () => {
                           className="self-center lg:max-h-[95vh] lg:max-w-[95vw] max-h-[80vh] md:max-h-[85vh] mt-10 md:mt-0 text-white"
                           src={brands[0].img_url}
                           alt="No img found"
-                          onLoad={findDimensions2}
+                          // onLoad={findDimensions2}
+                          onLoad={handleImageLoad}
                           ref={imageRef}
                         />
-
+                        {antn !== 0 && (
+                          <div
+                            style={{
+                              position: 'absolute',
+                              left: `${pos.lft}%`,
+                              top: `${pos.tp}%`,
+                              width: `${pos.wdth}%`,
+                              height: `${pos.hght}%`,
+                              border: `2px solid ${antn === 1 ? 'red' : 'green'}`,
+                              backgroundColor: antn === 1 ? 'rgba(255, 0, 0, 0.2)' : 'rgba(0, 255, 0, 0.2)',
+                              pointerEvents: 'none'
+                            }}
+                          />
+                        )}
                         {/* {nextBtn && (
                             <>
                               <IconButton
@@ -2006,30 +2000,23 @@ const Customers = () => {
                                   itm.anomaly_type !== '' ? (
                                     <Tooltip key={0 + ind}>
                                       <Box
-                                        key={ind}
                                         paddingX={0.2}
                                         paddingY={0.04}
                                         className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                        onMouseOver={() => {
-                                          // itm.anomaly_found > 0 &&
-                                          // calculate(itm.coords[0], itm.coords[1], itm.coords[2], itm.coords[3]);
-                                          calculate(itm.coords.xmin, itm.coords.ymin, itm.coords.xmax, itm.coords.ymax, 1);
-                                          //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
-                                          // console.log('here', itm.coords);
-                                          // setAntn(true);
-                                        }}
-                                        onMouseOut={() => {
-                                          // if (antn) {
-                                          //   const arr = [...posarr];
-                                          //   arr[index] = { lft: 0, tp: 0, wdth: 0, ht: 0 };
-                                          //   setposarr(arr);
-                                          //   setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                          //   setAntn(false);
-                                          // }
-                                          if (antn) {
-                                            setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                            setAntn(0);
+                                        onMouseEnter={() => {
+                                          if (itm.coords) {
+                                            calculate(
+                                              itm.coords.xmin,
+                                              itm.coords.ymin,
+                                              itm.coords.xmax,
+                                              itm.coords.ymax,
+                                              itm.anomaly_type !== '' ? 1 : 2
+                                            );
                                           }
+                                        }}
+                                        onMouseLeave={() => {
+                                          setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                          setAntn(0);
                                         }}
                                       >
                                         {console.log('poppp', itm.coords)}
@@ -2064,20 +2051,23 @@ const Customers = () => {
                                       // }
                                     >
                                       <Box
-                                        key={ind}
                                         paddingX={0.2}
                                         paddingY={0.04}
                                         className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                        onMouseOver={() => {
-                                          calculate(itm.coords.xmin, itm.coords.ymin, itm.coords.xmax, itm.coords.ymax, 2);
-                                          //  calculate(itm.xmin, itm.ymin, itm.xmax, itm.ymax);
-                                          // setAntn(true);
-                                        }}
-                                        onMouseOut={() => {
-                                          if (antn) {
-                                            setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                            setAntn(0);
+                                        onMouseEnter={() => {
+                                          if (itm.coords) {
+                                            calculate(
+                                              itm.coords.xmin,
+                                              itm.coords.ymin,
+                                              itm.coords.xmax,
+                                              itm.coords.ymax,
+                                              itm.anomaly_type !== '' ? 1 : 2
+                                            );
                                           }
+                                        }}
+                                        onMouseLeave={() => {
+                                          setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                          setAntn(0);
                                         }}
                                       >
                                         <RiCheckboxCircleLine className="text-4xl mr-0.5" style={{ color: 'green' }} />

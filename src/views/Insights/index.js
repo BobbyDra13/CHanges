@@ -362,7 +362,7 @@ const Insights = () => {
         if (brandDonutData.data.length > 0) {
           console.log('Donut chart data', brandDonutData);
           const extractedFullness = brandDonutData.data.map((item) => [item.missing_tester, item.empty_tray, item.correct]);
-          const extractedBrandNames = ['Missing tester', 'Empty Tray', 'Correct'];
+          const extractedBrandNames = ['Missing tester', 'Empty Shelf', 'Correct'];
           setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
           setBrandFullness(extractedFullness);
           console.log('Brand Fullness', extractedFullness);
@@ -475,7 +475,7 @@ const Insights = () => {
     //         if (brandDonutData.data.length > 0) {
     //           console.log('Donut chart data', brandDonutData);
     //           const extractedFullness = brandDonutData.data.map((item) => [item.missing_tester, item.empty_tray, item.correct]);
-    //           const extractedBrandNames = ['Missing tester', 'Empty Tray', 'Correct'];
+    //           const extractedBrandNames = ['Missing tester', 'Empty Shelf', 'Correct'];
     //           setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
     //           setBrandFullness(extractedFullness);
     //           console.log('Brand Fullness', extractedFullness);
@@ -1159,7 +1159,7 @@ const Insights = () => {
                     )}
                   </div>
                   <div className="w-1/2 h-full flex flex-col border-l-2 border-t-0 border-b-0 border-l-white">
-                    <span className="text-center text-white  text-sm font-semibold">Empty Tray</span>
+                    <span className="text-center text-white  text-sm font-semibold">Empty Shelf</span>
                     {!anomaliesLoading ? (
                       <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
                         {anoCount ? anoCount.unresolvedEmptyTrayCount : 'NA'}

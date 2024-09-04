@@ -539,7 +539,8 @@ function Overview() {
       async function getAssociateScore() {
         const body = {
           date: selectedDate,
-          store_id: store
+          store_id: store,
+          category: 'fragrance'
         };
         console.log('Body', body);
         try {
@@ -1040,7 +1041,7 @@ function Overview() {
                           associatescore.map((item, index) => {
                             console.log('item', item.associate_score);
                             const prepercent =
-                              ((item.no_of_bays_assigned - item.no_of_bays_with_anomalies) / item.no_of_bays_assigned) * 100;
+                              ((item.total_no_of_shelves - item.no_of_bays_with_anomalies) / item.total_no_of_shelves) * 100;
                             const percentage = Math.round(parseFloat(prepercent)) > 100 ? 100 : Math.round(parseFloat(prepercent));
                             const barcolor = percentage >= 99 ? '#00ac69' : percentage >= 95 ? '#f4a100' : '#ff413a';
                             // const capturedZone = item.zones.map((i) => {
@@ -1227,7 +1228,7 @@ function Overview() {
                       )}
                     </div>
                     <div className="w-1/2 h-full flex flex-col border-l-2 border-t-0 border-b-0 border-l-white">
-                      <span className="text-center text-white  text-sm font-semibold">Empty Tray</span>
+                      <span className="text-center text-white  text-sm font-semibold">Empty Shelf</span>
                       {!anomaliesLoading && anomalycount !== null ? (
                         <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
                           {anomalycount.length > 0 ? anomalycount[0].emptyTrayCount : 'NA'}
