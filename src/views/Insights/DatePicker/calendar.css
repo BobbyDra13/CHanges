@@ -1,0 +1,27 @@
+.custom-date-picker{
+    color: green;
+    border: 2px solid grey;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    padding-bottom: 10px;
+    width: 130px;
+    overflow: auto;
+    /* margin: 0 20px; */
+
+    /* position: absolute; */
+}
+.date-picker-label{
+    margin-bottom: 30px;
+    /* background-color: red; */
+    padding: 20px;
+}
+.multiple-select {
+    /* Your default styles */
+    transition: transform 0.5s ease;
+  }
+    
+  .multiple-select.visible {
+    transform: translateX(-0%);
+  }
+

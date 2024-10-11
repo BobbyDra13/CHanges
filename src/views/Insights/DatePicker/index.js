@@ -1,201 +1,211 @@
-import { React, useState, useEffect } from 'react';
+import { Box, Paper, Button } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+// import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+// import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import "./calendar.css";
+import MultipleSelectCheckmarks from "./Dropdown";
+import { motion } from "framer-motion";
+import { useDispatch } from "react-redux";
+// import './custom-datepicker.css';
 
-// materia-ui imports
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import Badge from '@mui/material/Badge';
-import { PickersDay } from '@mui/x-date-pickers/PickersDay';
-import { GetInsightsDates } from 'api'; //, GetDates
-// import { useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import EventIcon from '@mui/icons-material/Event';
-import { IconButton, useMediaQuery, useTheme } from '@mui/material';
-
-function ServerDay(props) {
-  const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
-  // console.log(props);
-  const isSelected = !props.outsideCurrentMonth && highlightedDays.indexOf(props.day.getDate()) >= 0;
-
-  return (
-    <Badge
-      key={props.day.toString()}
-      overlap="circular"
-      sx={isSelected ? { margin: '2px', borderRadius: '50%' } : undefined}
-      badgeContent={isSelected ? '' : undefined}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      variant={'dot'}
-      color={isSelected ? 'primary' : undefined}
-    >
-      <PickersDay {...other} outsideCurrentMonth={outsideCurrentMonth} day={day} />
-    </Badge>
-  );
-}
-
-function DatePickerComp() {
-  const location = useLocation();
-  const [calender, setCalender] = useState(new Date());
-  const [events, setEvents] = useState([]);
-  const [highlightedDays, setHighlightedDays] = useState([]);
-  const [openDatePicker, setOpenDatePicker] = useState(false);
-
-  // const storeId = useSelector((state) => state.customization.date);
-
-  const storeId = JSON.parse(localStorage.getItem('analysisStoreId'));
-  const userId = JSON.parse(localStorage.getItem('userData')).data[0]._id;
-  console.log('Store ID', storeId);
-  console.log('User', userId);
-
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
+const DatePickerComp = () => {
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+  const [flag, setFlag] = useState(false);
   const dispatch = useDispatch();
-  const selectedDate = useSelector((state) => state.customization.selectedDate);
+  const handleStartDateChange = (date) => {
+    console.log(date);
+    date && setStartDate(date);
+  };
 
-  useEffect(() => {
-    async function getEventsdata() {
-      const body = {
-        store_ids: [`${storeId}`],
-        page: location.pathname === '/main/insights' || location.pathname === '/main/stores' ? true : false,
-        user_id: userId
-      };
-      console.log('API BODY', body);
-      // const body = {
-      //   store_ids: storeId
-      // };
-      try {
-        const Edata = await GetInsightsDates(body);
-        const dateArray = Edata.data[0].dates;
+  const handleEndDateChange = (date) => {
+    setEndDate(date);
+  };
 
-        const daysOnly = dateArray.map((item) => {
-          const eventdate = new Date(item);
-          return eventdate;
-        });
-        setEvents(daysOnly);
-        // setIsLoading(false)
-      } catch (error) {
-        console.log(error);
-      }
+  // Custom function to check if the time is within the allowed range
+  const isTimeWithinRange = (date) => {
+    console.log(date);
+    const hours = date.getHours();
+    return hours >= 18 && hours <= 22;
+  };
+
+  function graphToSelect(ChartData) {
+    // setChartValue(ChartData);
+    console.log(ChartData);
+    const currentDate = new Date();
+    if (ChartData == "Last 30 Days") {
+      const thirtyDaysAgo = new Date(currentDate);
+      thirtyDaysAgo.setDate(currentDate.getDate() - 30);
+      setStartDate(thirtyDaysAgo);
+      setFlag(false);
+    } else if (ChartData == "Last Week") {
+      const sevenDaysAgo = new Date(currentDate);
+      sevenDaysAgo.setDate(currentDate.getDate() - 7);
+      setStartDate(sevenDaysAgo);
+      setFlag(false);
+    } else if (ChartData == "Current Day") {
+      setStartDate(currentDate);
+      setFlag(false);
+    } else {
+      setFlag(true);
     }
-    getEventsdata();
-    // eslint-disable-next-line
-  }, [storeId, userId, location]);
-
-  useEffect(() => {
-    setHighlightedDays([]);
-    const daysToHighlight = events.map((event) => {
-      const today = new Date();
-      if (event.getMonth() === today.getMonth()) {
-        return event.getDate();
-      }
-      return;
-    });
-    setHighlightedDays(daysToHighlight);
-  }, [events]);
-
-  function handleCalOpen() {
-    setOpenDatePicker(true);
-    const daysToHighlight = events.map((event) => {
-      if (event.getMonth() === calender.getMonth()) {
-        return event.getDate();
-      }
-      return;
-    });
-
-    setHighlightedDays([]);
-    setHighlightedDays(daysToHighlight);
   }
 
-  const handleMonthChange = (date) => {
-    // console.log(date.getMonth());
-    const daysToHighlight = events.map((event) => {
-      // console.log(event.getMonth());
-      if (event.getMonth() === date.getMonth()) {
-        return event.getDate();
-      }
-      return;
-    });
-
-    setHighlightedDays([]);
-    setHighlightedDays(daysToHighlight);
-  };
-
-  const handlechange = (date) => {
-    setCalender(date);
-    // console.log(date.getDate())
-  };
-  function padTo2Digits(num) {
-    return num.toString().padStart(2, '0');
+  function handleApply() {
+    console.log("Date range selected", startDate, endDate);
   }
 
-  // eslint-disable-next-line
-  function formatDate(date) {
-    return [date.getFullYear(), padTo2Digits(date.getMonth() + 1), padTo2Digits(date.getDate())].join('-');
-  }
+
   useEffect(() => {
     dispatch({
       type: 'selectedDate',
-      payload: calender
+      payload: startDate
     });
     // eslint-disable-next-line
-  }, [calender]);
-  // console.log('Calender', calender.toLocaleDateString('en-GB'));
-  // console.log("date", new Date(2023, 11, 26))
+  }, [startDate]);
+
+  // const [events, setEvents] = useState([]);
+  // const [highlightedDays, setHighlightedDays] = useState([]);
+
+  // useEffect(() => {
+  //   // Fetch and set events
+  //   const fetchedEvents = [
+  //     new Date(2024, 9, 15), // Example events for the demo
+  //     new Date(2024, 9, 18),
+  //     new Date(2024, 9, 20)
+  //   ];
+  //   setEvents(fetchedEvents);
+
+  //   const daysToHighlight = fetchedEvents.map((event) => event.getDate());
+  //   setHighlightedDays(daysToHighlight);
+  // }, []);
+
+
+  // const dayClassName = (date) => {
+  //   return highlightedDays.includes(date.getDate()) && date.getMonth() === startDate.getMonth()
+  //     ? 'highlight-day'
+  //     : undefined;
+  // };
 
   return (
-    <>
-      <div className={`flex items-center ${isSmallScreen && 'hidden'}`}>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <DatePicker
-            className="cursor-pointer"
-            sx={{
-              bgcolor: 'white',
-              '& .MuiInputBase-root': {
-                height: '40px' // Adjust the height as needed
-              }
-            }}
-            slots={{
-              day: ServerDay
-            }}
-            slotProps={{
-              textField: {
-                fullWidth: true,
-                bgcolor: 'white'
-                // readOnly: true,
-                // onClick: () => setOpen(true),
-              },
-              day: {
-                highlightedDays
-              }
-            }}
-            format="dd/MM/yyyy"
-            id="date-picker-inline"
-            label="Date Selected"
-            value={selectedDate}
-            onChange={handlechange}
-            onMonthChange={handleMonthChange}
-            minDate={new Date(2023, 11, 26)}
-            maxDate={new Date()}
-            closeOnSelect={false}
-            onOpen={handleCalOpen}
-            onClose={() => setOpenDatePicker(false)}
-            open={openDatePicker}
-          />
-        </LocalizationProvider>
-      </div>
-      {isSmallScreen && (
-        <IconButton
-          sx={{ color: 'black' }}
-          onClick={() => {
-            setOpenDatePicker(!openDatePicker);
-          }}
-        >
-          <EventIcon />
-        </IconButton>
-      )}
-    </>
+    <div
+      style={{ display: "flex", justifyContent: "flex-end", margin: "10px" }}
+    >
+      <Paper
+        elevation={0}
+        sx={{
+          display: "flex",
+          // width: "60%",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          position: "relative",
+        }}
+      >
+        {flag && (
+          <>
+            <motion.div
+              initial={{ opacity: 0, x: 10 }} // Initial animation properties
+              animate={{ opacity: 1, x: 0 }} // Animation properties when flag becomes true
+              transition={{ duration: 0.8, delay: 0.5 }} // Animation duration
+              style={{
+                margin: "0 15px 0 0",
+                display: "flex",
+                // width: "55%",
+                justifyContent: "space-between",
+                alignItems: "center",
+                position: "relative",
+                border: "1px solid #007FFF",
+              }}
+              className="gap-2"
+              // className="border border-red-500"
+            >
+              <div
+                style={{
+                  // width: "250px",
+                  justifyContent: "space-between",
+                  display: "flex",
+                  alignItems: "center",
+                  margin: "0px",
+                }}
+                
+              >
+                
+                <DatePicker
+                  className="custom-date-picker"
+                  // dayClassName={dayClassName} ////
+                  selected={startDate}
+                  closeOnScroll={true}
+                  onChange={handleStartDateChange}
+                  showIcon
+                  // showTimeSelect
+                  // timeFormat="HH:mm"
+                  // timeIntervals={15}
+                  // dateFormat="  dd-MM-yyyy hh:mm aa"
+                  dateFormat="dd-MM-yyyy"
+                  placeholderText="Select start date and time"
+                  // icon="fa fa-calendar"
+                  // selectsStart
+                  startDate={startDate}
+                  endDate={endDate}
+                  maxDate={new Date()}
+                  // minTime={startDate && isTimeWithinRange(startDate) ? new Date(0, 0, 0, 18, 0) : new Date(0, 0, 0, 18, 0)}
+                  // maxTime={endDate && isTimeWithinRange(endDate) ? endDate : new Date(0, 0, 0, 22, 0)}
+                />
+              </div>
+              {/* </LocalizationProvider> */}
+              {/* <h4 style={{fontWeight:"700"}}>TO</h4> */}
+              <div
+                style={{
+                  // width: "230px",
+                  justifyContent: "space-between",
+                  display: "flex",
+                  alignItems: "center",
+                  margin: "0 ",
+                }}
+              >
+                
+                <DatePicker
+                  className="custom-date-picker"
+                  selected={endDate}
+                  onChange={handleEndDateChange}
+                  closeOnScroll={true}
+                  showIcon
+                  // showTimeSelect
+                  // timeFormat="HH:mm"
+                  // timeIntervals={15}
+                  // dateFormat="  dd-MM-yyyy hh:mm aa"
+                  dateFormat="  dd-MM-yyyy "
+                  placeholderText="Select end date and time"
+                  // minTime={ isTimeWithinRange(startDate) ? startDate : new Date(0, 0, 0, 18, 0)}
+                  // maxTime={endDate && isTimeWithinRange(endDate) ?  new Date(0, 0, 0, 22, 0) : new Date(0, 0, 0, 22, 0)}
+                  selectsEnd
+                  startDate={startDate}
+                  endDate={endDate}
+                  maxDate={new Date()}
+                  // icon="fa fa-calendar"
+                  // minDate={startDate}
+                />
+              </div>
+            </motion.div>
+            <Button
+              // sx={{ marginLeft: "30px" }}
+              onClick={handleApply}
+              variant="contained"
+              color="success"
+            >
+              Apply
+            </Button>
+          </>
+        )}
+        <MultipleSelectCheckmarks
+          isVisible={flag}
+          graphToSelect={graphToSelect}
+        />
+      </Paper>
+    </div>
   );
-}
+};
 
 export default DatePickerComp;
