@@ -85,18 +85,18 @@ const Insights = () => {
     return localISOTime;
   };
 
-  // const selectedDate = useSelector((state) => state.customization.selectedDate)
-  // .toISOString()
-  // .slice(0, 10);
+  const selectedDate = toLocalDateString(useSelector((state) => state.customization.selectedDate).start_date);
+  const start_date = toLocalDateString(useSelector((state) => state.customization.selectedDate).start_date);
+  const end_date = toLocalDateString(useSelector((state) => state.customization.selectedDate).end_date);
 
-  const selectedDate = toLocalDateString(useSelector((state) => state.customization.selectedDate));
-
-  console.log('getDate', selectedDate);
+  console.log(
+    'getDate',
+    useSelector((state) => state.customization.selectedDate)
+  );
 
   const { selectOptions } = histogramChartRequirements;
   const [selected, setSelected] = useState(selectOptions[0].value);
   const [seriesData, setSeriesData] = useState([]);
-  // const [selectedDate, setSelectedDate] = useState(new Date());
   const [capProgress, setCapProgress] = useState(false);
   const [avgCapProgress, setAvgCapProgress] = useState(false);
   //eslint-disable-next-line
@@ -131,12 +131,16 @@ const Insights = () => {
   const [anomalycount7days, setanomalycount7days] = useState(null);
   const getsevendaysdataForOsaAndTester = async () => {
     const data = {
-      date: selectedDate,
+      // date: selectedDate,
+      start_date: start_date,
+      end_date: end_date,
       //  user_id : "666fef1bdbf527b634e95c0b"
       user_id: '66795cbe1d905892a4256692'
     };
     const data1 = {
-      start_date: selectedDate,
+      // start_date: selectedDate,
+      start_date: start_date,
+      end_date: end_date,
       //  user_id : "666fef1bdbf527b634e95c0b"
       user_id: '66795cbe1d905892a4256692'
     };
@@ -162,7 +166,9 @@ const Insights = () => {
   useEffect(() => {
     const getAnomalyCount = async () => {
       const data = {
-        date: selectedDate,
+        // date: selectedDate,
+        start_date: start_date,
+        end_date: end_date,
         //  user_id : "666fef1bdbf527b634e95c0b"
         user_id: '66795cbe1d905892a4256694'
       };
@@ -179,7 +185,7 @@ const Insights = () => {
       }
     };
     getAnomalyCount();
-  }, [selectedDate]);
+  }, [selectedDate, start_date, end_date]);
   //eslint-disable-next-line
   const getHistogramdata = async () => {
     const data = {
@@ -286,7 +292,9 @@ const Insights = () => {
   // ------------------------
   async function fetchDashboardData() {
     const capBody = {
-      date: selectedDate,
+      // date: selectedDate,
+      start_date: start_date,
+      end_date: end_date,
       user_id: '66795cbe1d905892a4256693'
       // user_id: user_id
     };
@@ -296,14 +304,18 @@ const Insights = () => {
       user_id: user_id
     };
     const donutBody = {
-      date: selectedDate,
+      // date: selectedDate,
+      start_date: start_date,
+      end_date: end_date,
       user_id: '66795cbe1d905892a4256694'
     };
     const dataa = {
       // user_id: '666fef1bdbf527b634e95c0b',
       user_id: '66795cbe1d905892a4256692',
       //date: '2024-06-27'
-      date: selectedDate
+      // date: selectedDate
+      start_date: start_date,
+      end_date: end_date
     };
     console.log('donutBody', donutBody);
     // const anomlayBody = {
@@ -320,7 +332,19 @@ const Insights = () => {
     console.log('abc date', selectedDate);
     try {
       const brandDonutData = await GetRadarChartData(donutBody);
-      console.log('bebo', brandDonutData);
+      console.log('bebo', brandDonutData.data);
+      console.log('Donut chart data', brandDonutData);
+      if (brandDonutData.data.length > 0) {
+        const extractedFullness = brandDonutData.data.map((item) => [item.missing_tester, item.empty_tray, item.correct]);
+        const extractedBrandNames = ['Missing tester', 'Empty Shelf', 'Correct'];
+        setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
+        setBrandFullness(extractedFullness);
+        console.log('Brand Fullness', extractedFullness);
+        setBrandNames(extractedBrandNames);
+        console.log('Brand Names', brandNames);
+      } else {
+        setBrandFullness([]);
+      }
       const CapData = await GetCapProg(capBody);
       console.log('thala', CapData);
       //const histogramData = await GetPopHistogramData(popKpiCardBody);
@@ -358,20 +382,9 @@ const Insights = () => {
         console.log('uii', avgCapProgress);
         setCapProgress(CapData.data.results);
       }
-      if (brandDonutData) {
-        if (brandDonutData.data.length > 0) {
-          console.log('Donut chart data', brandDonutData);
-          const extractedFullness = brandDonutData.data.map((item) => [item.missing_tester, item.empty_tray, item.correct]);
-          const extractedBrandNames = ['Missing tester', 'Empty Shelf', 'Correct'];
-          setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
-          setBrandFullness(extractedFullness);
-          console.log('Brand Fullness', extractedFullness);
-          setBrandNames(extractedBrandNames);
-          console.log('Brand Names', brandNames);
-        } else {
-          setBrandFullness([]);
-        }
-      }
+      // if (brandDonutData) {
+
+      // }
 
       if (histogramData) {
         //    if(dropdown === "")
@@ -393,118 +406,6 @@ const Insights = () => {
   const user_id = JSON.parse(localStorage.getItem('userData')).data._id;
   console.log('brooo', user_id);
   useEffect(() => {
-    // const storeIds = JSON.parse(localStorage.getItem('userData')).data.stores;
-    // dispatch({ type: 'DATE', date: storeIds });
-    /* eslint-disable no-inner-declarations */
-    // if (isMounted) {
-    //   async function fetchDashboardData() {
-    //     const capBody = {
-    //       date: selectedDates,
-    //       user_id: '66795cbe1d905892a4256693'
-    //       // user_id: user_id
-    //     };
-    //     //eslint-disable-next-line
-    //     const popKpiCardBody = {
-    //       date: selectedDates,
-    //       user_id: user_id
-    //     };
-    //     const donutBody = {
-    //       date: selectedDates,
-    //       user_id: '66795cbe1d905892a4256694'
-    //     };
-    //     const dataa = {
-    //       // user_id: '666fef1bdbf527b634e95c0b',
-    //       user_id: '66795cbe1d905892a4256692',
-    //       //date: '2024-06-27'
-    //       date: selectedDates
-    //     };
-    //     console.log('donutBody', donutBody);
-    //     // const anomlayBody = {
-    //     //   date: selectedDate.toString(),
-    //     //   user_id: '66795cbe1d905892a4256694'
-    //     //   // date: selectedDate.toString(),
-    //     //   // user_id: user_id
-    //     // };
-    //     // console.log('anomlybody', anomlayBody);
-    //     setAvgCapProgress(false);
-    //     setCapProgress(false);
-    //     setFullness(false);
-    //     setBarChartData(false);
-    //     console.log('abc date', selectedDates);
-    //     try {
-    //       const brandDonutData = await GetRadarChartData(donutBody);
-    //       console.log('bebo', brandDonutData);
-    //       const CapData = await GetCapProg(capBody);
-    //       console.log('thala', CapData);
-    //       //const histogramData = await GetPopHistogramData(popKpiCardBody);
-    //       const histogramData = selectedDates.toString() && (await testerPercentAndOsaScoreHistogram(dataa));
-    //       console.log(histogramData);
-    //       sethisto(histogramData);
-    //       const anomalies = await GetRadarChartData(donutBody);
-    //       // const anomalyCount = await getAnomalyCountInsights(anomlayBody);
-    //       // console.log('jiop',anomalyCount);
-    //       if (anomalies) {
-    //         setAnomaliesLoading(false);
-    //         setAnomaliesCount(anomalies.data);
-    //         console.log('abc', anomalies.data);
-    //       }
-    //       // if(anomalyCount) {
-    //       //   console.log('before',anoCount);
-    //       //   setAnoCount(anomalyCount);
-    //       //   console.log('after',anoCount);
-    //       // } else {
-    //       //   setAnoCount('');
-    //       // }
-    //       if (CapData) {
-    //         if (CapData.data.results.length > 0) {
-    //           // let sum = 0;
-    //           // for (let i = 0; i < CapData.data.length; i++) {
-    //           //   sum += CapData.data[i].captureProgress;
-    //           // }
-    //           // const average = sum / CapData.data.length;
-    //           const average = CapData.data.avgCaptureProgress;
-    //           setAvgCapProgress(average);
-    //         } else {
-    //           setAvgCapProgress('');
-    //         }
-    //         console.log('thik', CapData.data.results);
-    //         console.log('uii', avgCapProgress);
-    //         setCapProgress(CapData.data.results);
-    //       }
-    //       if (brandDonutData) {
-    //         if (brandDonutData.data.length > 0) {
-    //           console.log('Donut chart data', brandDonutData);
-    //           const extractedFullness = brandDonutData.data.map((item) => [item.missing_tester, item.empty_tray, item.correct]);
-    //           const extractedBrandNames = ['Missing tester', 'Empty Shelf', 'Correct'];
-    //           setBrandChartOptions({ ...brandChartOptions, labels: extractedBrandNames });
-    //           setBrandFullness(extractedFullness);
-    //           console.log('Brand Fullness', extractedFullness);
-    //           setBrandNames(extractedBrandNames);
-    //           console.log('Brand Names', brandNames);
-    //         } else {
-    //           setBrandFullness([]);
-    //         }
-    //       }
-
-    //       if (histogramData) {
-    //         //    if(dropdown === "")
-    //         //  setBarChartData(histogramData.data[0].OSA_Score_histogram);
-
-    //         if (dropdown === 'Osa Score') {
-    //           setBarChartData(histogramData.data[0].OSA_Score_histogram);
-    //         } else {
-    //           setBarChartData(histogramData.data[0].testers_score_histogram);
-    //         }
-
-    //         setFullness(true);
-    //         console.log('histogramData', barChartData);
-    //       }
-    //     } catch (error) {
-    //       console.log(error);
-    //     }
-    //   }
-    //   fetchDashboardData();
-    // }
     fetchDashboardData();
     getsevendaysdataForOsaAndTester();
     //eslint-disable-next-line
@@ -664,11 +565,6 @@ const Insights = () => {
     setPopupOpen(false);
   };
   console.log('popup open-->', popupOpen);
-  // const history = useHistory();
-
-  // const navigateToStoreInsight = (id) => {
-  //   history.push(`/main/stores/storeinsight/overview/${id}`);
-  // };
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(max-width: 640px)'); // Tailwind's sm breakpoint
@@ -722,9 +618,6 @@ const Insights = () => {
       >
         <Stack direction={'row'} justifyContent={'space-between'}>
           <Typography variant="h3">Insights</Typography>
-          {/* <Box>
-            <DatePickerComp SetSelectedDate={setSelectedDate} />
-          </Box> */}
         </Stack>
       </Grid>
       <Grid item xs={12}>
@@ -748,44 +641,6 @@ const Insights = () => {
           >
             <PoPScoreKPICard date={selectedDate} />
           </Grid>
-
-          {/* <div className="w-full"> */}
-
-          {/* {!showPopUp && (
-            <Grid item lg={3} sm={6} xs={12}>
-              <KpiPop
-                isLoaded={fullness}
-                chart={statisticsChartsData[3].chart}
-                title="VM Score"
-                count="NA"
-                percentage="NA"
-                // chipColor={
-                //   vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0 ? 'error' : 'success'
-                // }
-                // isLoss={vmc && vmc.differencePercentage && vmc.differencePercentage.withoutAnomalyPercentageDifference < 0}
-                color={'#9CA3AF'}
-                // color={theme.palette.success.main}
-              />
-            </Grid>
-          )} */}
-
-          {/* </div> */}
-
-          {/* <Grid item lg={3} sm={6} xs={12}> */}
-          {/* KPI VIEW */}
-          {/* OSA */}
-          {/* <KpiPop */}
-          {/* isLoaded={fullness} */}
-          {/* chart={statisticsChartsData[2].chart} */}
-          {/* title="OSA" */}
-          {/* count="NA" */}
-          {/* percentage="NA" */}
-          {/* // isLoss */}
-          {/* // chipColor="success" */}
-          {/* color={'#9CA3AF'} */}
-          {/* // color={theme.palette.success.main} */}
-          {/* /> */}
-          {/* </Grid> */}
 
           {showPopUp && (
             <Grid
@@ -832,22 +687,6 @@ const Insights = () => {
                                       <Typography paddingBottom={0.6} className="self-end" variant="h5" color="inherit">
                                         Goodness Histogram
                                       </Typography>
-                                      {/* <div style={{display: "flex", alignItems:"center", gap : "7px", marginLeft: "40px", cursor:"pointer"}} onClick={()=>{handleclickontester()}}>
-                                      <div className='' style={{height:"12px",width: "12px" , background: "red", borderRadius:"50%"}}>
-
-                                      </div>
-                                      <div className=''> 
-                                              Tester Percent
-                                      </div>
-                                      </div>
-                                      <div style={{display: "flex", alignItems:"center", gap : "7px", marginLeft: "9px",  cursor:"pointer"}} onClick={()=>{handleclickOnOsa()}}>
-                                      <div className=' bg-red-300' style={{height:"12px",width: "12px" , borderRadius:"50%"}}>
-
-                                      </div>
-                                      <div className=''>
-                                              Osa Score
-                                      </div>
-                                      </div> */}
                                       <Select
                                         style={{
                                           position: 'absolute',
@@ -925,123 +764,6 @@ const Insights = () => {
                             </Box>
                           </CardContent>
                         ) : (
-                          //  : barChartData[0]?.data?.bayAnalysis['0-10%'] === 9 &&
-                          //   vmChartData?.length === 0 &&
-                          //   vmc.currentDay.totalAnomalies === 0 &&
-                          //   vmc.currentDay.totalCaptureCount === 0 ? (
-                          //   <div className="w-full h-full flex justify-center place-items-center">
-                          //     <img style={{ height: '392px' }} src={NoDataImg} alt="No data" />
-                          //   </div>
-                          // ) : vmChartData?.length > 0 && selected === histogramChartRequirements.selectOptions[1].value ? (
-                          //   <CardContent sx={{ padding: 0, paddingBottom: '0 !important' }}>
-                          //     <Box color="#fff" bgcolor={theme.palette.primary.main} p={3}>
-                          //       <Grid container justifyContent="space-between" alignItems="center">
-                          //         <Grid item>
-                          //           <Grid container spacing={1}>
-                          //             <Stack direction={'row'} spacing={1}>
-                          //               <Typography sx={{ paddingLeft: 2 }} variant="h2" color="inherit">
-                          //                 {barChartData[0]?.data?.totalBaysCount}
-                          //               </Typography>
-                          //               <Typography paddingBottom={0.6} className="self-end" variant="h5" color="inherit">
-                          //                 Bays
-                          //               </Typography>
-                          //             </Stack>
-                          //           </Grid>
-                          //         </Grid>
-                          //         <Grid item>
-                          //           <Grid container alignItems="center">
-                          //             <TextField
-                          //               id="standard-select-currency"
-                          //               size="small"
-                          //               select
-                          //               value={selected}
-                          //               onChange={(e) => setSelected(e.target.value)}
-                          //               sx={{
-                          //                 '& .MuiInputBase-input': {
-                          //                   paddingBottom: 0.5,
-                          //                   paddingTop: 0.7,
-                          //                   fontSize: '1rem',
-                          //                   fontWeight: 600,
-                          //                   color: 'white'
-                          //                 }
-                          //               }}
-                          //             >
-                          //               {histogramChartRequirements.selectOptions.map((option) => (
-                          //                 <MenuItem key={option.value} value={option.value} disabled={option.disabled}>
-                          //                   {option.label}
-                          //                 </MenuItem>
-                          //               ))}
-                          //             </TextField>
-                          //           </Grid>
-                          //         </Grid>
-                          //       </Grid>
-                          //       <Grid item>
-                          //         <Chart
-                          //           options={histogramOptions.options}
-                          //           series={series}
-                          //           type={histogramOptions.options.chart.type}
-                          //           height={histogramOptions.options.chart.height}
-                          //         />
-                          //       </Grid>
-                          //     </Box>
-                          //   </CardContent>
-                          // ) : vmChartData?.length === 0 &&
-                          //   vmc.currentDay.totalAnomalies === 0 &&
-                          //   vmc.currentDay.totalCaptureCount !== 0 &&
-                          //   selected === histogramChartRequirements.selectOptions[1].value ? (
-                          //   <CardContent sx={{ padding: 0, paddingBottom: '0 !important' }}>
-                          //     <Box color="#fff" bgcolor={theme.palette.primary.main} p={3}>
-                          //       <Grid container justifyContent="space-between" alignItems="center">
-                          //         <Grid item>
-                          //           <Grid container spacing={1}>
-                          //             <Stack direction={'row'} spacing={1}>
-                          //               <Typography sx={{ paddingLeft: 2 }} variant="h2" color="inherit">
-                          //                 {barChartData[0]?.data?.totalBaysCount}
-                          //               </Typography>
-                          //               <Typography paddingBottom={0.6} className="self-end" variant="h5" color="inherit">
-                          //                 Bays
-                          //               </Typography>
-                          //             </Stack>
-                          //           </Grid>
-                          //         </Grid>
-                          //         <Grid item>
-                          //           <Grid container alignItems="center">
-                          //             <TextField
-                          //               id="standard-select-currency"
-                          //               size="small"
-                          //               select
-                          //               value={selected}
-                          //               onChange={(e) => setSelected(e.target.value)}
-                          //               sx={{
-                          //                 '& .MuiInputBase-input': {
-                          //                   paddingBottom: 0.5,
-                          //                   paddingTop: 0.7,
-                          //                   fontSize: '1rem',
-                          //                   fontWeight: 600,
-                          //                   color: 'white'
-                          //                 }
-                          //               }}
-                          //             >
-                          //               {histogramChartRequirements.selectOptions.map((option) => (
-                          //                 <MenuItem key={option.value} value={option.value} disabled={option.disabled}>
-                          //                   {option.label}
-                          //                 </MenuItem>
-                          //               ))}
-                          //             </TextField>
-                          //           </Grid>
-                          //         </Grid>
-                          //       </Grid>
-                          //       <Grid item>
-                          //         <Chart
-                          //           options={histogramOptions.options}
-                          //           series={series}
-                          //           type={histogramOptions.options.chart.type}
-                          //           height={histogramOptions.options.chart.height}
-                          //         />
-                          //       </Grid>
-                          //     </Box>
-                          //   </CardContent>
-                          // )
                           <div className="w-full h-full flex justify-center place-items-center">
                             <Skeleton variant="rounded" width={'100%'} height={392} />
                           </div>
@@ -1109,16 +831,6 @@ const Insights = () => {
                             <Skeleton variant="circular" width={300} height={310} />
                           </div>
                         )}
-
-                        {/* <Grid item>
-                          <BrandDonutChart
-                            chartOptions={brandChartOptions}
-                            chartSeries={brandFullness}
-                            chartHeight={BrandChartData.height}
-                            chartType={BrandChartData.type}
-                          />
-                        </Grid> */}
-                        {/* <BrandDonutChart chartData={BrandChartData} /> */}
                       </CardContent>
                     </Card>
                   </Grid>
@@ -1168,16 +880,6 @@ const Insights = () => {
                       <Skeleton variant="rectangular" height={42} className="rounded-md" />
                     )}
                   </div>
-                  {/* <div className="w-2/6 h-full flex flex-col">
-                    <span className="text-center text-white  text-sm font-semibold">Correct</span>
-                    {!anomaliesLoading ? (
-                      <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                        {anomaliesCount[0].correct}
-                      </span>
-                    ) : (
-                      <Skeleton variant="rectangular" height={45} className="rounded-md" />
-                    )}
-                  </div> */}
                 </div>
               </Card>
               <Card>
@@ -1264,11 +966,6 @@ const Insights = () => {
                                       // onScroll={()=>setOpenZone(false)}
                                     />
                                   </div>
-                                  {/* {openZone[key] ? (
-                                    <FaEyeSlash className="cursor-pointer" onClick={() => handleZoneCaptureProgressMenuClose(key)} />
-                                  ) : (
-                                    <FaEye className="cursor-pointer" onClick={() => handleZoneCaptureProgressMenuOpen(key)} />
-                                  )} */}
                                 </div>
                                 {false && (
                                   <Paper className="mt-10 p-5 max-h-96 overflow-y-auto" elevation={10}>
@@ -1298,50 +995,6 @@ const Insights = () => {
                                       );
                                     })}
                                   </Paper>
-                                  //                                   <Menu
-                                  //   id="capture-progress-menu"
-                                  //   anchorEl={anchorEl}
-                                  //   open={openZone}
-                                  //   onClose={handleZoneCaptureProgressMenuClose}
-                                  //   anchorOrigin={{
-                                  //     vertical: 'bottom',
-                                  //     horizontal: 'right',
-                                  //   }}
-                                  //   transformOrigin={{
-                                  //     vertical: 'top',
-                                  //     horizontal: 'right',
-                                  //   }}
-                                  //   // PaperProps={{
-                                  //   //   style: {
-                                  //   //     maxHeight: ITEM_HEIGHT * 4.5,
-                                  //   //     width: '20ch',
-                                  //   //   },
-                                  //   // }}
-                                  // >
-                                  //   <MenuItem disabled>
-                                  //     <Typography variant="h6">Zone-wise Capture Progress</Typography>
-                                  //   </MenuItem>
-                                  //   {item.captureProgressZoneData.map((it, index) => (
-                                  //     <MenuItem key={index} disabled>
-                                  //       <Typography variant="body1" color="initial">
-                                  //         {it.zone_id} - {parseFloat(it.capturePercentage).toFixed(2)}%
-                                  //       </Typography>
-                                  //       <LinearProgress
-                                  //         sx={{
-                                  //           borderRadius: 3,
-                                  //           height: 5,
-                                  //           [theme.breakpoints.up('xl')]: {
-                                  //             height: 5,
-                                  //           },
-                                  //         }}
-                                  //         variant="determinate"
-                                  //         aria-label="direct"
-                                  //         value={parseFloat(it.capturePercentage)}
-                                  //         color="primary"
-                                  //       />
-                                  //     </MenuItem>
-                                  //   ))}
-                                  // </Menu>
                                 )}
                               </Grid>
                             </Grid>

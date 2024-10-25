@@ -3,9 +3,20 @@ import KpiCard from './KpiCard/index';
 //eslint-disable-next-line
 import { GetAnomalies, testerPercentSevenDayMultistore } from 'api';
 import { useTheme, Skeleton, Card, Stack, Grid, Typography } from '@mui/material';
+import { useSelector } from 'react-redux';
 
 function TesterPercentKpiCard({ date, testerMultiScore }) {
   const theme = useTheme();
+
+  const toLocalDateString = (date) => {
+    const tzOffset = date.getTimezoneOffset() * 60000; // offset in milliseconds
+    const localISOTime = new Date(date.getTime() - tzOffset).toISOString().slice(0, 10);
+    return localISOTime;
+  };
+
+  // const selectedDate = toLocalDateString(useSelector((state) => state.customization.selectedDate).start_date);
+  const start_date = toLocalDateString(useSelector((state) => state.customization.selectedDate).start_date);
+  const end_date = toLocalDateString(useSelector((state) => state.customization.selectedDate).end_date);
 
   const [anomalyData, setAnomalyData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -96,7 +107,9 @@ function TesterPercentKpiCard({ date, testerMultiScore }) {
   useEffect(() => {
     async function getData() {
       const body = {
-        date: date.toString(),
+        // date: date.toString(),
+        start_date: start_date.toString(),
+        end_date: end_date.toString(),
         user_id: '66795cbe1d905892a4256692'
       };
 

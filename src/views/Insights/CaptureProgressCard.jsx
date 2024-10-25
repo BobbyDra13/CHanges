@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import KpiCard from './KpiCard/index';
 // import { GetCaptureProgress } from 'api';
 import { useTheme, Skeleton, Card, Stack, Grid, Typography } from '@mui/material';
+import { useSelector } from 'react-redux';
 
 function CaptureProgressCard({ date }) {
   const theme = useTheme();
@@ -13,6 +14,16 @@ function CaptureProgressCard({ date }) {
   const [status, setStatus] = useState([]);
   const [dates, setDates] = useState([]);
   const [isDataAvailable, setIsDataAvailable] = useState(false);
+
+  const toLocalDateString = (date) => {
+    const tzOffset = date.getTimezoneOffset() * 60000; // offset in milliseconds
+    const localISOTime = new Date(date.getTime() - tzOffset).toISOString().slice(0, 10);
+    return localISOTime;
+  };
+
+  // const selectedDate = toLocalDateString(useSelector((state) => state.customization.selectedDate).start_date);
+  const start_date = toLocalDateString(useSelector((state) => state.customization.selectedDate).start_date);
+  const end_date = toLocalDateString(useSelector((state) => state.customization.selectedDate).end_date);
 
   const userId = JSON.parse(localStorage.getItem('userData')).data._id;
   console.log('User ID:', userId);
@@ -26,7 +37,9 @@ function CaptureProgressCard({ date }) {
   useEffect(() => {
     async function getData() {
       const body = {
-        date: date.toString(),
+        // date: date.toString(),
+        start_date: start_date,
+        end_date: end_date,
         user_id: userId
       };
 

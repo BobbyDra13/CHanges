@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogTitle, IconButton, Table, TableBody, TableCell, TableHead, TableRow, Button } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { useSelector } from 'react-redux';
 
 // const dummyData = [
 //   { store_id: 'S001', pop_score: 87, capture_status: true, _id: '65c74d4112465588b7a4984c' },
@@ -16,6 +17,15 @@ import CloseIcon from '@mui/icons-material/Close';
 // ];
 
 const PopUp = ({ open, onClose, value, selectedDate }) => {
+  const toLocalDateString = (date) => {
+    const tzOffset = date.getTimezoneOffset() * 60000; // offset in milliseconds
+    const localISOTime = new Date(date.getTime() - tzOffset).toISOString().slice(0, 10);
+    return localISOTime;
+  };
+
+  // const selectedDate = toLocalDateString(useSelector((state) => state.customization.selectedDate).start_date);
+  const start_date = toLocalDateString(useSelector((state) => state.customization.selectedDate).start_date);
+  const end_date = toLocalDateString(useSelector((state) => state.customization.selectedDate).end_date);
   // console.log('value is... ', value);
 
   const [dummyData, setDummyData] = useState([]);
@@ -28,7 +38,9 @@ const PopUp = ({ open, onClose, value, selectedDate }) => {
     const makeApiCall = async () => {
       const url = 'https://nifno3du90.execute-api.eu-west-2.amazonaws.com/test/web-app/dashboard/store-wise-pop-capture-score ';
       const data = {
-        date: `${selectedDate}`,
+        // date: `${selectedDate}`,
+        start_date: `${start_date}`,
+        end_date: `${end_date}`,
         user_id: `${dataFinal}`,
         isSort: `${value}`
       };
