@@ -35,6 +35,6 @@
             uses: SamKirkland/FTP-Deploy-Action@v4.3.4
             with:
               local-dir: /home/runner/work/disha_tira_webApp/disha_tira_webApp/build/
-              server: 217.21.91.239
+              server: 82.112.239.242
               username: u134273879.disha_rr_tira_test_ftp_user
               password: ${{ secrets.DISHA_TIRA_TEST_FTP_PWD }}
