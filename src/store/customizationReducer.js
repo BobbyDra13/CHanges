@@ -12,7 +12,7 @@ export const initialState = {
     lat: '',
     lng: ''
   },
-  selectedDate: new Date()
+  selectedDate: { start_date: new Date(), end_date: new Date() }
 };
 const customizationReducer = (state = initialState, action) => {
   switch (action.type) {

@@ -16,6 +16,7 @@ import ReactApexChart from 'react-apexcharts';
 
 // assets import
 import NoDataImg from '../../assets/images/No_data-amico.svg';
+import { useSelector } from 'react-redux';
 
 // chart options
 const columnChartOptions = {
@@ -116,7 +117,17 @@ const AnomaliesBarChart = ({ selectedDate }) => {
   const [options, setOptions] = useState({});
   const [chartData, setChartData] = useState(null);
 
-  const todayDate = new Date().toString();
+  const toLocalDateString = (date) => {
+    const tzOffset = date.getTimezoneOffset() * 60000; // offset in milliseconds
+    const localISOTime = new Date(date.getTime() - tzOffset).toISOString().slice(0, 10);
+    return localISOTime;
+  };
+
+  // const selectedDate = toLocalDateString(useSelector((state) => state.customization.selectedDate).start_date);
+  const start_date = toLocalDateString(useSelector((state) => state.customization.selectedDate).start_date);
+  const end_date = toLocalDateString(useSelector((state) => state.customization.selectedDate).end_date);
+
+  // const todayDate = new Date().toString();
   const user_id = JSON.parse(localStorage.getItem('userData')).data._id;
   console.log('iooio', user_id);
 
@@ -148,9 +159,11 @@ const AnomaliesBarChart = ({ selectedDate }) => {
 
   useEffect(() => {
     async function fetchBarChartData() {
-      const finalDate = selectedDate ? selectedDate : todayDate;
+      // const finalDate = selectedDate ? selectedDate : todayDate;
       const body = {
-        date: finalDate,
+        // date: finalDate,
+        start_date: start_date,
+        end_date: end_date,
         user_id: '66795cbe1d905892a4256692'
         // user_id: "666fef1bdbf527b634e95c0b"
       };

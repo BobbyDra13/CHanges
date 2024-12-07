@@ -280,7 +280,9 @@ const Customers = () => {
   // .toISOString()
   // .slice(0, 10);
 
-  const datess = toLocalDateString(useSelector((state) => state.customization.selectedDate));
+  const datess = toLocalDateString(useSelector((state) => state.customization.selectedDate).start_date);
+
+  console.log('datess is ', datess);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };

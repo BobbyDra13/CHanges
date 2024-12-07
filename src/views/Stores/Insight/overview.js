@@ -157,7 +157,7 @@ function Overview() {
   // .toISOString()
   // .slice(0, 10);
 
-  const selectedDate = toLocalDateString(useSelector((state) => state.customization.selectedDate));
+  const selectedDate = toLocalDateString(useSelector((state) => state.customization.selectedDate).start_date);
   //eslint-disable-next-line
   const [empCount, setEmpCount] = useState('');
   //eslint-disable-next-line
