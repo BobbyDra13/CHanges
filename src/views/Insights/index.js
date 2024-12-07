@@ -416,7 +416,7 @@ const Insights = () => {
       setSeriesData([]);
     };
     //eslint-disable-next-line
-  }, [selectedDate]);
+  }, [selectedDate, end_date, start_date]);
 
   // console.log('Current anomaly', anomaliesPercentage);
   console.log('jaii', brandFullness);

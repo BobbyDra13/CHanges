@@ -176,7 +176,7 @@ function AnomalyKPICard({ date, anomalycount7days }) {
 
     getData();
     //eslint-disable-next-line
-  }, [date]);
+  }, [date, start_date, end_date]);
 
   const chartConfig = {
     type: 'line',
