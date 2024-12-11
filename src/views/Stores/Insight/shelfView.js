@@ -87,25 +87,25 @@ export default function ShelfView({ date }) {
   // Capitalize words and replace underscores with spaces
   function formatText(str) {
     return str
-      .split('_')
+      ?.split('_')
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ');
   }
 
   function capitalizeWords(str) {
     return str
-      .split(' ')
+      ?.split(' ')
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   }
   function replaceUnderscores(str) {
     // Use the replace method with a regular expression
-    return capitalizeWords(str.replace(/_/g, ' '));
+    return capitalizeWords(str?.replace(/_/g, ' '));
   }
   function removeAfterLastUnderscore(str) {
-    const lastUnderscoreIndex = str.lastIndexOf('_');
+    const lastUnderscoreIndex = str?.lastIndexOf('_');
     if (lastUnderscoreIndex !== -1) {
-      return replaceUnderscores(str.substring(0, lastUnderscoreIndex));
+      return replaceUnderscores(str?.substring(0, lastUnderscoreIndex));
     } else {
       // No underscore found, return original string
       return replaceUnderscores(str);
@@ -261,7 +261,7 @@ export default function ShelfView({ date }) {
                     style={{
                       backgroundColor: d.capture_status === 0 ? '#f5f5f5' : active === d.brand_id ? 'black' : 'white',
                       opacity: d.capture_status === 0 ? '0.4' : '1',
-                      color: active === d.brand_id ? 'white' : 'black',
+                      color: active === d.brand_id && d.capture_status === 1 ? 'white' : 'black',
                       fontWeight: 'bolder',
                       cursor: d.capture_status === 0 ? 'not-allowed' : 'pointer'
                     }}
