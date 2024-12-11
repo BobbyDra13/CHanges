@@ -750,7 +750,7 @@ function Overview() {
                               <div className="mt-2" key={index}>
                                 <div className="flex gap-1 items-center justify-between">
                                   <div>
-                                    {item._id.toUpperCase()} :
+                                    {item._id?.toUpperCase()} :
                                     <span className="text-base font-semibold" style={{ color: barcolor }}>
                                       {' ' + percentage} %
                                     </span>
@@ -896,7 +896,7 @@ function Overview() {
                               <div className="mt-2" key={index}>
                                 <div className="flex gap-1 items-center justify-between">
                                   <div>
-                                    {item._id.toUpperCase()} :
+                                    {item._id?.toUpperCase()} :
                                     <span className="text-base font-semibold" style={{ color: barcolor }}>
                                       {' ' + percentage} %
                                     </span>
