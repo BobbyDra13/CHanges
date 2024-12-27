@@ -33,7 +33,7 @@ function ServerDay(props) {
   );
 }
 
-function DatePickerComp() {
+function DatePickerComp2() {
   const location = useLocation();
   const [calender, setCalender] = useState(new Date());
   const [events, setEvents] = useState([]);
@@ -136,7 +136,8 @@ function DatePickerComp() {
   useEffect(() => {
     dispatch({
       type: 'selectedDate',
-      payload: calender
+      // payload: calender
+      payload: { start_date: calender, end_date: calender }
     });
     // eslint-disable-next-line
   }, [calender]);
@@ -172,7 +173,7 @@ function DatePickerComp() {
             format="dd/MM/yyyy"
             id="date-picker-inline"
             label="Date Selected"
-            value={selectedDate}
+            value={selectedDate.start_date}
             onChange={handlechange}
             onMonthChange={handleMonthChange}
             minDate={new Date(2023, 11, 26)}
@@ -198,4 +199,4 @@ function DatePickerComp() {
   );
 }
 
-export default DatePickerComp;
+export default DatePickerComp2;

@@ -113,6 +113,7 @@ const Insights = () => {
   const [osascorehistogram, setosascorehistogram] = useState(true);
   const [testerpercenthistogram, settesterpercenthistogram] = useState(false);
   const [dropdown, setdropdown] = useState('Osa Score');
+  const userId= JSON.parse( localStorage.getItem('userData'))?.data[0]?._id;
 
   // const [anchorEl, setAnchorEl] = useState(null);
   const handleclickOnOsa = () => {
@@ -135,14 +136,16 @@ const Insights = () => {
       start_date: start_date,
       end_date: end_date,
       //  user_id : "666fef1bdbf527b634e95c0b"
-      user_id: '66795cbe1d905892a4256692'
+      // user_id: '66795cbe1d905892a4256692'
+      user_id: userId,
     };
     const data1 = {
       // start_date: selectedDate,
       start_date: start_date,
       end_date: end_date,
       //  user_id : "666fef1bdbf527b634e95c0b"
-      user_id: '66795cbe1d905892a4256692'
+      // user_id: '66795cbe1d905892a4256692'
+      user_id: userId,
     };
     try {
       console.log('sel', selectedDate);
@@ -170,7 +173,8 @@ const Insights = () => {
         start_date: start_date,
         end_date: end_date,
         //  user_id : "666fef1bdbf527b634e95c0b"
-        user_id: '66795cbe1d905892a4256694'
+        // user_id: '66795cbe1d905892a4256694'
+        user_id: userId,
       };
       try {
         const anomalyCount = await getAnomalyCountInsights(data);
@@ -295,7 +299,8 @@ const Insights = () => {
       // date: selectedDate,
       start_date: start_date,
       end_date: end_date,
-      user_id: '66795cbe1d905892a4256693'
+      // user_id: '66795cbe1d905892a4256693'
+      user_id: userId,
       // user_id: user_id
     };
     //eslint-disable-next-line
@@ -307,11 +312,13 @@ const Insights = () => {
       // date: selectedDate,
       start_date: start_date,
       end_date: end_date,
-      user_id: '66795cbe1d905892a4256694'
+      // user_id: '66795cbe1d905892a4256694'
+      user_id: userId,
     };
     const dataa = {
       // user_id: '666fef1bdbf527b634e95c0b',
-      user_id: '66795cbe1d905892a4256692',
+      // user_id: '66795cbe1d905892a4256692',
+      user_id: userId,
       //date: '2024-06-27'
       // date: selectedDate
       start_date: start_date,
@@ -404,7 +411,7 @@ const Insights = () => {
     }
   }
   const user_id = JSON.parse(localStorage.getItem('userData')).data._id;
-  console.log('brooo', user_id);
+  
   useEffect(() => {
     fetchDashboardData();
     getsevendaysdataForOsaAndTester();

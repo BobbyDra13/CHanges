@@ -128,8 +128,8 @@ const AnomaliesBarChart = ({ selectedDate }) => {
   const end_date = toLocalDateString(useSelector((state) => state.customization.selectedDate).end_date);
 
   // const todayDate = new Date().toString();
-  const user_id = JSON.parse(localStorage.getItem('userData')).data._id;
-  console.log('iooio', user_id);
+  const userId= JSON.parse( localStorage.getItem('userData'))?.data[0]?._id;
+  // console.log('iooio', user_id);
 
   function getLastWeekDates(dateString) {
     // Try parsing the date string
@@ -164,7 +164,7 @@ const AnomaliesBarChart = ({ selectedDate }) => {
         // date: finalDate,
         start_date: start_date,
         end_date: end_date,
-        user_id: '66795cbe1d905892a4256692'
+        user_id: userId,
         // user_id: "666fef1bdbf527b634e95c0b"
       };
 

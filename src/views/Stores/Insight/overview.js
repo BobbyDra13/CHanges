@@ -157,7 +157,8 @@ function Overview() {
   // .toISOString()
   // .slice(0, 10);
 
-  const selectedDate = toLocalDateString(useSelector((state) => state.customization.selectedDate).start_date);
+  const selectedDate = toLocalDateString(useSelector((state) => state.customization.selectedDate).end_date);
+  const selectedDate2 = useSelector((state) => state.customization.selectedDate);
   //eslint-disable-next-line
   const [empCount, setEmpCount] = useState('');
   //eslint-disable-next-line
@@ -200,7 +201,7 @@ function Overview() {
   useEffect(() => {
     get7daysdata(selectedDate);
     //eslint-disable-next-line
-  }, [selectedDate, store]);
+  }, [selectedDate, store, selectedDate2]);
   const handleClickAssociateScoreModal = () => {
     setOpenAssociateScoreModal((prev) => !prev);
     setIsSnackbarOpen(false);
@@ -283,16 +284,13 @@ function Overview() {
       setIsDownloading(false);
     }
   };
-  const [
-    // storeviewcaptureprogres,
-    setstoreviewcaptureprogres
-  ] = useState(0);
+  const [storeviewcaptureprogres, setstoreviewcaptureprogres] = useState(0);
   const getviewcaptureprogress = async () => {
     try {
-      const response = store && selectedDate && (await storeviewcaptureprogress(selectedDate, store));
+      const response = store && selectedDate2 && (await storeviewcaptureprogress(selectedDate2, store));
 
-      console.log(response);
-      setstoreviewcaptureprogres(response.captureProgress);
+      console.log('dates', response);
+      setstoreviewcaptureprogres(response[0].captureProgress);
     } catch (error) {
       console.log('error from getviewcaptureprogress', error);
     }
@@ -300,7 +298,7 @@ function Overview() {
   useEffect(() => {
     getviewcaptureprogress();
     //eslint-disable-next-line
-  }, [testfullness7days, selectedDate, store]);
+  }, [selectedDate2, store]);
   useEffect(() => {
     getviewcaptureprogress();
     //eslint-disable-next-line
@@ -363,7 +361,7 @@ function Overview() {
       }
       // labels: ['Progress']
     },
-    series: [capture7days.length > 0 ? capture7days[capture7days.length - 1] : 0],
+    series: [storeviewcaptureprogres ? storeviewcaptureprogres : 0],
     labels: ['A']
   };
 
@@ -603,7 +601,7 @@ function Overview() {
   const [anomalycount, setanomalycount] = useState(null);
   const getanomalydetails = async () => {
     try {
-      const res = store && selectedDate && (await storeanomalycount(selectedDate, store));
+      const res = store && selectedDate && (await storeanomalycount(selectedDate2, store));
       res && setanomalycount(res);
       setAnomaliesLoading(false);
       res && console.log('tty', res);
@@ -634,8 +632,8 @@ function Overview() {
   const [brandwiseosaandtester_tester, setbrandwiseosaandtester_tester] = useState([]);
   const getbrandwiseosaandtesterscore = async () => {
     try {
-      const result1 = store && selectedDate && (await brandWiseOsaAndTesterScore(selectedDate, store));
-      const result2 = store && selectedDate && (await brandWiseOsaAndTesterScore(selectedDate, store));
+      const result1 = store && selectedDate && (await brandWiseOsaAndTesterScore(selectedDate2, store));
+      const result2 = store && selectedDate && (await brandWiseOsaAndTesterScore(selectedDate2, store));
       console.log('getbrandwiseosaandtesterscore score kpi', result1);
       result1 && result1.length > 0 && result1.sort((a, b) => a.OSA_Score - b.OSA_Score);
       setbrandwiseosaandtester_osa(result1);
@@ -988,25 +986,6 @@ function Overview() {
                 </Card>
               </div>
             </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
-              <Card className="border border-gray-300" sx={{ height: '276px' }}>
-                <div className="flex  w-full  flex-col gap-1 p-3">
-                  <div className="flex items-center justify-center gap-2 w-full">
-                    {/* <DirectionsWalkIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" /> */}
-                    <img src={pog} alt="pop" className="h-14 w-14" />
-
-                    <div className="w-full">
-                      <p className="text-3xl text-gray-500 ">NA</p>
-                      <p className="text-lg font-semibold">PoG</p>
-                    </div>
-                    <IoMdSettings className="text-5xl cursor-not-allowed" />
-                  </div>
-                  <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
-                    <p className="text-base font-semibold text-gray-500">Currently No data available</p>
-                  </div>
-                </div>
-              </Card>
-            </Grid>
 
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <div style={{ height: '276px' }} className="flex flex-col">
@@ -1127,7 +1106,7 @@ function Overview() {
                       <div className="flex items-center justify-center gap-2 w-full">
                         <img src={popIcon} alt="pop" className="h-14 w-14" />
                         <div className="w-full">
-                          <p className="text-3xl text-gray-500 "></p>
+                          <p className="text-3xl text-gray-500 ">NA</p>
                           <p className="text-lg font-semibold">Associate Score</p>
                         </div>
                         <>
@@ -1151,6 +1130,25 @@ function Overview() {
                   )}
                 </Card>
               </div>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
+              <Card className="border border-gray-300" sx={{ height: '276px' }}>
+                <div className="flex  w-full  flex-col gap-1 p-3">
+                  <div className="flex items-center justify-center gap-2 w-full">
+                    {/* <DirectionsWalkIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" /> */}
+                    <img src={pog} alt="pop" className="h-14 w-14" />
+
+                    <div className="w-full">
+                      <p className="text-3xl text-gray-500 ">NA</p>
+                      <p className="text-lg font-semibold">PoG</p>
+                    </div>
+                    <IoMdSettings className="text-5xl cursor-not-allowed" />
+                  </div>
+                  <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
+                    <p className="text-base font-semibold text-gray-500">Currently No data available</p>
+                  </div>
+                </div>
+              </Card>
             </Grid>
 
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
@@ -1202,9 +1200,7 @@ function Overview() {
                     </div>
                     <div className="flex gap-1 flex-col">
                       {/* <div className="text-4xl font-semibold">{capProgressValue ? parseFloat(capProgressValue).toFixed(1) : 0}%</div> */}
-                      <div className="text-4xl font-semibold">
-                        {capture7days.length > 0 ? capture7days[capture7days.length - 1].toFixed(1) : 0}%
-                      </div>
+                      <div className="text-4xl font-semibold">{storeviewcaptureprogres ? storeviewcaptureprogres.toFixed(1) : 0}%</div>
                       <div className="text-sm font-semibold">Capture Progress</div>
                     </div>
                   </div>

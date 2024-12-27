@@ -26,6 +26,7 @@ function TesterPercentKpiCard({ date, testerMultiScore }) {
   const [status, setStatus] = useState([]);
   const [dates, setDates] = useState([]);
   const [isDataAvailable, setIsDataAvailable] = useState(true);
+  const userId = JSON.parse(localStorage.getItem('userData'))?.data[0]?._id;
   function getLastWeekDates(dateString) {
     // Try parsing the date string
     try {
@@ -51,6 +52,18 @@ function TesterPercentKpiCard({ date, testerMultiScore }) {
     }
   }
   const [diff, setDiff] = useState(null);
+  const calculateAverage = (arr) => {
+    // Convert all elements to numbers and filter out invalid values
+    const numericValues = arr.map(Number).filter((value) => !isNaN(value));
+
+    // Calculate the sum of numeric values
+    const sum = numericValues.reduce((acc, num) => acc + num, 0);
+
+    // Calculate the average
+    const average = numericValues.length > 0 ? sum / numericValues.length : 0;
+
+    return average;
+  };
   const getsevendaysdata = async () => {
     // const data = {
     //   date: date,
@@ -63,7 +76,7 @@ function TesterPercentKpiCard({ date, testerMultiScore }) {
       // const anomaly = res && res.data && res.data.OSA.length > 0 && res.data.OSA.map((item) => (item ? item.toFixed(2) : 0));
       //if (res.data.OSA.length > 0) setIsDataAvailable(true);
       if (testerMultiScore && testerMultiScore.length > 0) setIsDataAvailable(true);
-
+      const average = calculateAverage(testerMultiScore).toFixed(2);
       const stat = [];
       //eslint-disable-next-line
       // const anomaly1 =
@@ -84,7 +97,8 @@ function TesterPercentKpiCard({ date, testerMultiScore }) {
       const diff = (lastdaypercent - secondlastdaypercent).toFixed(2);
       setDiff(diff);
       setAnomalyChipData(diff);
-      setAnomalyPercentage(lastdaypercent);
+      // setAnomalyPercentage(lastdaypercent);
+      setAnomalyPercentage(average);
 
       // console.log('animalt from anamoly', anomaly);
       console.log('animalt from anamoly', testerMultiScore);
@@ -101,7 +115,7 @@ function TesterPercentKpiCard({ date, testerMultiScore }) {
   const dummyData = {
     data: [0, 0, 0, 0, 0, 0, 0],
     capture_status: [true, true, true, true, true, true, false],
-    categories: getLastWeekDates(date)
+    categories: getLastWeekDates(end_date)
   };
 
   useEffect(() => {
@@ -110,7 +124,8 @@ function TesterPercentKpiCard({ date, testerMultiScore }) {
         // date: date.toString(),
         start_date: start_date.toString(),
         end_date: end_date.toString(),
-        user_id: '66795cbe1d905892a4256692'
+        // user_id: '66795cbe1d905892a4256692'
+        user_id: userId
       };
 
       try {

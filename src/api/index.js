@@ -687,7 +687,8 @@ export const storeviewcaptureprogress = async (date, store) => {
       store_id: String(store),
       //store_id:"6623a893c40c738627f3373f",
 
-      date: String(date)
+      start_date: String(date.start_date),
+      end_date: String(date.end_date)
       // date:"2024-06-13"
     };
 
@@ -717,7 +718,9 @@ export const storeanomalycount = async (date, store) => {
       store_id: String(store),
       //  store_id:"6623a893c40c738627f3373f",
 
-      date: String(date)
+      start_date: String(date.start_date),
+      end_date: String(date.end_date)
+
       // date:"2024-06-13"
     };
 
@@ -805,7 +808,8 @@ export const brandWiseOsaAndTesterScore = async (finalDate, store) => {
     const data = {
       store_id: String(store),
       // store_id:"6623a893c40c738627f3373f",
-      date: finalDate
+      start_date: finalDate.start_date,
+      end_date:finalDate.end_date
       // date:"2024-06-13"
     };
 
