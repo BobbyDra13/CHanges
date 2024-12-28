@@ -601,7 +601,7 @@ function Overview() {
   const [anomalycount, setanomalycount] = useState(null);
   const getanomalydetails = async () => {
     try {
-      const res = store && selectedDate && (await storeanomalycount(selectedDate2, store));
+      const res = store && selectedDate2 && (await storeanomalycount(selectedDate2, store));
       res && setanomalycount(res);
       setAnomaliesLoading(false);
       res && console.log('tty', res);
@@ -614,7 +614,7 @@ function Overview() {
   useEffect(() => {
     getanomalydetails();
     //eslint-disable-next-line
-  }, [selectedDate, store]);
+  }, [selectedDate2, store]);
 
   const [associatescore, setassociatescore] = useState([]);
   const getassociatescore = async () => {
@@ -632,8 +632,8 @@ function Overview() {
   const [brandwiseosaandtester_tester, setbrandwiseosaandtester_tester] = useState([]);
   const getbrandwiseosaandtesterscore = async () => {
     try {
-      const result1 = store && selectedDate && (await brandWiseOsaAndTesterScore(selectedDate2, store));
-      const result2 = store && selectedDate && (await brandWiseOsaAndTesterScore(selectedDate2, store));
+      const result1 = store && selectedDate2 && (await brandWiseOsaAndTesterScore(selectedDate2, store));
+      const result2 = store && selectedDate2 && (await brandWiseOsaAndTesterScore(selectedDate2, store));
       console.log('getbrandwiseosaandtesterscore score kpi', result1);
       result1 && result1.length > 0 && result1.sort((a, b) => a.OSA_Score - b.OSA_Score);
       setbrandwiseosaandtester_osa(result1);
@@ -651,7 +651,7 @@ function Overview() {
     getbrandwiseosaandtesterscore();
     // getanomalydetails();
     //eslint-disable-next-line
-  }, [store, selectedDate]);
+  }, [store, selectedDate2]);
 
   //eslint-disable-next-line
   const [capture7day, setcapture7day] = useState(null);
@@ -676,7 +676,7 @@ function Overview() {
             {storeID ? <Typography variant="h6">Store ID: {storeID}</Typography> : <></>}
             <div className="flex space-x-2 sm:mt-2">
               {/* <DatePickerStore SetSelectedDate={setSelectedDate} style={{ borderRadius: '15px' }} /> */}
-              <div>
+              {/* <div>
                 <button
                   onClick={isDownloading ? null : handleDownload}
                   className="w-28 h-10 mt-5 md:mt-0 rounded-md shadow-md border border-white bg-cyan-500 hover:bg-cyan-600 active:bg-cyan-400 text-white flex place-items-center"
@@ -690,7 +690,7 @@ function Overview() {
                     </div>
                   )}
                 </button>
-              </div>
+              </div> */}
             </div>
           </Stack>
         </Grid>

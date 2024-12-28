@@ -188,9 +188,9 @@ const Customers = () => {
   const [nextClickLoad] = useState(false);
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
 
-  const userId= JSON.parse( localStorage.getItem('userData'))?.data[0]?._id;
+  const userId = JSON.parse(localStorage.getItem('userData'))?.data[0]?._id;
 
-console.log("user id is ..", userId);
+  console.log('user id is ..', userId);
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -1527,7 +1527,7 @@ console.log("user id is ..", userId);
                                 <Box
                                   paddingX={0.2}
                                   paddingY={0.04}
-                                  className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                  className="bg-gray-200 rounded-full hidden  gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
                                   onMouseEnter={() => {
                                     if (itm.coords) {
                                       calculate(

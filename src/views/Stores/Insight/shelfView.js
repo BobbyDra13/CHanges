@@ -188,6 +188,7 @@ export default function ShelfView({ date }) {
   // Set initial active brand
   useEffect(() => {
     if (isBrandData && isBrandData.length > 0) {
+      isBrandData.sort((a, b) => a.brand_name.localeCompare(b.brand_name));
       setActive(isBrandData[0].brand_id);
     }
   }, [isBrandData]);
@@ -288,13 +289,7 @@ export default function ShelfView({ date }) {
             {/* Slider */}
 
             {loading ? (
-               <Grid
-               item
-               md={8}
-               sm={8.6}
-               style={{  }}
-               className="flex justify-center align-middle text-center border border-red-500 w-[550px] h-[460px] mt-8 "
-             >
+              <Grid item md={8} sm={8.6} style={{}} className="flex justify-center align-middle text-center  w-[550px] h-[460px] mt-8 ">
                 <l-bouncy size="45" speed="1.75" color="black" className="w-full h-full"></l-bouncy>
               </Grid>
             ) : (
@@ -303,8 +298,9 @@ export default function ShelfView({ date }) {
                 md={8}
                 sm={8.6}
                 style={{ height: '460px', marginBottom: '50px', overflowY: 'scroll', marginTop: '35px' }}
-                className="inline-block w-[550px] border border-green-400"
+                className="inline-block w-[550px] "
               >
+                <p>* Showing images of end date that you have selected</p>
                 <Slider {...settings} className="w-[600px] h-[400px]">
                   {sliderData.map((item, index) => (
                     <Grid item key={item._id || index} style={{ marginBottom: '10px' }} className="w-full flex">
@@ -359,7 +355,7 @@ export default function ShelfView({ date }) {
                                       <Box
                                         paddingX={0.2}
                                         paddingY={0.04}
-                                        className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                        className="bg-gray-200 rounded-full hidden  gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
                                       >
                                         <RiCheckboxCircleLine className="text-4xl mr-0.5" style={{ color: 'green' }} />
                                         <Typography paddingRight={2} variant="h6">
