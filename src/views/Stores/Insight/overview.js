@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-target-blank */
 import React, { useState, useEffect, useRef } from 'react';
 // import { useDispatch } from 'react-redux';
 // import { addZone } from '../../../store/slices/zoneSlice';
@@ -39,8 +40,8 @@ import { getRatio } from 'api/sentinelAPI';
 // import Diversity3Icon from '@mui/icons-material/Diversity3';
 import LineChartToggle from './lineChartToggle';
 // import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
-import { IoMdSettings, IoMdDownload } from 'react-icons/io';
-import { CgSpinner } from 'react-icons/cg';
+import { IoMdSettings } from 'react-icons/io';
+// import { CgSpinner } from 'react-icons/cg';
 // import CsvModal from './CsvUpload';
 import CsvModalAssociate from './CSV_Associate';
 import RadarChart from './RadarChart';
@@ -50,7 +51,7 @@ import {
   // GetCapProgStoreView,
   // GetAnomaliesCount,
   // getAssociateScoreData,
-  GetReport,
+  // GetReport,
   getsevendaydata,
   storeviewcaptureprogress,
   storeanomalycount,
@@ -113,7 +114,8 @@ function Overview() {
     // , setIsGroup
   ] = useState([]);
   const [activeButton, setActiveButton] = useState('Trends View');
-  const [isDownloading, setIsDownloading] = useState(false);
+  //eslint-disable-next-line
+  // const [isDownloading, setIsDownloading] = useState(false);
   // const [selectedZoneID, setSelectedZoneID] = useState(null);
   const targetRef = useRef(null);
   //eslint-disable-next-line
@@ -133,7 +135,7 @@ function Overview() {
   //   }, 100);
   // };
 
-  const storeDetails = JSON.parse(localStorage.getItem('analysisStoreDetails'));
+  // const storeDetails = JSON.parse(localStorage.getItem('analysisStoreDetails'));
 
   const handleButtonClick = (button) => {
     setActiveButton(button);
@@ -246,44 +248,44 @@ function Overview() {
     setSnackbarConfig({ open: false, message: '', severity: 'success' });
   };
 
-  const handleDownload = async () => {
-    setIsDownloading(true);
+  // const handleDownload = async () => {
+  //   setIsDownloading(true);
 
-    const selectedDate2 = new Date(selectedDate);
-    selectedDate2.setDate(selectedDate2.getDate() + 1);
-    const tomorrow = selectedDate2.toISOString().split('T')[0];
+  //   const selectedDate2 = new Date(selectedDate);
+  //   selectedDate2.setDate(selectedDate2.getDate() + 1);
+  //   const tomorrow = selectedDate2.toISOString().split('T')[0];
 
-    const startDate = selectedDate + 'T00:00:00';
-    const endDate = tomorrow + 'T00:00:00';
+  //   const startDate = selectedDate + 'T00:00:00';
+  //   const endDate = tomorrow + 'T00:00:00';
 
-    const body = {
-      start_date: startDate,
-      end_date: endDate,
-      store_name: storeDetails.id,
-      file_type: 'excel'
-    };
-    try {
-      const response = await GetReport(body);
-      console.log('Report Response:', response);
+  //   const body = {
+  //     start_date: startDate,
+  //     end_date: endDate,
+  //     store_name: storeDetails.id,
+  //     file_type: 'excel'
+  //   };
+  //   try {
+  //     const response = await GetReport(body);
+  //     console.log('Report Response:', response);
 
-      if (response.data.presigned_url !== null) {
-        const url = response.data.presigned_url;
-        const link = document.createElement('a');
-        link.href = url;
+  //     if (response.data.presigned_url !== null) {
+  //       const url = response.data.presigned_url;
+  //       const link = document.createElement('a');
+  //       link.href = url;
 
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        setSnackbarConfig({ open: true, message: 'File Downloaded Successfully', severity: 'success' });
-      } else {
-        setSnackbarConfig({ open: true, message: 'No data found !', severity: 'warning' });
-      }
-    } catch (error) {
-      setSnackbarConfig({ open: true, message: 'Something went wrong !', severity: 'error' });
-    } finally {
-      setIsDownloading(false);
-    }
-  };
+  //       document.body.appendChild(link);
+  //       link.click();
+  //       document.body.removeChild(link);
+  //       setSnackbarConfig({ open: true, message: 'File Downloaded Successfully', severity: 'success' });
+  //     } else {
+  //       setSnackbarConfig({ open: true, message: 'No data found !', severity: 'warning' });
+  //     }
+  //   } catch (error) {
+  //     setSnackbarConfig({ open: true, message: 'Something went wrong !', severity: 'error' });
+  //   } finally {
+  //     setIsDownloading(false);
+  //   }
+  // };
   const [storeviewcaptureprogres, setstoreviewcaptureprogres] = useState(0);
   const getviewcaptureprogress = async () => {
     try {
@@ -995,7 +997,7 @@ function Overview() {
                       <div className="flex items-center justify-center gap-2 w-full">
                         <img src={associate} alt="pop" className="h-14 w-14" />
                         <div className="w-full">
-                          <p className="text-3xl text-gray-500 "></p>
+                          <p className="text-3xl text-gray-500 ">NA</p>
                           <p className="text-lg font-semibold">Associate Score</p>
                         </div>
                         <>
