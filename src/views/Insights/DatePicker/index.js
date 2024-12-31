@@ -88,11 +88,21 @@ const DatePickerComp = () => {
   }, [storeId, userId, location]);
 
   const handleStartDateChange = (date) => {
-    date && setStartDate(date);
+    // date && setStartDate(date);
+    if (date) {
+      setStartDate(date);
+      // Disable dates before the selected start date in the end date picker
+      setEndDate((prevEndDate) => (prevEndDate < date ? date : prevEndDate));
+    }
   };
 
   const handleEndDateChange = (date) => {
-    setEndDate(date);
+    // setEndDate(date);
+    if (date) {
+      setEndDate(date);
+      // Disable dates after the selected end date in the start date picker
+      setStartDate((prevStartDate) => (prevStartDate > date ? date : prevStartDate));
+    }
   };
 
   function graphToSelect(ChartData) {
@@ -191,7 +201,7 @@ const DatePickerComp = () => {
                   placeholderText="Select start date"
                   startDate={startDate}
                   endDate={endDate}
-                  maxDate={new Date()}
+                  maxDate={endDate || new Date()}
                   renderDayContents={(day, date) => <CustomDay date={date} events={events} />}
                 />
               </div>
@@ -214,6 +224,7 @@ const DatePickerComp = () => {
                   selectsEnd
                   startDate={startDate}
                   endDate={endDate}
+                  minDate={startDate}
                   maxDate={new Date()}
                   renderDayContents={(day, date) => <CustomDay date={date} events={events} />}
                 />

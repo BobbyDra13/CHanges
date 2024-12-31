@@ -26,6 +26,7 @@ function OSAkpiPop({ date, osaMultiScore }) {
   const [status, setStatus] = useState([]);
   const [dates, setDates] = useState([]);
   const [isDataAvailable, setIsDataAvailable] = useState(true);
+  const userId = JSON.parse(localStorage.getItem('userData'))?.data[0]?._id;
   function getLastWeekDates(dateString) {
     // Try parsing the date string
     try {
@@ -51,6 +52,20 @@ function OSAkpiPop({ date, osaMultiScore }) {
     }
   }
   const [diff, setDiff] = useState(null);
+
+  const calculateAverage = (arr) => {
+    // Convert all elements to numbers and filter out invalid values
+    const numericValues = arr.map(Number).filter((value) => !isNaN(value));
+
+    // Calculate the sum of numeric values
+    const sum = numericValues.reduce((acc, num) => acc + num, 0);
+
+    // Calculate the average
+    const average = numericValues.length > 0 ? sum / numericValues.length : 0;
+
+    return average;
+  };
+
   const getsevendaysdata = async () => {
     // const data = {
     //   date: date,
@@ -63,7 +78,7 @@ function OSAkpiPop({ date, osaMultiScore }) {
       // const anomaly = res && res.data && res.data.OSA.length > 0 && res.data.OSA.map((item) => (item ? item.toFixed(2) : 0));
       //if (res.data.OSA.length > 0) setIsDataAvailable(true);
       if (osaMultiScore && osaMultiScore.length > 0) setIsDataAvailable(true);
-
+      const average = calculateAverage(osaMultiScore).toFixed(2);
       const stat = [];
       //eslint-disable-next-line
       // const anomaly1 =
@@ -84,9 +99,11 @@ function OSAkpiPop({ date, osaMultiScore }) {
       const lastdaypercent = osaMultiScore.length > 0 ? osaMultiScore[osaMultiScore.length - 1] : 0;
       const secondlastdaypercent = osaMultiScore.length > 0 ? osaMultiScore[osaMultiScore.length - 2] : 0;
       const diff = (lastdaypercent - secondlastdaypercent).toFixed(2);
+      console.log('osa multi score', osaMultiScore);
       setDiff(diff);
       setAnomalyChipData(diff);
-      setAnomalyPercentage(lastdaypercent);
+      // setAnomalyPercentage(lastdaypercent);
+      setAnomalyPercentage(average);
 
       // console.log('animalt from anamoly', anomaly);
       console.log('animalt from anamoly', osaMultiScore);
@@ -104,7 +121,7 @@ function OSAkpiPop({ date, osaMultiScore }) {
   const dummyData = {
     data: [0, 0, 0, 0, 0, 0, 0],
     capture_status: [true, true, true, true, true, true, true],
-    categories: getLastWeekDates(date)
+    categories: getLastWeekDates(end_date)
   };
 
   useEffect(() => {
@@ -113,12 +130,14 @@ function OSAkpiPop({ date, osaMultiScore }) {
         // date: date.toString(),
         start_date: start_date,
         end_date: end_date,
-        user_id: '66795cbe1d905892a4256692'
+        // user_id: '66795cbe1d905892a4256692'
+        user_id: userId
       };
 
       try {
         setLoading(true);
         const data = await GetAnomalies(body);
+        console.log('data from get anomalies', data);
         if (data === undefined) {
           setIsDataAvailable(false);
           setStatus(dummyData.capture_status);
@@ -164,7 +183,7 @@ function OSAkpiPop({ date, osaMultiScore }) {
           setAnomalyPercentage(anomaliesDetectedLine[anomaliesDetectedLine.length - 1]);
           // setCapStatus(data.data[6].capture_status);
         }
-
+        // console.log("anomalies detected line", anomaliesDetectedLine);
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -173,7 +192,7 @@ function OSAkpiPop({ date, osaMultiScore }) {
 
     getData();
     //eslint-disable-next-line
-  }, [date]);
+  }, [date, start_date, end_date]);
 
   const chartConfig = {
     type: 'line',
@@ -312,7 +331,7 @@ function OSAkpiPop({ date, osaMultiScore }) {
       }
     }
   };
-
+  console.log('anomaly percentage', anomalyPercentage);
   return (
     <>
       {loading ? (

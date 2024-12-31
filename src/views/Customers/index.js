@@ -188,6 +188,9 @@ const Customers = () => {
   const [nextClickLoad] = useState(false);
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
 
+  const userId = JSON.parse(localStorage.getItem('userData'))?.data[0]?._id;
+
+  console.log('user id is ..', userId);
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -579,7 +582,7 @@ const Customers = () => {
     // Simulate API call delay
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/get-store-details';
     const data = {
-      user_id: '66d05c9fe7479092e8f7e8ab',
+      user_id: userId,
       // date: new Date().toISOString().split('T')[0]
       date: datess
       // date: '2024-07-10'
@@ -1524,7 +1527,7 @@ const Customers = () => {
                                 <Box
                                   paddingX={0.2}
                                   paddingY={0.04}
-                                  className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                  className="bg-gray-200 rounded-full hidden  gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
                                   onMouseEnter={() => {
                                     if (itm.coords) {
                                       calculate(

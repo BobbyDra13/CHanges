@@ -29,6 +29,7 @@ function AnomalyKPICard({ date, anomalycount7days }) {
   const [status, setStatus] = useState([]);
   const [dates, setDates] = useState([]);
   const [isDataAvailable, setIsDataAvailable] = useState(true);
+  const userId = JSON.parse(localStorage.getItem('userData'))?.data[0]?._id;
   function getLastWeekDates(dateString) {
     // Try parsing the date string
     try {
@@ -60,7 +61,8 @@ function AnomalyKPICard({ date, anomalycount7days }) {
     const data = {
       date: date,
       //  user_id : "666fef1bdbf527b634e95c0b"
-      user_id: '66795cbe1d905892a4256692'
+      // user_id: '66795cbe1d905892a4256692'
+      user_id: userId
     };
     try {
       //   const res = date && (await OsaScoreMultistoreSevenday(data));
@@ -90,7 +92,9 @@ function AnomalyKPICard({ date, anomalycount7days }) {
       const differ = lastdaypercent - secondlastdaypercent;
       // setDiff(differ);
       setAnomalyChipData(differ);
-      setAnomalyPercentage(lastdaypercent);
+      const sum = anomalycount7days?.reduce((acc, value) => acc + parseFloat(value), 0);
+      // setAnomalyPercentage(lastdaypercent);
+      setAnomalyPercentage(sum);
 
       // console.log('animalt from anamoly', anomaly);
       console.log('animalt from anamoly', anomalycount7days);
@@ -107,7 +111,7 @@ function AnomalyKPICard({ date, anomalycount7days }) {
   const dummyData = {
     data: [0, 0, 0, 0, 0, 0, 0],
     capture_status: [true, true, true, true, true, true, true],
-    categories: getLastWeekDates(date)
+    categories: getLastWeekDates(end_date)
   };
 
   useEffect(() => {
@@ -116,7 +120,8 @@ function AnomalyKPICard({ date, anomalycount7days }) {
         // date: date.toString(),
         start_date: start_date,
         end_date: end_date,
-        user_id: '66795cbe1d905892a4256692'
+        // user_id: '66795cbe1d905892a4256692'
+        user_id: userId
       };
 
       try {

@@ -188,6 +188,7 @@ export default function ShelfView({ date }) {
   // Set initial active brand
   useEffect(() => {
     if (isBrandData && isBrandData.length > 0) {
+      isBrandData.sort((a, b) => a.brand_name.localeCompare(b.brand_name));
       setActive(isBrandData[0].brand_id);
     }
   }, [isBrandData]);
@@ -286,121 +287,130 @@ export default function ShelfView({ date }) {
                 ))}
             </Grid>
             {/* Slider */}
-            <Grid
-              item
-              md={8}
-              sm={8.6}
-              style={{ height: '460px', marginBottom: '50px', overflowY: 'scroll', marginTop: '35px' }}
-              className="inline-block w-[550px]"
-            >
-              <Slider {...settings} className="w-[600px] h-[400px]">
-                {sliderData.map((item, index) => (
-                  <Grid item key={item._id || index} style={{ marginBottom: '10px' }} className="w-full flex">
-                    {item.img_url ? (
-                      <div className="flex w-full h-full">
-                        <div className="h-full relative">
-                          <img
-                            src={item.img_url}
-                            alt="img"
-                            className="image rounded-md shadow-md hover:cursor-pointer h-96"
-                            onClick={handleImageClick}
-                          />
-                        </div>
-                        <div className="ml-3" style={{ padding: '7px' }}>
-                          <Typography variant="h3" className="">
-                            {item.brand_name}
-                          </Typography>
-                          <Divider />
-                          <Typography paddingBottom={1.5} width={'100%'} variant="h5">
-                            Bay ID : {item.bay_id}
-                          </Typography>
-                          <Typography width={'100%'} variant="h5">
-                            Date & Time of Capture
-                          </Typography>
-                          <Typography paddingBottom={1.5} width={'100%'} variant="h5">
-                            {formatDate(item.timestamp)}
-                          </Typography>
-                          <Typography width={'100%'} variant="h5">
-                            Anomalies
-                          </Typography>
-                          <Divider />
-                          <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
-                            {item.shelves &&
-                              item.shelves.length > 0 &&
-                              item.shelves.map((itm, ind) =>
-                                itm.anomaly_type !== '' ? (
-                                  <Tooltip key={ind}>
-                                    <Box
-                                      paddingX={0.2}
-                                      paddingY={0.04}
-                                      className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                    >
-                                      <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
-                                      <Typography paddingRight={2} variant="h6">
-                                        {formatText(itm.anomaly_type)}
-                                      </Typography>
-                                    </Box>
-                                  </Tooltip>
-                                ) : (
-                                  <Tooltip key={ind}>
-                                    <Box
-                                      paddingX={0.2}
-                                      paddingY={0.04}
-                                      className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                    >
-                                      <RiCheckboxCircleLine className="text-4xl mr-0.5" style={{ color: 'green' }} />
-                                      <Typography paddingRight={2} variant="h6">
-                                        No Anomaly
-                                      </Typography>
-                                    </Box>
-                                  </Tooltip>
-                                )
-                              )}
+
+            {loading ? (
+              <Grid item md={8} sm={8.6} style={{}} className="flex justify-center align-middle text-center  w-[550px] h-[460px] mt-8 ">
+                <l-bouncy size="45" speed="1.75" color="black" className="w-full h-full"></l-bouncy>
+              </Grid>
+            ) : (
+              <Grid
+                item
+                md={8}
+                sm={8.6}
+                style={{ height: '460px', marginBottom: '50px', overflowY: 'scroll', marginTop: '35px' }}
+                className="inline-block w-[550px] "
+              >
+                <p>* Showing images of end date that you have selected</p>
+                <Slider {...settings} className="w-[600px] h-[400px]">
+                  {sliderData.map((item, index) => (
+                    <Grid item key={item._id || index} style={{ marginBottom: '10px' }} className="w-full flex">
+                      {item.img_url ? (
+                        <div className="flex w-full h-full">
+                          <div className="h-full relative">
+                            <img
+                              src={item.img_url}
+                              alt="img"
+                              className="image rounded-md shadow-md hover:cursor-pointer h-96"
+                              onLoad={() => setLoading(false)}
+                              onClick={handleImageClick}
+                            />
                           </div>
-                          <Divider />
-                          <Typography width={'100%'} variant="h5">
-                            Team
-                          </Typography>
-                          <div style={{ paddingBottom: 13 }} className="w-full flex justify-start">
-                            <AvatarGroup
-                              sx={{
-                                '& .MuiAvatar-root': { width: 40, height: 40, fontSize: 24 }
-                              }}
-                              max={2}
-                            >
-                              <Tooltip
-                                title={
-                                  <div className="w-[200px] p-2 flex flex-col space-y-2">
-                                    <Typography sx={{ width: '100%', color: 'white' }} variant="h6">
-                                      Agent Details
-                                    </Typography>
-                                    <Typography variant="subtitle2">Name: {item.user[0].name}</Typography>
-                                    <Typography variant="subtitle2">Number: {item.user[0].number}</Typography>
-                                  </div>
-                                }
-                                enterTouchDelay={1}
-                                leaveTouchDelay={100000}
+                          <div className="ml-3" style={{ padding: '7px' }}>
+                            <Typography variant="h3" className="">
+                              {item.brand_name}
+                            </Typography>
+                            <Divider />
+                            <Typography paddingBottom={1.5} width={'100%'} variant="h5">
+                              Bay ID : {item.bay_id}
+                            </Typography>
+                            <Typography width={'100%'} variant="h5">
+                              Date & Time of Capture
+                            </Typography>
+                            <Typography paddingBottom={1.5} width={'100%'} variant="h5">
+                              {formatDate(item.timestamp)}
+                            </Typography>
+                            <Typography width={'100%'} variant="h5">
+                              Anomalies
+                            </Typography>
+                            <Divider />
+                            <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
+                              {item.shelves &&
+                                item.shelves.length > 0 &&
+                                item.shelves.map((itm, ind) =>
+                                  itm.anomaly_type !== '' ? (
+                                    <Tooltip key={ind}>
+                                      <Box
+                                        paddingX={0.2}
+                                        paddingY={0.04}
+                                        className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                      >
+                                        <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
+                                        <Typography paddingRight={2} variant="h6">
+                                          {formatText(itm.anomaly_type)}
+                                        </Typography>
+                                      </Box>
+                                    </Tooltip>
+                                  ) : (
+                                    <Tooltip key={ind}>
+                                      <Box
+                                        paddingX={0.2}
+                                        paddingY={0.04}
+                                        className="bg-gray-200 rounded-full hidden  gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                      >
+                                        <RiCheckboxCircleLine className="text-4xl mr-0.5" style={{ color: 'green' }} />
+                                        <Typography paddingRight={2} variant="h6">
+                                          No Anomaly
+                                        </Typography>
+                                      </Box>
+                                    </Tooltip>
+                                  )
+                                )}
+                            </div>
+                            <Divider />
+                            <Typography width={'100%'} variant="h5">
+                              Team
+                            </Typography>
+                            <div style={{ paddingBottom: 13 }} className="w-full flex justify-start">
+                              <AvatarGroup
+                                sx={{
+                                  '& .MuiAvatar-root': { width: 40, height: 40, fontSize: 24 }
+                                }}
+                                max={2}
                               >
-                                <Avatar
-                                  className="hover:cursor-pointer"
-                                  sx={{ bgcolor: success }}
-                                  alt={item.user[0].name}
-                                  src="/example.jpg"
-                                />
-                              </Tooltip>
-                            </AvatarGroup>
+                                <Tooltip
+                                  title={
+                                    <div className="w-[200px] p-2 flex flex-col space-y-2">
+                                      <Typography sx={{ width: '100%', color: 'white' }} variant="h6">
+                                        Agent Details
+                                      </Typography>
+                                      <Typography variant="subtitle2">Name: {item.user[0].name}</Typography>
+                                      <Typography variant="subtitle2">Number: {item.user[0].number}</Typography>
+                                    </div>
+                                  }
+                                  enterTouchDelay={1}
+                                  leaveTouchDelay={100000}
+                                >
+                                  <Avatar
+                                    className="hover:cursor-pointer"
+                                    sx={{ bgcolor: success }}
+                                    alt={item.user[0].name}
+                                    src="/example.jpg"
+                                  />
+                                </Tooltip>
+                              </AvatarGroup>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ) : (
-                      <div className="flex w-full h-full">
-                        <img src={noData} alt="img" style={{ height: '50%', width: '100%', borderRadius: '7px', cursor: 'pointer' }} />
-                      </div>
-                    )}
-                  </Grid>
-                ))}
-              </Slider>
-            </Grid>
+                      ) : (
+                        <div className="flex w-full h-full">
+                          <img src={noData} alt="img" style={{ height: '50%', width: '100%', borderRadius: '7px', cursor: 'pointer' }} />
+                        </div>
+                      )}
+                    </Grid>
+                  ))}
+                </Slider>
+              </Grid>
+            )}
           </Grid>
         </div>
       ) : (

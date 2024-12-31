@@ -113,6 +113,7 @@ const Insights = () => {
   const [osascorehistogram, setosascorehistogram] = useState(true);
   const [testerpercenthistogram, settesterpercenthistogram] = useState(false);
   const [dropdown, setdropdown] = useState('Osa Score');
+  const userId = JSON.parse(localStorage.getItem('userData'))?.data[0]?._id;
 
   // const [anchorEl, setAnchorEl] = useState(null);
   const handleclickOnOsa = () => {
@@ -135,14 +136,16 @@ const Insights = () => {
       start_date: start_date,
       end_date: end_date,
       //  user_id : "666fef1bdbf527b634e95c0b"
-      user_id: '66795cbe1d905892a4256692'
+      // user_id: '66795cbe1d905892a4256692'
+      user_id: userId
     };
     const data1 = {
       // start_date: selectedDate,
       start_date: start_date,
       end_date: end_date,
       //  user_id : "666fef1bdbf527b634e95c0b"
-      user_id: '66795cbe1d905892a4256692'
+      // user_id: '66795cbe1d905892a4256692'
+      user_id: userId
     };
     try {
       console.log('sel', selectedDate);
@@ -170,7 +173,8 @@ const Insights = () => {
         start_date: start_date,
         end_date: end_date,
         //  user_id : "666fef1bdbf527b634e95c0b"
-        user_id: '66795cbe1d905892a4256694'
+        // user_id: '66795cbe1d905892a4256694'
+        user_id: userId
       };
       try {
         const anomalyCount = await getAnomalyCountInsights(data);
@@ -185,7 +189,7 @@ const Insights = () => {
       }
     };
     getAnomalyCount();
-  }, [selectedDate, start_date, end_date]);
+  }, [selectedDate, start_date, end_date, userId]);
   //eslint-disable-next-line
   const getHistogramdata = async () => {
     const data = {
@@ -295,7 +299,8 @@ const Insights = () => {
       // date: selectedDate,
       start_date: start_date,
       end_date: end_date,
-      user_id: '66795cbe1d905892a4256693'
+      // user_id: '66795cbe1d905892a4256693'
+      user_id: userId
       // user_id: user_id
     };
     //eslint-disable-next-line
@@ -307,11 +312,13 @@ const Insights = () => {
       // date: selectedDate,
       start_date: start_date,
       end_date: end_date,
-      user_id: '66795cbe1d905892a4256694'
+      // user_id: '66795cbe1d905892a4256694'
+      user_id: userId
     };
     const dataa = {
       // user_id: '666fef1bdbf527b634e95c0b',
-      user_id: '66795cbe1d905892a4256692',
+      // user_id: '66795cbe1d905892a4256692',
+      user_id: userId,
       //date: '2024-06-27'
       // date: selectedDate
       start_date: start_date,
@@ -404,7 +411,7 @@ const Insights = () => {
     }
   }
   const user_id = JSON.parse(localStorage.getItem('userData')).data._id;
-  console.log('brooo', user_id);
+
   useEffect(() => {
     fetchDashboardData();
     getsevendaysdataForOsaAndTester();
@@ -864,7 +871,7 @@ const Insights = () => {
                     <span className="text-center text-white text-sm font-semibold">Missing Tester</span>
                     {!anomaliesLoading ? (
                       <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                        {anoCount ? anoCount.unresolvedMissingTesterCount : 'NA'}
+                        {anoCount ? anoCount.unresolvedMissingTesterCount : '0'}
                       </span>
                     ) : (
                       <Skeleton variant="rectangular" height={42} className="rounded-md" />
@@ -874,7 +881,7 @@ const Insights = () => {
                     <span className="text-center text-white  text-sm font-semibold">Empty Shelf</span>
                     {!anomaliesLoading ? (
                       <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                        {anoCount ? anoCount.unresolvedEmptyTrayCount : 'NA'}
+                        {anoCount ? anoCount.unresolvedEmptyTrayCount : '0'}
                       </span>
                     ) : (
                       <Skeleton variant="rectangular" height={42} className="rounded-md" />
@@ -884,36 +891,61 @@ const Insights = () => {
               </Card>
               <Card>
                 {/* progress */}
-                <Grid container spacing={gridSpacing}>
-                  <Grid item xs={6} sm={4} md={3} lg={7} xl={6}>
-                    <Chart
-                      options={progressChart.options}
-                      series={avgCapProgress ? [parseFloat(avgCapProgress)] : [0]}
-                      type={progressChart.options.chart.type}
-                      height={progressChart.options.chart.height}
-                    />
+                {avgCapProgress ? (
+                  <Grid container spacing={gridSpacing}>
+                    <Grid item xs={6} sm={4} md={3} lg={7} xl={6}>
+                      {/* {avgCapProgress ? ( */}
+                      <Chart
+                        options={progressChart.options}
+                        series={avgCapProgress ? [parseFloat(avgCapProgress)] : [0]}
+                        type={progressChart.options.chart.type}
+                        height={progressChart.options.chart.height}
+                      />
+                      {/* ):(
+                      <div className="w-full h-full flex justify-center place-items-center">
+                        <img style={{ width: '100%' , height:'auto' }} src={NoDataPng} alt="No data" />
+                       
+                      </div>
+                    )} */}
+                    </Grid>
+                    <Grid item alignContent={'center'} xs={6} sm={8} md={9} lg={5} xl={6}>
+                      <div className="flex flex-col gap-1">
+                        <Typography variant="h1" sx={{ color: accentColMain, paddingTop: 8 }}>
+                          {avgCapProgress ? (
+                            `${parseFloat(avgCapProgress).toFixed(1)}%`
+                          ) : avgCapProgress === 0 ? ( //edited as zero from ''
+                            '0%'
+                          ) : (
+                            <Stack spacing={0.5}>
+                              <Skeleton animation="wave" variant="rounded" width={60} height={10} />
+                              <Skeleton animation="wave" variant="rounded" width={75} height={10} />
+                              <Skeleton animation="wave" variant="rounded" width={90} height={10} />
+                            </Stack>
+                          )}
+                        </Typography>
+                        <Typography variant="h5" color="textSecondary">
+                          Capture Progress
+                        </Typography>
+                      </div>
+                    </Grid>
                   </Grid>
-                  <Grid item alignContent={'center'} xs={6} sm={8} md={9} lg={5} xl={6}>
-                    <div className="flex flex-col gap-1">
-                      <Typography variant="h1" sx={{ color: accentColMain, paddingTop: 8 }}>
-                        {avgCapProgress ? (
-                          `${parseFloat(avgCapProgress).toFixed(1)}%`
-                        ) : avgCapProgress === 0 ? ( //edited as zero from ''
-                          '0%'
-                        ) : (
-                          <Stack spacing={0.5}>
-                            <Skeleton animation="wave" variant="rounded" width={60} height={10} />
-                            <Skeleton animation="wave" variant="rounded" width={75} height={10} />
-                            <Skeleton animation="wave" variant="rounded" width={90} height={10} />
-                          </Stack>
-                        )}
-                      </Typography>
+                ) : (
+                  <>
+                    {/* <Grid item alignContent={'center'} xs={6} sm={8} md={9} lg={5} xl={6}> */}
+                    <div className="flex justify-center items-center gap-1" style={{ margin: '16px 16px' }}>
                       <Typography variant="h5" color="textSecondary">
                         Capture Progress
                       </Typography>
                     </div>
-                  </Grid>
-                </Grid>
+                    {/* </Grid> */}
+                    {/* <Typography variant="h5" color="textSecondary">
+                        Capture Progress
+                      </Typography> */}
+                    <div className="w-full h-full flex justify-center place-items-center">
+                      <img style={{ width: '100%', height: 'auto' }} src={NoDataPng} alt="No data" />
+                    </div>
+                  </>
+                )}
                 <CardContent
                   sx={{
                     height: 370,
@@ -929,86 +961,85 @@ const Insights = () => {
                   <Grid container spacing={gridSpacing}>
                     {capProgress ? (
                       // capProgress.map((item) => (
-                      capProgress.length > 0 &&
-                      capProgress.map((item, key) => {
-                        return (
-                          <Grid key={key} item xs={12}>
-                            <Grid container justifyContent={'space-between'} alignItems="center" spacing={1}>
-                              <Grid item sm zeroMinWidth>
-                                <Typography variant="body2">{item.store_name}</Typography>
-                              </Grid>
-                              <Grid item>
-                                <Typography variant="body2" align="right">
-                                  {/* {Math.floor(item.capture_percentage)}% */}
-                                  {parseFloat(item.captureProgress).toFixed(1)}
-                                </Typography>
-                              </Grid>
+                      capProgress.length > 0 ? (
+                        capProgress.map((item, key) => {
+                          return (
+                            <Grid key={key} item xs={12}>
+                              <Grid container justifyContent={'space-between'} alignItems="center" spacing={1}>
+                                <Grid item sm zeroMinWidth>
+                                  <Typography variant="body2">{item.store_name}</Typography>
+                                </Grid>
+                                <Grid item>
+                                  <Typography variant="body2" align="right">
+                                    {/* {Math.floor(item.capture_percentage)}% */}
+                                    {parseFloat(item.captureProgress).toFixed(1)}
+                                  </Typography>
+                                </Grid>
 
-                              <Grid item xs={12}>
-                                <div className="flex items-center justify-between">
-                                  <div style={{ width: '88%' }}>
-                                    <LinearProgress
-                                      className="cursor-pointer"
-                                      sx={{
-                                        borderRadius: 3,
-                                        height: 5,
+                                <Grid item xs={12}>
+                                  <div className="flex items-center justify-between">
+                                    <div style={{ width: '88%' }}>
+                                      <LinearProgress
+                                        className="cursor-pointer"
+                                        sx={{
+                                          borderRadius: 3,
+                                          height: 5,
 
-                                        [theme.breakpoints.up('xl')]: {
-                                          height: 5 // Height for screens equal to or larger than 'lg' breakpoint
-                                        }
-                                      }}
-                                      variant="determinate"
-                                      aria-label="direct"
-                                      // value={Math.floor(item.capture_percentage)}
-                                      value={parseFloat(item.captureProgress)}
-                                      color="primary"
+                                          [theme.breakpoints.up('xl')]: {
+                                            height: 5 // Height for screens equal to or larger than 'lg' breakpoint
+                                          }
+                                        }}
+                                        variant="determinate"
+                                        aria-label="direct"
+                                        // value={Math.floor(item.capture_percentage)}
+                                        value={parseFloat(item.captureProgress)}
+                                        color="primary"
 
-                                      // onScroll={()=>setOpenZone(false)}
-                                    />
+                                        // onScroll={()=>setOpenZone(false)}
+                                      />
+                                    </div>
                                   </div>
-                                </div>
-                                {false && (
-                                  <Paper className="mt-10 p-5 max-h-96 overflow-y-auto" elevation={10}>
-                                    <Typography variant="h4">Zone wise Capture Progress</Typography>
-                                    {/* {item.length > 0 && */}
-                                    {item.captureProgressZoneData.map((it, index) => {
-                                      return (
-                                        <div key={index}>
-                                          <Typography key={index} className="m-2" variant="body1" color="initial">
-                                            {it.zone_id} - {parseFloat(it.capturePercentage).toFixed(2)}%
-                                          </Typography>
-                                          <LinearProgress
-                                            sx={{
-                                              borderRadius: 3,
-                                              height: 5,
-                                              [theme.breakpoints.up('xl')]: {
-                                                height: 5 // Height for screens equal to or larger than 'lg' breakpoint
-                                              }
-                                            }}
-                                            variant="determinate"
-                                            aria-label="direct"
-                                            value={parseFloat(it.capturePercentage)}
-                                            color="primary"
-                                            // onClick={()=>(setOpenZone(!openZone))}
-                                          />
-                                        </div>
-                                      );
-                                    })}
-                                  </Paper>
-                                )}
+                                  {false && (
+                                    <Paper className="mt-10 p-5 max-h-96 overflow-y-auto" elevation={10}>
+                                      <Typography variant="h4">Zone wise Capture Progress</Typography>
+                                      {/* {item.length > 0 && */}
+                                      {item.captureProgressZoneData.map((it, index) => {
+                                        return (
+                                          <div key={index}>
+                                            <Typography key={index} className="m-2" variant="body1" color="initial">
+                                              {it.zone_id} - {parseFloat(it.capturePercentage).toFixed(2)}%
+                                            </Typography>
+                                            <LinearProgress
+                                              sx={{
+                                                borderRadius: 3,
+                                                height: 5,
+                                                [theme.breakpoints.up('xl')]: {
+                                                  height: 5 // Height for screens equal to or larger than 'lg' breakpoint
+                                                }
+                                              }}
+                                              variant="determinate"
+                                              aria-label="direct"
+                                              value={parseFloat(it.capturePercentage)}
+                                              color="primary"
+                                              // onClick={()=>(setOpenZone(!openZone))}
+                                            />
+                                          </div>
+                                        );
+                                      })}
+                                    </Paper>
+                                  )}
+                                </Grid>
                               </Grid>
                             </Grid>
-                          </Grid>
-                        );
-                      })
-                    ) : // ))
-
-                    capProgress.length === 0 ? (
-                      <div className="w-full h-full flex justify-center place-items-center">
-                        <img style={{ width: '100%' }} src={NoDataPng} alt="No data" />
-                      </div>
+                          );
+                        })
+                      ) : (
+                        <div className="w-full h-full flex justify-center place-items-center">
+                          <img style={{ width: '100%' }} src={NoDataPng} alt="No data" />
+                          {/* <>No data</> */}
+                        </div>
+                      )
                     ) : (
-                      // <>No data</>
                       <Stack paddingLeft={gridSpacing} width={'100%'} spacing={gridSpacing}>
                         <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
                         <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
