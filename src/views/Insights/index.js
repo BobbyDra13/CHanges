@@ -411,7 +411,6 @@ const Insights = () => {
     }
   }
   const user_id = JSON.parse(localStorage.getItem('userData')).data._id;
-
   useEffect(() => {
     fetchDashboardData();
     getsevendaysdataForOsaAndTester();
