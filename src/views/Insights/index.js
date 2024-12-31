@@ -871,7 +871,7 @@ const Insights = () => {
                     <span className="text-center text-white text-sm font-semibold">Missing Tester</span>
                     {!anomaliesLoading ? (
                       <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                        {anoCount ? anoCount.unresolvedMissingTesterCount : 'NA'}
+                        {anoCount ? anoCount.unresolvedMissingTesterCount : '0'}
                       </span>
                     ) : (
                       <Skeleton variant="rectangular" height={42} className="rounded-md" />
@@ -881,7 +881,7 @@ const Insights = () => {
                     <span className="text-center text-white  text-sm font-semibold">Empty Shelf</span>
                     {!anomaliesLoading ? (
                       <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                        {anoCount ? anoCount.unresolvedEmptyTrayCount : 'NA'}
+                        {anoCount ? anoCount.unresolvedEmptyTrayCount : '0'}
                       </span>
                     ) : (
                       <Skeleton variant="rectangular" height={42} className="rounded-md" />
@@ -891,14 +891,22 @@ const Insights = () => {
               </Card>
               <Card>
                 {/* progress */}
+                {avgCapProgress ? (
                 <Grid container spacing={gridSpacing}>
                   <Grid item xs={6} sm={4} md={3} lg={7} xl={6}>
+                    {/* {avgCapProgress ? ( */}
                     <Chart
                       options={progressChart.options}
                       series={avgCapProgress ? [parseFloat(avgCapProgress)] : [0]}
                       type={progressChart.options.chart.type}
                       height={progressChart.options.chart.height}
-                    />
+                    /> 
+                    {/* ):(
+                      <div className="w-full h-full flex justify-center place-items-center">
+                        <img style={{ width: '100%' , height:'auto' }} src={NoDataPng} alt="No data" />
+                       
+                      </div>
+                    )} */}
                   </Grid>
                   <Grid item alignContent={'center'} xs={6} sm={8} md={9} lg={5} xl={6}>
                     <div className="flex flex-col gap-1">
@@ -921,6 +929,25 @@ const Insights = () => {
                     </div>
                   </Grid>
                 </Grid>
+                ):(
+                  <>
+                  {/* <Grid item alignContent={'center'} xs={6} sm={8} md={9} lg={5} xl={6}> */}
+                    <div className="flex justify-center items-center gap-1" 
+  style={{ margin: '16px 16px' }}>
+                      <Typography variant="h5" color="textSecondary">
+                        Capture Progress
+                      </Typography>
+                    </div>
+                  {/* </Grid> */}
+                  {/* <Typography variant="h5" color="textSecondary">
+                        Capture Progress
+                      </Typography> */}
+                  <div className="w-full h-full flex justify-center place-items-center">
+                    <img style={{ width: '100%' , height:'auto' }} src={NoDataPng} alt="No data" />
+                   
+                  </div>
+                  </>
+                )} 
                 <CardContent
                   sx={{
                     height: 370,
@@ -936,7 +963,7 @@ const Insights = () => {
                   <Grid container spacing={gridSpacing}>
                     {capProgress ? (
                       // capProgress.map((item) => (
-                      capProgress.length > 0 &&
+                      capProgress.length > 0 ?(
                       capProgress.map((item, key) => {
                         return (
                           <Grid key={key} item xs={12}>
@@ -1008,14 +1035,14 @@ const Insights = () => {
                           </Grid>
                         );
                       })
-                    ) : // ))
-
-                    capProgress.length === 0 ? (
+                    ) : (
+                    
                       <div className="w-full h-full flex justify-center place-items-center">
                         <img style={{ width: '100%' }} src={NoDataPng} alt="No data" />
+                        {/* <>No data</> */}
                       </div>
-                    ) : (
-                      // <>No data</>
+                    ) ): (
+                      
                       <Stack paddingLeft={gridSpacing} width={'100%'} spacing={gridSpacing}>
                         <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
                         <Skeleton animation="wave" variant="rounded" width={'100%'} height={60} />
