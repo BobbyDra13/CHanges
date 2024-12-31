@@ -92,7 +92,9 @@ function AnomalyKPICard({ date, anomalycount7days }) {
       const differ = lastdaypercent - secondlastdaypercent;
       // setDiff(differ);
       setAnomalyChipData(differ);
-      setAnomalyPercentage(lastdaypercent);
+      const sum = anomalycount7days?.reduce((acc, value) => acc + parseFloat(value), 0);
+      // setAnomalyPercentage(lastdaypercent);
+      setAnomalyPercentage(sum);
 
       // console.log('animalt from anamoly', anomaly);
       console.log('animalt from anamoly', anomalycount7days);

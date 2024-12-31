@@ -17,13 +17,13 @@ const KpiCard = ({ isLoaded, color, chipColor, title, count, percentage, isLoss,
   return (
     <Card sx={{ paddingTop: isLoaded ? 2.25 : 0, paddingBottom: 2.25 }}>
       <Stack spacing={0.5}>
-      <Typography sx={{color: color, paddingLeft: 2.25, paddingRight: 2.25 }} variant="h3" color="textSecondary">
+        <Typography sx={{ color: color, paddingLeft: 2.25, paddingRight: 2.25 }} variant="h3" color="textSecondary">
           {title}
         </Typography>
-      <Grid container alignItems="center">
+        <Grid container alignItems="center">
           <Grid item>
             {isLoaded ? (
-              <Typography variant="h3" sx={{ color: color, paddingLeft: 2.25, paddingRight: 2.25 }}>
+              <Typography variant="h3" sx={{ color: 'chocolate', paddingLeft: 2.25, paddingRight: 2.25 }}>
                 {count}
               </Typography>
             ) : (
@@ -55,7 +55,7 @@ const KpiCard = ({ isLoaded, color, chipColor, title, count, percentage, isLoss,
             <Skeleton sx={{ marginTop: 1.75 }} animation="wave" variant="rounded" width={55} height={26} />
           )}
         </Grid>
-        
+
         <Box>
           {isLoaded ? (
             <div>{chart && <Chart width={'100%'} {...chart} />}</div> //className='pb-10'
@@ -63,7 +63,6 @@ const KpiCard = ({ isLoaded, color, chipColor, title, count, percentage, isLoss,
             <Skeleton animation="wave" variant="rectangular" width={'100%'} height={133} />
           )}
         </Box>
-        
       </Stack>
     </Card>
   );
