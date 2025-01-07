@@ -62,12 +62,26 @@ const Insights = () => {
   }, [testerpercenthistogram]);
 
   // Data fetching
+  const fetchHistogramData = useCallback(async () => {
+    try {
+      if (selectedDate) {
+        const histogramData = await testerPercentAndOsaScoreHistogram({ start_date, end_date, user_id: userId });
+        if (histogramData) {
+          const histogramToShow =
+            dropdown === 'Osa Score' ? histogramData.data[0].OSA_Score_histogram : histogramData.data[0].testers_score_histogram;
+          setBarChartData(histogramToShow);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching histogram data:', error);
+    }
+  }, [selectedDate, start_date, end_date, userId, dropdown]);
+
   const fetchDashboardData = useCallback(async () => {
     try {
-      const [brandDonutData, capData, histogramData] = await Promise.all([
+      const [brandDonutData, capData] = await Promise.all([
         GetRadarChartData({ start_date, end_date, user_id: userId }),
-        GetCapProg({ start_date, end_date, user_id: userId }),
-        selectedDate && testerPercentAndOsaScoreHistogram({ start_date, end_date, user_id: userId })
+        GetCapProg({ start_date, end_date, user_id: userId })
       ]);
 
       // Process brand donut data
@@ -90,17 +104,11 @@ const Insights = () => {
         setAvgCapProgress('');
         setCapProgress([]);
       }
-
-      // Process histogram data
-      if (histogramData) {
-        const histogramToShow =
-          dropdown === 'Osa Score' ? histogramData.data[0].OSA_Score_histogram : histogramData.data[0].testers_score_histogram;
-        setBarChartData(histogramToShow);
-      }
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     }
-  }, [selectedDate, start_date, end_date, userId, dropdown]);
+    // eslint-disable-next-line
+  }, [selectedDate, start_date, end_date, userId]);
 
   const fetchKPIData = useCallback(async () => {
     try {
@@ -141,6 +149,10 @@ const Insights = () => {
     fetchDashboardData();
     fetchKPIData();
   }, [fetchDashboardData, fetchKPIData]);
+
+  useEffect(() => {
+    fetchHistogramData();
+  }, [fetchHistogramData]);
 
   useEffect(() => {
     if (barChartData) {
