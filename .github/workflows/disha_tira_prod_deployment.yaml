@@ -1,0 +1,40 @@
+---
+    name: disha-tira-prod-deployment-pipeline
+    on:
+      push:
+        branches:
+          - main
+    jobs:
+      web-deploy:
+        name: 🎉 Deploy-prod-branch
+        runs-on: ubuntu-latest
+        steps:
+          - name: 🚚 Get latest code
+            uses: actions/checkout@v3
+          - name: Use Node.js 16
+            uses: actions/setup-node@v4
+            with:
+              node-version: 20
+          - name: 🔨 Install dependencies
+            run: |
+              pwd
+              npm -v
+              npm i --force
+          - name: Building the react js project
+            run: |
+              npm run build
+            env:
+              CI: false
+          - name: Checking the path and the data
+            run: |
+              ls -la
+              cd build/
+              ls -la
+              pwd
+          - name: 📂 Sync files
+            uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+            with:
+              local-dir: /home/runner/work/disha_tira_webApp/disha_tira_webApp/build/
+              server: 82.112.239.242
+              username: u134273879.dishatiraprod
+              password: ${{ secrets.DISHA_TIRA_PROD_FTP_PWD }}
