@@ -1,7 +1,4 @@
-/* eslint-disable react/jsx-no-target-blank */
-import React, { useState, useEffect, useRef } from 'react';
-// import { useDispatch } from 'react-redux';
-// import { addZone } from '../../../store/slices/zoneSlice';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   Grid,
@@ -14,297 +11,236 @@ import {
   Box,
   Tooltip,
   IconButton,
-  Divider,
   Snackbar,
-  Alert
-  // TableContainer,
-  // TableHead,
-  // TableRow,
-  // TableCell,
-  // Paper,
-  // Table,
-  // TableBody
+  Alert,
+  Select,
+  MenuItem,
+  FormControl
 } from '@mui/material';
 import { useMediaQuery, useTheme } from '@mui/material';
-import { avgDwelTime } from '../../../api/sentinelAPI';
-// import { footfallCard } from '../../../api/sentinelAPI';
-import { getRatio } from 'api/sentinelAPI';
-// import NoDataImg from '../../../assets/images/No_data-amico.svg';
-// import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
-// import UpdateIcon from '@mui/icons-material/Update';
-// import Uniquejourney from './KPICards/Uniquejourney';
-// import DonutChart from './TrendsViewCharts/DonutChart';
-// import DonutChartTwo from './TrendsViewCharts/DonutChartTwo';
-// import GroupIcon from '@mui/icons-material/Group';
-// import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-// import Diversity3Icon from '@mui/icons-material/Diversity3';
 import LineChartToggle from './lineChartToggle';
-// import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import { IoMdSettings } from 'react-icons/io';
-// import { CgSpinner } from 'react-icons/cg';
-// import CsvModal from './CsvUpload';
 import CsvModalAssociate from './CSV_Associate';
 import RadarChart from './RadarChart';
-import {
-  // GetPopPercentage,
-  // //  GetpopKPI,
-  // GetCapProgStoreView,
-  // GetAnomaliesCount,
-  // getAssociateScoreData,
-  // GetReport,
-  getsevendaydata,
-  storeviewcaptureprogress,
-  storeanomalycount,
-  OsaScoreForKpi,
-  // associateScore,
-  associatescoreaforkpi,
-  brandWiseOsaAndTesterScore
-} from 'api';
-// import { IoIosWarning } from 'react-icons/io';
-// import { get } from 'react-hook-form';
+import { getsevendaydata, storeviewcaptureprogress, storeanomalycount, associatescoreaforkpi, brandWiseOsaAndTesterScore } from 'api';
 import Chart from 'react-apexcharts';
 import popIcon from '../../../assets/images/pop_icon.png';
 import { FaCircleInfo } from 'react-icons/fa6';
-
 import pog from '../../../assets/images/pog.jpeg';
 import associate from '../../../assets/images/profile-user.png';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { setSelectedCategory } from 'store/slices/categorySlice';
 
 function Overview() {
   const urlParams = new URLSearchParams(window.location.search);
   const data = Object.fromEntries(urlParams.entries());
-  // const value = JSON.stringify(data).substring(2, 12);
-  const storeID = JSON.stringify(data).substring(16, 20);
-
-  // console.log(JSON.stringify(data));
-  // const [storeID, setStoreID]=useState("");
-  // if(data){
-  //   setStoreID(JSON.stringify(data).substring(17, 20))
-  // }
-  // console.log(storeID);
-
+  const storeID = useMemo(() => JSON.stringify(data).substring(16, 20), [data]);
   const { store } = useParams();
-  console.log('storeId is : ', store);
 
-  console.log('the id is', store);
-  // const dispatch = useDispatch();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const isMediumScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-  const [
-    // storeDwelTime,
-    setStoreDwelTime
-  ] = useState(false);
-  const [
-    // averageDwellTime,
-    setAverageDwellTime
-  ] = useState(false);
-  const [
-    // dweltimeData,
-    setDweltimedata
-  ] = useState(false);
-  // const [footfalldata, setFootfalldata] = useState(false);
-  const [
-    // associateScoreData,
-    setAssociateScoreData
-  ] = useState([]);
-  const [
-    isGroup
-    // , setIsGroup
-  ] = useState([]);
+  const [isGroup] = useState([]);
   const [activeButton, setActiveButton] = useState('Trends View');
-  //eslint-disable-next-line
-  // const [isDownloading, setIsDownloading] = useState(false);
-  // const [selectedZoneID, setSelectedZoneID] = useState(null);
   const targetRef = useRef(null);
-  //eslint-disable-next-line
-  // const [ftfall, setftfall] = useState([]);
-  // const [isZoneID, setIsZoneID] = useState('');
-  // const handleScrollToComponent = (zoneId) => {
-  //   // Scroll to the target component
-  //   // localStorage.setItem('selectedZoneId', zoneId);
-  //   dispatch(addZone(zoneId)); //Add the zone id to store
-  //   console.log('zoneId in overview page:', zoneId);
-  //   // setIsZoneID(zoneId);
-  //   setTimeout(() => {
-  //     if (targetRef.current) {
-  //       targetRef.current.scrollIntoView({ behavior: 'smooth' });
-  //     }
-  //     handleButtonClick('Shelf View');
-  //   }, 100);
-  // };
-
-  // const storeDetails = JSON.parse(localStorage.getItem('analysisStoreDetails'));
-
-  const handleButtonClick = (button) => {
-    setActiveButton(button);
-  };
-
-  // function padTo2Digits(num) {
-  //   return num.toString().padStart(2, '0');
-  // }
-  // const customDate = new Date();
-  // const finalCustomDate = data
-  //   ? value
-  //   : [customDate.getFullYear(), padTo2Digits(customDate.getMonth() + 1), padTo2Digits(customDate.getDate())].join('-');
-  // const [date] = useState(finalCustomDate);
-  const toLocalDateString = (date) => {
-    const tzOffset = date.getTimezoneOffset() * 60000; // offset in milliseconds
-    const localISOTime = new Date(date.getTime() - tzOffset).toISOString().slice(0, 10);
-    return localISOTime;
-  };
-
-  // const selectedDate = useSelector((state) => state.customization.selectedDate)
-  // .toISOString()
-  // .slice(0, 10);
-
-  const selectedDate = toLocalDateString(useSelector((state) => state.customization.selectedDate).end_date);
-  const selectedDate2 = useSelector((state) => state.customization.selectedDate);
-  //eslint-disable-next-line
-  const [empCount, setEmpCount] = useState('');
-  //eslint-disable-next-line
-  const [costcnt, setCostcnt] = useState('');
-  // const [ratio, setRatio] = useState('');
-  // const [openPopScoreModal, setOpenPopScoreModal] = useState(false);
-  const [openAssociateScoreModal, setOpenAssociateScoreModal] = useState(false);
-  const [snackbarConfig, setSnackbarConfig] = useState({ open: false, message: '', severity: 'success' });
-  //eslint-disable-next-line
-  // const [captureProg, setCaptureProg] = useState([]);
-  // const [capProgressValue, setCapProgressValue] = useState(0);
-  //eslint-disable-next-line
-  const [anomaliesCount, setAnomaliesCount] = useState([]);
   const [anomaliesLoading, setAnomaliesLoading] = useState(true);
-  // const [sevendaydata, setsevendaydata] = useState(null);
   const [capture7days, setcapture7days] = useState([]);
   const [Osa7days, setOsa7days] = useState([]);
   const [testfullness7days, settestfullness7days] = useState([]);
-  // const selectedDates = useSelector((state) => state.customization.selectedDate)
-  // .toISOString()
-  // .slice(0, 10);
-
-  const get7daysdata = async (selectedDate) => {
-    try {
-      const result = store && selectedDate && (await getsevendaydata(selectedDate, store));
-      console.log('st', store);
-      console.log('result from get7daysdata', result);
-      result && setcapture7days(result.capture7days);
-      result && settestfullness7days(result.testerFullness7days);
-      result && setOsa7days(result.OSA7days);
-    } catch (error) {
-      console.log('error in get7daysdata', error);
-    }
-  };
-
-  useEffect(() => {
-    get7daysdata(selectedDate);
-    //eslint-disable-next-line
-  }, []);
-  useEffect(() => {
-    get7daysdata(selectedDate);
-    //eslint-disable-next-line
-  }, [selectedDate, store, selectedDate2]);
-  const handleClickAssociateScoreModal = () => {
-    setOpenAssociateScoreModal((prev) => !prev);
-    setIsSnackbarOpen(false);
-    // console.log(openPopScoreModal);
-  };
-  // const handleClickPopScoreModal = () => {
-  //   setOpenPopScoreModal((prev) => !prev);
-  //   setSnackbarConfig({ open: false, message: '', severity: 'success' });
-  //   console.log(openPopScoreModal);
-  // };
-
-  // const handleClose = () => {
-  //   setOpenPopScoreModal(false); // Close the modal
-  //   setOpenAssociateScoreModal(false);
-  // };
-
-  // const handleUploadComplete = (success) => {
-  //   //here changes are made, change it such that success is given as o/p only when both the API's give the response
-  //   setOpenPopScoreModal(false); // Close the modal
-  //   if (success) {
-  //     setSnackbarConfig({ open: true, message: 'File uploaded successfully!', severity: 'success' });
-  //   } else {
-  //     setSnackbarConfig({ open: true, message: 'Error uploading file!', severity: 'error' });
-  //   }
-  // };
-
-  const handleCloseAssociateScoreModal = () => {
-    setOpenAssociateScoreModal(false); // Close the modal
-  };
-
-  const handleAssociateUploadComplete = (success) => {
-    //here changes are made, change it such that success is given as o/p only when both the API's give the response
-    setOpenAssociateScoreModal(false); // Close the modal
-    if (success) {
-      setSnackbarConfig({ open: true, message: 'File uploaded successfully!', severity: 'success' });
-    } else {
-      setSnackbarConfig({ open: true, message: 'Error uploading file!', severity: 'error' });
-    }
-  };
-
-  const handleSnackBarClose = () => {
-    setSnackbarConfig({ open: false, message: '', severity: 'success' });
-  };
-
-  // const handleDownload = async () => {
-  //   setIsDownloading(true);
-
-  //   const selectedDate2 = new Date(selectedDate);
-  //   selectedDate2.setDate(selectedDate2.getDate() + 1);
-  //   const tomorrow = selectedDate2.toISOString().split('T')[0];
-
-  //   const startDate = selectedDate + 'T00:00:00';
-  //   const endDate = tomorrow + 'T00:00:00';
-
-  //   const body = {
-  //     start_date: startDate,
-  //     end_date: endDate,
-  //     store_name: storeDetails.id,
-  //     file_type: 'excel'
-  //   };
-  //   try {
-  //     const response = await GetReport(body);
-  //     console.log('Report Response:', response);
-
-  //     if (response.data.presigned_url !== null) {
-  //       const url = response.data.presigned_url;
-  //       const link = document.createElement('a');
-  //       link.href = url;
-
-  //       document.body.appendChild(link);
-  //       link.click();
-  //       document.body.removeChild(link);
-  //       setSnackbarConfig({ open: true, message: 'File Downloaded Successfully', severity: 'success' });
-  //     } else {
-  //       setSnackbarConfig({ open: true, message: 'No data found !', severity: 'warning' });
-  //     }
-  //   } catch (error) {
-  //     setSnackbarConfig({ open: true, message: 'Something went wrong !', severity: 'error' });
-  //   } finally {
-  //     setIsDownloading(false);
-  //   }
-  // };
+  const [openAssociateScoreModal, setOpenAssociateScoreModal] = useState(false);
+  const [snackbarConfig, setSnackbarConfig] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
   const [storeviewcaptureprogres, setstoreviewcaptureprogres] = useState(0);
-  const getviewcaptureprogress = async () => {
-    try {
-      const response = store && selectedDate2 && (await storeviewcaptureprogress(selectedDate2, store));
+  const [anomalycount, setanomalycount] = useState([]);
+  const [associatescore, setassociatescore] = useState([]);
+  const [brandwiseosaandtester_osa, setbrandwiseosaandtester_osa] = useState([]);
+  const [brandwiseosaandtester_tester, setbrandwiseosaandtester_tester] = useState([]);
+  const [isLoadingBrandScores, setIsLoadingBrandScores] = useState(false);
 
-      console.log('dates', response);
-      setstoreviewcaptureprogres(response[0].captureProgress);
-    } catch (error) {
-      console.log('error from getviewcaptureprogress', error);
-    }
+  const selectedCategory = useSelector((state) => state.category?.selectedCategory) || 'All';
+  const dispatch = useDispatch();
+
+  const handleCategoryChange = (event) => {
+    dispatch(setSelectedCategory(event.target.value));
   };
-  useEffect(() => {
-    getviewcaptureprogress();
-    //eslint-disable-next-line
-  }, [selectedDate2, store]);
-  useEffect(() => {
-    getviewcaptureprogress();
-    //eslint-disable-next-line
+
+  const toLocalDateString = useCallback((date) => {
+    if (!date) return null;
+    const tzOffset = date.getTimezoneOffset() * 60000;
+    return new Date(date.getTime() - tzOffset).toISOString().slice(0, 10);
   }, []);
+
+  const selectedDateFromRedux = useSelector((state) => state?.customization?.selectedDate);
+
+  const selectedDate = useMemo(() => {
+    if (!selectedDateFromRedux?.end_date) return null;
+    return toLocalDateString(selectedDateFromRedux.end_date);
+  }, [toLocalDateString, selectedDateFromRedux]);
+
+  const selectedDate2 = useMemo(() => selectedDateFromRedux || null, [selectedDateFromRedux]);
+
+  useEffect(() => {
+    // Initialize data when dates are not available
+    if (!selectedDate || !selectedDate2) {
+      setcapture7days([]);
+      settestfullness7days([]);
+      setOsa7days([]);
+      setanomalycount([]);
+      setassociatescore([]);
+      setbrandwiseosaandtester_osa([]);
+      setbrandwiseosaandtester_tester([]);
+    }
+  }, [selectedDate, selectedDate2]);
+
+  const get7daysdata = useCallback(
+    async (date) => {
+      if (!store || !date) {
+        setcapture7days([]);
+        settestfullness7days([]);
+        setOsa7days([]);
+        return;
+      }
+
+      try {
+        const result = await getsevendaydata(date, store);
+        if (!result) {
+          throw new Error('No data received');
+        }
+
+        setcapture7days(Array.isArray(result.capture7days) ? result.capture7days : []);
+        settestfullness7days(Array.isArray(result.testerFullness7days) ? result.testerFullness7days : []);
+        setOsa7days(Array.isArray(result.OSA7days) ? result.OSA7days : []);
+      } catch (error) {
+        console.error('Error in get7daysdata:', error);
+        setcapture7days([]);
+        settestfullness7days([]);
+        setOsa7days([]);
+        setSnackbarConfig({
+          open: true,
+          message: 'Failed to fetch 7 days data',
+          severity: 'error'
+        });
+      }
+    },
+    [store]
+  );
+
+  useEffect(() => {
+    get7daysdata(selectedDate);
+  }, [get7daysdata, selectedDate]);
+
+  const handleButtonClick = useCallback((button) => {
+    setActiveButton(button);
+  }, []);
+
+  const handleCloseSnackbar = useCallback(() => {
+    setSnackbarConfig((prev) => ({ ...prev, open: false }));
+  }, []);
+
+  const getanomalydetails = useCallback(async () => {
+    try {
+      if (!selectedDate2 || !store) return;
+
+      const res = await storeanomalycount(selectedDate2, store);
+      if (res) {
+        setanomalycount(res);
+        setAnomaliesLoading(false);
+      }
+    } catch (error) {
+      console.error('Error in getanomalydetails:', error);
+      setanomalycount(null);
+      setAnomaliesLoading(false);
+    }
+  }, [store, selectedDate2]);
+
+  useEffect(() => {
+    getanomalydetails();
+  }, [getanomalydetails]);
+
+  const getassociatescore = useCallback(async () => {
+    try {
+      if (!selectedDate || !store) return;
+
+      const result = await associatescoreaforkpi(selectedDate, store, 'fragrances');
+      setassociatescore(result || []);
+    } catch (e) {
+      console.error('Error in getassociatescore:', e);
+      setassociatescore([]);
+    }
+  }, [store, selectedDate]);
+
+  useEffect(() => {
+    getassociatescore();
+  }, [getassociatescore]);
+
+  const calculateAverage = useCallback((data, field) => {
+    if (!Array.isArray(data) || data.length === 0) return 'NA';
+    if (data.length === 1 && (data[0]._id === null || data[0][field] === null)) return 'NA';
+    const validScores = data.filter((item) => item[field] !== null);
+    if (validScores.length === 0) return 'NA';
+    const sum = validScores.reduce((acc, item) => acc + (parseFloat(item[field]) || 0), 0);
+    return (sum / validScores.length).toFixed(1);
+  }, []);
+
+  const getbrandwiseosaandtesterscore = useCallback(async () => {
+    try {
+      if (!selectedDate2 || !store) return;
+
+      setIsLoadingBrandScores(true);
+      const [result1, result2] = await Promise.all([
+        brandWiseOsaAndTesterScore(selectedDate2, store, selectedCategory.toLowerCase()),
+        brandWiseOsaAndTesterScore(selectedDate2, store, selectedCategory.toLowerCase())
+      ]);
+
+      setbrandwiseosaandtester_osa(result1 || []);
+      setbrandwiseosaandtester_tester(result2 || []);
+
+      if (Array.isArray(result1) && result1.length > 0) {
+        result1.sort((a, b) => a.OSA_Score - b.OSA_Score);
+      }
+
+      if (Array.isArray(result2) && result2.length > 0) {
+        result2.sort((a, b) => a.testers_score - b.testers_score);
+      }
+    } catch (error) {
+      console.error('Error in getbrandwiseosaandtesterscore:', error);
+      setbrandwiseosaandtester_osa([]);
+      setbrandwiseosaandtester_tester([]);
+    } finally {
+      setIsLoadingBrandScores(false);
+    }
+  }, [store, selectedDate2, selectedCategory]);
+
+  const isDataAvailable = useCallback((data) => {
+    return Array.isArray(data) && data.length > 0 && data[0]._id !== null;
+  }, []);
+
+  useEffect(() => {
+    getbrandwiseosaandtesterscore();
+  }, [getbrandwiseosaandtesterscore]);
+
+  const getviewcaptureprogress = useCallback(async () => {
+    try {
+      if (!selectedDate2 || !store) return;
+
+      const response = await storeviewcaptureprogress(selectedDate2, store);
+      if (response) {
+        setstoreviewcaptureprogres(response[0].captureProgress);
+      }
+    } catch (error) {
+      console.error('Error in getviewcaptureprogress:', error);
+      setstoreviewcaptureprogres(0);
+    }
+  }, [store, selectedDate2]);
+
+  useEffect(() => {
+    getviewcaptureprogress();
+  }, [getviewcaptureprogress]);
+
   const accentColLight = theme.palette.success.light;
   const accentColDark = theme.palette.success.dark;
   const progressChart = {
@@ -380,294 +316,29 @@ function Overview() {
     borderRadius: '15px'
   };
 
-  // console.log(ratio);
-
-  // const calDate = (d) => {
-  //   setSelectedDate(d.toString());
-  //   return d;
-  // };
-
-  const [isMounted, setIsMounted] = useState(true);
-  // const [totalPOP, setTotalPop] = useState(false);
-  useEffect(() => {
-    // Set the component to be mounted when the effect is run
-    setIsMounted(true);
-
-    // Return a cleanup function to set the component to unmounted
-    return () => {
-      setIsMounted(false);
-    };
+  const handleAssociateUploadComplete = useCallback((success) => {
+    if (success) {
+      setSnackbarConfig({
+        open: true,
+        message: 'File uploaded successfully!',
+        severity: 'success'
+      });
+    } else {
+      setSnackbarConfig({
+        open: true,
+        message: 'Error uploading file!',
+        severity: 'error'
+      });
+    }
   }, []);
 
-  useEffect(() => {
-    if (isMounted) {
-      const commonBody = {
-        start_date: selectedDate,
-        storeId: store
-      };
-      // const popBody = {
-      //   date: date,
-      //   store_id: store
-      // };
-      // eslint-disable-next-line
-      async function getDataDwell() {
-        // console.log(date);
-        try {
-          const data = await avgDwelTime(commonBody);
-          console.log('Dwell Time', data);
-          // console.log(data.length);
-          if (data.storeDwellTime.length == 0) {
-            setStoreDwelTime(false);
-            setDweltimedata(false);
-          } else if (data.storeDwellTime.length > 0) {
-            const { storeDwellTime } = data;
+  const handleCloseAssociateScoreModal = useCallback(() => {
+    setOpenAssociateScoreModal(false);
+  }, []);
 
-            const storeAvgDwellTime = storeDwellTime[0].avgDwellTime;
-
-            setStoreDwelTime(storeAvgDwellTime);
-
-            const filteredZoneDwellTime = data.zoneDwellTime.filter((zone) => zone.zoneName !== 'Entry');
-            setDweltimedata(filteredZoneDwellTime);
-
-            const avgDwellTimeValues = filteredZoneDwellTime.map((zone) => zone.avgDwellTime);
-            const total = avgDwellTimeValues.reduce((acc, val) => acc + val, 0);
-            const avg = total / avgDwellTimeValues.length;
-            setAverageDwellTime(avg);
-          }
-          return data;
-        } catch (error) {
-          console.log(error);
-        }
-      }
-      // console.log(commonBody);
-      // eslint-disable-next-line
-      // async function getFootfalldata() {
-      //   try {
-      //     // const data = await footfallCard(commonBody);
-      //     // const data = await GetpopKPI(popBody);
-      //     // const data2 = await GetPopPercentage(popBody);
-      //     // console.log(data2.data);
-      //     data2.data !== null ? setTotalPop(parseFloat(data2.data.average_pop_score).toFixed(1)) : setTotalPop(false);
-
-      //     console.log('pop data', data2.data);
-      //     // if (data.data.length === 0) {
-      //     //   // console.log('hello')
-      //     //   setFootfalldata(false);
-      //     //   setftfall(false);
-      //     // } else if (data.data.length > 0) {
-      //     //   // const { totalCustomerStore } = data[0];
-      //     //   // const { zones } = data[0];
-      //     //   const group = data.data;
-      //     //   setIsGroup(group);
-
-      //     //   group.forEach((item) => {
-      //     //     let percentageString = item.data.FullnessPopPercent.replace('%', '');
-      //     //     item.data.FullnessPopPercent = parseFloat(percentageString);
-      //     //   });
-      //     //   group.sort((a, b) => a.data.FullnessPopPercent - b.data.FullnessPopPercent);
-      //     //   console.log('pxs');
-      //     //   setftfall(true);
-      //     //   // console.log(zones);
-      //     //   setFootfalldata(group);
-      //     // }
-
-      //     // return data;
-      //   } catch (error) {
-      //     console.log(error);
-      //   }
-      // }
-      // eslint-disable-next-line
-      async function getRatioData() {
-        const body = {
-          date: '2024-03-21',
-          store_id: store
-        };
-        try {
-          const {
-            'Customer count': customerCount,
-            'Employee count': employeeCount
-            // 'Employee to customer ratio': ratio
-          } = await getRatio(body);
-          setEmpCount(employeeCount);
-          setCostcnt(customerCount);
-          // setRatio(ratio);
-          // const u = await data.length
-          // setUniquejourneys(u);
-          // setJourneyData([...data]);
-          // console.log(journeyData.length)
-          // console.log(dta);
-          // return ;
-        } catch (error) {
-          console.log(error);
-        }
-      }
-      //eslint-disable-next-line
-      async function getCaptureProg() {
-        try {
-          // const capProgress = await GetCapProgStoreView(popBody);
-          // const capProgress = { data: [] };
-          // console.log('capTop ', capProgress);
-          // const capProg = capProgress.data.captureProgressZoneData.map((item) => {
-          //   return {
-          //     ...item,
-          //     captureProgress: parseFloat(item.captureProgress.replace('%', ''))
-          //   };
-          // });
-          // setCaptureProg(capProg);
-          // setCapProgressValue(capProgress.data[0].capture_percentage);
-        } catch (error) {
-          console.log(error);
-        }
-      }
-      //eslint-disable-next-line
-      async function getAnomalies() {
-        try {
-          // const anomalies = await GetAnomaliesCount(popBody);
-          const anomalies = { data: [] };
-          if (anomalies) {
-            // setAnomaliesLoading(false);
-            setAnomaliesCount(anomalies.data);
-            console.log('def', anomalies.data);
-            console.log('def date', date);
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      }
-
-      //eslint-disable-next-line
-      async function getAssociateScore() {
-        const body = {
-          date: selectedDate,
-          store_id: store,
-          category: 'fragrance'
-        };
-        console.log('Body', body);
-        try {
-          // const associateScore = await getAssociateScoreData(body);
-          const associateScore = { data: [] };
-          if (associateScore) {
-            setAssociateScoreData(associateScore.data);
-            console.log('Associate Score', associateScore.data);
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      }
-
-      getAnomalies();
-      // getFootfalldata();
-      getDataDwell();
-      getRatioData();
-      getCaptureProg();
-      getAssociateScore();
-    }
-
-    // eslint-disable-next-line
-  }, [selectedDate]);
-  // console.log('Anomalies ', anomaliesCount);
-  // const handleOpenCameraView = () => {
-  //   setIsCamOpen(true);
-  //   handleScrollToComponent();
-  // }
-  // ftfall && ftfall.sort((a, b) => b.totalCustomerZone - a.totalCustomerZone);
-  // dweltimeData && dweltimeData.sort((a, b) => b.avgDwellTime - a.avgDwellTime);
-
-  // useEffect(() => {
-  //   console.log('date from dasda', date);
-  // }, [finalDate]);
-
-  const [
-    // osascore,
-    setosascore
-  ] = useState(0);
-  const [
-    // testerscore,
-    settesterscore
-  ] = useState(0);
-  const getosascoreforkpi = async () => {
-    try {
-      const result = store && selectedDate && (await OsaScoreForKpi(selectedDate, store));
-      console.log(result);
-      //   result && console.log("osa score" , result[0].osa_score.avg_osa_score);
-      //  result &&  console.log("and the result is", result);
-      result && result.osa_score.length > 0 ? setosascore(result.osa_score[0].avg_osa_score) : setosascore(0);
-      result && result.tester_score.length > 0 ? settesterscore(result.tester_score[0].avg_osa_score) : settesterscore(0);
-    } catch (e) {
-      setosascore(0);
-      settesterscore(0);
-      console.log('error from osascore', e);
-    }
-  };
-
-  const [anomalycount, setanomalycount] = useState(null);
-  const getanomalydetails = async () => {
-    try {
-      const res = store && selectedDate2 && (await storeanomalycount(selectedDate2, store));
-      res && setanomalycount(res);
-      setAnomaliesLoading(false);
-      res && console.log('tty', res);
-      console.log('uuop', res[0].missingTesterCount);
-    } catch (error) {
-      console.log('error:', error);
-    }
-  };
-
-  useEffect(() => {
-    getanomalydetails();
-    //eslint-disable-next-line
-  }, [selectedDate2, store]);
-
-  const [associatescore, setassociatescore] = useState([]);
-  const getassociatescore = async () => {
-    try {
-      const category = 'fragrances';
-      const result = store && selectedDate && (await associatescoreaforkpi(selectedDate, store, category));
-      console.log('assocaite score kpi', result);
-      setassociatescore(result);
-      result && result.length > 0 && console.log('result', result[0].osa_score);
-    } catch (e) {
-      console.log('error from osascore', e);
-    }
-  };
-  const [brandwiseosaandtester_osa, setbrandwiseosaandtester_osa] = useState([]);
-  const [brandwiseosaandtester_tester, setbrandwiseosaandtester_tester] = useState([]);
-  const getbrandwiseosaandtesterscore = async () => {
-    try {
-      const result1 = store && selectedDate2 && (await brandWiseOsaAndTesterScore(selectedDate2, store));
-      const result2 = store && selectedDate2 && (await brandWiseOsaAndTesterScore(selectedDate2, store));
-      console.log('getbrandwiseosaandtesterscore score kpi', result1);
-      result1 && result1.length > 0 && result1.sort((a, b) => a.OSA_Score - b.OSA_Score);
-      setbrandwiseosaandtester_osa(result1);
-      result2 && result2.length > 0 && result2.sort((a, b) => a.testers_score - b.testers_score);
-
-      setbrandwiseosaandtester_tester(result2);
-    } catch (error) {
-      console.log('error from brand wise osa and tester score', error);
-    }
-  };
-
-  useEffect(() => {
-    getassociatescore();
-    getosascoreforkpi();
-    getbrandwiseosaandtesterscore();
-    // getanomalydetails();
-    //eslint-disable-next-line
-  }, [store, selectedDate2]);
-
-  //eslint-disable-next-line
-  const [capture7day, setcapture7day] = useState(null);
-  //eslint-disable-next-line
-  const [Osa7day, setOsa7day] = useState(null);
-  //eslint-disable-next-line
-  const [testfullness7day, settestfullness7day] = useState(null);
-  //eslint-disable-next-line
-  useEffect(() => {
-    setcapture7day(capture7days);
-    setOsa7day(Osa7days);
-    settestfullness7day(testfullness7days);
-    //eslint-disable-next-line
-  }, [testfullness7days, Osa7days, capture7days]);
+  const handleClickAssociateScoreModal = useCallback(() => {
+    setOpenAssociateScoreModal(true);
+  }, []);
 
   return (
     <div className="w-full">
@@ -677,22 +348,23 @@ function Overview() {
             <Typography variant="h3">Overview </Typography>
             {storeID ? <Typography variant="h6">Store ID: {storeID}</Typography> : <></>}
             <div className="flex space-x-2 sm:mt-2">
-              {/* <DatePickerStore SetSelectedDate={setSelectedDate} style={{ borderRadius: '15px' }} /> */}
-              {/* <div>
-                <button
-                  onClick={isDownloading ? null : handleDownload}
-                  className="w-28 h-10 mt-5 md:mt-0 rounded-md shadow-md border border-white bg-cyan-500 hover:bg-cyan-600 active:bg-cyan-400 text-white flex place-items-center"
+              <FormControl size="small" sx={{ minWidth: 120 }}>
+                <Select
+                  value={selectedCategory}
+                  onChange={handleCategoryChange}
+                  displayEmpty
+                  sx={{
+                    backgroundColor: 'white',
+                    '& .MuiSelect-select': {
+                      py: 1
+                    }
+                  }}
                 >
-                  {isDownloading ? (
-                    <CgSpinner className="w-full text-xl animate-spin" />
-                  ) : (
-                    <div className="w-full h-full flex justify-center space-x-2">
-                      <IoMdDownload className="h-full text-lg" />
-                      <span className="mt-2 text-base">Report</span>
-                    </div>
-                  )}
-                </button>
-              </div> */}
+                  <MenuItem value="All">All</MenuItem>
+                  <MenuItem value="Fragrance">Fragrance</MenuItem>
+                  <MenuItem value="Beauty">Beauty</MenuItem>
+                </Select>
+              </FormControl>
             </div>
           </Stack>
         </Grid>
@@ -701,51 +373,39 @@ function Overview() {
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <div style={{ height: '276px' }} className="flex flex-col">
                 <Card className="border border-gray-300" sx={{ height: '276px' }}>
-                  {brandwiseosaandtester_osa && brandwiseosaandtester_osa.length > 0 ? (
+                  {isLoadingBrandScores ? (
                     <div className="flex  w-full  flex-col gap-1 p-3">
                       <div className="flex items-center justify-center gap-2 w-full">
                         <img src={popIcon} alt="pop" className="h-14 w-14" />
                         <div className="w-full">
-                          <p className="text-3xl text-gray-500 ">{Osa7days ? Osa7days[Osa7days.length - 1] : 0}%</p>
+                          <p className="text-3xl text-gray-500 ">NA</p>
                           <p className="text-lg font-semibold">OSA</p>
                         </div>
-                        <>
-                          <IoMdSettings
-                            className="text-5xl cursor-not-allowed"
-                            //  onClick={handleClickAssociateScoreModal}
-                          />
-                          <Modal
-                            open={openAssociateScoreModal}
-                            onClose={handleCloseAssociateScoreModal}
-                            aria-labelledby="modal-modal-title"
-                            aria-describedby="modal-modal-description"
-                          >
-                            <Box sx={modalStyle}>
-                              <CsvModalAssociate onUploadComplete={handleAssociateUploadComplete} />
-                            </Box>
-                          </Modal>
-                        </>
+                        <IoMdSettings className="text-5xl cursor-not-allowed" />
                       </div>
                       <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
-                        {brandwiseosaandtester_osa && brandwiseosaandtester_osa.length > 0 ? (
+                        <Skeleton variant="rectangular" height={184} className="rounded-md" />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex  w-full  flex-col gap-1 p-3">
+                      <div className="flex items-center justify-center gap-2 w-full">
+                        <img src={popIcon} alt="pop" className="h-14 w-14" />
+                        <div className="w-full">
+                          <p className="text-3xl text-gray-500 ">
+                            {calculateAverage(brandwiseosaandtester_osa, 'OSA_Score')}
+                            {calculateAverage(brandwiseosaandtester_osa, 'OSA_Score') !== 'NA' && '%'}
+                          </p>
+                          <p className="text-lg font-semibold">OSA</p>
+                        </div>
+                        <IoMdSettings className="text-5xl cursor-not-allowed" />
+                      </div>
+                      <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
+                        {isDataAvailable(brandwiseosaandtester_osa) ? (
                           brandwiseosaandtester_osa.map((item, index) => {
                             console.log('item', item.OSA_Score);
                             const percentage = Math.round(parseFloat(item.OSA_Score)) > 100 ? 100 : Math.round(parseFloat(item.OSA_Score));
                             const barcolor = percentage >= 99 ? '#00ac69' : percentage >= 95 ? '#f4a100' : '#ff413a';
-                            // const capturedZone = item.zones.map((i) => {
-                            //   return i._id.zone;
-                            // });
-                            // const capturedZoneString = capturedZone.join(', ');
-                            // const assignedZone = item.assigned_zones;
-                            // const assignedZoneString = assignedZone.join(', ');
-                            // const firstScore =
-                            //   parseFloat(item.total_pop_percentage_first).toFixed(1) > 100
-                            //     ? 100
-                            //     : parseFloat(item.total_pop_percentage_first).toFixed(1);
-                            // const secondScore =
-                            //   parseFloat(item.total_pop_percentage).toFixed(1) > 100
-                            //     ? 100
-                            //     : parseFloat(item.total_pop_percentage).toFixed(1);
                             return (
                               <div className="mt-2" key={index}>
                                 <div className="flex gap-1 items-center justify-between">
@@ -763,24 +423,6 @@ function Overview() {
                                           <p className="text-base">Bays Captured</p>
                                           <p className="text-base "> {item.no_of_bays_captured}</p>
                                         </div>
-                                        <Divider
-                                          sx={{
-                                            bgcolor: 'white'
-                                          }}
-                                        />
-                                        {/* <div className="mb-2 p-2">
-                                          <p className="text-base">Bays with anomalies</p>
-                                          <p className="text-base "> {item.no_of_bays_with_anomalies}</p>
-                                        </div> */}
-                                        {/* <Divider
-                                          sx={{
-                                            bgcolor: 'white'
-                                          }}
-                                        /> */}
-                                        {/* <div className=" p-2">
-                                          <p className="text-xs">First Score :{' ' + item.missing_tester_percentage} %</p>
-                                         
-                                        </div> */}
                                       </div>
                                     }
                                     disableHoverListener={true}
@@ -806,34 +448,8 @@ function Overview() {
                             );
                           })
                         ) : (
-                          <Skeleton variant="rectangular" height={184} className="rounded-md" />
+                          <p className="text-base font-semibold text-gray-500">Currently No data available</p>
                         )}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex  w-full  flex-col gap-1 p-3">
-                      <div className="flex items-center justify-center gap-2 w-full">
-                        <img src={popIcon} alt="pop" className="h-14 w-14" />
-                        <div className="w-full">
-                          <p className="text-3xl text-gray-500 ">{Osa7days ? Osa7days[Osa7days.length - 1] : 0}%</p>
-                          <p className="text-lg font-semibold">OSA</p>
-                        </div>
-                        <>
-                          <IoMdSettings className="text-5xl" onClick={handleClickAssociateScoreModal} />
-                          <Modal
-                            open={openAssociateScoreModal}
-                            onClose={handleCloseAssociateScoreModal}
-                            aria-labelledby="modal-modal-title"
-                            aria-describedby="modal-modal-description"
-                          >
-                            <Box sx={modalStyle}>
-                              <CsvModalAssociate onUploadComplete={handleAssociateUploadComplete} type="associateStore" />
-                            </Box>
-                          </Modal>
-                        </>
-                      </div>
-                      <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
-                        <p className="text-base font-semibold text-gray-500">Currently No data available</p>
                       </div>
                     </div>
                   )}
@@ -844,54 +460,40 @@ function Overview() {
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <div style={{ height: '276px' }} className="flex flex-col">
                 <Card className="border border-gray-300" sx={{ height: '276px' }}>
-                  {brandwiseosaandtester_tester && brandwiseosaandtester_tester.length > 0 ? (
+                  {isLoadingBrandScores ? (
+                    <div className="flex  w-full  flex-col gap-1 p-3">
+                      <div className="flex items-center justify-center gap-2 w-full">
+                        <img src={popIcon} alt="pop" className="h-14 w-14" />
+                        <div className="w-full">
+                          <p className="text-3xl text-gray-500 ">NA</p>
+                          <p className="text-lg font-semibold">Tester Score</p>
+                        </div>
+                        <IoMdSettings className="text-5xl cursor-not-allowed" />
+                      </div>
+                      <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
+                        <Skeleton variant="rectangular" height={184} className="rounded-md" />
+                      </div>
+                    </div>
+                  ) : (
                     <div className="flex  w-full  flex-col gap-1 p-3">
                       <div className="flex items-center justify-center gap-2 w-full">
                         <img src={popIcon} alt="pop" className="h-14 w-14" />
                         <div className="w-full">
                           <p className="text-3xl text-gray-500 ">
-                            {testfullness7days ? testfullness7days[testfullness7days.length - 1] : 0}%
+                            {calculateAverage(brandwiseosaandtester_tester, 'testers_score')}
+                            {calculateAverage(brandwiseosaandtester_tester, 'testers_score') !== 'NA' && '%'}
                           </p>
                           <p className="text-lg font-semibold">Tester Score</p>
                         </div>
-                        <>
-                          <IoMdSettings
-                            className="text-5xl cursor-not-allowed"
-                            //  onClick={handleClickAssociateScoreModal}
-                          />
-                          <Modal
-                            open={openAssociateScoreModal}
-                            onClose={handleCloseAssociateScoreModal}
-                            aria-labelledby="modal-modal-title"
-                            aria-describedby="modal-modal-description"
-                          >
-                            <Box sx={modalStyle}>
-                              <CsvModalAssociate onUploadComplete={handleAssociateUploadComplete} />
-                            </Box>
-                          </Modal>
-                        </>
+                        <IoMdSettings className="text-5xl cursor-not-allowed" />
                       </div>
                       <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
-                        {brandwiseosaandtester_tester && brandwiseosaandtester_tester.length > 0 ? (
+                        {isDataAvailable(brandwiseosaandtester_tester) ? (
                           brandwiseosaandtester_tester.map((item, index) => {
                             console.log('item', item.testers_score);
                             const percentage =
                               Math.round(parseFloat(item.testers_score)) > 100 ? 100 : Math.round(parseFloat(item.testers_score));
                             const barcolor = percentage >= 99 ? '#00ac69' : percentage >= 95 ? '#f4a100' : '#ff413a';
-                            // const capturedZone = item.zones.map((i) => {
-                            //   return i._id.zone;
-                            // });
-                            // const capturedZoneString = capturedZone.join(', ');
-                            // const assignedZone = item.assigned_zones;
-                            // const assignedZoneString = assignedZone.join(', ');
-                            // const firstScore =
-                            //   parseFloat(item.total_pop_percentage_first).toFixed(1) > 100
-                            //     ? 100
-                            //     : parseFloat(item.total_pop_percentage_first).toFixed(1);
-                            // const secondScore =
-                            //   parseFloat(item.total_pop_percentage).toFixed(1) > 100
-                            //     ? 100
-                            //     : parseFloat(item.total_pop_percentage).toFixed(1);
                             return (
                               <div className="mt-2" key={index}>
                                 <div className="flex gap-1 items-center justify-between">
@@ -909,24 +511,6 @@ function Overview() {
                                           <p className="text-base">Bays Captured</p>
                                           <p className="text-base "> {item.no_of_bays_captured}</p>
                                         </div>
-                                        {/* <Divider
-                                          sx={{
-                                            bgcolor: 'white'
-                                          }}
-                                        />
-                                        <div className="mb-2 p-2">
-                                          <p className="text-base">Bays with anomalies</p>
-                                          <p className="text-base "> {item.no_of_bays_with_anomalies}</p>
-                                        </div>
-                                        <Divider
-                                          sx={{
-                                            bgcolor: 'white'
-                                          }}
-                                        /> */}
-                                        {/* <div className=" p-2">
-                                          <p className="text-xs">First Score :{' ' + item.missing_tester_percentage} %</p>
-                                         
-                                        </div> */}
                                       </div>
                                     }
                                     disableHoverListener={true}
@@ -952,36 +536,8 @@ function Overview() {
                             );
                           })
                         ) : (
-                          <Skeleton variant="rectangular" height={184} className="rounded-md" />
+                          <p className="text-base font-semibold text-gray-500">Currently No data available</p>
                         )}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex  w-full  flex-col gap-1 p-3">
-                      <div className="flex items-center justify-center gap-2 w-full">
-                        <img src={popIcon} alt="pop" className="h-14 w-14" />
-                        <div className="w-full">
-                          <p className="text-3xl text-gray-500 ">
-                            {testfullness7days ? testfullness7days[testfullness7days.length - 1] : 0}%
-                          </p>
-                          <p className="text-lg font-semibold">Tester Score</p>
-                        </div>
-                        <>
-                          <IoMdSettings className="text-5xl" onClick={handleClickAssociateScoreModal} />
-                          <Modal
-                            open={openAssociateScoreModal}
-                            onClose={handleCloseAssociateScoreModal}
-                            aria-labelledby="modal-modal-title"
-                            aria-describedby="modal-modal-description"
-                          >
-                            <Box sx={modalStyle}>
-                              <CsvModalAssociate onUploadComplete={handleAssociateUploadComplete} type="associateStore" />
-                            </Box>
-                          </Modal>
-                        </>
-                      </div>
-                      <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
-                        <p className="text-base font-semibold text-gray-500">Currently No data available</p>
                       </div>
                     </div>
                   )}
@@ -1025,20 +581,6 @@ function Overview() {
                               ((item.total_no_of_shelves - item.no_of_bays_with_anomalies) / item.total_no_of_shelves) * 100;
                             const percentage = Math.round(parseFloat(prepercent)) > 100 ? 100 : Math.round(parseFloat(prepercent));
                             const barcolor = percentage >= 99 ? '#00ac69' : percentage >= 95 ? '#f4a100' : '#ff413a';
-                            // const capturedZone = item.zones.map((i) => {
-                            //   return i._id.zone;
-                            // });
-                            // const capturedZoneString = capturedZone.join(', ');
-                            // const assignedZone = item.assigned_zones;
-                            // const assignedZoneString = assignedZone.join(', ');
-                            // const firstScore =
-                            //   parseFloat(item.total_pop_percentage_first).toFixed(1) > 100
-                            //     ? 100
-                            //     : parseFloat(item.total_pop_percentage_first).toFixed(1);
-                            // const secondScore =
-                            //   parseFloat(item.total_pop_percentage).toFixed(1) > 100
-                            //     ? 100
-                            //     : parseFloat(item.total_pop_percentage).toFixed(1);
                             return (
                               <div className="mt-2" key={index}>
                                 <div className="flex gap-1 items-center justify-between">
@@ -1056,24 +598,6 @@ function Overview() {
                                           <p className="text-base">Bays Captured</p>
                                           <p className="text-base "> {item.no_of_bays_captured ? item.no_of_bays_captured : 0}</p>
                                         </div>
-                                        {/* <Divider
-                                          sx={{
-                                            bgcolor: 'white'
-                                          }}
-                                        />
-                                        <div className="mb-2 p-2">
-                                          <p className="text-base">Bays with anomalies</p>
-                                          <p className="text-base "> {item.no_of_bays_with_anomalies}</p>
-                                        </div>
-                                        <Divider
-                                          sx={{
-                                            bgcolor: 'white'
-                                          }}
-                                        /> */}
-                                        {/* <div className=" p-2">
-                                          <p className="text-xs">First Score :{' ' + item.missing_tester_percentage} %</p>
-                                         
-                                        </div> */}
                                       </div>
                                     }
                                     disableHoverListener={true}
@@ -1137,7 +661,6 @@ function Overview() {
               <Card className="border border-gray-300" sx={{ height: '276px' }}>
                 <div className="flex  w-full  flex-col gap-1 p-3">
                   <div className="flex items-center justify-center gap-2 w-full">
-                    {/* <DirectionsWalkIcon className="bg-[#444444] text-white rounded-full p-2 text-6xl" /> */}
                     <img src={pog} alt="pop" className="h-14 w-14" />
 
                     <div className="w-full">
@@ -1194,14 +717,12 @@ function Overview() {
                     <div>
                       <Chart
                         options={progressChart.options}
-                        // series={capProgressValue ? [parseFloat(capProgressValue).toFixed(1)] : [0]}
                         series={progressChart.series}
                         type={progressChart.options.chart.type}
                         height={progressChart.options.chart.height}
                       />
                     </div>
                     <div className="flex gap-1 flex-col">
-                      {/* <div className="text-4xl font-semibold">{capProgressValue ? parseFloat(capProgressValue).toFixed(1) : 0}%</div> */}
                       <div className="text-4xl font-semibold">{storeviewcaptureprogres ? storeviewcaptureprogres.toFixed(1) : 0}%</div>
                       <div className="text-sm font-semibold">Capture Progress</div>
                     </div>
@@ -1247,9 +768,9 @@ function Overview() {
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         key={'bottom' + 'right'}
         autoHideDuration={6000}
-        onClose={handleSnackBarClose}
+        onClose={handleCloseSnackbar}
       >
-        <Alert onClose={handleSnackBarClose} severity={snackbarConfig.severity} sx={{ width: '100%' }}>
+        <Alert onClose={handleCloseSnackbar} severity={snackbarConfig.severity} sx={{ width: '100%' }}>
           {snackbarConfig.message}
         </Alert>
       </Snackbar>

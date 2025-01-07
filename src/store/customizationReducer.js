@@ -12,8 +12,10 @@ export const initialState = {
     lat: '',
     lng: ''
   },
-  selectedDate: { start_date: new Date(), end_date: new Date() }
+  selectedDate: { start_date: new Date(), end_date: new Date() },
+  selectedRange: 'Current Day'  
 };
+
 const customizationReducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.MENU_OPEN:
@@ -41,6 +43,11 @@ const customizationReducer = (state = initialState, action) => {
       return {
         ...state,
         selectedDate: action.payload
+      };
+    case 'SET_SELECTED_RANGE':
+      return {
+        ...state,
+        selectedRange: action.payload
       };
     default:
       return state;

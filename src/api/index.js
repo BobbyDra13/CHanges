@@ -802,14 +802,16 @@ export const associatescoreaforkpi = async (date, store, category) => {
   }
 };
 
-export const brandWiseOsaAndTesterScore = async (finalDate, store) => {
+export const brandWiseOsaAndTesterScore = async (finalDate, store, category) => {
+  console.log('Body for api', finalDate, store, category);
   try {
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/brand-wise-score';
     const data = {
       store_id: String(store),
       // store_id:"6623a893c40c738627f3373f",
       start_date: finalDate.start_date,
-      end_date:finalDate.end_date
+      end_date: finalDate.end_date,
+      category: category
       // date:"2024-06-13"
     };
 

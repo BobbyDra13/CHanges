@@ -1,278 +1,99 @@
-import React, { useState, useEffect } from 'react';
-import KpiCard from './KpiCard/index';
-import { GetPopWeekLineData } from 'api';
-import { useTheme, Skeleton, Card, Stack, Grid, Typography } from '@mui/material';
-import { useSelector } from 'react-redux';
+import React from 'react';
+import { useTheme, Card, Stack, Grid, Typography, LinearProgress, Chip } from '@mui/material';
+import LockIcon from '@mui/icons-material/Lock';
 
-function PoPScoreKPICard({ date }) {
+function PoPScoreKPICard() {
   const theme = useTheme();
-  const toLocalDateString = (date) => {
-    const tzOffset = date.getTimezoneOffset() * 60000; // offset in milliseconds
-    const localISOTime = new Date(date.getTime() - tzOffset).toISOString().slice(0, 10);
-    return localISOTime;
-  };
-
-  // const selectedDate = toLocalDateString(useSelector((state) => state.customization.selectedDate).start_date);
-  const start_date = toLocalDateString(useSelector((state) => state.customization.selectedDate).start_date);
-  const end_date = toLocalDateString(useSelector((state) => state.customization.selectedDate).end_date);
-  const [popData, setPopData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [popChipData, setPopChipData] = useState('');
-  const [capStatus, setCapStatus] = useState(true);
-  const [popPercentage, setPopPercentage] = useState('0');
-  const [status, setStatus] = useState([]);
-  const [dates, setDates] = useState([]);
-  const [isDataAvailable, setIsDataAvailable] = useState(false);
-  const user_id = JSON.parse(localStorage.getItem('userData')).data._id;
-  console.log('yyaa', user_id);
-
-  const dummyData = {
-    data: [0, 0, 0, 0, 0, 0, 0],
-    capture_status: [false, false, false, false, false, false, false],
-    categories: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA']
-  };
-
-  useEffect(() => {
-    async function getData() {
-      const body = {
-        // date: date.toString(),
-        start_date: start_date,
-        end_date: end_date,
-        user_id: user_id
-      };
-
-      try {
-        setLoading(true);
-        const data = await GetPopWeekLineData(body);
-        console.log('fhk', data);
-        if (data === undefined) {
-          setIsDataAvailable(false);
-          setStatus(dummyData.capture_status);
-          setDates(dummyData.categories);
-          setPopData(dummyData.data);
-          setPopChipData('NA%');
-          setPopPercentage('NA');
-          setCapStatus(false);
-          setLoading(false);
-        }
-        const popScoreFullnessLine = data.data;
-        setIsDataAvailable(true);
-        const popScoreFullness = popScoreFullnessLine.map((item) => {
-          if (item && item.averagePopScore != 'No data found') {
-            const percentage = parseFloat(item.averagePopScore.replace('%', ''));
-            return `${percentage.toFixed(2)}%`;
-          } else {
-            return '0%';
-          }
-        });
-        setPopData(popScoreFullness);
-        const lastElement = parseFloat(popScoreFullness[popScoreFullness.length - 1].replace('%', '')) || 0;
-        const secondLastElement = parseFloat(popScoreFullness[popScoreFullness.length - 2].replace('%', '')) || 0;
-        const difference = `${(lastElement - secondLastElement).toFixed(1)}`;
-        setPopChipData(difference);
-
-        const Dates = popScoreFullnessLine.map((item) => {
-          let date = item.capture_status ? item.date : `${item.date} (Data not captured)`;
-          return date;
-        });
-        console.log('Dates', Dates);
-        setDates(Dates);
-
-        const CaptureStatus = popScoreFullnessLine.map((i) => {
-          return i.capture_status;
-        });
-        setStatus(CaptureStatus);
-
-        if (data.data === null) {
-          setPopPercentage('0');
-        } else {
-          let percentage = `${parseFloat(data.data[6].averagePopScore).toFixed(1)}%`;
-          setPopPercentage(percentage);
-          setCapStatus(data.data[6].capture_status);
-        }
-
-        setLoading(false);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    getData();
-    //eslint-disable-next-line
-  }, [date]);
-
-  const chartConfig = {
-    type: 'line',
-    height: 100,
-    series: [
-      {
-        name: 'PoP Compliance %',
-        data: popData
-      }
-    ],
-    options: {
-      chart: {
-        toolbar: {
-          show: false
-        }
-      },
-      colors: [isDataAvailable ? '#10b981' : '#dadada'],
-      markers: {
-        discrete: [
-          {
-            seriesIndex: 0,
-            dataPointIndex: 0,
-            fillColor: !isDataAvailable ? '#dadada' : status[0] ? '#10b981' : '#dadada',
-            strokeColor: 'white',
-            size: 7
-          },
-          {
-            seriesIndex: 0,
-            dataPointIndex: 1,
-            fillColor: !isDataAvailable ? '#dadada' : status[1] ? '#10b981' : '#dadada',
-            strokeColor: 'white',
-            size: 7
-          },
-          {
-            seriesIndex: 0,
-            dataPointIndex: 2,
-            fillColor: !isDataAvailable ? '#dadada' : status[2] ? '#10b981' : '#dadada',
-            strokeColor: 'white',
-            size: 7
-          },
-          {
-            seriesIndex: 0,
-            dataPointIndex: 3,
-            fillColor: !isDataAvailable ? '#dadada' : status[3] ? '#10b981' : '#dadada',
-            strokeColor: 'white',
-            size: 7
-          },
-          {
-            seriesIndex: 0,
-            dataPointIndex: 4,
-            fillColor: !isDataAvailable ? '#dadada' : status[4] ? '#10b981' : '#dadada',
-            strokeColor: 'white',
-            size: 7
-          },
-          {
-            seriesIndex: 0,
-            dataPointIndex: 5,
-            fillColor: !isDataAvailable ? '#dadada' : status[5] ? '#10b981' : '#dadada',
-            strokeColor: 'white',
-            size: 7
-          },
-          {
-            seriesIndex: 0,
-            dataPointIndex: 6,
-            fillColor: !isDataAvailable ? '#dadada' : status[6] ? '#10b981' : '#dadada',
-            strokeColor: 'white',
-            size: 7
-          }
-        ]
-      },
-
-      title: {
-        show: ''
-      },
-      dataLabels: {
-        enabled: false
-      },
-      xaxis: {
-        type: 'category',
-        categories: dates,
-        axisTicks: {
-          show: false
-        },
-        axisBorder: {
-          show: false
-        },
-        tooltip: {
-          enabled: false
-        },
-        labels: {
-          show: false
-        }
-      },
-      yaxis: {
-        labels: {
-          show: false,
-          style: {
-            colors: '#fff',
-            fontSize: '13px',
-            fontFamily: 'inherit',
-            fontWeight: 300
-          }
-        },
-        max: 100
-      },
-      stroke: {
-        lineCap: 'round',
-        curve: 'smooth',
-        width: 5
-      },
-
-      grid: {
-        show: false,
-        borderColor: '#ffffff40',
-        strokeDashArray: 5,
-        xaxis: {
-          lines: {
-            show: false
-          }
-        },
-        padding: {
-          top: 5,
-          right: 20
-        }
-      },
-      fill: {
-        opacity: 0.8
-      },
-      tooltip: {
-        theme: 'dark',
-        y: {
-          formatter: (val) => (val === 0 ? 'NILL' : val)
-        }
-      }
-    }
-  };
+  const disabledColor = theme.palette.grey[600]; // Darker grey for better visibility
 
   return (
-    <>
-      {loading ? (
-        <Card sx={{ paddingTop: 0, paddingBottom: 2.25 }}>
-          <Stack spacing={0.5}>
-            <Skeleton animation="wave" variant="rectangular" width={'100%'} height={133} />
-            <Grid container alignItems="center">
-              <Grid item>
-                <Skeleton
-                  sx={{ marginLeft: 2.25, marginTop: 0.75, marginRight: 2.25 }}
-                  animation="wave"
-                  variant="rounded"
-                  width={82}
-                  height={35}
-                />
-              </Grid>
-              <Skeleton sx={{ marginTop: 1.75 }} animation="wave" variant="rounded" width={55} height={26} />
-            </Grid>
-            <Typography sx={{ paddingLeft: 2.25, paddingRight: 2.25 }} variant="h5" color="textSecondary">
-              PoP Compliance
+    <Card sx={{ 
+      paddingTop: 1.5, 
+      paddingBottom: 2,
+      backgroundColor: '#fff',
+      position: 'relative'
+    }}>
+      <Stack spacing={0.5}>
+        <Grid container alignItems="center" spacing={1} sx={{ paddingLeft: 1, paddingRight: 2.25 }}>
+          <Grid item>
+            <Typography sx={{ color: disabledColor }} variant="h3" color="textSecondary">
+              POP Score
             </Typography>
-          </Stack>
-        </Card>
-      ) : (
-        <KpiCard
-          isLoaded={true}
-          chart={chartConfig}
-          title="PoP Compliance"
-          count={`${!isDataAvailable ? 'NA' : parseFloat(popPercentage) === 0 ? '0' : popPercentage}`}
-          percentage={`${isDataAvailable ? Math.abs(popChipData) : 'NA'}%`}
-          chipColor={!capStatus ? '#9CA3AF' : +popChipData < 0 ? '#FF6761' : '#10B981'}
-          isLoss={+popChipData < 0}
-          color={!isDataAvailable ? '#9ca3af' : capStatus ? theme.palette.success.main : '#9ca3af'}
-        />
-      )}
-    </>
+          </Grid>
+          <Grid item>
+            <LockIcon sx={{ color: disabledColor, fontSize: '1rem' }} />
+          </Grid>
+        </Grid>
+
+        <Grid container alignItems="center">
+          <Grid item>
+            <Typography variant="h3" sx={{ color: disabledColor, paddingLeft: 2.25, paddingRight: 2.25 }}>
+              N/A
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Chip
+              variant="combined"
+              sx={{ 
+                backgroundColor: theme.palette.grey[200], 
+                color: disabledColor, 
+                ml: 1.25, 
+                pl: 1,
+                cursor: 'not-allowed'
+              }}
+              label="--"
+              size="small"
+            />
+          </Grid>
+        </Grid>
+
+        <Stack spacing={2} sx={{ px: 2.25, py: 2 }}>
+          <div>
+            <div className="flex justify-between mb-1">
+              <Typography variant="body2" sx={{ color: disabledColor }}>Fragrance</Typography>
+              <Typography variant="body2" sx={{ color: disabledColor }}>
+                N/A
+              </Typography>
+            </div>
+            <LinearProgress
+              variant="determinate"
+              value={0}
+              sx={{
+                height: 8,
+                borderRadius: 5,
+                bgcolor: theme.palette.grey[100],
+                '& .MuiLinearProgress-bar': {
+                  borderRadius: 5,
+                  backgroundColor: theme.palette.grey[300]
+                }
+              }}
+            />
+          </div>
+
+          <div>
+            <div className="flex justify-between mb-1">
+              <Typography variant="body2" sx={{ color: disabledColor }}>Beauty</Typography>
+              <Typography variant="body2" sx={{ color: disabledColor }}>
+                N/A
+              </Typography>
+            </div>
+            <LinearProgress
+              variant="determinate"
+              value={0}
+              sx={{
+                height: 8,
+                borderRadius: 5,
+                bgcolor: theme.palette.grey[100],
+                '& .MuiLinearProgress-bar': {
+                  borderRadius: 5,
+                  backgroundColor: theme.palette.grey[300]
+                }
+              }}
+            />
+          </div>
+        </Stack>
+      </Stack>
+    </Card>
   );
 }
 

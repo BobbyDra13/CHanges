@@ -4,6 +4,7 @@ import FormControl from '@mui/material/FormControl';
 import ListItemText from '@mui/material/ListItemText';
 import Select from '@mui/material/Select';
 import { NativeSelect } from '@mui/material';
+import { useDispatch } from 'react-redux';
 import React from 'react';
 import "./calendar.css"
 
@@ -18,37 +19,29 @@ const MenuProps = {
   }
 };
 
-const names = ['Current Day', 'Last Week', 'Last 30 Days'," Custome Range"];
+const names = ['Current Day', 'Last Week', 'Last 30 Days',"Custom Range"];
 
-export default function MultipleSelectCheckmarks({ isVisible,  graphToSelect }) {
-  const [personName, setPersonName] = useState('Select Range');
+export default function MultipleSelectCheckmarks({ isVisible, graphToSelect }) {
+  const [personName, setPersonName] = useState('Current Day');
   const [open, setOpen] = useState(false);
+  const dispatch = useDispatch();
 
   const handleChange = (event) => {
     const {
       target: { value }
     } = event;
-//     const currentDate = new Date();
-//     const thirtyDaysAgo = new Date(currentDate);
-// thirtyDaysAgo.setDate(currentDate.getDate() - 30);
-// const sevenDaysAgo = new Date(currentDate);
-//         sevenDaysAgo.setDate(currentDate.getDate() - 7);
-        
-//     if((strtTime != thirtyDaysAgo || strtTime!= sevenDaysAgo || strtTime != currentDate) && endTime!= currentDate ){
-//       setPersonName("Select Range")
-//     }
-//     else{
-//       alert("hello")
-      
-//     }
+    
     setPersonName(value);
     graphToSelect(value);
+    
+    // Dispatch the selected range to Redux
+    dispatch({
+      type: 'SET_SELECTED_RANGE',
+      payload: value
+    });
+    
     setOpen(false);
   };
-  // const handelClickbtn = ()=>{
-  //   graphToSelect(personName);
-  //   setOpen(false);
-  // }
 
   return (
     <div className={`multiple-select ${isVisible ? 'visible' : ''}`}>
@@ -67,13 +60,9 @@ export default function MultipleSelectCheckmarks({ isVisible,  graphToSelect }) 
         >
           {names.map((name) => (
             <MenuItem key={name} value={name}>
-              {/* <Checkbox checked={personName.indexOf(name) > -1} /> */}
               <ListItemText primary={name} />
             </MenuItem>
           ))}
-          {/* <Box sx={{width:"100%", display:"flex", justifyContent:"flex-end", overflow:"hidden"}}>
-           <Button sx={{margin:"10px"}} onClick={ handelClickbtn} variant="contained">Done</Button>
-           </Box> */}
         </Select>
       </FormControl>
     </div>
