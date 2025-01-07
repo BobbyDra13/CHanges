@@ -6,7 +6,7 @@ import Select from '@mui/material/Select';
 import { NativeSelect } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import React from 'react';
-import "./calendar.css"
+import './calendar.css';
 
 const ITEM_HEIGHT = 60;
 const ITEM_PADDING_TOP = 10;
@@ -19,7 +19,7 @@ const MenuProps = {
   }
 };
 
-const names = ['Current Day', 'Last Week', 'Last 30 Days',"Custom Range"];
+const names = ['Current Day', 'Last Week', 'Last 30 Days', 'Custom Range'];
 
 export default function MultipleSelectCheckmarks({ isVisible, graphToSelect }) {
   const [personName, setPersonName] = useState('Current Day');
@@ -30,16 +30,16 @@ export default function MultipleSelectCheckmarks({ isVisible, graphToSelect }) {
     const {
       target: { value }
     } = event;
-    
+
     setPersonName(value);
     graphToSelect(value);
-    
+
     // Dispatch the selected range to Redux
     dispatch({
       type: 'SET_SELECTED_RANGE',
       payload: value
     });
-    
+
     setOpen(false);
   };
 

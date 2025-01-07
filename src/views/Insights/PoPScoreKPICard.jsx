@@ -7,12 +7,14 @@ function PoPScoreKPICard() {
   const disabledColor = theme.palette.grey[600]; // Darker grey for better visibility
 
   return (
-    <Card sx={{ 
-      paddingTop: 1.5, 
-      paddingBottom: 2,
-      backgroundColor: '#fff',
-      position: 'relative'
-    }}>
+    <Card
+      sx={{
+        paddingTop: 1.5,
+        paddingBottom: 2,
+        backgroundColor: '#fff',
+        position: 'relative'
+      }}
+    >
       <Stack spacing={0.5}>
         <Grid container alignItems="center" spacing={1} sx={{ paddingLeft: 1, paddingRight: 2.25 }}>
           <Grid item>
@@ -34,10 +36,10 @@ function PoPScoreKPICard() {
           <Grid item>
             <Chip
               variant="combined"
-              sx={{ 
-                backgroundColor: theme.palette.grey[200], 
-                color: disabledColor, 
-                ml: 1.25, 
+              sx={{
+                backgroundColor: theme.palette.grey[200],
+                color: disabledColor,
+                ml: 1.25,
                 pl: 1,
                 cursor: 'not-allowed'
               }}
@@ -50,7 +52,9 @@ function PoPScoreKPICard() {
         <Stack spacing={2} sx={{ px: 2.25, py: 2 }}>
           <div>
             <div className="flex justify-between mb-1">
-              <Typography variant="body2" sx={{ color: disabledColor }}>Fragrance</Typography>
+              <Typography variant="body2" sx={{ color: disabledColor }}>
+                Fragrance
+              </Typography>
               <Typography variant="body2" sx={{ color: disabledColor }}>
                 N/A
               </Typography>
@@ -72,7 +76,9 @@ function PoPScoreKPICard() {
 
           <div>
             <div className="flex justify-between mb-1">
-              <Typography variant="body2" sx={{ color: disabledColor }}>Beauty</Typography>
+              <Typography variant="body2" sx={{ color: disabledColor }}>
+                Beauty
+              </Typography>
               <Typography variant="body2" sx={{ color: disabledColor }}>
                 N/A
               </Typography>

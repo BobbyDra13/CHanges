@@ -166,7 +166,7 @@ const Header = ({ drawerToggle }) => {
         {/* {!showDatePicker && (
              <Tooltip title={'calender is not active for this page'}> <div className='cursor-not-allowed' style={{position:"absolute", height:"50px", width:'230px',zIndex:"10000", top:'-5px'}}></div></Tooltip>
             )}  */}
-      { window.location.pathname === '/main/stores'? <DatePickerComp2 /> : <DatePickerComp /> }
+        {window.location.pathname === '/main/stores' ? <DatePickerComp2 /> : <DatePickerComp />}
       </Box>
       <ProfileSection />
     </>

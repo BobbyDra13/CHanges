@@ -16,7 +16,7 @@ export const getInsightsKPI = async ({ start_date, end_date }) => {
         }
       }
     );
-    
+
     if (res.data?.data?.[0]) {
       const data = res.data.data[0];
       // Format decimal values to 2 places

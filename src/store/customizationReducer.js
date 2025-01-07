@@ -13,7 +13,7 @@ export const initialState = {
     lng: ''
   },
   selectedDate: { start_date: new Date(), end_date: new Date() },
-  selectedRange: 'Current Day'  
+  selectedRange: 'Current Day'
 };
 
 const customizationReducer = (state = initialState, action) => {

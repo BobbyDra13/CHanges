@@ -10,63 +10,61 @@ const CaptureProgressSection = ({ avgCapProgress, capProgress }) => {
   const accentColLight = theme.palette.success.light;
   const accentColMain = theme.palette.success.main;
 
-  const progressChartOptions = useMemo(() => ({
-    chart: {
-      height: 200,
-      type: 'radialBar',
-      sparkline: { enabled: true }
-    },
-    colors: [accentColLight],
-    plotOptions: {
-      radialBar: {
-        hollow: { margin: 0, size: '30%' },
-        track: {
-          dropShadow: {
-            enabled: true,
-            top: 2,
-            left: 0,
-            blur: 4,
-            opacity: 0.15
-          }
-        },
-        dataLabels: {
-          show: false,
-          name: {
-            offsetY: -10,
-            color: '#fff',
-            fontSize: '13px'
+  const progressChartOptions = useMemo(
+    () => ({
+      chart: {
+        height: 200,
+        type: 'radialBar',
+        sparkline: { enabled: true }
+      },
+      colors: [accentColLight],
+      plotOptions: {
+        radialBar: {
+          hollow: { margin: 0, size: '30%' },
+          track: {
+            dropShadow: {
+              enabled: true,
+              top: 2,
+              left: 0,
+              blur: 4,
+              opacity: 0.15
+            }
           },
-          value: {
-            color: '#fff',
-            fontSize: '30px',
-            show: false
+          dataLabels: {
+            show: false,
+            name: {
+              offsetY: -10,
+              color: '#fff',
+              fontSize: '13px'
+            },
+            value: {
+              color: '#fff',
+              fontSize: '30px',
+              show: false
+            }
           }
         }
-      }
-    },
-    fill: {
-      type: 'gradient',
-      gradient: {
-        shade: 'dark',
-        type: 'vertical',
-        gradientToColors: [accentColDark],
-        stops: [0, 100]
-      }
-    },
-    stroke: { width: 5 }
-  }), [accentColLight, accentColDark]);
+      },
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shade: 'dark',
+          type: 'vertical',
+          gradientToColors: [accentColDark],
+          stops: [0, 100]
+        }
+      },
+      stroke: { width: 5 }
+    }),
+    [accentColLight, accentColDark]
+  );
 
   return (
     <Card>
       {avgCapProgress ? (
         <Grid container spacing={2}>
           <Grid item xs={6} sm={4} md={3} lg={7} xl={6}>
-            <Chart
-              options={progressChartOptions}
-              series={[parseFloat(avgCapProgress)]}
-              type="radialBar"
-              height={200}
-            />
+            <Chart options={progressChartOptions} series={[parseFloat(avgCapProgress)]} type="radialBar" height={200} />
           </Grid>
           <Grid item alignContent="center" xs={6} sm={8} md={9} lg={5} xl={6}>
             <div className="flex flex-col gap-1">

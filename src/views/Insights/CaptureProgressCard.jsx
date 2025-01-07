@@ -25,7 +25,7 @@ function CaptureProgressCard({ date }) {
   const start_date = toLocalDateString(useSelector((state) => state.customization.selectedDate).start_date);
   const end_date = toLocalDateString(useSelector((state) => state.customization.selectedDate).end_date);
 
-  const userId= JSON.parse( localStorage.getItem('userData'))?.data[0]?._id;
+  const userId = JSON.parse(localStorage.getItem('userData'))?.data[0]?._id;
   console.log('User ID:', userId);
 
   const dummyData = {
