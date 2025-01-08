@@ -32,6 +32,7 @@ import noData from '../../../assets/images/No_data-amico.svg';
 import { BsSearch } from 'react-icons/bs';
 import { useSelector } from 'react-redux';
 import MenuIcon from '@mui/icons-material/Menu';
+import { ChevronLeftRounded, ChevronRightRounded } from '@mui/icons-material';
 bouncy.register();
 
 export default function ShelfView({ date }) {
@@ -134,6 +135,10 @@ export default function ShelfView({ date }) {
 
   // Handle image click
 
+  useEffect(() => {
+    setDialogData(sliderData[0]);
+  }, [sliderData]);
+
   const handleImageClick = useCallback(() => {
     if (antn) {
       setPos({ lft: false, tp: false, wdth: false, ht: false });
@@ -220,6 +225,27 @@ export default function ShelfView({ date }) {
     return Array.isArray(isBrandData) ? isBrandData.filter((d) => d.brand_name.toLowerCase().includes(searchQuery.toLowerCase())) : [];
   }, [isBrandData, searchQuery]);
   console.log('dialogData', dialogData);
+  function handlePrevBay() {
+    if (isBrandData && isBrandData.length > 0) {
+      isBrandData.sort((a, b) => a.brand_name.localeCompare(b.brand_name));
+      const filteredArray = isBrandData.filter((obj) => obj.capture_status === 1);
+      const currentIndex = filteredArray.findIndex((bay) => bay.brand_id === active);
+      const newIndex = currentIndex === 0 ? filteredArray.length - 1 : currentIndex - 1;
+      console.log('dialogData newIndex', newIndex, active);
+      setActive(filteredArray[newIndex].brand_id);
+    }
+  }
+
+  function handleNextBay() {
+    if (isBrandData && isBrandData.length > 0) {
+      isBrandData.sort((a, b) => a.brand_name.localeCompare(b.brand_name));
+      const filteredArray = isBrandData.filter((obj) => obj.capture_status === 1);
+      const currentIndex = filteredArray.findIndex((bay) => bay.brand_id === active);
+      const newIndex = (currentIndex + 1) % filteredArray.length;
+      console.log('dialogData newIndex', newIndex, active);
+      setActive(filteredArray[newIndex].brand_id);
+    }
+  }
   return (
     <>
       {isBrandData && isBrandData.length > 0 ? (
@@ -450,6 +476,18 @@ export default function ShelfView({ date }) {
           ) : (
             dialogData && (
               <div className="zoom-container">
+                <ChevronLeftRounded
+                  onClick={handlePrevBay}
+                  className="text-gray-400 opacity-50 hover:opacity-100 absolute z-10 cursor-pointer lg:left-[2%] lg:top-[45%] left-0 top-[35%] w-10 h-10 md:w-20 md:h-20"
+                  // onKeyDown={handleKeyDownBay}
+                  tabIndex="0"
+                />
+                <ChevronRightRounded
+                  onClick={handleNextBay}
+                  className="text-gray-400 opacity-50 hover:opacity-100 w-10 h-10 md:w-20 md:h-20 absolute z-10 cursor-pointer lg:right-[2%] lg:top-[45%] right-0 top-[35%]"
+                  // onKeyDown={handleKeyDownBay}
+                  tabIndex="0"
+                />
                 <div className="image-container flex justify-center items-center lg:mb-0 mb-10 relative">
                   <TransformWrapper>
                     <TransformComponent>
