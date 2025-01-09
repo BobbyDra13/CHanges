@@ -187,6 +187,7 @@ const Customers = () => {
   const [load, setLoad] = useState(false);
   const [nextClickLoad] = useState(false);
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
+  const [boundingBoxes, setBoundingBoxes] = useState([]);
 
   const userId = JSON.parse(localStorage.getItem('userData'))?.data[0]?._id;
 
@@ -633,13 +634,17 @@ const Customers = () => {
   const [natural] = useState({ wdth: false, hght: false });
 
   const calculate = useCallback(
-    (xmin, ymin, xmax, ymax, code) => {
+    (xmin, ymin, xmax, ymax, code, returnValues = false) => {
       if (!imageDimensions.width || !imageDimensions.height) return;
 
       const lft = (xmin / imageDimensions.width) * 100;
       const tp = (ymin / imageDimensions.height) * 100;
       const width = ((xmax - xmin) / imageDimensions.width) * 100;
       const height = ((ymax - ymin) / imageDimensions.height) * 100;
+
+      if (returnValues) {
+        return { left: lft, top: tp, width, height };
+      }
 
       setPos({ lft, tp, wdth: width, hght: height });
       setAntn(code);
@@ -1432,20 +1437,21 @@ const Customers = () => {
                           }}
                         />
 
-                        {antn !== 0 && (
+                        {antn !== 0 && boundingBoxes && boundingBoxes.map((box, index) => (
                           <div
+                            key={index}
                             style={{
                               position: 'absolute',
-                              left: `${pos.lft}%`,
-                              top: `${pos.tp}%`,
-                              width: `${pos.wdth}%`,
-                              height: `${pos.hght}%`,
+                              left: `${box.left}%`,
+                              top: `${box.top}%`,
+                              width: `${box.width}%`,
+                              height: `${box.height}%`,
                               border: `2px solid ${antn === 1 ? 'red' : 'green'}`,
                               backgroundColor: antn === 1 ? 'rgba(255, 0, 0, 0.2)' : 'rgba(0, 255, 0, 0.2)',
                               pointerEvents: 'none'
                             }}
                           />
-                        )}
+                        ))}
                       </div>
                       {/* </TransformComponent> */}
                     </div>
@@ -1493,66 +1499,47 @@ const Customers = () => {
                           cData &&
                           cData.length > 0 &&
                           cData[0].shelves &&
-                          cData[0].shelves.map((itm, ind) =>
-                            itm.anomaly_type !== '' ? (
-                              <Tooltip key={0 + ind}>
+                          [...new Set(cData[0].shelves.filter(shelf => shelf.anomaly_type !== '').map(shelf => shelf.anomaly_type))].map((anomalyType, index) => {
+                            const shelvesWithAnomaly = cData[0].shelves.filter(shelf => shelf.anomaly_type === anomalyType);
+                            return (
+                              <Tooltip key={index}>
                                 <Box
                                   paddingX={0.2}
                                   paddingY={0.04}
                                   className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
                                   onMouseEnter={() => {
-                                    if (itm.coords) {
-                                      calculate(
-                                        itm.coords.xmin,
-                                        itm.coords.ymin,
-                                        itm.coords.xmax,
-                                        itm.coords.ymax,
-                                        itm.anomaly_type !== '' ? 1 : 2
-                                      );
-                                    }
+                                    // Create multiple bounding boxes for all shelves with this anomaly type
+                                    const boxes = shelvesWithAnomaly.map(shelf => {
+                                      if (shelf.coords) {
+                                        const { left, top, width, height } = calculate(
+                                          shelf.coords.xmin,
+                                          shelf.coords.ymin,
+                                          shelf.coords.xmax,
+                                          shelf.coords.ymax,
+                                          1,
+                                          true
+                                        );
+                                        return { left, top, width, height };
+                                      }
+                                      return null;
+                                    }).filter(box => box !== null);
+                                    
+                                    setBoundingBoxes(boxes);
+                                    setAntn(1);
                                   }}
                                   onMouseLeave={() => {
-                                    setPos({ lft: false, tp: false, wdth: false, ht: false });
+                                    setBoundingBoxes([]);
                                     setAntn(0);
                                   }}
                                 >
                                   <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
                                   <Typography paddingRight={2} variant="h6">
-                                    {removeAfterLastUnderscore(itm.anomaly_type)}
+                                    {removeAfterLastUnderscore(anomalyType)} ({shelvesWithAnomaly.length})
                                   </Typography>
                                 </Box>
                               </Tooltip>
-                            ) : (
-                              <Tooltip key={0 + ind}>
-                                <Box
-                                  paddingX={0.2}
-                                  paddingY={0.04}
-                                  className="bg-gray-200 rounded-full hidden  gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                  onMouseEnter={() => {
-                                    if (itm.coords) {
-                                      calculate(
-                                        itm.coords.xmin,
-                                        itm.coords.ymin,
-                                        itm.coords.xmax,
-                                        itm.coords.ymax,
-                                        itm.anomaly_type !== '' ? 1 : 2
-                                      );
-                                    }
-                                  }}
-                                  onMouseLeave={() => {
-                                    setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                    setAntn(0);
-                                  }}
-                                >
-                                  <RiCheckboxCircleLine className="text-4xl mr-0.5" style={{ color: 'green' }} />
-                                  <Typography paddingRight={2} variant="h6">
-                                    No Anomaly
-                                  </Typography>
-                                </Box>
-                              </Tooltip>
-                            )
-                          )
-                          // )
+                            );
+                          })
                         )}
                       </div>
                       <Typography width={'100%'} variant="h3">
@@ -1628,7 +1615,7 @@ const Customers = () => {
                   </div>
                 </div>
               )
-              // ))}
+              // })}
             }
           </DialogContent>
         </Dialog>
@@ -1788,16 +1775,21 @@ const Customers = () => {
                                 alt: 'Wristwatch by Ted Baker London',
                                 src: `${brands[0].img_url}`,
                                 // src: `${fashionImage}`,
-                                isFluidWidth: true,
-                                onload: `${findDimensions}`
-                                // className: "self-center lg:max-h-[95vh] lg:max-w-[95vw] max-h-[80vh] md:max-h-[85vh] mt-10 md:mt-0 text-white"
-                                // className: 'object-contain h-full w-full'
+                                // width: 500,
+                                // height: 800,
+                                // width: 300,
+                                // height: 750,
+                                // zoomLensScale: 200,
+                                alt: 'My Product'
                               },
                               largeImage: {
                                 src: `${brands[0].img_url}`,
                                 // src: `${fashionImage}`,
-                                width: 1280,
-                                height: 960
+                                alt: 'My Product Zoom',
+                                // width: '100%',
+                                // height: '100%'
+                                // width: imageDimensions.width,
+                                // height: imageDimensions.height 
                               },
                               isHintEnabled: true
                             }}
@@ -1819,20 +1811,111 @@ const Customers = () => {
                           onLoad={handleImageLoad}
                           ref={imageRef}
                         />
-                        {antn !== 0 && (
+                        {antn !== 0 && boundingBoxes && boundingBoxes.map((box, index) => (
                           <div
+                            key={index}
                             style={{
                               position: 'absolute',
-                              left: `${pos.lft}%`,
-                              top: `${pos.tp}%`,
-                              width: `${pos.wdth}%`,
-                              height: `${pos.hght}%`,
+                              left: `${box.left}%`,
+                              top: `${box.top}%`,
+                              width: `${box.width}%`,
+                              height: `${box.height}%`,
                               border: `2px solid ${antn === 1 ? 'red' : 'green'}`,
                               backgroundColor: antn === 1 ? 'rgba(255, 0, 0, 0.2)' : 'rgba(0, 255, 0, 0.2)',
                               pointerEvents: 'none'
                             }}
                           />
-                        )}
+                        ))}
+                        {/* {nextBtn && (
+                            <>
+                              <IconButton
+                                className="absolute top-1/2 -right-14 z-50" // Adjust the right position
+                                style={{
+                                  fontSize: '30px',
+                                  color: 'white',
+                                  // backgroundColor: 'white',
+                                  borderRadius: '50%',
+                                  padding: '8px'
+                                }}
+                                onClick={handleNextClick1}
+                              >
+                                <SlArrowRight />
+                              </IconButton>
+                              <IconButton
+                                className="absolute top-1/2 -left-14 z-50" // Adjust the left position
+                                style={{
+                                  fontSize: '30px',
+                                  color: 'white',
+                                  // backgroundColor: 'white',
+                                  borderRadius: '50%',
+                                  padding: '8px'
+                                }}
+                                onClick={handlePrevClick1}
+                              >
+                                <SlArrowLeft />
+                              </IconButton>
+                            </>
+                          )} */}
+                        {/* <div className="w-full h-full relative "> */}
+                        {/* <div className="max-h-[15vh] max-w-[15vw] h-[10vh] mx-auto"> */}
+                        {/* <div id="imageMagnify">
+                          <ReactImageMagnify
+                            {...{
+                              smallImage: {
+                                alt: 'Wristwatch by Ted Baker London',
+                                src: `${brands[0].img_url}`,
+                                // src: `${fashionImage}`,
+                                // width: 500,
+                                // height: 800,
+                                // width: 300,
+                                // height: 750,
+                                // zoomLensScale: 200,
+                                alt: 'My Product'
+                              },
+                              largeImage: {
+                                src: `${brands[0].img_url}`,
+                                // src: `${fashionImage}`,
+                                alt: 'My Product Zoom',
+                                // width: '100%',
+                                // height: '100%'
+                                // width: imageDimensions.width,
+                                // height: imageDimensions.height 
+                              },
+                              isHintEnabled: true
+                            }}
+                          />
+                        </div> */}
+                        {/* <CustomMagnifier
+                          src={`${brands[0].img_url}`}
+                          smallWidth={300}
+                          smallHeight={800}
+                          largeWidth={200}
+                          largeHeight={300}
+                        /> */}
+
+                        <img
+                          className="self-center lg:max-h-[95vh] lg:max-w-[95vw] max-h-[80vh] md:max-h-[85vh] mt-10 md:mt-0 text-white"
+                          src={brands[0].img_url}
+                          alt="No img found"
+                          // onLoad={findDimensions2}
+                          onLoad={handleImageLoad}
+                          ref={imageRef}
+                        />
+                        {antn !== 0 && boundingBoxes && boundingBoxes.map((box, index) => (
+                          <div
+                            key={index}
+                            style={{
+                              position: 'absolute',
+                              left: `${box.left}%`,
+                              top: `${box.top}%`,
+                              width: `${box.width}%`,
+                              height: `${box.height}%`,
+                              border: `2px solid ${antn === 1 ? 'red' : 'green'}`,
+                              backgroundColor: antn === 1 ? 'rgba(255, 0, 0, 0.2)' : 'rgba(0, 255, 0, 0.2)',
+                              pointerEvents: 'none'
+                            }}
+                          />
+                        ))}
                         {/* {nextBtn && (
                             <>
                               <IconButton
@@ -2058,7 +2141,7 @@ const Customers = () => {
                                       <Box
                                         paddingX={0.2}
                                         paddingY={0.04}
-                                        className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                        className="bg-gray-200 rounded-full hidden  gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
                                         onMouseEnter={() => {
                                           if (itm.coords) {
                                             calculate(
