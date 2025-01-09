@@ -60,6 +60,7 @@ function Overview() {
   const [brandwiseosaandtester_osa, setbrandwiseosaandtester_osa] = useState([]);
   const [brandwiseosaandtester_tester, setbrandwiseosaandtester_tester] = useState([]);
   const [isLoadingBrandScores, setIsLoadingBrandScores] = useState(false);
+  const [isLoadingAssociateScore, setIsLoadingAssociateScore] = useState(false);
 
   const selectedCategory = useSelector((state) => state.category?.selectedCategory) || 'All';
   const dispatch = useDispatch();
@@ -96,38 +97,35 @@ function Overview() {
     }
   }, [selectedDate, selectedDate2]);
 
-  const get7daysdata = useCallback(
-    async (date) => {
-      if (!store || !date) {
-        setcapture7days([]);
-        settestfullness7days([]);
-        setOsa7days([]);
-        return;
+  const get7daysdata = useCallback(async () => {
+    if (!selectedDate2 || !store) {
+      setcapture7days([]);
+      settestfullness7days([]);
+      setOsa7days([]);
+      return;
+    }
+
+    try {
+      const result = await getsevendaydata(selectedDate2, store, selectedCategory.toLowerCase());
+      if (!result) {
+        throw new Error('No data received');
       }
 
-      try {
-        const result = await getsevendaydata(date, store);
-        if (!result) {
-          throw new Error('No data received');
-        }
-
-        setcapture7days(Array.isArray(result.capture7days) ? result.capture7days : []);
-        settestfullness7days(Array.isArray(result.testerFullness7days) ? result.testerFullness7days : []);
-        setOsa7days(Array.isArray(result.OSA7days) ? result.OSA7days : []);
-      } catch (error) {
-        console.error('Error in get7daysdata:', error);
-        setcapture7days([]);
-        settestfullness7days([]);
-        setOsa7days([]);
-        setSnackbarConfig({
-          open: true,
-          message: 'Failed to fetch 7 days data',
-          severity: 'error'
-        });
-      }
-    },
-    [store]
-  );
+      setcapture7days(Array.isArray(result.capture7days) ? result.capture7days : []);
+      settestfullness7days(Array.isArray(result.testerFullness7days) ? result.testerFullness7days : []);
+      setOsa7days(Array.isArray(result.OSA7days) ? result.OSA7days : []);
+    } catch (error) {
+      console.error('Error in get7daysdata:', error);
+      setcapture7days([]);
+      settestfullness7days([]);
+      setOsa7days([]);
+      setSnackbarConfig({
+        open: true,
+        message: 'Failed to fetch 7 days data',
+        severity: 'error'
+      });
+    }
+  }, [store, selectedDate2, selectedCategory]);
 
   useEffect(() => {
     get7daysdata(selectedDate);
@@ -145,7 +143,7 @@ function Overview() {
     try {
       if (!selectedDate2 || !store) return;
 
-      const res = await storeanomalycount(selectedDate2, store);
+      const res = await storeanomalycount(selectedDate2, store, selectedCategory.toLowerCase());
       if (res) {
         setanomalycount(res);
         setAnomaliesLoading(false);
@@ -155,27 +153,29 @@ function Overview() {
       setanomalycount(null);
       setAnomaliesLoading(false);
     }
-  }, [store, selectedDate2]);
+  }, [store, selectedDate2, selectedCategory]);
 
   useEffect(() => {
     getanomalydetails();
   }, [getanomalydetails]);
 
-  const getassociatescore = useCallback(async () => {
+  const fetchAssociateScore = useCallback(async () => {
     try {
-      if (!selectedDate || !store) return;
-
-      const result = await associatescoreaforkpi(selectedDate, store, 'fragrances');
+      if (!selectedDate2 || !store) return;
+      setIsLoadingAssociateScore(true);
+      const result = await associatescoreaforkpi(selectedDate2, store, selectedCategory.toLowerCase());
       setassociatescore(result || []);
     } catch (e) {
       console.error('Error in getassociatescore:', e);
       setassociatescore([]);
+    } finally {
+      setIsLoadingAssociateScore(false);
     }
-  }, [store, selectedDate]);
+  }, [store, selectedDate2, selectedCategory]);
 
   useEffect(() => {
-    getassociatescore();
-  }, [getassociatescore]);
+    fetchAssociateScore();
+  }, [fetchAssociateScore]);
 
   const calculateAverage = useCallback((data, field) => {
     if (!Array.isArray(data) || data.length === 0) return 'NA';
@@ -227,7 +227,7 @@ function Overview() {
     try {
       if (!selectedDate2 || !store) return;
 
-      const response = await storeviewcaptureprogress(selectedDate2, store);
+      const response = await storeviewcaptureprogress(selectedDate2, store, selectedCategory.toLowerCase());
       if (response) {
         setstoreviewcaptureprogres(response[0].captureProgress);
       }
@@ -235,7 +235,7 @@ function Overview() {
       console.error('Error in getviewcaptureprogress:', error);
       setstoreviewcaptureprogres(0);
     }
-  }, [store, selectedDate2]);
+  }, [store, selectedDate2, selectedCategory]);
 
   useEffect(() => {
     getviewcaptureprogress();
@@ -548,55 +548,62 @@ function Overview() {
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <div style={{ height: '276px' }} className="flex flex-col">
                 <Card className="border border-gray-300" sx={{ height: '276px' }}>
-                  {associatescore && associatescore.length > 0 ? (
-                    <div className="flex  w-full  flex-col gap-1 p-3">
+                  {isLoadingAssociateScore ? (
+                    <div className="flex w-full flex-col gap-1 p-3">
                       <div className="flex items-center justify-center gap-2 w-full">
                         <img src={associate} alt="pop" className="h-14 w-14" />
                         <div className="w-full">
-                          <p className="text-3xl text-gray-500 ">NA</p>
+                          <p className="text-3xl text-gray-500">NA</p>
                           <p className="text-lg font-semibold">Associate Score</p>
                         </div>
-                        <>
-                          <IoMdSettings
-                            className="text-5xl cursor-not-allowed"
-                            // onClick={handleClickAssociateScoreModal}
-                          />
-                          <Modal
-                            open={openAssociateScoreModal}
-                            onClose={handleCloseAssociateScoreModal}
-                            aria-labelledby="modal-modal-title"
-                            aria-describedby="modal-modal-description"
-                          >
-                            <Box sx={modalStyle}>
-                              <CsvModalAssociate onUploadComplete={handleAssociateUploadComplete} />
-                            </Box>
-                          </Modal>
-                        </>
+                        <IoMdSettings className="text-5xl cursor-not-allowed" />
                       </div>
-                      <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
-                        {associatescore.length > 0 ? (
-                          associatescore.map((item, index) => {
-                            console.log('item', item.associate_score);
-                            const prepercent =
-                              ((item.total_no_of_shelves - item.no_of_bays_with_anomalies) / item.total_no_of_shelves) * 100;
-                            const percentage = Math.round(parseFloat(prepercent)) > 100 ? 100 : Math.round(parseFloat(prepercent));
-                            const barcolor = percentage >= 99 ? '#00ac69' : percentage >= 95 ? '#f4a100' : '#ff413a';
+                      <div className="bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
+                        <Skeleton variant="rectangular" height={184} className="rounded-md" />
+                      </div>
+                    </div>
+                  ) : associatescore && associatescore.length > 0 ? (
+                    <div className="flex w-full flex-col gap-1 p-3">
+                      <div className="flex items-center justify-center gap-2 w-full">
+                        <img src={associate} alt="pop" className="h-14 w-14" />
+                        <div className="w-full">
+                          <p className="text-3xl text-gray-500">
+                            {(associatescore.reduce((acc, curr) => acc + curr.associate_score, 0) / associatescore.length).toFixed(1)}%
+                          </p>
+                          <p className="text-lg font-semibold">Associate Score</p>
+                        </div>
+                        <IoMdSettings className="text-5xl cursor-not-allowed" />
+                        <Modal
+                          open={openAssociateScoreModal}
+                          onClose={handleCloseAssociateScoreModal}
+                          aria-labelledby="modal-modal-title"
+                          aria-describedby="modal-modal-description"
+                        >
+                          <Box sx={modalStyle}>
+                            <CsvModalAssociate onUploadComplete={handleAssociateUploadComplete} />
+                          </Box>
+                        </Modal>
+                      </div>
+                      <div className="bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
+                        {[...associatescore]
+                          .sort((a, b) => a.associate_score - b.associate_score)
+                          .map((item, index) => {
+                            const barcolor = item.associate_score >= 99 ? '#00ac69' : item.associate_score >= 95 ? '#f4a100' : '#ff413a';
                             return (
                               <div className="mt-2" key={index}>
                                 <div className="flex gap-1 items-center justify-between">
                                   <div>
                                     {item.user_name} :
                                     <span className="text-base font-semibold" style={{ color: barcolor }}>
-                                      {' ' + percentage} %
+                                      {' ' + item.associate_score}%
                                     </span>
                                   </div>
                                   <Tooltip
-                                    key={index}
                                     title={
                                       <div>
                                         <div className="mb-2 p-2">
                                           <p className="text-base">Bays Captured</p>
-                                          <p className="text-base "> {item.no_of_bays_captured ? item.no_of_bays_captured : 0}</p>
+                                          <p className="text-base">{item.no_of_bays_captured ? item.no_of_bays_captured : 0}</p>
                                         </div>
                                       </div>
                                     }
@@ -609,47 +616,42 @@ function Overview() {
                                 </div>
                                 <LinearProgress
                                   variant="determinate"
-                                  value={percentage}
+                                  value={item.associate_score}
                                   className="rounded-lg"
                                   sx={{
                                     marginTop: '5px',
-                                    backgroundColor: 'white', // Set color for unfilled part
+                                    backgroundColor: 'white',
                                     '& .MuiLinearProgress-bar': {
-                                      backgroundColor: `${barcolor}` // Set color for filled part
+                                      backgroundColor: barcolor
                                     }
                                   }}
                                 />
                               </div>
                             );
-                          })
-                        ) : (
-                          <Skeleton variant="rectangular" height={184} className="rounded-md" />
-                        )}
+                          })}
                       </div>
                     </div>
                   ) : (
-                    <div className="flex  w-full  flex-col gap-1 p-3">
+                    <div className="flex w-full flex-col gap-1 p-3">
                       <div className="flex items-center justify-center gap-2 w-full">
                         <img src={popIcon} alt="pop" className="h-14 w-14" />
                         <div className="w-full">
-                          <p className="text-3xl text-gray-500 ">NA</p>
+                          <p className="text-3xl text-gray-500">NA</p>
                           <p className="text-lg font-semibold">Associate Score</p>
                         </div>
-                        <>
-                          <IoMdSettings className="text-5xl" onClick={handleClickAssociateScoreModal} />
-                          <Modal
-                            open={openAssociateScoreModal}
-                            onClose={handleCloseAssociateScoreModal}
-                            aria-labelledby="modal-modal-title"
-                            aria-describedby="modal-modal-description"
-                          >
-                            <Box sx={modalStyle}>
-                              <CsvModalAssociate onUploadComplete={handleAssociateUploadComplete} type="associateStore" />
-                            </Box>
-                          </Modal>
-                        </>
+                        <IoMdSettings className="text-5xl" onClick={handleClickAssociateScoreModal} />
+                        <Modal
+                          open={openAssociateScoreModal}
+                          onClose={handleCloseAssociateScoreModal}
+                          aria-labelledby="modal-modal-title"
+                          aria-describedby="modal-modal-description"
+                        >
+                          <Box sx={modalStyle}>
+                            <CsvModalAssociate onUploadComplete={handleAssociateUploadComplete} type="associateStore" />
+                          </Box>
+                        </Modal>
                       </div>
-                      <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
+                      <div className="bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
                         <p className="text-base font-semibold text-gray-500">Currently No data available</p>
                       </div>
                     </div>

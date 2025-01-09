@@ -27,7 +27,7 @@ import { GetAllBrands, getZonedetails } from 'api';
 import { bouncy } from 'ldrs';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import '../../Customers/zoom-card-item.css';
-import { RiErrorWarningLine, RiCheckboxCircleLine } from 'react-icons/ri';
+import { RiErrorWarningLine } from 'react-icons/ri';
 import noData from '../../../assets/images/No_data-amico.svg';
 import { BsSearch } from 'react-icons/bs';
 import { useSelector } from 'react-redux';
@@ -57,6 +57,8 @@ export default function ShelfView({ date }) {
   const open = Boolean(anchorEl);
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
+  const [boundingBoxes, setBoundingBoxes] = useState([]);
+  const [antn, setAntn] = useState(0);
 
   // Slider settings
   const settings = {
@@ -141,7 +143,6 @@ export default function ShelfView({ date }) {
 
   const handleImageClick = useCallback(() => {
     if (antn) {
-      setPos({ lft: false, tp: false, wdth: false, ht: false });
       setAntn(!antn);
     }
     const clickedItem = sliderData[currentSlide];
@@ -197,12 +198,16 @@ export default function ShelfView({ date }) {
       setActive(isBrandData[0].brand_id);
     }
   }, [isBrandData]);
-  const [antn, setAntn] = useState(0);
-  const [pos, setPos] = useState({ lft: false, tp: false, wdth: false, ht: false });
 
   // Add this function in your component
+  const handleImageLoad = (event) => {
+    const { naturalWidth, naturalHeight } = event.target;
+    setImageDimensions({ width: naturalWidth, height: naturalHeight });
+    setLoading(false);
+  };
+
   const calculate = useCallback(
-    (xmin, ymin, xmax, ymax, code) => {
+    (xmin, ymin, xmax, ymax, code, returnValues = false) => {
       if (!imageDimensions.width || !imageDimensions.height) return;
 
       const lft = (xmin / imageDimensions.width) * 100;
@@ -210,16 +215,15 @@ export default function ShelfView({ date }) {
       const width = ((xmax - xmin) / imageDimensions.width) * 100;
       const height = ((ymax - ymin) / imageDimensions.height) * 100;
 
-      setPos({ lft, tp, wdth: width, hght: height });
+      if (returnValues) {
+        return { left: lft, top: tp, width, height };
+      }
+
       setAntn(code);
     },
     [imageDimensions]
   );
 
-  const handleImageLoad = useCallback((event) => {
-    const { naturalWidth, naturalHeight } = event.target;
-    setImageDimensions({ width: naturalWidth, height: naturalHeight });
-  }, []);
   // Filter brands based on search query
   const filteredData = useMemo(() => {
     return Array.isArray(isBrandData) ? isBrandData.filter((d) => d.brand_name.toLowerCase().includes(searchQuery.toLowerCase())) : [];
@@ -324,117 +328,158 @@ export default function ShelfView({ date }) {
                 md={8}
                 sm={8.6}
                 style={{ height: '460px', marginBottom: '50px', overflowY: 'scroll', marginTop: '35px' }}
-                className="inline-block w-[550px] "
+                className="inline-block w-[550px]"
               >
                 <p>* Showing images of end date that you have selected</p>
-                <Slider {...settings} className="w-[600px] h-[400px]">
-                  {sliderData.map((item, index) => (
-                    <Grid item key={item._id || index} style={{ marginBottom: '10px' }} className="w-full flex">
-                      {item.img_url ? (
-                        <div className="flex w-full h-full">
-                          <div className="h-full relative">
-                            <img
-                              src={item.img_url}
-                              alt="img"
-                              className="image rounded-md shadow-md hover:cursor-pointer h-96"
-                              onLoad={() => setLoading(false)}
-                              onClick={handleImageClick}
-                            />
-                          </div>
-                          <div className="ml-3" style={{ padding: '7px' }}>
-                            <Typography variant="h3" className="">
-                              {item.brand_name}
-                            </Typography>
-                            <Divider />
-                            <Typography paddingBottom={1.5} width={'100%'} variant="h5">
-                              Bay ID : {item.bay_id}
-                            </Typography>
-                            <Typography width={'100%'} variant="h5">
-                              Date & Time of Capture
-                            </Typography>
-                            <Typography paddingBottom={1.5} width={'100%'} variant="h5">
-                              {formatDate(item.timestamp)}
-                            </Typography>
-                            <Typography width={'100%'} variant="h5">
-                              Anomalies
-                            </Typography>
-                            <Divider />
-                            <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
-                              {item.shelves &&
-                                item.shelves.length > 0 &&
-                                item.shelves.map((itm, ind) =>
-                                  itm.anomaly_type !== '' ? (
-                                    <Tooltip key={ind}>
-                                      <Box
-                                        paddingX={0.2}
-                                        paddingY={0.04}
-                                        className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                      >
-                                        <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
-                                        <Typography paddingRight={2} variant="h6">
-                                          {formatText(itm.anomaly_type)}
-                                        </Typography>
-                                      </Box>
-                                    </Tooltip>
-                                  ) : (
-                                    <Tooltip key={ind}>
-                                      <Box
-                                        paddingX={0.2}
-                                        paddingY={0.04}
-                                        className="bg-gray-200 rounded-full hidden  gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                      >
-                                        <RiCheckboxCircleLine className="text-4xl mr-0.5" style={{ color: 'green' }} />
-                                        <Typography paddingRight={2} variant="h6">
-                                          No Anomaly
-                                        </Typography>
-                                      </Box>
-                                    </Tooltip>
-                                  )
-                                )}
-                            </div>
-                            <Divider />
-                            <Typography width={'100%'} variant="h5">
-                              Team
-                            </Typography>
-                            <div style={{ paddingBottom: 13 }} className="w-full flex justify-start">
-                              <AvatarGroup
-                                sx={{
-                                  '& .MuiAvatar-root': { width: 40, height: 40, fontSize: 24 }
-                                }}
-                                max={2}
-                              >
-                                <Tooltip
-                                  title={
-                                    <div className="w-[200px] p-2 flex flex-col space-y-2">
-                                      <Typography sx={{ width: '100%', color: 'white' }} variant="h6">
-                                        Agent Details
-                                      </Typography>
-                                      <Typography variant="subtitle2">Name: {item.user[0].name}</Typography>
-                                      <Typography variant="subtitle2">Number: {item.user[0].number}</Typography>
-                                    </div>
-                                  }
-                                  enterTouchDelay={1}
-                                  leaveTouchDelay={100000}
-                                >
-                                  <Avatar
-                                    className="hover:cursor-pointer"
-                                    sx={{ bgcolor: success }}
-                                    alt={item.user[0].name}
-                                    src="/example.jpg"
+                {sliderData && sliderData.length > 0 ? (
+                  <Slider {...settings} className="w-[600px] h-[400px]">
+                    {sliderData.map((item, index) => (
+                      <Grid item key={item._id || index} style={{ marginBottom: '10px' }} className="w-full flex">
+                        {item.img_url ? (
+                          <div className="flex w-full h-full">
+                            <div className="h-full relative">
+                              <img
+                                src={item.img_url}
+                                alt="img"
+                                className="image rounded-md shadow-md hover:cursor-pointer h-96"
+                                onLoad={handleImageLoad}
+                                onClick={handleImageClick}
+                              />
+                              {antn !== 0 &&
+                                boundingBoxes &&
+                                boundingBoxes.map((box, index) => (
+                                  <div
+                                    key={index}
+                                    style={{
+                                      position: 'absolute',
+                                      left: `${box.left}%`,
+                                      top: `${box.top}%`,
+                                      width: `${box.width}%`,
+                                      height: `${box.height}%`,
+                                      border: `2px solid ${antn === 1 ? 'red' : 'green'}`,
+                                      backgroundColor: antn === 1 ? 'rgba(255, 0, 0, 0.2)' : 'rgba(0, 255, 0, 0.2)',
+                                      pointerEvents: 'none'
+                                    }}
                                   />
-                                </Tooltip>
-                              </AvatarGroup>
+                                ))}
+                            </div>
+                            <div className="ml-3" style={{ padding: '7px' }}>
+                              <Typography variant="h3" className="">
+                                {item.brand_name}
+                              </Typography>
+                              <Divider />
+                              <Typography paddingBottom={1.5} width={'100%'} variant="h5">
+                                Bay ID : {item.bay_id}
+                              </Typography>
+                              <Typography width={'100%'} variant="h5">
+                                Date & Time of Capture
+                              </Typography>
+                              <Typography paddingBottom={1.5} width={'100%'} variant="h5">
+                                {formatDate(item.timestamp)}
+                              </Typography>
+                              <Typography width={'100%'} variant="h5">
+                                Anomalies
+                              </Typography>
+                              <Divider />
+                              <div style={{ paddingBottom: 13 }} className="w-full flex flex-wrap gap-2">
+                                {item.shelves &&
+                                  item.shelves.length > 0 &&
+                                  [
+                                    ...new Set(item.shelves.filter((shelf) => shelf.anomaly_type !== '').map((shelf) => shelf.anomaly_type))
+                                  ].map((anomalyType, index) => {
+                                    const shelvesWithAnomaly = item.shelves.filter((shelf) => shelf.anomaly_type === anomalyType);
+                                    return (
+                                      <Tooltip key={index}>
+                                        <Box
+                                          paddingX={0.2}
+                                          paddingY={0.04}
+                                          className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                          onMouseEnter={() => {
+                                            const boxes = shelvesWithAnomaly
+                                              .map((shelf) => {
+                                                if (shelf.coords) {
+                                                  const { left, top, width, height } = calculate(
+                                                    shelf.coords.xmin,
+                                                    shelf.coords.ymin,
+                                                    shelf.coords.xmax,
+                                                    shelf.coords.ymax,
+                                                    1,
+                                                    true
+                                                  );
+                                                  return { left, top, width, height };
+                                                }
+                                                return null;
+                                              })
+                                              .filter((box) => box !== null);
+
+                                            setBoundingBoxes(boxes);
+                                            setAntn(1);
+                                          }}
+                                          onMouseLeave={() => {
+                                            setBoundingBoxes([]);
+                                            setAntn(0);
+                                          }}
+                                        >
+                                          <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
+                                          <Typography paddingRight={2} variant="h6">
+                                            {formatText(anomalyType)} ({shelvesWithAnomaly.length})
+                                          </Typography>
+                                        </Box>
+                                      </Tooltip>
+                                    );
+                                  })}
+                              </div>
+                              <Divider />
+                              <Typography width={'100%'} variant="h5">
+                                Team
+                              </Typography>
+                              <div style={{ paddingBottom: 13 }} className="w-full flex justify-start">
+                                <AvatarGroup
+                                  sx={{
+                                    '& .MuiAvatar-root': { width: 40, height: 40, fontSize: 24 }
+                                  }}
+                                  max={2}
+                                >
+                                  <Tooltip
+                                    title={
+                                      <div className="w-[200px] p-2 flex flex-col space-y-2">
+                                        <Typography sx={{ width: '100%', color: 'white' }} variant="h6">
+                                          Agent Details
+                                        </Typography>
+                                        <Typography variant="subtitle2">Name: {item.user[0].name}</Typography>
+                                        <Typography variant="subtitle2">Number: {item.user[0].number}</Typography>
+                                      </div>
+                                    }
+                                    enterTouchDelay={1}
+                                    leaveTouchDelay={100000}
+                                  >
+                                    <Avatar
+                                      className="hover:cursor-pointer"
+                                      sx={{ bgcolor: success }}
+                                      alt={item.user[0].name}
+                                      src="/example.jpg"
+                                    />
+                                  </Tooltip>
+                                </AvatarGroup>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ) : (
-                        <div className="flex w-full h-full">
-                          <img src={noData} alt="img" style={{ height: '50%', width: '100%', borderRadius: '7px', cursor: 'pointer' }} />
-                        </div>
-                      )}
-                    </Grid>
-                  ))}
-                </Slider>
+                        ) : (
+                          <div className="flex w-full h-full">
+                            <img src={noData} alt="img" style={{ height: '50%', width: '100%', borderRadius: '7px', cursor: 'pointer' }} />
+                          </div>
+                        )}
+                      </Grid>
+                    ))}
+                  </Slider>
+                ) : (
+                  <div className="w-full h-[400px] flex justify-center items-center flex-col gap-4">
+                    <img src={noData} alt="No Data" style={{ height: '200px', width: 'auto', opacity: '0.6' }} />
+                    <Typography variant="h4" color="textSecondary">
+                      No Data Available
+                    </Typography>
+                  </div>
+                )}
               </Grid>
             )}
           </Grid>
@@ -469,58 +514,314 @@ export default function ShelfView({ date }) {
               top: '4%'
             }}
           />
+          <ChevronLeftRounded
+            onClick={handlePrevBay}
+            className="text-gray-400 opacity-50 hover:opacity-100 absolute z-10 cursor-pointer lg:left-[2%] lg:top-[45%] left-0 top-[35%] w-10 h-10 md:w-20 md:h-20"
+            tabIndex="0"
+          />
+          <ChevronRightRounded
+            onClick={handleNextBay}
+            className="text-gray-400 opacity-50 hover:opacity-100 w-10 h-10 md:w-20 md:h-20 absolute z-10 cursor-pointer lg:right-[2%] lg:top-[45%] right-0 top-[35%]"
+            tabIndex="0"
+          />
           {loading ? (
             <div className="flex justify-center items-center h-full">
               <l-bouncy size="45" speed="1.75" color="white"></l-bouncy>
             </div>
+          ) : !dialogData || !dialogData.img_url ? (
+            <div className="flex justify-center items-center h-full flex-col gap-6">
+              <img src={noData} alt="No Data" style={{ height: '300px', width: 'auto', opacity: '0.6' }} />
+              <Typography variant="h3" className="text-white opacity-60">
+                No Data Available
+              </Typography>
+            </div>
           ) : (
-            dialogData && (
-              <div className="zoom-container">
-                <ChevronLeftRounded
-                  onClick={handlePrevBay}
-                  className="text-gray-400 opacity-50 hover:opacity-100 absolute z-10 cursor-pointer lg:left-[2%] lg:top-[45%] left-0 top-[35%] w-10 h-10 md:w-20 md:h-20"
-                  // onKeyDown={handleKeyDownBay}
-                  tabIndex="0"
-                />
-                <ChevronRightRounded
-                  onClick={handleNextBay}
-                  className="text-gray-400 opacity-50 hover:opacity-100 w-10 h-10 md:w-20 md:h-20 absolute z-10 cursor-pointer lg:right-[2%] lg:top-[45%] right-0 top-[35%]"
-                  // onKeyDown={handleKeyDownBay}
-                  tabIndex="0"
-                />
-                <div className="image-container flex justify-center items-center lg:mb-0 mb-10 relative">
-                  <TransformWrapper>
-                    <TransformComponent>
-                      <div style={{ position: 'relative' }}>
-                        <img
-                          className="self-center lg:max-h-[95vh] lg:max-w-[95vw] max-h-[80vh] md:max-h-[85vh] mt-10 md:mt-0 text-white"
-                          src={dialogData.img_url}
-                          alt="No img found"
-                          ref={imageRef}
-                          onLoad={handleImageLoad}
-                        />
-                        {antn !== 0 && (
+            <div className="zoom-container">
+              <div className="image-container flex justify-center items-center lg:mb-0 mb-10 relative">
+                <TransformWrapper>
+                  <TransformComponent>
+                    <div style={{ position: 'relative' }}>
+                      <img
+                        className="self-center lg:max-h-[95vh] lg:max-w-[95vw] max-h-[80vh] md:max-h-[85vh] mt-10 md:mt-0 text-white"
+                        src={dialogData.img_url}
+                        alt="No img found"
+                        ref={imageRef}
+                        onLoad={handleImageLoad}
+                      />
+                      {antn !== 0 &&
+                        boundingBoxes &&
+                        boundingBoxes.map((box, index) => (
                           <div
+                            key={index}
                             style={{
                               position: 'absolute',
-                              left: `${pos.lft}%`,
-                              top: `${pos.tp}%`,
-                              width: `${pos.wdth}%`,
-                              height: `${pos.hght}%`,
+                              left: `${box.left}%`,
+                              top: `${box.top}%`,
+                              width: `${box.width}%`,
+                              height: `${box.height}%`,
                               border: `2px solid ${antn === 1 ? 'red' : 'green'}`,
                               backgroundColor: antn === 1 ? 'rgba(255, 0, 0, 0.2)' : 'rgba(0, 255, 0, 0.2)',
                               pointerEvents: 'none'
                             }}
                           />
+                        ))}
+                    </div>
+                  </TransformComponent>
+                </TransformWrapper>
+              </div>
+              {isMobile ? (
+                <>
+                  <IconButton
+                    className="absolute text-white left-[4%] top-[3%]"
+                    size="large"
+                    aria-label="more"
+                    id="long-button"
+                    aria-controls={open ? 'long-menu' : undefined}
+                    aria-expanded={open ? 'true' : undefined}
+                    aria-haspopup="true"
+                    onClick={handleClick}
+                  >
+                    <MenuIcon />
+                  </IconButton>
+                  <Menu
+                    id="long-menu"
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleClose}
+                    PaperProps={{
+                      style: {
+                        maxHeight: '80vh',
+                        width: '80vw',
+                        backgroundColor: 'white',
+                        color: 'rgba(0, 0, 0, 0.8)'
+                      }
+                    }}
+                  >
+                    <MenuItem>
+                      <Typography variant="h6">
+                        {dialogData.bay_id} - {dialogData.bay_info.brand_name}
+                      </Typography>
+                    </MenuItem>
+                    <Divider style={{ backgroundColor: 'white' }} />
+                    <MenuItem>
+                      <Typography variant="body1">Date & Time: {formatDate(dialogData.timestamp)}</Typography>
+                    </MenuItem>
+                    <Divider style={{ backgroundColor: 'white' }} />
+                    <MenuItem>
+                      <Typography variant="body1">OSA Score: {dialogData.OSA_Score}%</Typography>
+                    </MenuItem>
+                    <MenuItem>
+                      <Typography variant="body1">Tester Score: {dialogData.testers_score}%</Typography>
+                    </MenuItem>
+                    <MenuItem>
+                      <Typography variant="body1">Category: {dialogData.category}</Typography>
+                    </MenuItem>
+                    <Divider style={{ backgroundColor: 'white' }} />
+                    <MenuItem>
+                      <Typography variant="body1">Name: {dialogData.user[0].name}</Typography>
+                    </MenuItem>
+                    <MenuItem>
+                      <Typography variant="body1">Number: {dialogData.user[0].number}</Typography>
+                    </MenuItem>
+                    <Divider style={{ backgroundColor: 'white' }} />
+                    <MenuItem style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                      <div className="flex flex-wrap gap-2">
+                        <Typography variant="body1">Anomalies</Typography>
+                        <Divider style={{ backgroundColor: 'white' }} />
+                        {anomalyType === 'color_assortment' ? (
+                          <Box
+                            paddingX={0.2}
+                            paddingY={0.04}
+                            className="bg-white rounded-full flex gap-1 justify-center place-items-center"
+                          >
+                            <RiErrorWarningLine className="text-2xl mr-0.5 text-purple-500" />
+                            <Typography variant="body2">Colour</Typography>
+                          </Box>
+                        ) : (
+                          dialogData &&
+                          dialogData.shelves &&
+                          [
+                            ...new Set(dialogData.shelves.filter((shelf) => shelf.anomaly_type !== '').map((shelf) => shelf.anomaly_type))
+                          ].map((anomalyType, index) => {
+                            const shelvesWithAnomaly = dialogData.shelves.filter((shelf) => shelf.anomaly_type === anomalyType);
+                            return (
+                              <Box
+                                key={index}
+                                paddingX={0.2}
+                                paddingY={0.04}
+                                className="bg-white rounded-full flex gap-1 justify-center place-items-center"
+                                onMouseEnter={() => {
+                                  const boxes = shelvesWithAnomaly
+                                    .map((shelf) => {
+                                      if (shelf.coords) {
+                                        const { left, top, width, height } = calculate(
+                                          shelf.coords.xmin,
+                                          shelf.coords.ymin,
+                                          shelf.coords.xmax,
+                                          shelf.coords.ymax,
+                                          1,
+                                          true
+                                        );
+                                        return { left, top, width, height };
+                                      }
+                                      return null;
+                                    })
+                                    .filter((box) => box !== null);
+
+                                  setBoundingBoxes(boxes);
+                                  setAntn(1);
+                                }}
+                                onMouseLeave={() => {
+                                  setBoundingBoxes([]);
+                                  setAntn(0);
+                                }}
+                              >
+                                <RiErrorWarningLine className="text-2xl mr-0.5" style={{ color: error }} />
+                                <Typography variant="body2">
+                                  {formatText(anomalyType)} ({shelvesWithAnomaly.length})
+                                </Typography>
+                              </Box>
+                            );
+                          })
                         )}
                       </div>
-                    </TransformComponent>
-                  </TransformWrapper>
-                </div>
-                {isMobile ? (
-                  <>
+                    </MenuItem>
+                  </Menu>
+                </>
+              ) : (
+                <>
+                  <div
+                    className=" text-xl cursor-pointer text-white absolute hidden xl:block"
+                    style={{
+                      left: '4%',
+                      top: '3%'
+                    }}
+                  >
+                    <Typography variant="h3" className="text-white">
+                      {dialogData.bay_id} - {dialogData.bay_info.brand_name}
+                    </Typography>
+                  </div>
+                  <div
+                    className=" text-xl cursor-pointer text-white absolute hidden xl:block"
+                    style={{
+                      left: '4%',
+                      top: '20%'
+                    }}
+                  >
+                    <Typography variant="h3" className="text-white">
+                      Date & Time of Capture
+                    </Typography>
+                    <Divider color="white" className="mb-2" />
+                    <Typography variant="h5" className="text-white">
+                      {formatDate(dialogData.timestamp)}
+                    </Typography>
+                  </div>
+                  <div
+                    className=" text-xl cursor-pointer text-white absolute hidden xl:block"
+                    style={{
+                      left: '4%',
+                      top: '35%'
+                    }}
+                  >
+                    <Typography variant="h3" className="text-white">
+                      OSA Score: {dialogData.OSA_Score}%
+                    </Typography>
+                    <Typography variant="h3" className="text-white">
+                      Tester Score: {dialogData.testers_score}%{' '}
+                    </Typography>
+                    <Typography variant="h3" className="text-white">
+                      Category: {dialogData.category}
+                    </Typography>
+                  </div>
+                  <div
+                    className=" text-xl cursor-pointer text-white absolute xl:block hidden"
+                    style={{
+                      left: '4%',
+                      bottom: '3%'
+                    }}
+                  >
+                    <Typography variant="h3" className="text-white">
+                      Name: {dialogData.user[0].name}
+                    </Typography>
+                    <Typography variant="h3" className="text-white">
+                      Number: {dialogData.user[0].number}
+                    </Typography>
+                  </div>
+
+                  <div
+                    className=" text-xl cursor-pointer text-white absolute hidden xl:block"
+                    style={{
+                      right: '4%',
+                      top: '20%'
+                    }}
+                  >
+                    <Typography variant="h3" className="text-white">
+                      Anomalies
+                    </Typography>
+                    <Divider color="white" className="mb-2" />
+                    <div className="flex flex-wrap gap-2 w-80">
+                      {anomalyType === 'color_assortment' ? (
+                        <Box
+                          paddingX={0.2}
+                          paddingY={0.04}
+                          className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center"
+                        >
+                          <RiErrorWarningLine className="text-4xl mr-0.5 text-purple-500" />
+                          <Typography paddingRight={2} variant="h6">
+                            Colour
+                          </Typography>
+                        </Box>
+                      ) : (
+                        dialogData &&
+                        dialogData.shelves &&
+                        [
+                          ...new Set(dialogData.shelves.filter((shelf) => shelf.anomaly_type !== '').map((shelf) => shelf.anomaly_type))
+                        ].map((anomalyType, index) => {
+                          const shelvesWithAnomaly = dialogData.shelves.filter((shelf) => shelf.anomaly_type === anomalyType);
+                          return (
+                            <Tooltip key={index}>
+                              <Box
+                                paddingX={0.2}
+                                paddingY={0.04}
+                                className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                onMouseEnter={() => {
+                                  const boxes = shelvesWithAnomaly
+                                    .map((shelf) => {
+                                      if (shelf.coords) {
+                                        const { left, top, width, height } = calculate(
+                                          shelf.coords.xmin,
+                                          shelf.coords.ymin,
+                                          shelf.coords.xmax,
+                                          shelf.coords.ymax,
+                                          1,
+                                          true
+                                        );
+                                        return { left, top, width, height };
+                                      }
+                                      return null;
+                                    })
+                                    .filter((box) => box !== null);
+
+                                  setBoundingBoxes(boxes);
+                                  setAntn(1);
+                                }}
+                                onMouseLeave={() => {
+                                  setBoundingBoxes([]);
+                                  setAntn(0);
+                                }}
+                              >
+                                <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
+                                <Typography paddingRight={2} variant="h6">
+                                  {removeAfterLastUnderscore(anomalyType)} ({shelvesWithAnomaly.length})
+                                </Typography>
+                              </Box>
+                            </Tooltip>
+                          );
+                        })
+                      )}
+                    </div>
                     <IconButton
-                      className="absolute text-white left-[4%] top-[3%]"
+                      className="absolute text-white left-[4%] top-[3%] xl:hidden"
                       size="large"
                       aria-label="more"
                       id="long-button"
@@ -531,281 +832,10 @@ export default function ShelfView({ date }) {
                     >
                       <MenuIcon />
                     </IconButton>
-                    <Menu
-                      id="long-menu"
-                      anchorEl={anchorEl}
-                      open={open}
-                      onClose={handleClose}
-                      PaperProps={{
-                        style: {
-                          maxHeight: '80vh',
-                          width: '80vw',
-                          backgroundColor: 'white',
-                          color: 'rgba(0, 0, 0, 0.8)'
-                        }
-                      }}
-                    >
-                      <MenuItem>
-                        <Typography variant="h6">
-                          {dialogData.bay_id} - {dialogData.bay_info.brand_name}
-                        </Typography>
-                      </MenuItem>
-                      <Divider style={{ backgroundColor: 'white' }} />
-                      <MenuItem>
-                        <Typography variant="body1">Date & Time: {formatDate(dialogData.timestamp)}</Typography>
-                      </MenuItem>
-                      <Divider style={{ backgroundColor: 'white' }} />
-                      <MenuItem>
-                        <Typography variant="body1">OSA Score: {dialogData.OSA_Score}%</Typography>
-                      </MenuItem>
-                      <MenuItem>
-                        <Typography variant="body1">Tester Score: {dialogData.testers_score}%</Typography>
-                      </MenuItem>
-                      <MenuItem>
-                        <Typography variant="body1">Category: {dialogData.category}</Typography>
-                      </MenuItem>
-                      <Divider style={{ backgroundColor: 'white' }} />
-                      <MenuItem>
-                        <Typography variant="body1">Name: {dialogData.user[0].name}</Typography>
-                      </MenuItem>
-                      <MenuItem>
-                        <Typography variant="body1">Number: {dialogData.user[0].number}</Typography>
-                      </MenuItem>
-                      <Divider style={{ backgroundColor: 'white' }} />
-                      <MenuItem style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                        <div className="flex flex-wrap gap-2">
-                          <Typography variant="body1">Anomalies</Typography>
-                          <Divider style={{ backgroundColor: 'white' }} />
-                          {anomalyType === 'color_assortment' ? (
-                            <Box
-                              paddingX={0.2}
-                              paddingY={0.04}
-                              className="bg-white rounded-full flex gap-1 justify-center place-items-center"
-                            >
-                              <RiErrorWarningLine className="text-2xl mr-0.5 text-purple-500" />
-                              <Typography variant="body2">Colour</Typography>
-                            </Box>
-                          ) : (
-                            dialogData.shelves &&
-                            dialogData.shelves.map((itm, ind) =>
-                              itm.anomaly_type !== '' ? (
-                                <Box
-                                  key={ind}
-                                  paddingX={0.2}
-                                  paddingY={0.04}
-                                  className="bg-white rounded-full flex gap-1 justify-center place-items-center"
-                                >
-                                  <RiErrorWarningLine className="text-2xl mr-0.5" style={{ color: error }} />
-                                  <Typography variant="body2">{formatText(itm.anomaly_type)}</Typography>
-                                </Box>
-                              ) : (
-                                <Box
-                                  key={ind}
-                                  paddingX={0.2}
-                                  paddingY={0.04}
-                                  className="bg-white rounded-full flex gap-1 justify-center place-items-center"
-                                >
-                                  <RiCheckboxCircleLine className="text-2xl mr-0.5" style={{ color: 'green' }} />
-                                  <Typography variant="body2">No Anomaly</Typography>
-                                </Box>
-                              )
-                            )
-                          )}
-                        </div>
-                      </MenuItem>
-                    </Menu>
-                  </>
-                ) : (
-                  <>
-                    <div
-                      className=" text-xl cursor-pointer text-white absolute hidden xl:block"
-                      style={{
-                        left: '4%',
-                        top: '3%'
-                      }}
-                    >
-                      <Typography variant="h3" className="text-white">
-                        {dialogData.bay_id} - {dialogData.bay_info.brand_name}
-                      </Typography>
-                    </div>
-                    <div
-                      className=" text-xl cursor-pointer text-white absolute hidden xl:block"
-                      style={{
-                        left: '4%',
-                        top: '20%'
-                      }}
-                    >
-                      <Typography variant="h3" className="text-white">
-                        Date & Time of Capture
-                      </Typography>
-                      <Divider color="white" className="mb-2" />
-                      <Typography variant="h5" className="text-white">
-                        {formatDate(dialogData.timestamp)}
-                      </Typography>
-                    </div>
-                    <div
-                      className=" text-xl cursor-pointer text-white absolute hidden xl:block"
-                      style={{
-                        left: '4%',
-                        top: '35%'
-                      }}
-                    >
-                      <Typography variant="h3" className="text-white">
-                        OSA Score: {dialogData.OSA_Score}%
-                      </Typography>
-                      <Typography variant="h3" className="text-white">
-                        Tester Score: {dialogData.testers_score}%{' '}
-                      </Typography>
-                      <Typography variant="h3" className="text-white">
-                        Category: {dialogData.category}
-                      </Typography>
-                    </div>
-                    <div
-                      className=" text-xl cursor-pointer text-white absolute xl:block hidden"
-                      style={{
-                        left: '4%',
-                        bottom: '3%'
-                      }}
-                    >
-                      <Typography variant="h3" className="text-white">
-                        Name: {dialogData.user[0].name}
-                      </Typography>
-                      <Typography variant="h3" className="text-white">
-                        Number: {dialogData.user[0].number}
-                      </Typography>
-                    </div>
-
-                    <div
-                      className=" text-xl cursor-pointer text-white absolute hidden xl:block"
-                      style={{
-                        right: '4%',
-                        top: '20%'
-                      }}
-                    >
-                      <Typography variant="h3" className="text-white">
-                        Anomalies
-                      </Typography>
-                      <Divider color="white" className="mb-2" />
-                      <div className="flex flex-wrap gap-2 w-80">
-                        {anomalyType === 'color_assortment' ? (
-                          <Box
-                            paddingX={0.2}
-                            paddingY={0.04}
-                            className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center"
-                          >
-                            <RiErrorWarningLine className="text-4xl mr-0.5 text-purple-500" />
-                            <Typography paddingRight={2} variant="h6">
-                              Colour
-                            </Typography>
-                          </Box>
-                        ) : (
-                          dialogData &&
-                          dialogData.shelves &&
-                          dialogData.shelves.map(
-                            (itm, ind) =>
-                              itm.anomaly_type !== '' ? (
-                                <Tooltip key={0 + ind}>
-                                  <Box
-                                    paddingX={0.2}
-                                    paddingY={0.04}
-                                    className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                    onMouseEnter={() => {
-                                      if (itm.coords) {
-                                        calculate(
-                                          itm.coords.xmin,
-                                          itm.coords.ymin,
-                                          itm.coords.xmax,
-                                          itm.coords.ymax,
-                                          itm.anomaly_type !== '' ? 1 : 2
-                                        );
-                                      }
-                                    }}
-                                    onMouseLeave={() => {
-                                      setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                      setAntn(0);
-                                    }}
-                                  >
-                                    <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
-                                    <Typography paddingRight={2} variant="h6">
-                                      {removeAfterLastUnderscore(itm.anomaly_type)}
-                                      {/* {itm.type.map((anomaly) => removeAfterLastUnderscore(anomaly))} */}
-                                    </Typography>
-                                  </Box>
-                                </Tooltip>
-                              ) : (
-                                <Tooltip
-                                  key={0 + ind}
-                                  // title={
-                                  //   <div>
-                                  //     {console.log(itm, ind)}
-                                  //     <Typography variant="body1">
-                                  //       Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
-                                  //     </Typography>
-                                  //     <Typography variant="body1">
-                                  //       <span>Description :</span>
-                                  //       {itm.anomaly_type === 'alien_pop'
-                                  //         ? itm.print_tag
-                                  //           ? itm.print_tag
-                                  //           : 'No Data Found'
-                                  //         : itm.article_description
-                                  //         ? itm.article_description
-                                  //         : 'No Data Found'}
-                                  //     </Typography>
-                                  //     <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
-                                  //   </div>
-                                  // }
-                                >
-                                  <Box
-                                    paddingX={0.2}
-                                    paddingY={0.04}
-                                    className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                    onMouseEnter={() => {
-                                      if (itm.coords) {
-                                        calculate(
-                                          itm.coords.xmin,
-                                          itm.coords.ymin,
-                                          itm.coords.xmax,
-                                          itm.coords.ymax,
-                                          itm.anomaly_type !== '' ? 1 : 2
-                                        );
-                                      }
-                                    }}
-                                    onMouseLeave={() => {
-                                      setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                      setAntn(0);
-                                    }}
-                                  >
-                                    <RiCheckboxCircleLine className="text-4xl mr-0.5" style={{ color: 'green' }} />
-                                    <Typography paddingRight={2} variant="h6">
-                                      No Anomaly
-                                      {/* {removeAfterLastUnderscore(itm.anomaly_type)} */}
-                                      {/* {cData[0].unique_anomaly_array.map((anomaly) => removeAfterLastUnderscore(anomaly) )} */}
-                                    </Typography>
-                                  </Box>
-                                </Tooltip>
-                              )
-                            // )
-                          )
-                          // )
-                        )}
-                      </div>
-                      <IconButton
-                        className="absolute text-white left-[4%] top-[3%] xl:hidden"
-                        size="large"
-                        aria-label="more"
-                        id="long-button"
-                        aria-controls={open ? 'long-menu' : undefined}
-                        aria-expanded={open ? 'true' : undefined}
-                        aria-haspopup="true"
-                        onClick={handleClick}
-                      >
-                        <MenuIcon />
-                      </IconButton>
-                    </div>
-                  </>
-                )}
-              </div>
-            )
+                  </div>
+                </>
+              )}
+            </div>
           )}
         </DialogContent>
       </Dialog>

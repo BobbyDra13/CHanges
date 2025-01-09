@@ -424,7 +424,6 @@ const Customers = () => {
     setMetadata(id);
 
     if (antn) {
-      setPos({ lft: false, tp: false, wdth: false, ht: false });
       //setAntn(!antn);
       setAntn(0);
     }
@@ -448,10 +447,8 @@ const Customers = () => {
     console.log('i am clicked', isImageDialogOpen2);
     console.log('anomaly', anomaly);
     if (antn) {
-      setPos({ lft: false, tp: false, wdth: false, ht: false });
       setAntn(!antn);
     }
-    // setPosArr([]);
     if (!isImageDialogOpen2) {
       console.log('i am clicked inside', isImageDialogOpen2);
       // setCdata(anomaly);
@@ -516,7 +513,6 @@ const Customers = () => {
     setMetadata(id);
 
     if (antn) {
-      setPos({ lft: false, tp: false, wdth: false, ht: false });
       //setAntn(!antn);
       setAntn(0);
     }
@@ -630,7 +626,6 @@ const Customers = () => {
 
   const imageRef = useRef(null);
   const [antn, setAntn] = useState(0);
-  const [pos, setPos] = useState({ lft: false, tp: false, wdth: false, ht: false });
   const [natural] = useState({ wdth: false, hght: false });
 
   const calculate = useCallback(
@@ -646,7 +641,6 @@ const Customers = () => {
         return { left: lft, top: tp, width, height };
       }
 
-      setPos({ lft, tp, wdth: width, hght: height });
       setAntn(code);
     },
     [imageDimensions]
@@ -921,6 +915,9 @@ const Customers = () => {
     }
   }, [cData]);
   console.log('cData', cData);
+
+  //Do not remove, will get fixedlater
+  //eslint-disable-next-line
   const GetBrandWiseDetails = async (brand_id) => {
     try {
       console.log('brand_id', brand_id);
@@ -1431,27 +1428,29 @@ const Customers = () => {
                           // onLoad={findDimensions}
                           ref={imageRef}
                           onLoad={handleImageLoad}
-                          onClick={() => {
-                            console.log('i am clicked too');
-                            GetBrandWiseDetails(cData[0].brand_id);
-                          }}
+                          // onClick={() => {
+                          //   console.log('i am clicked too');
+                          //   GetBrandWiseDetails(cData[0].brand_id);
+                          // }}
                         />
 
-                        {antn !== 0 && boundingBoxes && boundingBoxes.map((box, index) => (
-                          <div
-                            key={index}
-                            style={{
-                              position: 'absolute',
-                              left: `${box.left}%`,
-                              top: `${box.top}%`,
-                              width: `${box.width}%`,
-                              height: `${box.height}%`,
-                              border: `2px solid ${antn === 1 ? 'red' : 'green'}`,
-                              backgroundColor: antn === 1 ? 'rgba(255, 0, 0, 0.2)' : 'rgba(0, 255, 0, 0.2)',
-                              pointerEvents: 'none'
-                            }}
-                          />
-                        ))}
+                        {antn !== 0 &&
+                          boundingBoxes &&
+                          boundingBoxes.map((box, index) => (
+                            <div
+                              key={index}
+                              style={{
+                                position: 'absolute',
+                                left: `${box.left}%`,
+                                top: `${box.top}%`,
+                                width: `${box.width}%`,
+                                height: `${box.height}%`,
+                                border: `2px solid ${antn === 1 ? 'red' : 'green'}`,
+                                backgroundColor: antn === 1 ? 'rgba(255, 0, 0, 0.2)' : 'rgba(0, 255, 0, 0.2)',
+                                pointerEvents: 'none'
+                              }}
+                            />
+                          ))}
                       </div>
                       {/* </TransformComponent> */}
                     </div>
@@ -1499,8 +1498,10 @@ const Customers = () => {
                           cData &&
                           cData.length > 0 &&
                           cData[0].shelves &&
-                          [...new Set(cData[0].shelves.filter(shelf => shelf.anomaly_type !== '').map(shelf => shelf.anomaly_type))].map((anomalyType, index) => {
-                            const shelvesWithAnomaly = cData[0].shelves.filter(shelf => shelf.anomaly_type === anomalyType);
+                          [
+                            ...new Set(cData[0].shelves.filter((shelf) => shelf.anomaly_type !== '').map((shelf) => shelf.anomaly_type))
+                          ].map((anomalyType, index) => {
+                            const shelvesWithAnomaly = cData[0].shelves.filter((shelf) => shelf.anomaly_type === anomalyType);
                             return (
                               <Tooltip key={index}>
                                 <Box
@@ -1508,22 +1509,23 @@ const Customers = () => {
                                   paddingY={0.04}
                                   className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
                                   onMouseEnter={() => {
-                                    // Create multiple bounding boxes for all shelves with this anomaly type
-                                    const boxes = shelvesWithAnomaly.map(shelf => {
-                                      if (shelf.coords) {
-                                        const { left, top, width, height } = calculate(
-                                          shelf.coords.xmin,
-                                          shelf.coords.ymin,
-                                          shelf.coords.xmax,
-                                          shelf.coords.ymax,
-                                          1,
-                                          true
-                                        );
-                                        return { left, top, width, height };
-                                      }
-                                      return null;
-                                    }).filter(box => box !== null);
-                                    
+                                    const boxes = shelvesWithAnomaly
+                                      .map((shelf) => {
+                                        if (shelf.coords) {
+                                          const { left, top, width, height } = calculate(
+                                            shelf.coords.xmin,
+                                            shelf.coords.ymin,
+                                            shelf.coords.xmax,
+                                            shelf.coords.ymax,
+                                            1,
+                                            true
+                                          );
+                                          return { left, top, width, height };
+                                        }
+                                        return null;
+                                      })
+                                      .filter((box) => box !== null);
+
                                     setBoundingBoxes(boxes);
                                     setAntn(1);
                                   }}
@@ -1811,21 +1813,23 @@ const Customers = () => {
                           onLoad={handleImageLoad}
                           ref={imageRef}
                         />
-                        {antn !== 0 && boundingBoxes && boundingBoxes.map((box, index) => (
-                          <div
-                            key={index}
-                            style={{
-                              position: 'absolute',
-                              left: `${box.left}%`,
-                              top: `${box.top}%`,
-                              width: `${box.width}%`,
-                              height: `${box.height}%`,
-                              border: `2px solid ${antn === 1 ? 'red' : 'green'}`,
-                              backgroundColor: antn === 1 ? 'rgba(255, 0, 0, 0.2)' : 'rgba(0, 255, 0, 0.2)',
-                              pointerEvents: 'none'
-                            }}
-                          />
-                        ))}
+                        {antn !== 0 &&
+                          boundingBoxes &&
+                          boundingBoxes.map((box, index) => (
+                            <div
+                              key={index}
+                              style={{
+                                position: 'absolute',
+                                left: `${box.left}%`,
+                                top: `${box.top}%`,
+                                width: `${box.width}%`,
+                                height: `${box.height}%`,
+                                border: `2px solid ${antn === 1 ? 'red' : 'green'}`,
+                                backgroundColor: antn === 1 ? 'rgba(255, 0, 0, 0.2)' : 'rgba(0, 255, 0, 0.2)',
+                                pointerEvents: 'none'
+                              }}
+                            />
+                          ))}
                         {/* {nextBtn && (
                             <>
                               <IconButton
@@ -1901,21 +1905,23 @@ const Customers = () => {
                           onLoad={handleImageLoad}
                           ref={imageRef}
                         />
-                        {antn !== 0 && boundingBoxes && boundingBoxes.map((box, index) => (
-                          <div
-                            key={index}
-                            style={{
-                              position: 'absolute',
-                              left: `${box.left}%`,
-                              top: `${box.top}%`,
-                              width: `${box.width}%`,
-                              height: `${box.height}%`,
-                              border: `2px solid ${antn === 1 ? 'red' : 'green'}`,
-                              backgroundColor: antn === 1 ? 'rgba(255, 0, 0, 0.2)' : 'rgba(0, 255, 0, 0.2)',
-                              pointerEvents: 'none'
-                            }}
-                          />
-                        ))}
+                        {antn !== 0 &&
+                          boundingBoxes &&
+                          boundingBoxes.map((box, index) => (
+                            <div
+                              key={index}
+                              style={{
+                                position: 'absolute',
+                                left: `${box.left}%`,
+                                top: `${box.top}%`,
+                                width: `${box.width}%`,
+                                height: `${box.height}%`,
+                                border: `2px solid ${antn === 1 ? 'red' : 'green'}`,
+                                backgroundColor: antn === 1 ? 'rgba(255, 0, 0, 0.2)' : 'rgba(0, 255, 0, 0.2)',
+                                pointerEvents: 'none'
+                              }}
+                            />
+                          ))}
                         {/* {nextBtn && (
                             <>
                               <IconButton
@@ -2083,93 +2089,52 @@ const Customers = () => {
                               brands &&
                               brands.length > 0 &&
                               brands[0].shelves &&
-                              brands[0].shelves.map(
-                                (itm, ind) =>
-                                  itm.anomaly_type !== '' ? (
-                                    <Tooltip key={0 + ind}>
-                                      <Box
-                                        paddingX={0.2}
-                                        paddingY={0.04}
-                                        className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                        onMouseEnter={() => {
-                                          if (itm.coords) {
-                                            calculate(
-                                              itm.coords.xmin,
-                                              itm.coords.ymin,
-                                              itm.coords.xmax,
-                                              itm.coords.ymax,
-                                              itm.anomaly_type !== '' ? 1 : 2
-                                            );
-                                          }
-                                        }}
-                                        onMouseLeave={() => {
-                                          setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                          setAntn(0);
-                                        }}
-                                      >
-                                        {console.log('poppp', itm.coords)}
-                                        <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
-                                        <Typography paddingRight={2} variant="h6">
-                                          {removeAfterLastUnderscore(itm.anomaly_type)}
-                                          {/* {itm.type.map((anomaly) => removeAfterLastUnderscore(anomaly))} */}
-                                        </Typography>
-                                      </Box>
-                                    </Tooltip>
-                                  ) : (
-                                    <Tooltip
-                                      key={0 + ind}
-                                      // title={
-                                      //   <div>
-                                      //     {console.log(itm, ind)}
-                                      //     <Typography variant="body1">
-                                      //       Article Code: {itm.article_code ? itm.article_code : 'No Data Found'}
-                                      //     </Typography>
-                                      //     <Typography variant="body1">
-                                      //       <span>Description :</span>
-                                      //       {itm.anomaly_type === 'alien_pop'
-                                      //         ? itm.print_tag
-                                      //           ? itm.print_tag
-                                      //           : 'No Data Found'
-                                      //         : itm.article_description
-                                      //         ? itm.article_description
-                                      //         : 'No Data Found'}
-                                      //     </Typography>
-                                      //     <Typography variant="body1">Ean Code: {itm.ean_code ? itm.ean_code : 'No Data Found'}</Typography>
-                                      //   </div>
-                                      // }
+                              [
+                                ...new Set(
+                                  brands[0].shelves.filter((shelf) => shelf.anomaly_type !== '').map((shelf) => shelf.anomaly_type)
+                                )
+                              ].map((anomalyType, index) => {
+                                const shelvesWithAnomaly = brands[0].shelves.filter((shelf) => shelf.anomaly_type === anomalyType);
+                                return (
+                                  <Tooltip key={index}>
+                                    <Box
+                                      paddingX={0.2}
+                                      paddingY={0.04}
+                                      className="bg-gray-200 rounded-full flex gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
+                                      onMouseEnter={() => {
+                                        const boxes = shelvesWithAnomaly
+                                          .map((shelf) => {
+                                            if (shelf.coords) {
+                                              const { left, top, width, height } = calculate(
+                                                shelf.coords.xmin,
+                                                shelf.coords.ymin,
+                                                shelf.coords.xmax,
+                                                shelf.coords.ymax,
+                                                1,
+                                                true
+                                              );
+                                              return { left, top, width, height };
+                                            }
+                                            return null;
+                                          })
+                                          .filter((box) => box !== null);
+
+                                        setBoundingBoxes(boxes);
+                                        setAntn(1);
+                                      }}
+                                      onMouseLeave={() => {
+                                        setBoundingBoxes([]);
+                                        setAntn(0);
+                                      }}
                                     >
-                                      <Box
-                                        paddingX={0.2}
-                                        paddingY={0.04}
-                                        className="bg-gray-200 rounded-full hidden  gap-1 justify-center place-items-center cursor-pointer hover:bg-amber-500"
-                                        onMouseEnter={() => {
-                                          if (itm.coords) {
-                                            calculate(
-                                              itm.coords.xmin,
-                                              itm.coords.ymin,
-                                              itm.coords.xmax,
-                                              itm.coords.ymax,
-                                              itm.anomaly_type !== '' ? 1 : 2
-                                            );
-                                          }
-                                        }}
-                                        onMouseLeave={() => {
-                                          setPos({ lft: false, tp: false, wdth: false, ht: false });
-                                          setAntn(0);
-                                        }}
-                                      >
-                                        <RiCheckboxCircleLine className="text-4xl mr-0.5" style={{ color: 'green' }} />
-                                        <Typography paddingRight={2} variant="h6">
-                                          No Anomaly
-                                          {/* {removeAfterLastUnderscore(itm.anomaly_type)} */}
-                                          {/* {cData[0].unique_anomaly_array.map((anomaly) => removeAfterLastUnderscore(anomaly) )} */}
-                                        </Typography>
-                                      </Box>
-                                    </Tooltip>
-                                  )
-                                // )
-                              )
-                              // )
+                                      <RiErrorWarningLine className="text-4xl mr-0.5" style={{ color: error }} />
+                                      <Typography paddingRight={2} variant="h6">
+                                        {removeAfterLastUnderscore(anomalyType)} ({shelvesWithAnomaly.length})
+                                      </Typography>
+                                    </Box>
+                                  </Tooltip>
+                                );
+                              })
                             )}
                           </div>
                         </div>

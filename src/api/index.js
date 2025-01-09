@@ -651,14 +651,16 @@ export const GetReport = async (data) => {
 };
 
 ///////////////////////////////////////API for getting last seven days data that is fulness7days and capture7days////////////////////////////
-export const getsevendaydata = async (date, store) => {
+export const getsevendaydata = async (finalDate, store, category) => {
   try {
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/line-chart';
     const data = {
-      date: String(date),
       store_id: String(store),
-      //store_id: '6623a893c40c738627f3373f',
-      category: 'fragrances'
+      // store_id:"6623a893c40c738627f3373f",
+      start_date: finalDate.start_date,
+      end_date: finalDate.end_date,
+      category: category
+      // date:"2024-06-13"
     };
 
     const response = await fetch(url, {
@@ -680,15 +682,15 @@ export const getsevendaydata = async (date, store) => {
   }
 };
 
-export const storeviewcaptureprogress = async (date, store) => {
+export const storeviewcaptureprogress = async (finalDate, store, category) => {
   try {
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/capture-progress';
     const data = {
       store_id: String(store),
-      //store_id:"6623a893c40c738627f3373f",
-
-      start_date: String(date.start_date),
-      end_date: String(date.end_date)
+      // store_id:"6623a893c40c738627f3373f",
+      start_date: finalDate.start_date,
+      end_date: finalDate.end_date,
+      category: category
       // date:"2024-06-13"
     };
 
@@ -711,16 +713,15 @@ export const storeviewcaptureprogress = async (date, store) => {
   }
 };
 
-export const storeanomalycount = async (date, store) => {
+export const storeanomalycount = async (finalDate, store, category) => {
   try {
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/anomly-count';
     const data = {
       store_id: String(store),
-      //  store_id:"6623a893c40c738627f3373f",
-
-      start_date: String(date.start_date),
-      end_date: String(date.end_date)
-
+      // store_id:"6623a893c40c738627f3373f",
+      start_date: finalDate.start_date,
+      end_date: finalDate.end_date,
+      category: category
       // date:"2024-06-13"
     };
 
@@ -772,13 +773,14 @@ export const OsaScoreForKpi = async (date, store) => {
     console.log('error in OsaScoreForKpi : ', error);
   }
 };
-export const associatescoreaforkpi = async (date, store, category) => {
+export const associatescoreaforkpi = async (finalDate, store, category) => {
   try {
     const url = 'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/associate-score';
     const data = {
       store_id: String(store),
       // store_id:"6623a893c40c738627f3373f",
-      date: String(date),
+      start_date: finalDate.start_date,
+      end_date: finalDate.end_date,
       category: category
       // date:"2024-06-13"
     };
