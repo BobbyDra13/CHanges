@@ -48,6 +48,7 @@ function Overview() {
   const targetRef = useRef(null);
   const [anomaliesLoading, setAnomaliesLoading] = useState(true);
   const [capture7days, setcapture7days] = useState([]);
+  const [SevenDaysDate, set7DaysDate] = useState([]);
   const [Osa7days, setOsa7days] = useState([]);
   const [testfullness7days, settestfullness7days] = useState([]);
   const [openAssociateScoreModal, setOpenAssociateScoreModal] = useState(false);
@@ -114,6 +115,7 @@ function Overview() {
       }
 
       setcapture7days(Array.isArray(result.capture7days) ? result.capture7days : []);
+      set7DaysDate(Array.isArray(result?.dateList) ? result?.dateList : []);
       settestfullness7days(Array.isArray(result.testerFullness7days) ? result.testerFullness7days : []);
       setOsa7days(Array.isArray(result.OSA7days) ? result.OSA7days : []);
     } catch (error) {
@@ -128,7 +130,7 @@ function Overview() {
       });
     }
   }, [store, selectedDate2, selectedCategory]);
-
+  console.log('sevendaysDate', SevenDaysDate);
   useEffect(() => {
     get7daysdata(selectedDate);
   }, [get7daysdata, selectedDate]);
@@ -707,7 +709,7 @@ function Overview() {
                 }}
                 style={{ height: '275px' }}
               >
-                <RadarChart storeId={store} date={selectedDate} />
+                <RadarChart storeId={store} date={selectedDate} data={brandwiseosaandtester_osa} />
               </Card>
             </Grid>
           </Grid>
@@ -717,6 +719,7 @@ function Overview() {
             <Grid ref={targetRef} className="mb-10" item xs={12} lg={9} xl={9.6}>
               <Card className="border border-gray-300" sx={{ height: '550px' }}>
                 <LineChartToggle
+                  sevendaysDate={SevenDaysDate}
                   capture7days={capture7days}
                   Osa7days={Osa7days}
                   testfullness7days={testfullness7days}

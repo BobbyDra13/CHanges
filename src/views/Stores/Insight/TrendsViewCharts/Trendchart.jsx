@@ -6,11 +6,12 @@ import { Box, Paper } from '@mui/material';
 // import Timeline from './TimelineChart';
 // import FilterMenu from './FilterMenu';
 
-export default function TrendsChart({ storeId, date, isSmallScreen, capture7days, Osa7days, testfullness7days }) {
+export default function TrendsChart({ storeId, date, isSmallScreen, capture7days, Osa7days, testfullness7days, sevendaysDate }) {
   // const [chartvalue, setChartValue] = useState('Footfall');
   // function graphToSelect(ChartData) {
   // setChartValue(ChartData);
   // }
+  console.log('sevendaysDate', sevendaysDate);
   return (
     <Box
       sx={{
@@ -25,7 +26,14 @@ export default function TrendsChart({ storeId, date, isSmallScreen, capture7days
       </div>
       <Paper elevation={0} sx={{ width: '100%', position: 'relative', height: '400px' }}>
         {/* {chartvalue == 'Journey' ? <Sankey /> : chartvalue == 'Engagement' ? <Timeline date={date} /> : <Areachart date={date} />} */}
-        <Areachart storeId={storeId} date={date} capture7days={capture7days} Osa7days={Osa7days} testfullness7days={testfullness7days} />
+        <Areachart
+          storeId={storeId}
+          date={date}
+          capture7days={capture7days}
+          Osa7days={Osa7days}
+          testfullness7days={testfullness7days}
+          sevendaysDate={sevendaysDate}
+        />
       </Paper>
     </Box>
   );
