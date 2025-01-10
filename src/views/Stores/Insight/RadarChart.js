@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
-import { getStoreWiseRadarChart } from 'api';
+// import { getStoreWiseRadarChart } from 'api';
 
-const RadarChart = ({ storeId, date }) => {
+const RadarChart = ({ date, data }) => {
   const [radarData, setRadarData] = useState(null);
   const [options, setOptions] = useState({});
+
   const defaultOption = {
     chart: {
       type: 'radar',
@@ -24,17 +25,20 @@ const RadarChart = ({ storeId, date }) => {
   useEffect(() => {
     const fetchData = async () => {
       setRadarData(null);
-      const body = {
-        date: date.toString(),
-        store_id: storeId
-      };
+      // const body = {
+      //   date: date.toString(),
+      //   store_id: storeId
+      // };
       try {
-        const response = await getStoreWiseRadarChart(body);
-        const data = response.data[0];
+        // const response = await getStoreWiseRadarChart(body);
+        // const data2 = response.data[0];
         if (data) {
           setRadarData(data);
-          const labels = ['Correct', 'Empty Shelf', 'Missing Tester'];
-          const seriesData = [data.correct, data.empty_tray, data.missing_tester];
+          console.log('data is...', data);
+          // const labels = ['Correct', 'Empty Shelf', 'Missing Tester'];
+          // const seriesData = [data.correct, data.empty_tray, data.missing_tester];
+          const labels = data.map((item) => item._id);
+          const seriesData = data.map((item) => item.OSA_Score);
           setOptions({
             chart: {
               type: 'radar',
@@ -60,7 +64,7 @@ const RadarChart = ({ storeId, date }) => {
     };
     fetchData();
     // eslint-disable-next-line
-  }, [date]);
+  }, [date, data]);
 
   return (
     <div className="h-full p-2">

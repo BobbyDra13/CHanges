@@ -15,7 +15,8 @@ const Areachart = ({
   date,
   capture7days,
   Osa7days,
-  testfullness7days
+  testfullness7days,
+  sevendaysDate
 }) => {
   // const { store } = useParams();
   //eslint-disable-next-line
@@ -47,31 +48,31 @@ const Areachart = ({
   //   return dates.reverse(); // Reverse to show most recent day first
   // }
 
-  function getLastWeekDates(dateString) {
-    // Try parsing the date string
-    try {
-      const date = new Date(dateString);
+  // function getLastWeekDates(dateString) {
+  //   // Try parsing the date string
+  //   try {
+  //     const date = new Date(dateString);
 
-      // Ensure the parsed date is valid
-      if (isNaN(date.getTime())) {
-        throw new Error('Invalid date format. Please provide a valid date string.');
-      }
+  //     // Ensure the parsed date is valid
+  //     if (isNaN(date.getTime())) {
+  //       throw new Error('Invalid date format. Please provide a valid date string.');
+  //     }
 
-      const lastWeekDates = [];
-      for (let i = 0; i < 7; i++) {
-        const day = new Date(date.getTime() - i * 24 * 60 * 60 * 1000);
-        const year = day.getFullYear();
-        const month = String(day.getMonth() + 1).padStart(2, '0'); // Pad with leading zero
-        const dayStr = String(day.getDate()).padStart(2, '0');
-        lastWeekDates.push(`${year}-${month}-${dayStr}`);
-      }
-      lastWeekDates.reverse();
-      return lastWeekDates;
-    } catch (error) {
-      console.error('Error getting last week dates:', error.message);
-      return []; // Return empty array on error
-    }
-  }
+  //     const lastWeekDates = [];
+  //     for (let i = 0; i < 7; i++) {
+  //       const day = new Date(date.getTime() - i * 24 * 60 * 60 * 1000);
+  //       const year = day.getFullYear();
+  //       const month = String(day.getMonth() + 1).padStart(2, '0'); // Pad with leading zero
+  //       const dayStr = String(day.getDate()).padStart(2, '0');
+  //       lastWeekDates.push(`${year}-${month}-${dayStr}`);
+  //     }
+  //     lastWeekDates.reverse();
+  //     return lastWeekDates;
+  //   } catch (error) {
+  //     console.error('Error getting last week dates:', error.message);
+  //     return []; // Return empty array on error
+  //   }
+  // }
 
   // const get7daysdata = async (date) => {
   //   try {
@@ -294,7 +295,8 @@ const Areachart = ({
         // categories : [
         //   'mon' , 'tue' , 'wed' , 'thur', 'fri', 'sat' , 'sun'
         // ],
-        categories: date && getLastWeekDates(date),
+        // categories: date && getLastWeekDates(date),
+        categories: date && sevendaysDate,
         // categories: [
         //   '2018-09-19T15:30:00.000Z',
         //   '2018-09-19T16:00:00.000Z',
@@ -335,7 +337,7 @@ const Areachart = ({
       { name: 'OSA Score', data: Osa7days && Osa7days }
     ];
 
-    const newCategories = date && getLastWeekDates(date); // Replace with your date logic
+    const newCategories = date && sevendaysDate; // Replace with your date logic
 
     setstate((prevState) => ({
       ...prevState,
@@ -352,7 +354,7 @@ const Areachart = ({
   }, [date, Osa7days, testfullness7days, capture7days]);
   //graph options end
 
-  // console.log(footfalldata);
+  console.log('sevendaysDate111', sevendaysDate);
   return (
     <>
       {/* {custCount.length > 0 ? (
