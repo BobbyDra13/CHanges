@@ -657,6 +657,7 @@ export const getsevendaydata = async (finalDate, store, category) => {
     const data = {
       store_id: String(store),
       // store_id:"6623a893c40c738627f3373f",
+      date: finalDate.end_date, 
       start_date: finalDate.start_date,
       end_date: finalDate.end_date,
       category: category
