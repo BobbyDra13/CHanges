@@ -12,7 +12,7 @@ const ExceptionsDonut = ({ brandChartOptions, brandFullness, chartHeight, chartT
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
             <Typography paddingTop={1} className="self-end" variant="h5" color="inherit">
-              Exceptions Distribution
+              Avg. Exceptions Distribution
             </Typography>
           </Grid>
         </Grid>
