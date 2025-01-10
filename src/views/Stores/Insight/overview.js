@@ -15,7 +15,8 @@ import {
   Alert,
   Select,
   MenuItem,
-  FormControl
+  FormControl,
+  Button
 } from '@mui/material';
 import { useMediaQuery, useTheme } from '@mui/material';
 import LineChartToggle from './lineChartToggle';
@@ -28,6 +29,7 @@ import popIcon from '../../../assets/images/pop_icon.png';
 import { FaCircleInfo } from 'react-icons/fa6';
 import pog from '../../../assets/images/pog.jpeg';
 import associate from '../../../assets/images/profile-user.png';
+import { FiDownload } from 'react-icons/fi';
 import { useSelector, useDispatch } from 'react-redux';
 import { setSelectedCategory } from 'store/slices/categorySlice';
 
@@ -336,6 +338,7 @@ function Overview() {
     setOpenAssociateScoreModal(false);
   }, []);
 
+  //eslint-disable-next-line
   const handleClickAssociateScoreModal = useCallback(() => {
     setOpenAssociateScoreModal(true);
   }, []);
@@ -347,7 +350,7 @@ function Overview() {
           <Stack direction={isSmallScreen ? 'column' : 'row'} justifyContent={'space-between'}>
             <Typography variant="h3">Overview </Typography>
             {storeID ? <Typography variant="h6">Store ID: {storeID}</Typography> : <></>}
-            <div className="flex space-x-2 sm:mt-2">
+            <div className="flex space-x-2 sm:mt-2 items-center">
               <FormControl size="small" sx={{ minWidth: 120 }}>
                 <Select
                   value={selectedCategory}
@@ -365,6 +368,21 @@ function Overview() {
                   <MenuItem value="Beauty">Beauty</MenuItem>
                 </Select>
               </FormControl>
+              <Button
+                variant="contained"
+                disabled
+                startIcon={<FiDownload />}
+                sx={{
+                  backgroundColor: '#e0e0e0',
+                  color: '#9e9e9e',
+                  '&.Mui-disabled': {
+                    backgroundColor: '#e0e0e0',
+                    color: '#9e9e9e'
+                  }
+                }}
+              >
+                Report
+              </Button>
             </div>
           </Stack>
         </Grid>
@@ -639,7 +657,10 @@ function Overview() {
                           <p className="text-3xl text-gray-500">NA</p>
                           <p className="text-lg font-semibold">Associate Score</p>
                         </div>
-                        <IoMdSettings className="text-5xl" onClick={handleClickAssociateScoreModal} />
+                        <IoMdSettings
+                          className="text-5xl cursor-not-allowed"
+                          // onClick={handleClickAssociateScoreModal}
+                        />
                         <Modal
                           open={openAssociateScoreModal}
                           onClose={handleCloseAssociateScoreModal}
