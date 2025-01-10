@@ -909,14 +909,21 @@ export const GetSingleBrandDetails = async (data) => {
 
 export const GetAllBrands = async (data) => {
   try {
-    const response = await axios.post('https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/get-brands', data, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: await token()
+    const response = await axios.post(
+      'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/get-brands',
+      {
+        store_id: data.store_id,
+        start_date: data.start_date,
+        end_date: data.end_date,
+        category: data.category
+      },
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: await token()
+        }
       }
-    });
-    console.log('mlml', response.data);
-    // const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.id }));
+    );
     return response;
   } catch (error) {
     console.log('Error Calling GetAllBrands API: ', error);

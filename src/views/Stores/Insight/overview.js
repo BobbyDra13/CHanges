@@ -412,7 +412,7 @@ function Overview() {
                                   <div>
                                     {item._id?.toUpperCase()} :
                                     <span className="text-base font-semibold" style={{ color: barcolor }}>
-                                      {' ' + percentage} %
+                                      {' ' + percentage.toFixed(1)} %
                                     </span>
                                   </div>
                                   <Tooltip
@@ -500,7 +500,7 @@ function Overview() {
                                   <div>
                                     {item._id?.toUpperCase()} :
                                     <span className="text-base font-semibold" style={{ color: barcolor }}>
-                                      {' ' + percentage} %
+                                      {' ' + percentage.toFixed(1)} %
                                     </span>
                                   </div>
                                   <Tooltip
@@ -595,7 +595,7 @@ function Overview() {
                                   <div>
                                     {item.user_name} :
                                     <span className="text-base font-semibold" style={{ color: barcolor }}>
-                                      {' ' + item.associate_score}%
+                                      {' ' + item.associate_score.toFixed(1)}%
                                     </span>
                                   </div>
                                   <Tooltip

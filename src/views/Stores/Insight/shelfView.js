@@ -38,6 +38,8 @@ bouncy.register();
 export default function ShelfView({ date }) {
   const { store } = useParams();
   const zoneIds = useSelector((state) => state.zone);
+  const selectedDateFromRedux = useSelector((state) => state?.customization?.selectedDate);
+  const selectedCategory = useSelector((state) => state.category?.selectedCategory) || 'All';
   const imageRef = useRef(null);
   const [sliderData, setSliderData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -121,7 +123,7 @@ export default function ShelfView({ date }) {
       try {
         setLoading(true);
         const body = {
-          date: date.toString(),
+          date: selectedDateFromRedux?.end_date,
           brand_id: brand_id
         };
         const zoneData = store && date && (await getZonedetails(body));
@@ -132,7 +134,8 @@ export default function ShelfView({ date }) {
         setLoading(false);
       }
     },
-    [date, store]
+    // eslint-disable-next-line
+    [selectedDateFromRedux, store]
   );
 
   // Handle image click
@@ -173,9 +176,11 @@ export default function ShelfView({ date }) {
       try {
         const body = {
           store_id: [store],
-          date: date
+          start_date: selectedDateFromRedux?.start_date,
+          end_date: selectedDateFromRedux?.end_date,
+          category: selectedCategory.toLowerCase()
         };
-        const brandRes = date && store && (await GetAllBrands(body));
+        const brandRes = store && selectedDateFromRedux && (await GetAllBrands(body));
         const brandData = brandRes && brandRes.data && brandRes.data.data && brandRes.data.data.brands;
         if (brandData && brandData.length > 0) {
           setBrandEmpty(1);
@@ -189,7 +194,7 @@ export default function ShelfView({ date }) {
       }
     }
     getAllBrandsName();
-  }, [date, store, zoneIds]);
+  }, [store, selectedDateFromRedux, selectedCategory, zoneIds]);
 
   // Set initial active brand
   useEffect(() => {
@@ -330,7 +335,7 @@ export default function ShelfView({ date }) {
                 style={{ height: '460px', marginBottom: '50px', overflowY: 'scroll', marginTop: '35px' }}
                 className="inline-block w-[550px]"
               >
-                <p>* Showing images of end date that you have selected</p>
+                <p>* Here Showing images of today or end date that you have selected</p>
                 {sliderData && sliderData.length > 0 ? (
                   <Slider {...settings} className="w-[600px] h-[400px]">
                     {sliderData.map((item, index) => (
