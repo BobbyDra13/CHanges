@@ -11,7 +11,7 @@ function AnomalyKPICard({ kpiData, prevKpiData, loading }) {
   // Calculate total anomalies (sum of empty trays and missing testers)
   const calculateTotalAnomalies = (data) => {
     if (!data) return 0;
-    return parseInt(data.Total_empty_tray_count || 0) + parseInt(data.Total_missing_tester_count || 0);
+    return parseInt(data.Fragrance_total_anomaly_bays || 0) + parseInt(data.Beauty_total_anomaly_bays || 0);
   };
 
   // Calculate difference
@@ -37,7 +37,7 @@ function AnomalyKPICard({ kpiData, prevKpiData, loading }) {
           <Grid item>
             {!loading ? (
               <Typography variant="h3" sx={{ color: 'chocolate', paddingLeft: 2.25, paddingRight: 2.25 }}>
-                {kpiData ? totalAnomalies : 'N/A'}
+                {kpiData ? kpiData?.Fragrance_total_anomaly_bays + kpiData?.Beauty_total_anomaly_bays : 'N/A'}
               </Typography>
             ) : (
               <Skeleton

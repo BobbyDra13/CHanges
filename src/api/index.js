@@ -812,8 +812,8 @@ export const brandWiseOsaAndTesterScore = async (finalDate, store, category) => 
     const data = {
       store_id: String(store),
       // store_id:"6623a893c40c738627f3373f",
-      start_date: finalDate.start_date,
-      end_date: finalDate.end_date,
+      start_date: finalDate.start_date.toISOString().split('T')[0],
+      end_date: finalDate.end_date.toISOString().split('T')[0],
       category: category
       // date:"2024-06-13"
     };
@@ -914,8 +914,8 @@ export const GetAllBrands = async (data) => {
       'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/get-brands',
       {
         store_id: data.store_id,
-        start_date: data.start_date,
-        end_date: data.end_date,
+        start_date: data.start_date.toISOString().split('T')[0],
+        end_date: data.end_date.toISOString().split('T')[0],
         category: data.category
       },
       {
