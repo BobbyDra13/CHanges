@@ -111,14 +111,17 @@ const DatePickerComp = () => {
       const thirtyDaysAgo = new Date(currentDate);
       thirtyDaysAgo.setDate(currentDate.getDate() - 30);
       setStartDate(thirtyDaysAgo);
+      setEndDate(currentDate);
       setFlag(false);
     } else if (ChartData === 'Last Week') {
       const sevenDaysAgo = new Date(currentDate);
       sevenDaysAgo.setDate(currentDate.getDate() - 7);
       setStartDate(sevenDaysAgo);
+      setEndDate(currentDate);
       setFlag(false);
     } else if (ChartData === 'Current Day') {
       setStartDate(currentDate);
+      setEndDate(currentDate);
       setFlag(false);
     } else {
       setFlag(true);

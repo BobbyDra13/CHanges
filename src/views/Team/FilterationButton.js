@@ -15,7 +15,7 @@ const FilterationButton = ({ handleNavigationClick }) => {
     { label: 'Department Manager', value: 'Department Manager' },
     { label: 'Store Manager', value: 'Store Manager' },
     { label: 'Cluster Manager', value: 'Cluster Manager' },
-    { label: 'NHK Super User', value: 'NHK Super User' }
+    { label: 'NHQ Super User', value: 'NHQ' }
   ];
 
   return (

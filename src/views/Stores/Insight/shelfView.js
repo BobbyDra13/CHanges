@@ -123,7 +123,8 @@ export default function ShelfView({ date }) {
       try {
         setLoading(true);
         const body = {
-          date: selectedDateFromRedux?.end_date,
+          start_date: selectedDateFromRedux?.start_date.toISOString().split('T')[0],
+          end_date: selectedDateFromRedux?.end_date.toISOString().split('T')[0],
           brand_id: brand_id
         };
         const zoneData = store && date && (await getZonedetails(body));
