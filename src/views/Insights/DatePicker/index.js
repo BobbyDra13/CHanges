@@ -53,7 +53,7 @@ const DatePickerComp = () => {
   const dispatch = useDispatch();
 
   const storeId = JSON.parse(localStorage.getItem('analysisStoreId'));
-  const userId = JSON.parse(localStorage.getItem('userData')).data[0]._id;
+  const userId = JSON.parse(localStorage.getItem('userData'))?.data[0]?._id;
   console.log('Store ID', storeId);
   console.log('User', userId);
 
