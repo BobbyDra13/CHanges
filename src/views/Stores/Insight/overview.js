@@ -15,8 +15,7 @@ import {
   Alert,
   Select,
   MenuItem,
-  FormControl,
-  Button
+  FormControl
 } from '@mui/material';
 import { useMediaQuery, useTheme } from '@mui/material';
 import LineChartToggle from './lineChartToggle';
@@ -29,7 +28,6 @@ import popIcon from '../../../assets/images/pop_icon.png';
 import { FaCircleInfo } from 'react-icons/fa6';
 import pog from '../../../assets/images/pog.jpeg';
 import associate from '../../../assets/images/profile-user.png';
-import { FiDownload } from 'react-icons/fi';
 import { useSelector, useDispatch } from 'react-redux';
 import { setSelectedCategory } from 'store/slices/categorySlice';
 
@@ -48,7 +46,6 @@ function Overview() {
   const targetRef = useRef(null);
   const [anomaliesLoading, setAnomaliesLoading] = useState(true);
   const [capture7days, setcapture7days] = useState([]);
-  const [SevenDaysDate, set7DaysDate] = useState([]);
   const [Osa7days, setOsa7days] = useState([]);
   const [testfullness7days, settestfullness7days] = useState([]);
   const [openAssociateScoreModal, setOpenAssociateScoreModal] = useState(false);
@@ -63,7 +60,6 @@ function Overview() {
   const [brandwiseosaandtester_osa, setbrandwiseosaandtester_osa] = useState([]);
   const [brandwiseosaandtester_tester, setbrandwiseosaandtester_tester] = useState([]);
   const [isLoadingBrandScores, setIsLoadingBrandScores] = useState(false);
-  const [isLoadingAssociateScore, setIsLoadingAssociateScore] = useState(false);
 
   const selectedCategory = useSelector((state) => state.category?.selectedCategory) || 'All';
   const dispatch = useDispatch();
@@ -100,37 +96,39 @@ function Overview() {
     }
   }, [selectedDate, selectedDate2]);
 
-  const get7daysdata = useCallback(async () => {
-    if (!selectedDate2 || !store) {
-      setcapture7days([]);
-      settestfullness7days([]);
-      setOsa7days([]);
-      return;
-    }
-
-    try {
-      const result = await getsevendaydata(selectedDate2, store, selectedCategory.toLowerCase());
-      if (!result) {
-        throw new Error('No data received');
+  const get7daysdata = useCallback(
+    async (date) => {
+      if (!store || !date) {
+        setcapture7days([]);
+        settestfullness7days([]);
+        setOsa7days([]);
+        return;
       }
 
-      setcapture7days(Array.isArray(result.capture7days) ? result.capture7days : []);
-      set7DaysDate(Array.isArray(result?.dateList) ? result?.dateList : []);
-      settestfullness7days(Array.isArray(result.testerFullness7days) ? result.testerFullness7days : []);
-      setOsa7days(Array.isArray(result.OSA7days) ? result.OSA7days : []);
-    } catch (error) {
-      console.error('Error in get7daysdata:', error);
-      setcapture7days([]);
-      settestfullness7days([]);
-      setOsa7days([]);
-      setSnackbarConfig({
-        open: true,
-        message: 'Failed to fetch 7 days data',
-        severity: 'error'
-      });
-    }
-  }, [store, selectedDate2, selectedCategory]);
-  console.log('sevendaysDate', SevenDaysDate);
+      try {
+        const result = await getsevendaydata(date, store);
+        if (!result) {
+          throw new Error('No data received');
+        }
+
+        setcapture7days(Array.isArray(result.capture7days) ? result.capture7days : []);
+        settestfullness7days(Array.isArray(result.testerFullness7days) ? result.testerFullness7days : []);
+        setOsa7days(Array.isArray(result.OSA7days) ? result.OSA7days : []);
+      } catch (error) {
+        console.error('Error in get7daysdata:', error);
+        setcapture7days([]);
+        settestfullness7days([]);
+        setOsa7days([]);
+        setSnackbarConfig({
+          open: true,
+          message: 'Failed to fetch 7 days data',
+          severity: 'error'
+        });
+      }
+    },
+    [store]
+  );
+
   useEffect(() => {
     get7daysdata(selectedDate);
   }, [get7daysdata, selectedDate]);
@@ -147,7 +145,7 @@ function Overview() {
     try {
       if (!selectedDate2 || !store) return;
 
-      const res = await storeanomalycount(selectedDate2, store, selectedCategory.toLowerCase());
+      const res = await storeanomalycount(selectedDate2, store);
       if (res) {
         setanomalycount(res);
         setAnomaliesLoading(false);
@@ -157,29 +155,27 @@ function Overview() {
       setanomalycount(null);
       setAnomaliesLoading(false);
     }
-  }, [store, selectedDate2, selectedCategory]);
+  }, [store, selectedDate2]);
 
   useEffect(() => {
     getanomalydetails();
   }, [getanomalydetails]);
 
-  const fetchAssociateScore = useCallback(async () => {
+  const getassociatescore = useCallback(async () => {
     try {
-      if (!selectedDate2 || !store) return;
-      setIsLoadingAssociateScore(true);
-      const result = await associatescoreaforkpi(selectedDate2, store, selectedCategory.toLowerCase());
+      if (!selectedDate || !store) return;
+
+      const result = await associatescoreaforkpi(selectedDate, store, 'fragrances');
       setassociatescore(result || []);
     } catch (e) {
       console.error('Error in getassociatescore:', e);
       setassociatescore([]);
-    } finally {
-      setIsLoadingAssociateScore(false);
     }
-  }, [store, selectedDate2, selectedCategory]);
+  }, [store, selectedDate]);
 
   useEffect(() => {
-    fetchAssociateScore();
-  }, [fetchAssociateScore]);
+    getassociatescore();
+  }, [getassociatescore]);
 
   const calculateAverage = useCallback((data, field) => {
     if (!Array.isArray(data) || data.length === 0) return 'NA';
@@ -231,7 +227,7 @@ function Overview() {
     try {
       if (!selectedDate2 || !store) return;
 
-      const response = await storeviewcaptureprogress(selectedDate2, store, selectedCategory.toLowerCase());
+      const response = await storeviewcaptureprogress(selectedDate2, store);
       if (response) {
         setstoreviewcaptureprogres(response[0].captureProgress);
       }
@@ -239,7 +235,7 @@ function Overview() {
       console.error('Error in getviewcaptureprogress:', error);
       setstoreviewcaptureprogres(0);
     }
-  }, [store, selectedDate2, selectedCategory]);
+  }, [store, selectedDate2]);
 
   useEffect(() => {
     getviewcaptureprogress();
@@ -340,7 +336,6 @@ function Overview() {
     setOpenAssociateScoreModal(false);
   }, []);
 
-  //eslint-disable-next-line
   const handleClickAssociateScoreModal = useCallback(() => {
     setOpenAssociateScoreModal(true);
   }, []);
@@ -352,7 +347,7 @@ function Overview() {
           <Stack direction={isSmallScreen ? 'column' : 'row'} justifyContent={'space-between'}>
             <Typography variant="h3">Overview </Typography>
             {storeID ? <Typography variant="h6">Store ID: {storeID}</Typography> : <></>}
-            <div className="flex space-x-2 sm:mt-2 items-center">
+            <div className="flex space-x-2 sm:mt-2">
               <FormControl size="small" sx={{ minWidth: 120 }}>
                 <Select
                   value={selectedCategory}
@@ -370,21 +365,6 @@ function Overview() {
                   <MenuItem value="Beauty">Beauty</MenuItem>
                 </Select>
               </FormControl>
-              <Button
-                variant="contained"
-                disabled
-                startIcon={<FiDownload />}
-                sx={{
-                  backgroundColor: '#e0e0e0',
-                  color: '#9e9e9e',
-                  '&.Mui-disabled': {
-                    backgroundColor: '#e0e0e0',
-                    color: '#9e9e9e'
-                  }
-                }}
-              >
-                Report
-              </Button>
             </div>
           </Stack>
         </Grid>
@@ -413,8 +393,7 @@ function Overview() {
                         <img src={popIcon} alt="pop" className="h-14 w-14" />
                         <div className="w-full">
                           <p className="text-3xl text-gray-500 ">
-                            {/* {calculateAverage(brandwiseosaandtester_osa, 'OSA_Score')} */}
-                            {brandwiseosaandtester_tester[0]?.overall_osa}
+                            {calculateAverage(brandwiseosaandtester_osa, 'OSA_Score')}
                             {calculateAverage(brandwiseosaandtester_osa, 'OSA_Score') !== 'NA' && '%'}
                           </p>
                           <p className="text-lg font-semibold">OSA</p>
@@ -433,7 +412,7 @@ function Overview() {
                                   <div>
                                     {item._id?.toUpperCase()} :
                                     <span className="text-base font-semibold" style={{ color: barcolor }}>
-                                      {' ' + percentage.toFixed(1)} %
+                                      {' ' + percentage} %
                                     </span>
                                   </div>
                                   <Tooltip
@@ -501,8 +480,7 @@ function Overview() {
                         <img src={popIcon} alt="pop" className="h-14 w-14" />
                         <div className="w-full">
                           <p className="text-3xl text-gray-500 ">
-                            {/* {calculateAverage(brandwiseosaandtester_tester, 'testers_score')} */}
-                            {brandwiseosaandtester_tester[0]?.overall_tester}
+                            {calculateAverage(brandwiseosaandtester_tester, 'testers_score')}
                             {calculateAverage(brandwiseosaandtester_tester, 'testers_score') !== 'NA' && '%'}
                           </p>
                           <p className="text-lg font-semibold">Tester Score</p>
@@ -522,7 +500,7 @@ function Overview() {
                                   <div>
                                     {item._id?.toUpperCase()} :
                                     <span className="text-base font-semibold" style={{ color: barcolor }}>
-                                      {' ' + percentage.toFixed(1)} %
+                                      {' ' + percentage} %
                                     </span>
                                   </div>
                                   <Tooltip
@@ -570,62 +548,55 @@ function Overview() {
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4}>
               <div style={{ height: '276px' }} className="flex flex-col">
                 <Card className="border border-gray-300" sx={{ height: '276px' }}>
-                  {isLoadingAssociateScore ? (
-                    <div className="flex w-full flex-col gap-1 p-3">
+                  {associatescore && associatescore.length > 0 ? (
+                    <div className="flex  w-full  flex-col gap-1 p-3">
                       <div className="flex items-center justify-center gap-2 w-full">
                         <img src={associate} alt="pop" className="h-14 w-14" />
                         <div className="w-full">
-                          <p className="text-3xl text-gray-500">NA</p>
+                          <p className="text-3xl text-gray-500 ">NA</p>
                           <p className="text-lg font-semibold">Associate Score</p>
                         </div>
-                        <IoMdSettings className="text-5xl cursor-not-allowed" />
+                        <>
+                          <IoMdSettings
+                            className="text-5xl cursor-not-allowed"
+                            // onClick={handleClickAssociateScoreModal}
+                          />
+                          <Modal
+                            open={openAssociateScoreModal}
+                            onClose={handleCloseAssociateScoreModal}
+                            aria-labelledby="modal-modal-title"
+                            aria-describedby="modal-modal-description"
+                          >
+                            <Box sx={modalStyle}>
+                              <CsvModalAssociate onUploadComplete={handleAssociateUploadComplete} />
+                            </Box>
+                          </Modal>
+                        </>
                       </div>
-                      <div className="bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
-                        <Skeleton variant="rectangular" height={184} className="rounded-md" />
-                      </div>
-                    </div>
-                  ) : associatescore && associatescore.length > 0 ? (
-                    <div className="flex w-full flex-col gap-1 p-3">
-                      <div className="flex items-center justify-center gap-2 w-full">
-                        <img src={associate} alt="pop" className="h-14 w-14" />
-                        <div className="w-full">
-                          <p className="text-3xl text-gray-500">
-                            {(associatescore.reduce((acc, curr) => acc + curr.associate_score, 0) / associatescore.length).toFixed(1)}%
-                          </p>
-                          <p className="text-lg font-semibold">Associate Score</p>
-                        </div>
-                        <IoMdSettings className="text-5xl cursor-not-allowed" />
-                        <Modal
-                          open={openAssociateScoreModal}
-                          onClose={handleCloseAssociateScoreModal}
-                          aria-labelledby="modal-modal-title"
-                          aria-describedby="modal-modal-description"
-                        >
-                          <Box sx={modalStyle}>
-                            <CsvModalAssociate onUploadComplete={handleAssociateUploadComplete} />
-                          </Box>
-                        </Modal>
-                      </div>
-                      <div className="bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
-                        {[...associatescore]
-                          .sort((a, b) => a.associate_score - b.associate_score)
-                          .map((item, index) => {
-                            const barcolor = item.associate_score >= 99 ? '#00ac69' : item.associate_score >= 95 ? '#f4a100' : '#ff413a';
+                      <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
+                        {associatescore.length > 0 ? (
+                          associatescore.map((item, index) => {
+                            console.log('item', item.associate_score);
+                            const prepercent =
+                              ((item.total_no_of_shelves - item.no_of_bays_with_anomalies) / item.total_no_of_shelves) * 100;
+                            const percentage = Math.round(parseFloat(prepercent)) > 100 ? 100 : Math.round(parseFloat(prepercent));
+                            const barcolor = percentage >= 99 ? '#00ac69' : percentage >= 95 ? '#f4a100' : '#ff413a';
                             return (
                               <div className="mt-2" key={index}>
                                 <div className="flex gap-1 items-center justify-between">
                                   <div>
                                     {item.user_name} :
                                     <span className="text-base font-semibold" style={{ color: barcolor }}>
-                                      {' ' + item.associate_score.toFixed(1)}%
+                                      {' ' + percentage} %
                                     </span>
                                   </div>
                                   <Tooltip
+                                    key={index}
                                     title={
                                       <div>
                                         <div className="mb-2 p-2">
                                           <p className="text-base">Bays Captured</p>
-                                          <p className="text-base">{item.no_of_bays_captured ? item.no_of_bays_captured : 0}</p>
+                                          <p className="text-base "> {item.no_of_bays_captured ? item.no_of_bays_captured : 0}</p>
                                         </div>
                                       </div>
                                     }
@@ -638,45 +609,47 @@ function Overview() {
                                 </div>
                                 <LinearProgress
                                   variant="determinate"
-                                  value={item.associate_score}
+                                  value={percentage}
                                   className="rounded-lg"
                                   sx={{
                                     marginTop: '5px',
-                                    backgroundColor: 'white',
+                                    backgroundColor: 'white', // Set color for unfilled part
                                     '& .MuiLinearProgress-bar': {
-                                      backgroundColor: barcolor
+                                      backgroundColor: `${barcolor}` // Set color for filled part
                                     }
                                   }}
                                 />
                               </div>
                             );
-                          })}
+                          })
+                        ) : (
+                          <Skeleton variant="rectangular" height={184} className="rounded-md" />
+                        )}
                       </div>
                     </div>
                   ) : (
-                    <div className="flex w-full flex-col gap-1 p-3">
+                    <div className="flex  w-full  flex-col gap-1 p-3">
                       <div className="flex items-center justify-center gap-2 w-full">
                         <img src={popIcon} alt="pop" className="h-14 w-14" />
                         <div className="w-full">
-                          <p className="text-3xl text-gray-500">NA</p>
+                          <p className="text-3xl text-gray-500 ">NA</p>
                           <p className="text-lg font-semibold">Associate Score</p>
                         </div>
-                        <IoMdSettings
-                          className="text-5xl cursor-not-allowed"
-                          // onClick={handleClickAssociateScoreModal}
-                        />
-                        <Modal
-                          open={openAssociateScoreModal}
-                          onClose={handleCloseAssociateScoreModal}
-                          aria-labelledby="modal-modal-title"
-                          aria-describedby="modal-modal-description"
-                        >
-                          <Box sx={modalStyle}>
-                            <CsvModalAssociate onUploadComplete={handleAssociateUploadComplete} type="associateStore" />
-                          </Box>
-                        </Modal>
+                        <>
+                          <IoMdSettings className="text-5xl" onClick={handleClickAssociateScoreModal} />
+                          <Modal
+                            open={openAssociateScoreModal}
+                            onClose={handleCloseAssociateScoreModal}
+                            aria-labelledby="modal-modal-title"
+                            aria-describedby="modal-modal-description"
+                          >
+                            <Box sx={modalStyle}>
+                              <CsvModalAssociate onUploadComplete={handleAssociateUploadComplete} type="associateStore" />
+                            </Box>
+                          </Modal>
+                        </>
                       </div>
-                      <div className="bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
+                      <div className=" bg-slate-100 flex-grow overflow-y-auto h-[184px] p-2 rounded-lg scrollbar">
                         <p className="text-base font-semibold text-gray-500">Currently No data available</p>
                       </div>
                     </div>
@@ -711,7 +684,7 @@ function Overview() {
                 }}
                 style={{ height: '275px' }}
               >
-                <RadarChart storeId={store} date={selectedDate} data={brandwiseosaandtester_osa} />
+                <RadarChart storeId={store} date={selectedDate} />
               </Card>
             </Grid>
           </Grid>
@@ -719,9 +692,8 @@ function Overview() {
         <Grid item xs={12}>
           <Grid container spacing={2}>
             <Grid ref={targetRef} className="mb-10" item xs={12} lg={9} xl={9.6}>
-              <Card className="border border-gray-300" sx={{ height: '550px' }}>
+              <Card className="border border-gray-300" sx={{ height: '560px' }}>
                 <LineChartToggle
-                  sevendaysDate={SevenDaysDate}
                   capture7days={capture7days}
                   Osa7days={Osa7days}
                   testfullness7days={testfullness7days}
@@ -768,7 +740,7 @@ function Overview() {
                       {!anomaliesLoading && anomalycount !== null ? (
                         <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
                           {anomalycount && console.log('dds', anomalycount)}
-                          {anomalycount.length > 0 ? anomalycount[0].missingTesterCount : 'NA'}
+                          {anomalycount.length > 0 ? anomalycount[0].missingTesterCount : '0'}
                         </span>
                       ) : (
                         <Skeleton variant="rectangular" height={184} className="rounded-md" />
@@ -778,7 +750,7 @@ function Overview() {
                       <span className="text-center text-white  text-sm font-semibold">Empty Shelf</span>
                       {!anomaliesLoading && anomalycount !== null ? (
                         <span className="text-center text-white  flex-grow flex flex-col justify-center text-3xl font-semibold">
-                          {anomalycount.length > 0 ? anomalycount[0].emptyTrayCount : 'NA'}
+                          {anomalycount.length > 0 ? anomalycount[0].emptyTrayCount : '0'}
                         </span>
                       ) : (
                         <Skeleton variant="rectangular" height={184} className="rounded-md" />

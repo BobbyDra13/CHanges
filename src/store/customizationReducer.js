@@ -13,7 +13,8 @@ export const initialState = {
     lng: ''
   },
   selectedDate: { start_date: new Date(), end_date: new Date() },
-  selectedRange: 'Current Day'
+  selectedRange: 'Current Day',
+  singleSelectedDate: null
 };
 
 const customizationReducer = (state = initialState, action) => {
@@ -48,6 +49,11 @@ const customizationReducer = (state = initialState, action) => {
       return {
         ...state,
         selectedRange: action.payload
+      };
+      case 'selectedSingleDate':
+      return {
+        ...state,
+        singleSelectedDate: action.payload
       };
     default:
       return state;
