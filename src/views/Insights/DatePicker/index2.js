@@ -59,7 +59,6 @@ function DatePickerComp2() {
     }
   }, [singleSelectedDate]);
 
-
   useEffect(() => {
     async function getEventsdata() {
       const body = {

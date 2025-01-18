@@ -50,7 +50,7 @@ const customizationReducer = (state = initialState, action) => {
         ...state,
         selectedRange: action.payload
       };
-      case 'selectedSingleDate':
+    case 'selectedSingleDate':
       return {
         ...state,
         singleSelectedDate: action.payload

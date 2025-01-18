@@ -108,7 +108,6 @@ const DatePickerComp = () => {
       });
     }
   };
-  
 
   function graphToSelect(ChartData) {
     const currentDate = new Date();
