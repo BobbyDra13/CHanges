@@ -102,6 +102,10 @@ const DatePickerComp = () => {
       setEndDate(date);
       // Disable dates after the selected end date in the start date picker
       setStartDate((prevStartDate) => (prevStartDate > date ? date : prevStartDate));
+      dispatch({
+        type: 'selectedSingleDate',
+        payload: date
+      });
     }
   };
 
@@ -111,17 +115,14 @@ const DatePickerComp = () => {
       const thirtyDaysAgo = new Date(currentDate);
       thirtyDaysAgo.setDate(currentDate.getDate() - 30);
       setStartDate(thirtyDaysAgo);
-      setEndDate(currentDate);
       setFlag(false);
     } else if (ChartData === 'Last Week') {
       const sevenDaysAgo = new Date(currentDate);
       sevenDaysAgo.setDate(currentDate.getDate() - 7);
       setStartDate(sevenDaysAgo);
-      setEndDate(currentDate);
       setFlag(false);
     } else if (ChartData === 'Current Day') {
       setStartDate(currentDate);
-      setEndDate(currentDate);
       setFlag(false);
     } else {
       setFlag(true);
@@ -218,6 +219,7 @@ const DatePickerComp = () => {
               >
                 <DatePicker
                   className="custom-date-picker"
+                  id="end-date"
                   selected={endDate}
                   onChange={handleEndDateChange}
                   showIcon

@@ -41,6 +41,7 @@ function DatePickerComp2() {
   const [openDatePicker, setOpenDatePicker] = useState(false);
 
   // const storeId = useSelector((state) => state.customization.date);
+  const singleSelectedDate = useSelector((state) => state.customization.singleSelectedDate);
 
   const storeId = JSON.parse(localStorage.getItem('analysisStoreId'));
   const userId = JSON.parse(localStorage.getItem('userData')).data[0]._id;
@@ -52,6 +53,11 @@ function DatePickerComp2() {
 
   const dispatch = useDispatch();
   const selectedDate = useSelector((state) => state.customization.selectedDate);
+  useEffect(() => {
+    if (singleSelectedDate) {
+      setCalender(singleSelectedDate);
+    }
+  }, [singleSelectedDate]);
 
   useEffect(() => {
     async function getEventsdata() {

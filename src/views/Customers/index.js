@@ -23,7 +23,7 @@ import { useNavigate } from 'react-router-dom';
 import './zoom-card-item.css';
 import { bouncy } from 'ldrs';
 import MapComponent from './map';
-import { GetSingleBrandDetails } from 'api';
+import { GetSingleBrandDetails, SendAlert } from 'api';
 import './imageMagnifyer.css';
 // import DatePickerComp from 'views/Insights/DatePicker';
 
@@ -215,18 +215,7 @@ const Customers = () => {
   const [storeAnomalies, setStoreAnomalies] = useState();
   //eslint-disable-next-line
   const [metadata, setMetadata] = useState('');
-  const [alertData, setAlertData] = useState({
-    zone_id: false,
-    shelf_id: false,
-    group_id: false,
-    user_name: false,
-    user_id: false,
-    user_number: false,
-    user_email: false,
-    user_role: false,
-    anomaly_type: false,
-    message: false
-  });
+  const [alertData, setAlertData] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [msg, setMsg] = useState('');
@@ -668,11 +657,46 @@ const Customers = () => {
 
   useEffect(() => {
     async function sendAlertMsg() {
-      if (alertData.zone_id) {
-        // (You can simulate a successful response here)
-        setLoadsend(false);
-        setSnackbarOpen(true);
-        setSnackbarMessage('Alert store message sent successfully!');
+      // console.log(alertData);
+      if (alertData.AgentName) {
+        console.log('Number:', alertData.user_number);
+        const mssg = alertData.message === '' ? ' ' : alertData.message;
+        // const num = alertData.user_number ==='3024011800' ? '9960240543':data.user_number;
+        const API_KEY =
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NWY2MmE5Yzk4Nzk3MGFlZWM1ZTg0MCIsIm5hbWUiOiJOZW9QaHl0ZSIsImFwcE5hbWUiOiJBaVNlbnN5IiwiY2xpZW50SWQiOiI2NTVmNjJhOGM5ODc5NzBhZWVjNWU4M2IiLCJhY3RpdmVQbGFuIjoiQkFTSUNfTU9OVEhMWSIsImlhdCI6MTcwMDc0OTk5M30.8-SugzKOaRlF3BFhgTn944znZnsydeoUPudFEIZdNWs'; // Replace with your actual API key
+        const API_URL = 'https://backend.aisensy.com/campaign/t1/api/v2';
+        const formatDataForAPI = (data) => {
+          return {
+            apiKey: API_KEY,
+            campaignName: 'disha_tira_alert_campaign',
+            destination: data.user_number,
+            userName: data.AgentName,
+            templateParams: ['$AgentName', '$BayId', '$AnomaliesTypes', '$BayId', '$CustomMessage'],
+            tags: ['AgentName', 'BayId', 'AnomaliesTypes', 'CustomMessage'],
+            attributes: {
+              AgentName: data.AgentName,
+              BayId: data.BayId,
+              AnomaliesTypes: data.AnomaliesTypes,
+              CustomMessage: mssg
+            }
+          };
+        };
+
+        const formattedData = formatDataForAPI(alertData);
+        const status = await SendAlert(formattedData, API_KEY, API_URL);
+        console.log('status', status);
+
+        if (status) {
+          setLoadsend(false);
+          setSnackbarOpen(true);
+          setSnackbarMessage('Alert store message sent successfully!');
+          setAlertData({
+            AgentName: false,
+            BayId: false,
+            AnomaliesTypes: false,
+            CustomMessage: false
+          });
+        }
       }
     }
     sendAlertMsg();
@@ -680,38 +704,41 @@ const Customers = () => {
 
   const handelAlertClick = () => {
     setLoadsend(true);
+    // console.log('alertData is', cData[0]);
+    const uniqueAnomalyTypes = Array.from(new Set(cData[0].shelves.map((shelf) => shelf.anomaly_type).filter((type) => type)));
+    // console.log('alertData is', uniqueAnomalyTypes);TYU
+    // const array = cData.anomalies[0][0].map((item) => item.anomaly_type);
 
-    const array = cData.anomalies[0][0].map((item) => item.anomaly_type);
+    // const uniqueSet = new Set(array);
+    // const uniqueArray = Array.from(uniqueSet);
+    let result = uniqueAnomalyTypes.join(' and ');
+    console.log('alertData is', result);
 
-    const uniqueSet = new Set(array);
-    const uniqueArray = Array.from(uniqueSet);
-    let result;
+    // if (uniqueArray.length === 1) {
+    //   result = array[0].split('_')[0].charAt(0).toUpperCase() + array[0].split('_')[0].slice(1);
+    // } else {
+    //   result = array
+    //     .map((item) => item.split('_')[0].charAt(0).toUpperCase() + item.split('_')[0].slice(1))
+    //     .reverse()
+    //     .join(' and ');
+    // }
 
-    if (uniqueArray.length === 1) {
-      result = array[0].split('_')[0].charAt(0).toUpperCase() + array[0].split('_')[0].slice(1);
-    } else {
-      result = array
-        .map((item) => item.split('_')[0].charAt(0).toUpperCase() + item.split('_')[0].slice(1))
-        .reverse()
-        .join(' and ');
-    }
-
-    const string = cData.shelf_id;
-    const substring = string.substring(string.indexOf('S') + 1);
-    const shelf = 'Shelf ' + substring;
-
+    // const string = cData.shelf_id;
+    // const substring = string.substring(string.indexOf('S') + 1);
+    // const shelf = 'Shelf ' + substring;
+    // console.log('alertData is sdsad', result, cData[0].brand_name, cData[0].brand_id, cData[0].bay_id, cData[0].store_id, cData[0].user_name, cData[0].user_number, msg );
     setAlertData({
-      zone_id: cData.zone_id,
-      shelf_id: shelf,
-      group_id: cData.group_id,
-      user_name: cData.user_name,
-      user_id: cData.user_id,
-      user_number: cData.user_number,
-      user_email: cData.user_email,
-      user_role: cData.user_role,
-      anomaly_type: result,
-      message: msg
+      // zone_id: cData.zone_id,
+      brand_name: cData[0].brand_name,
+      brand_id: cData[0].brand_id,
+      BayId: cData[0].bay_name,
+      store_id: cData[0].store_id,
+      AgentName: cData[0].user_name,
+      user_number: cData[0].user_number,
+      AnomaliesTypes: result,
+      CustomMessage: msg
     });
+    console.log('alertData is sdsad', result);
   };
 
   const handleCloseSnackbar = () => {
