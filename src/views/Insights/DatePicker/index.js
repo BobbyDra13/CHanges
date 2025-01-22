@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Paper } from '@mui/material';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import MultipleSelectCheckmarks from './Dropdown';
 import './calendar.css';
@@ -45,15 +45,25 @@ const CustomDay = ({ date, events, dayClassName }) => {
 };
 
 const DatePickerComp = () => {
+  const selectedDate = useSelector((state) => state.customization.selectedDate);
   const location = useLocation();
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(selectedDate.start_date);
+  const [endDate, setEndDate] = useState(selectedDate.end_date);
   const [flag, setFlag] = useState(false);
   const [events, setEvents] = useState([]);
   const dispatch = useDispatch();
 
+  // const selectedDate = useSelector((state) => state.customization.selectedDate);
+
+  useEffect(() => {
+    setStartDate(selectedDate.start_date);
+    setEndDate(selectedDate.end_date);
+  }, [selectedDate]);
+
+  console.log('selectedDate asdfsaf', selectedDate);
+
   const storeId = JSON.parse(localStorage.getItem('analysisStoreId'));
-  const userId = JSON.parse(localStorage.getItem('userData')).data[0]._id;
+  const userId = JSON.parse(localStorage.getItem('userData'))?.data[0]?._id;
   console.log('Store ID', storeId);
   console.log('User', userId);
 

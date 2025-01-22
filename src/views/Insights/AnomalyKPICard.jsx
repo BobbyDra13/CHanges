@@ -92,63 +92,63 @@ function AnomalyKPICard({ kpiData, prevKpiData, loading }) {
             <Typography sx={{ color: 'black', paddingLeft: 2.25, paddingRight: 2.25 }} variant="h4" color="textSecondary">
               Anomalies
             </Typography>
-            {!loading && diff !== 0 && dropdownValue !== 'Custom Range' && (
-              <Grid item sx={{ display: 'flex', justifyContent: 'flex-start', paddingLeft: 2.25 }}>
-                <Grid
-                  item
-                  sx={{
-                    backgroundColor: '#ff8f00',
-                    color: 'white',
-                    pl: 0,
-                    pr: 0,
-                    width: '4rem',
-                    borderRadius: 2,
-                    fontWeight: 10,
-                    display: 'flex', // Add flex display
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                    // marginRight:2
-                  }}
-                >
-                  {!loading ? (
-                    <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 'bold', color: 'white', paddingLeft: 0, paddingRight: 0 }}>
-                      {kpiData ? totalAnomalies : 'N/A'}
-                    </Typography>
-                  ) : (
-                    <Skeleton
-                      sx={{ marginLeft: 2.25, marginTop: 0.75, marginRight: 2.25 }}
-                      animation="wave"
-                      variant="rounded"
-                      width={82}
-                      height={35}
-                    />
-                  )}
-                </Grid>
-                <Tooltip title={`Comparing ${dropdownValue.toLowerCase()} with the previous period`}>
-                  <Chip
-                    variant="combined"
-                    sx={{
-                      backgroundColor: 'white',
-                      ml: '2PX',
-                      '& .MuiChip-label': {
-                        color: diff <= 0 ? '#10B981' : '#FF6761',
-                        fontWeight: 500,
-                        fontSize: '0.875rem'
-                      }
-                    }}
-                    // icon={
-                    //   <>
-                    //     {diff > 0 && <TrendingUpIcon style={{ fontSize: '1rem', color:'#10B981' }} />}
-                    //     {diff <= 0 && <TrendingDownIcon style={{ fontSize: '1rem', color: '#FF6761' }} />}
-                    //   </>
-                    // }
-                    label={<CustomChipLabel />}
-                    // label={`${diff <= 0 ? '-' : '+'}${Math.abs(diff)}`}
-                    size="small"
+            {/* {!loading && diff !== 0 && dropdownValue !== 'Custom Range' && ( */}
+            <Grid item sx={{ display: 'flex', justifyContent: 'flex-start', paddingLeft: 2.25 }}>
+              <Grid
+                item
+                sx={{
+                  backgroundColor: '#ff8f00',
+                  color: 'white',
+                  pl: 0,
+                  pr: 0,
+                  width: '4rem',
+                  borderRadius: 2,
+                  fontWeight: 10,
+                  display: 'flex', // Add flex display
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                  // marginRight:2
+                }}
+              >
+                {!loading ? (
+                  <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 'bold', color: 'white', paddingLeft: 0, paddingRight: 0 }}>
+                    {kpiData ? totalAnomalies : 'N/A'}
+                  </Typography>
+                ) : (
+                  <Skeleton
+                    sx={{ marginLeft: 2.25, marginTop: 0.75, marginRight: 2.25 }}
+                    animation="wave"
+                    variant="rounded"
+                    width={82}
+                    height={20}
                   />
-                </Tooltip>
+                )}
               </Grid>
-            )}
+              <Tooltip title={`Comparing ${dropdownValue.toLowerCase()} with the previous period`}>
+                <Chip
+                  variant="combined"
+                  sx={{
+                    backgroundColor: 'white',
+                    ml: '2PX',
+                    '& .MuiChip-label': {
+                      color: diff <= 0 ? '#10B981' : '#FF6761',
+                      fontWeight: 500,
+                      fontSize: '0.875rem'
+                    }
+                  }}
+                  // icon={
+                  //   <>
+                  //     {diff > 0 && <TrendingUpIcon style={{ fontSize: '1rem', color:'#10B981' }} />}
+                  //     {diff <= 0 && <TrendingDownIcon style={{ fontSize: '1rem', color: '#FF6761' }} />}
+                  //   </>
+                  // }
+                  label={<CustomChipLabel />}
+                  // label={`${diff <= 0 ? '-' : '+'}${Math.abs(diff)}`}
+                  size="small"
+                />
+              </Tooltip>
+            </Grid>
+            {/* // )} */}
           </Grid>
 
           <WarningIcon style={{ paddingBottom: '20px', paddingRight: '20px', color: '#FF6761', fontSize: '3rem' }} />
