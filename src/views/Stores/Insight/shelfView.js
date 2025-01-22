@@ -613,9 +613,11 @@ export default function ShelfView({ date }) {
                       <Typography variant="body1">Date & Time: {formatDate(dialogData.timestamp)}</Typography>
                     </MenuItem>
                     <Divider style={{ backgroundColor: 'white' }} />
-                    <MenuItem>
-                      <Typography variant="body1">OSA Score: {dialogData.OSA_Score}%</Typography>
-                    </MenuItem>
+                    {dialogData.category.toLowerCase() != 'beauty' && (
+                      <MenuItem>
+                        <Typography variant="body1">OSA Score: {dialogData.OSA_Score}%</Typography>
+                      </MenuItem>
+                    )}
                     <MenuItem>
                       <Typography variant="body1">Tester Score: {dialogData.testers_score}%</Typography>
                     </MenuItem>
@@ -729,9 +731,11 @@ export default function ShelfView({ date }) {
                       top: '35%'
                     }}
                   >
-                    <Typography variant="h3" className="text-white">
-                      OSA Score: {dialogData.OSA_Score}%
-                    </Typography>
+                    {dialogData.category.toLowerCase() != 'beauty' && (
+                      <Typography variant="h3" className="text-white">
+                        OSA Score: {dialogData.OSA_Score}%
+                      </Typography>
+                    )}
                     <Typography variant="h3" className="text-white">
                       Tester Score: {dialogData.testers_score}%{' '}
                     </Typography>
