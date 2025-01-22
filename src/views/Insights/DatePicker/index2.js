@@ -34,14 +34,15 @@ function ServerDay(props) {
 }
 
 function DatePickerComp2() {
+  const selectedDate = useSelector((state) => state.customization.selectedDate);
   const location = useLocation();
-  const [calender, setCalender] = useState(new Date());
+  const [calender, setCalender] = useState(selectedDate.start_date);
   const [events, setEvents] = useState([]);
   const [highlightedDays, setHighlightedDays] = useState([]);
   const [openDatePicker, setOpenDatePicker] = useState(false);
 
   // const storeId = useSelector((state) => state.customization.date);
-  const singleSelectedDate = useSelector((state) => state.customization.singleSelectedDate);
+  // const singleSelectedDate = useSelector((state) => state.customization.singleSelectedDate);
 
   const storeId = JSON.parse(localStorage.getItem('analysisStoreId'));
   const userId = JSON.parse(localStorage.getItem('userData')).data[0]._id;
@@ -52,12 +53,13 @@ function DatePickerComp2() {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const dispatch = useDispatch();
-  const selectedDate = useSelector((state) => state.customization.selectedDate);
-  useEffect(() => {
-    if (singleSelectedDate) {
-      setCalender(singleSelectedDate);
-    }
-  }, [singleSelectedDate]);
+
+  console.log('selectedDate', selectedDate);
+  // useEffect(() => {
+  //   if (singleSelectedDate) {
+  //     setCalender(singleSelectedDate);
+  //   }
+  // }, [singleSelectedDate]);
 
   useEffect(() => {
     async function getEventsdata() {
@@ -144,6 +146,10 @@ function DatePickerComp2() {
       type: 'selectedDate',
       // payload: calender
       payload: { start_date: calender, end_date: calender }
+    });
+    dispatch({
+      type: 'SET_SELECTED_RANGE',
+      payload: 'Custom Range'
     });
     // eslint-disable-next-line
   }, [calender]);

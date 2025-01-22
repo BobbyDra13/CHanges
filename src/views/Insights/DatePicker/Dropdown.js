@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import ListItemText from '@mui/material/ListItemText';
 import Select from '@mui/material/Select';
 import { NativeSelect } from '@mui/material';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import React from 'react';
 import './calendar.css';
+// import { use } from 'react';
 
 const ITEM_HEIGHT = 60;
 const ITEM_PADDING_TOP = 10;
@@ -25,6 +26,13 @@ export default function MultipleSelectCheckmarks({ isVisible, graphToSelect }) {
   const [personName, setPersonName] = useState('Current Day');
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
+
+  const selectedRange = useSelector((state) => state.customization.selectedRange);
+  console.log('selectedRange', selectedRange);
+  useEffect(() => {
+    setPersonName(selectedRange);
+    graphToSelect(selectedRange);
+  }, [selectedRange, graphToSelect]);
 
   const handleChange = (event) => {
     const {
