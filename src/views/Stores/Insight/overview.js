@@ -393,7 +393,8 @@ function Overview() {
                         <img src={popIcon} alt="pop" className="h-14 w-14" />
                         <div className="w-full">
                           <p className="text-3xl text-gray-500 ">
-                            {calculateAverage(brandwiseosaandtester_osa, 'OSA_Score')}
+                            {/* {calculateAverage(brandwiseosaandtester_osa, 'OSA_Score')} */}
+                            {brandwiseosaandtester_osa[0]?.overall_osa}
                             {calculateAverage(brandwiseosaandtester_osa, 'OSA_Score') !== 'NA' && '%'}
                           </p>
                           <p className="text-lg font-semibold">OSA</p>
@@ -480,7 +481,8 @@ function Overview() {
                         <img src={popIcon} alt="pop" className="h-14 w-14" />
                         <div className="w-full">
                           <p className="text-3xl text-gray-500 ">
-                            {calculateAverage(brandwiseosaandtester_tester, 'testers_score')}
+                            {/* {calculateAverage(brandwiseosaandtester_tester, 'testers_score')} */}
+                            {brandwiseosaandtester_tester[0]?.overall_tester}
                             {calculateAverage(brandwiseosaandtester_tester, 'testers_score') !== 'NA' && '%'}
                           </p>
                           <p className="text-lg font-semibold">Tester Score</p>
