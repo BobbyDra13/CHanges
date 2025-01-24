@@ -1,10 +1,11 @@
 import { Grid, Paper, useMediaQuery, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
 // import Chart from 'react-apexcharts';
-import StoreView from './storeView';
+// import StoreView from './storeView';
 import TrendsChart from './TrendsViewCharts/Trendchart';
 import ShelfView from './shelfView';
 import { useSelector } from 'react-redux';
+import TIRAmodel from './TIRAmodel';
 
 const LineChartToggle = ({
   storeId,
@@ -179,15 +180,15 @@ const LineChartToggle = ({
             Trends View
           </button>
           <button
-            // onClick={() => handleButtonClick('Store View')}
+            onClick={() => handleButtonClick('Store View')}
             style={{
               backgroundColor: activeButton === 'Store View' ? 'black' : 'gray',
               color: '#fff',
               padding: '4px',
               marginRight: '3px',
               width: isSmallScreen ? '30%' : '15%',
-              fontSize: '1rem',
-              cursor: 'not-allowed'
+              fontSize: '1rem'
+              // cursor: 'not-allowed'
             }}
           >
             Store View
@@ -274,7 +275,8 @@ const LineChartToggle = ({
           </div>
         ) : activeButton == 'Store View' ? (
           <Grid>
-            <StoreView activeButton={activeButton} setActiveButton={setActiveButton} date={date} groups={isGroup} />
+            {/* <StoreView activeButton={activeButton} setActiveButton={setActiveButton} date={date} groups={isGroup} /> */}
+            <TIRAmodel />
           </Grid>
         ) : activeButton == 'Shelf View' ? (
           <Grid>
