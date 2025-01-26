@@ -134,6 +134,7 @@ const LineChartToggle = ({
 
   const endOfWeek = new Date(currentDate.setUTCHours(0, 0, 0, 0));
   endOfWeek.setDate(currentDate.getDate() + 2);
+  // const shelves = ['SHELF_1', 'SHELF_2', 'SHELF_3', 'SHELF_4', 'SHELF_5', 'SHELF_6', 'SHELF_7', 'SHELF_8', 'SHELF_9', 'SHELF_10'];
 
   useEffect(() => {
     // console.log(startOfWeek);
@@ -147,6 +148,13 @@ const LineChartToggle = ({
   //   setIsZoneid(zoneid);
   // },[zoneid]);
   console.log('sevendaysDate', sevendaysDate);
+
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const handleFullscreenToggle = () => {
+    setIsFullscreen(!isFullscreen);
+  };
+
   return (
     <Grid item sx={{ maxWidth: '100%', maxHeight: '100%', height: 'auto' }}>
       <Paper
