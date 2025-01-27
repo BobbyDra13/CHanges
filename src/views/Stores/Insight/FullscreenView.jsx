@@ -2,7 +2,8 @@ import React, { useState, useEffect, Suspense, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF, Html, useProgress, PerspectiveCamera } from '@react-three/drei';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { CircularProgress, Box, Typography, IconButton, Tooltip } from '@mui/material';
+import { Box, Typography, IconButton, Tooltip } from '@mui/material';
+import ModelLoader from 'component/Loader/ModelLoader';
 import { ZoomIn, ZoomOut, CenterFocusStrong, ThreeDRotation, PanTool, ThreeSixty, ArrowBack } from '@mui/icons-material';
 
 // Model URLs
@@ -43,7 +44,8 @@ function Loader() {
           minWidth: '200px'
         }}
       >
-        <CircularProgress variant="determinate" value={progress} size={60} thickness={4} />
+        {/* <CircularProgress variant="determinate" value={progress} size={60} thickness={4} /> */}
+        <ModelLoader />
         <Box sx={{ textAlign: 'center' }}>
           <Typography variant="h6" gutterBottom>
             Loading 3D Model
@@ -199,7 +201,7 @@ export default function FullscreenView() {
           <PerspectiveCamera makeDefault position={cameraPosition} fov={50} ref={cameraRef} near={0.1} far={1000} />
           <ambientLight intensity={0.5} />
           <hemisphereLight intensity={0.6} />
-          <directionalLight position={[5, 5, 5]} intensity={0.5} castShadow shadow-mapSize-width={1024} shadow-mapSize-height={1024} />
+          <directionalLight position={[5, 5, 5]} intensity={0.5} />
           <Suspense fallback={<Loader />}>
             {showTIRA ? (
               <ErrorBoundary fallback={<Html center>Error loading TIRA model</Html>}>
@@ -286,7 +288,7 @@ class ErrorBoundary extends React.Component {
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError() {
     return { hasError: true };
   }
 
@@ -300,7 +302,6 @@ class ErrorBoundary extends React.Component {
 
 const TIRAFullModel = ({ highlightedGroup }) => {
   const groupRef = useRef(null);
-  const [modelLoaded, setModelLoaded] = useState(false);
 
   const { scene } = useGLTF(TIRA_MODEL_URL, {
     draco: true,
@@ -309,12 +310,6 @@ const TIRAFullModel = ({ highlightedGroup }) => {
       console.log('TIRA Model loading progress:', progress);
     }
   });
-
-  useEffect(() => {
-    if (scene) {
-      setModelLoaded(true);
-    }
-  }, [scene]);
 
   useEffect(() => {
     if (groupRef.current && highlightedGroup) {
@@ -340,7 +335,6 @@ const TIRAFullModel = ({ highlightedGroup }) => {
 };
 
 const Shelf = ({ selectedShelf }) => {
-  const [modelLoaded, setModelLoaded] = useState(false);
   const modelUrl = getShelfModelURL(selectedShelf);
 
   // Log when component mounts or updates
@@ -359,13 +353,6 @@ const Shelf = ({ selectedShelf }) => {
       console.error(`Error loading ${selectedShelf}:`, error);
     }
   });
-
-  useEffect(() => {
-    if (scene) {
-      setModelLoaded(true);
-      console.log(`${selectedShelf} model loaded successfully`);
-    }
-  }, [scene, selectedShelf]);
 
   if (!selectedShelf) {
     console.error('No shelf selected');
