@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const WorkBoxPlugin = require('workbox-webpack-plugin');
 
 module.exports = function override(config) {
+  // Existing code
   config.resolve.fallback = {
     process: require.resolve('process/browser'),
     stream: require.resolve('stream-browserify'),
@@ -10,13 +11,14 @@ module.exports = function override(config) {
     buffer: require.resolve('buffer')
   };
 
-  // https://stackoverflow.com/questions/69135310/workaround-for-cache-size-limit-in-create-react-app-pwa-service-worker
+  // Increase cache size limit
   config.plugins.forEach((plugin) => {
     if (plugin instanceof WorkBoxPlugin.InjectManifest) {
       plugin.config.maximumFileSizeToCacheInBytes = 50 * 1024 * 1024;
     }
   });
 
+  // Add ProvidePlugin for process and Buffer
   config.plugins = [
     ...config.plugins,
     new webpack.ProvidePlugin({
@@ -24,6 +26,13 @@ module.exports = function override(config) {
       Buffer: ['buffer', 'Buffer']
     })
   ];
+
+  // Add exclusion for @mediapipe source maps
+  const sourceMapLoaderRule = config.module.rules.find((rule) => rule.loader && rule.loader.includes('source-map-loader'));
+
+  if (sourceMapLoaderRule) {
+    sourceMapLoaderRule.exclude = [/@mediapipe/]; // Exclude @mediapipe folder
+  }
 
   return config;
 };
