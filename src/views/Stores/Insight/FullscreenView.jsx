@@ -2,7 +2,6 @@ import React, { useState, useEffect, Suspense, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import * as THREE from 'three';
 
 export default function FullscreenView() {
   const navigate = useNavigate();
@@ -34,57 +33,38 @@ export default function FullscreenView() {
   };
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: '70px',
-        left: '0',
-        width: '100vw',
-        height: 'calc(100vh - 70px)',
-        background: 'white',
-        zIndex: 1000,
-        display: 'flex',
-        flexDirection: 'column'
-      }}
-    >
-      <button onClick={() => navigate(`/main/stores/storeinsight/overview/${store}`)}>Back</button>
-      <button onClick={handleStoreButton}>Store</button>
+    <div className="fixed top-[70px] left-0 w-full h-[calc(100vh-70px)] bg-white z-10 flex flex-col">
+      {/* Back and Store Buttons */}
+      <div className="flex justify-between items-center p-4">
+        <button
+          onClick={() => navigate(`/main/stores/storeinsight/overview/${store}`)}
+          className="px-4 py-2 bg-gray-200 text-black rounded-lg hover:bg-gray-300 transition"
+        >
+          Back
+        </button>
+        <button onClick={handleStoreButton} className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+          Store
+        </button>
+      </div>
 
-      <div
-        style={{
-          position: 'absolute',
-          top: '50px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 1100,
-          display: 'flex',
-          gap: '10px',
-          justifyContent: 'center',
-          flexWrap: 'nowrap',
-          overflowX: 'auto',
-          padding: '10px'
-        }}
-      >
+      {/* Shelf Buttons */}
+      <div className="absolute top-12 left-1/2 transform -translate-x-1/2 z-20 flex gap-2 overflow-x-auto px-4 py-2">
         {shelfButtons.map((shelf) => (
           <button
             key={shelf}
             onClick={() => handleShelfClick(shelf)}
             onMouseEnter={() => setHighlightedGroup(shelf)}
             onMouseLeave={() => setHighlightedGroup(null)}
-            style={{
-              padding: '8px 12px',
-              background: selectedShelf === shelf ? '#000' : '#fff',
-              color: selectedShelf === shelf ? '#fff' : '#000',
-              border: '1px solid #000',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
+            className={`px-4 py-2 border rounded-md cursor-pointer transition ${
+              selectedShelf === shelf ? 'bg-black text-white' : 'bg-white text-black border-black hover:bg-gray-200'
+            }`}
           >
             {shelf}
           </button>
         ))}
       </div>
 
+      {/* 3D Model Canvas */}
       <Canvas shadows camera={{ position: [6, 6, 6], fov: 50 }}>
         <ambientLight intensity={0.5} />
         <hemisphereLight intensity={0.6} />
@@ -122,10 +102,10 @@ const TIRAFullModel = ({ highlightedGroup }) => {
     }
   }, [highlightedGroup]);
 
-  return <primitive object={scene} ref={groupRef} scale={[0.5, 0.5, 0.5]} />;
+  return <primitive object={scene} ref={groupRef} scale={[2, 2, 2]} />;
 };
 
 const Shelf = ({ selectedShelf }) => {
   const { scene } = useGLTF(`https://storage.googleapis.com/3dmodelhost/Shelves/${selectedShelf}.glb`);
-  return <primitive object={scene} position={[0, 0, 0]} scale={[1, 1, 1]} />;
+  return <primitive object={scene} position={[0, 0, 0]} scale={[3, 3, 3]} />;
 };
