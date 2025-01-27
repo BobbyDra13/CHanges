@@ -1,5 +1,5 @@
 import { Grid, Paper, useMediaQuery, useTheme } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 // import Chart from 'react-apexcharts';
 // import StoreView from './storeView';
 import TrendsChart from './TrendsViewCharts/Trendchart';
@@ -20,7 +20,7 @@ const LineChartToggle = ({
 }) => {
   // const theme = useTheme();
   // const [activeButton, setActiveButton] = useState('Trends View');
-  const [isGroup, setIsGroup] = useState(null);
+  // const [isGroup, setIsGroup] = useState(null);
   // const [isZoneid, setIsZoneid] = useState('');
 
   const theme = useTheme();
@@ -140,7 +140,7 @@ const LineChartToggle = ({
     // console.log(startOfWeek);
     // console.log(date);
     // eslint-disable-next-line
-    setIsGroup(groups);
+    // setIsGroup(groups);
     // eslint-disable-next-line
   }, [date]);
 
@@ -149,11 +149,11 @@ const LineChartToggle = ({
   // },[zoneid]);
   console.log('sevendaysDate', sevendaysDate);
 
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  // const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const handleFullscreenToggle = () => {
-    setIsFullscreen(!isFullscreen);
-  };
+  // const handleFullscreenToggle = () => {
+  //   setIsFullscreen(!isFullscreen);
+  // };
 
   return (
     <Grid item sx={{ maxWidth: '100%', maxHeight: '100%', height: 'auto' }}>
