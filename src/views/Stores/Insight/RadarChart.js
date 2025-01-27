@@ -56,7 +56,7 @@ const RadarChart = ({ date, data }) => {
     };
     fetchData();
     // eslint-disable-next-line
-  }, [date, data, showWorst]);
+  }, [date, data, showWorst,selectedCategory]);
 
   const BrandCard = () => {
     console.log('response top brand best', bestBrands);
