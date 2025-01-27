@@ -1015,6 +1015,51 @@ export const testerPercentSevenDayMultistore = async (data) => {
   }
 };
 
+export const get_Top_Brands = async (data) => {
+  try {
+    //   const data = {
+    //     // store_id:String(store),
+    //     date: "2024-06-20",
+    //     user_id: "666fef1bdbf527b634e95c0b"
+    // };
+    const response = await axios.post(
+      'https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/store-view/brand/get-top-brands',
+      data,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: await token()
+        }
+      }
+    );
+    console.log('data from backedn of testerPercentSevenDayMultistore ', response.data);
+    // const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.id }));
+    return response;
+  } catch (error) {
+    console.log('Error Calling testerPercentSevenDayMultistore for insights page API: ', error);
+  }
+};
+
+export const get_CapturedBays = async (data) => {
+  try {
+    //   const data = {
+    //     // store_id:String(store),
+    //     date: "2024-06-20",
+    //     user_id: "666fef1bdbf527b634e95c0b"
+    // };
+    const response = await axios.post('https://pd9ydtkpok.execute-api.ap-south-1.amazonaws.com/dev/web-app/total_capture_bay', data, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: await token()
+      }
+    });
+    console.log('data from backedn of testerPercentSevenDayMultistore ', response.data);
+    // const res = response.data[0].zoneDetails.map((z) => ({ id: z._id, name: z.id }));
+    return response;
+  } catch (error) {
+    console.log('Error Calling testerPercentSevenDayMultistore for insights page API: ', error);
+  }
+};
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

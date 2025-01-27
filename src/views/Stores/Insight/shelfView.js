@@ -125,7 +125,8 @@ export default function ShelfView({ date }) {
         const body = {
           start_date: selectedDateFromRedux?.start_date.toISOString().split('T')[0],
           end_date: selectedDateFromRedux?.end_date.toISOString().split('T')[0],
-          brand_id: brand_id
+          brand_id: brand_id,
+          store_id: store
         };
         const zoneData = store && date && (await getZonedetails(body));
         setSliderData(zoneData.data);
