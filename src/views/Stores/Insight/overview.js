@@ -16,13 +16,21 @@ import {
   Select,
   MenuItem,
   FormControl
+  // Button
 } from '@mui/material';
 import { useMediaQuery, useTheme } from '@mui/material';
 import LineChartToggle from './lineChartToggle';
 import { IoMdSettings } from 'react-icons/io';
 import CsvModalAssociate from './CSV_Associate';
 import RadarChart from './RadarChart';
-import { getsevendaydata, storeviewcaptureprogress, storeanomalycount, associatescoreaforkpi, brandWiseOsaAndTesterScore } from 'api';
+import {
+  getsevendaydata,
+  storeviewcaptureprogress,
+  storeanomalycount,
+  associatescoreaforkpi,
+  brandWiseOsaAndTesterScore,
+  get_CapturedBays
+} from 'api';
 import Chart from 'react-apexcharts';
 import popIcon from '../../../assets/images/pop_icon.png';
 import { FaCircleInfo } from 'react-icons/fa6';
@@ -176,6 +184,26 @@ function Overview() {
   useEffect(() => {
     getassociatescore();
   }, [getassociatescore]);
+
+  const [capturedBaysData, setCapturedBaysData] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const body = {
+        date: selectedDate,
+        store_id: store,
+        category: selectedCategory.toLowerCase()
+      };
+
+      try {
+        const response = await get_CapturedBays(body);
+        console.log('captured and uncaptured data', response.data[0]);
+        setCapturedBaysData(response.data[0]);
+      } catch (error) {
+        console.log('captured and uncaptured data error ', error);
+      }
+    };
+    fetchData();
+  }, [store, selectedDate, selectedCategory]);
 
   const calculateAverage = useCallback((data, field) => {
     if (!Array.isArray(data) || data.length === 0) return 'NA';
@@ -714,7 +742,7 @@ function Overview() {
               </Card>
             </Grid>
             <Grid item className="mb-10" xs={12} lg={3} xl={2.4}>
-              <div className=" flex flex-col gap-2 " style={{ height: '275px' }}>
+              <div className=" flex flex-col gap-2 ">
                 <Card
                   className="border border-gray-300 h-2/3"
                   style={{
@@ -736,10 +764,45 @@ function Overview() {
                     </div>
                   </div>
                 </Card>
+
+                <Card
+                  className="border border-gray-300 bg-green-600 h-1/3"
+                  style={{
+                    padding: '10px',
+                    height: '100px'
+                  }}
+                >
+                  <div className="flex w-full h-full">
+                    {/* Total Bays Section */}
+                    <div className="w-1/2 h-full flex flex-col">
+                      <span className="text-center text-white text-sm font-semibold">Total Bays</span>
+                      {capturedBaysData ? (
+                        <span className="text-center text-white flex-grow flex flex-col justify-center text-3xl font-semibold">
+                          {capturedBaysData?.total_bays}
+                        </span>
+                      ) : (
+                        <Skeleton variant="rectangular" height={184} className="rounded-md" />
+                      )}
+                    </div>
+
+                    {/* Captured Bays Section */}
+                    <div className="w-1/2 h-full flex flex-col border-l-2 border-t-0 border-b-0 border-l-white">
+                      <span className="text-center text-white text-sm font-semibold">Captured Bays</span>
+                      {capturedBaysData ? (
+                        <span className="text-center text-white flex-grow flex flex-col justify-center text-3xl font-semibold">
+                          {capturedBaysData?.captured_bays}
+                        </span>
+                      ) : (
+                        <Skeleton variant="rectangular" height={184} className="rounded-md" />
+                      )}
+                    </div>
+                  </div>
+                </Card>
                 <Card
                   className="border border-gray-300 bg-[#ff413a] h-1/3"
                   style={{
-                    padding: '10px'
+                    padding: '10px',
+                    height: '100px'
                   }}
                 >
                   <div className="flex w-full h-full">
