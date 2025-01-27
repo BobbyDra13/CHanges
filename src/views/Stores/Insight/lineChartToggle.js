@@ -1,10 +1,11 @@
 import { Grid, Paper, useMediaQuery, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
 // import Chart from 'react-apexcharts';
-import StoreView from './storeView';
+// import StoreView from './storeView';
 import TrendsChart from './TrendsViewCharts/Trendchart';
 import ShelfView from './shelfView';
 import { useSelector } from 'react-redux';
+import TIRAmodel from './TIRAmodel';
 
 const LineChartToggle = ({
   storeId,
@@ -133,6 +134,7 @@ const LineChartToggle = ({
 
   const endOfWeek = new Date(currentDate.setUTCHours(0, 0, 0, 0));
   endOfWeek.setDate(currentDate.getDate() + 2);
+  // const shelves = ['SHELF_1', 'SHELF_2', 'SHELF_3', 'SHELF_4', 'SHELF_5', 'SHELF_6', 'SHELF_7', 'SHELF_8', 'SHELF_9', 'SHELF_10'];
 
   useEffect(() => {
     // console.log(startOfWeek);
@@ -146,6 +148,13 @@ const LineChartToggle = ({
   //   setIsZoneid(zoneid);
   // },[zoneid]);
   console.log('sevendaysDate', sevendaysDate);
+
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const handleFullscreenToggle = () => {
+    setIsFullscreen(!isFullscreen);
+  };
+
   return (
     <Grid item sx={{ maxWidth: '100%', maxHeight: '100%', height: 'auto' }}>
       <Paper
@@ -179,15 +188,15 @@ const LineChartToggle = ({
             Trends View
           </button>
           <button
-            // onClick={() => handleButtonClick('Store View')}
+            onClick={() => handleButtonClick('Store View')}
             style={{
               backgroundColor: activeButton === 'Store View' ? 'black' : 'gray',
               color: '#fff',
               padding: '4px',
               marginRight: '3px',
               width: isSmallScreen ? '30%' : '15%',
-              fontSize: '1rem',
-              cursor: 'not-allowed'
+              fontSize: '1rem'
+              // cursor: 'not-allowed'
             }}
           >
             Store View
@@ -274,7 +283,8 @@ const LineChartToggle = ({
           </div>
         ) : activeButton == 'Store View' ? (
           <Grid>
-            <StoreView activeButton={activeButton} setActiveButton={setActiveButton} date={date} groups={isGroup} />
+            {/* <StoreView activeButton={activeButton} setActiveButton={setActiveButton} date={date} groups={isGroup} /> */}
+            <TIRAmodel />
           </Grid>
         ) : activeButton == 'Shelf View' ? (
           <Grid>

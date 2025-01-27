@@ -10,6 +10,7 @@ import NotFound from 'views/NotFound/NotFound';
 import NewStorePage from 'views/Stores/Insight/newStorePage';
 import Overview from 'views/Stores/Insight/overview';
 import Videos from 'views/Stores/Insight/videos';
+import FullscreenView from 'views/Stores/Insight/FullscreenView';
 
 const Insight = Loadable(lazy(() => import('../views/Insights')));
 
@@ -56,6 +57,10 @@ const MainRoutes = {
         {
           path: '/main/stores/storeinsight/video',
           element: <Videos />
+        },
+        {
+          path: '/main/stores/storeinsight/fullscreen/:store',
+          element: <FullscreenView />
         }
       ]
     },
