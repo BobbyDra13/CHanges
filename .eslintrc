@@ -86,6 +86,13 @@
         "useTabs": false,
         "endOfLine": "auto"
       }
+    ],
+    // Add this rule to allow react-three/fiber props
+    "react/no-unknown-property": [
+      "warn",
+      {
+        "ignore": ["intensity", "position", "object"]
+      }
     ]
   }
 }
