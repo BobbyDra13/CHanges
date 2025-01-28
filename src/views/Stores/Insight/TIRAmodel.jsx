@@ -4,7 +4,7 @@ import { CircularProgress } from '@mui/material';
 
 export default function TIRAmodel() {
   const navigate = useNavigate();
-  const { store } = useParams(); // Get the `store` parameter from the route
+  const { store } = useParams();
   const [isLoading, setIsLoading] = useState(true);
 
   const handleExploreMore = () => {
@@ -53,7 +53,7 @@ export default function TIRAmodel() {
 
       {/* Static JPEG Image of the TIRA Model */}
       <img
-        src="https://storage.googleapis.com/3dmodelhost/TIRA.png" // Replace with the correct URL
+        src="https://storage.googleapis.com/3dmodelhost/TIRA1.jpg"
         alt="TIRA Model"
         style={{
           width: '100%',
