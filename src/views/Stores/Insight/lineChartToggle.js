@@ -189,22 +189,21 @@ const LineChartToggle = ({
           >
             Trends View
           </button>
-          {showStoreViewButton && (
             <button
               onClick={() => handleButtonClick('Store View')}
+              disabled={!showStoreViewButton}
               style={{
                 backgroundColor: activeButton === 'Store View' ? 'black' : 'gray',
                 color: '#fff',
                 padding: '4px',
                 marginRight: '3px',
                 width: isSmallScreen ? '30%' : '15%',
-                fontSize: '1rem'
-                // cursor: 'not-allowed'
+                fontSize: '1rem',
+                cursor: showStoreViewButton ? 'pointer' : 'not-allowed',
               }}
             >
               Store View
             </button>
-          )}
           <button
             onClick={() => handleButtonClick('Shelf View')}
             style={{
