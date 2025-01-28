@@ -160,7 +160,7 @@ export default function FullscreenView() {
   }, []);
 
   return (
-    <div className="fixed top-[63px] left-0 w-full h-[calc(100vh-70px)] bg-white z-10 flex flex-col">
+    <div className="fixed top-[63px] left-0 w-full h-[calc(100vh-63px)] bg-white z-10 flex flex-col">
       {/* Header with navigation buttons */}
       <div className="flex justify-between items-center p-4">
         <button
