@@ -155,6 +155,8 @@ const LineChartToggle = ({
   //   setIsFullscreen(!isFullscreen);
   // };
 
+  const showStoreViewButton = location.pathname === '/main/stores/storeinsight/overview/67591b90b378a605865c09e1';
+
   return (
     <Grid item sx={{ maxWidth: '100%', maxHeight: '100%', height: 'auto' }}>
       <Paper
@@ -187,20 +189,22 @@ const LineChartToggle = ({
           >
             Trends View
           </button>
-          <button
-            onClick={() => handleButtonClick('Store View')}
-            style={{
-              backgroundColor: activeButton === 'Store View' ? 'black' : 'gray',
-              color: '#fff',
-              padding: '4px',
-              marginRight: '3px',
-              width: isSmallScreen ? '30%' : '15%',
-              fontSize: '1rem'
-              // cursor: 'not-allowed'
-            }}
-          >
-            Store View
-          </button>
+          {showStoreViewButton && (
+            <button
+              onClick={() => handleButtonClick('Store View')}
+              style={{
+                backgroundColor: activeButton === 'Store View' ? 'black' : 'gray',
+                color: '#fff',
+                padding: '4px',
+                marginRight: '3px',
+                width: isSmallScreen ? '30%' : '15%',
+                fontSize: '1rem'
+                // cursor: 'not-allowed'
+              }}
+            >
+              Store View
+            </button>
+          )}
           <button
             onClick={() => handleButtonClick('Shelf View')}
             style={{
