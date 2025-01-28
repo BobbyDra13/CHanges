@@ -160,11 +160,17 @@ export default function FullscreenView() {
   }, []);
 
   return (
-    <div className="fixed top-[70px] left-0 w-full h-[calc(100vh-70px)] bg-white z-10 flex flex-col">
+    <div className="fixed top-[63px] left-0 w-full h-[calc(100vh-70px)] bg-white z-10 flex flex-col">
       {/* Header with navigation buttons */}
       <div className="flex justify-between items-center p-4">
         <button
-          onClick={() => navigate(`/main/stores/storeinsight/overview/${store}`)}
+          onClick={() => {
+            console.log('Navigating to Overview page');
+            navigate(`/main/stores/storeinsight/overview/${store}`);
+            setTimeout(() => {
+              window.location.reload();
+            }, 100);
+          }}
           className="px-4 py-2 bg-gray-200 text-black rounded-lg hover:bg-gray-300 transition flex items-center gap-2"
         >
           <ArrowBack />
@@ -359,5 +365,5 @@ const Shelf = ({ selectedShelf }) => {
     return null;
   }
 
-  return <primitive object={scene} position={[0, 0, 0]} scale={[3, 3, 3]} />;
+  return <primitive object={scene} scale={[5, 5, 5]} />;
 };
