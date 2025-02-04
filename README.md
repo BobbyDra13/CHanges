@@ -1,6 +1,6 @@
 # Introduction
 
-This is Disha | Fashion
+This is Disha | Tira
 
 # Getting Started
 
