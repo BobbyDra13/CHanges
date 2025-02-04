@@ -41,7 +41,8 @@ function Loader() {
           p: 3,
           borderRadius: 2,
           boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-          minWidth: '200px'
+          minWidth: '200px',
+          marginBottom: '350px'
         }}
       >
         {/* <CircularProgress variant="determinate" value={progress} size={60} thickness={4} /> */}
@@ -76,7 +77,7 @@ export default function FullscreenView() {
   const [selectedShelf, setSelectedShelf] = useState(null);
   const [highlightedGroup, setHighlightedGroup] = useState(null);
   const [showTIRA, setShowTIRA] = useState(true);
-  const [cameraPosition, setCameraPosition] = useState([6, 6, 6]);
+  const [cameraPosition, setCameraPosition] = useState([0, 1, 4]);
   const [isDragMode, setIsDragMode] = useState(false);
   const controlsRef = useRef();
   const cameraRef = useRef();
@@ -138,7 +139,7 @@ export default function FullscreenView() {
   const resetCamera = () => {
     if (controlsRef.current) {
       controlsRef.current.reset();
-      setCameraPosition([6, 6, 6]);
+      setCameraPosition([0, 1, 4]);
     }
   };
 
@@ -203,8 +204,8 @@ export default function FullscreenView() {
 
       {/* 3D Model Canvas */}
       <div className="relative flex-grow">
-        <Canvas shadows>
-          <PerspectiveCamera makeDefault position={cameraPosition} fov={50} ref={cameraRef} near={0.1} far={1000} />
+        <Canvas shadows camera={{ position: [0, 1, 4], fov: 45 }}>
+          <PerspectiveCamera makeDefault position={cameraPosition} fov={45} ref={cameraRef} near={0.1} far={1000} />
           <ambientLight intensity={0.5} />
           <hemisphereLight intensity={0.6} />
           <directionalLight position={[5, 5, 5]} intensity={0.5} />
@@ -233,6 +234,7 @@ export default function FullscreenView() {
             zoomSpeed={0.8}
             panSpeed={1.2}
             enableDamping={true}
+            target={[0, 1, 0]}
             mouseButtons={{
               LEFT: isDragMode ? 2 : 0, // 0 = ROTATE, 2 = PAN
               MIDDLE: 1, // DOLLY (zoom)
