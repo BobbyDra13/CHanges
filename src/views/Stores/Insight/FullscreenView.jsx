@@ -5,16 +5,22 @@ import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { Box, Typography, IconButton, Tooltip } from '@mui/material';
 import ModelLoader from 'component/Loader/ModelLoader';
 import { ZoomIn, ZoomOut, CenterFocusStrong, ThreeDRotation, PanTool, ThreeSixty, ArrowBack } from '@mui/icons-material';
+import ToggleSwitch from 'component/toggle-switch';
 
 // Model URLs
 const TIRA_MODEL_URL = 'https://storage.googleapis.com/3dmodelhost/TIRA_final.glb';
-const getShelfModelURL = (shelf) => `https://storage.googleapis.com/3dmodelhost/Shelves/${shelf}.glb`;
+const getShelfModelURL = (shelf, isIdeal) => {
+  if (isIdeal) {
+    return `https://storage.googleapis.com/3dmodelhost/Ideal/Ideal_SHELF_1.glb`;
+  }
+  return `https://storage.googleapis.com/3dmodelhost/Shelves/${shelf}.glb`;
+};
 
 // Only preload TIRA model initially
 useGLTF.preload(TIRA_MODEL_URL);
 
 // Preload models
-const shelfButtons = ['SHELF_1', 'SHELF_2', 'SHELF_3', 'SHELF_4', 'SHELF_5', 'SHELF_6', 'SHELF_7', 'SHELF_8', 'SHELF_9', 'SHELF_10'];
+//const shelfButtons = ['SHELF_1', 'SHELF_2', 'SHELF_3', 'SHELF_4', 'SHELF_5', 'SHELF_6', 'SHELF_7', 'SHELF_8', 'SHELF_9', 'SHELF_10'];
 const SHELF_NAMES = ['SHELF_1', 'SHELF_2', 'SHELF_3', 'SHELF_4', 'SHELF_5', 'SHELF_6', 'SHELF_7', 'SHELF_8', 'SHELF_9', 'SHELF_10'];
 
 function Loader() {
@@ -76,19 +82,24 @@ export default function FullscreenView() {
   const location = useLocation();
   const [selectedShelf, setSelectedShelf] = useState(null);
   const [highlightedGroup, setHighlightedGroup] = useState(null);
+  const [isIdealMode, setIsIdealMode] = useState(false);
   const [showTIRA, setShowTIRA] = useState(true);
   const [cameraPosition, setCameraPosition] = useState([0, 1, 4]);
   const [isDragMode, setIsDragMode] = useState(false);
   const controlsRef = useRef();
   const cameraRef = useRef();
+  //const [isCompareMode, setIsCompareMode] = useState(false);
 
   // Effect to handle URL params and set initial state
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const shelf = queryParams.get('shelf');
-    console.log('URL Params - shelf:', shelf);
+    const ideal = queryParams.get('ideal') === 'true';
+    console.log('URL Params - shelf:', shelf, 'ideal:', ideal);
 
-    if (shelf && shelfButtons.includes(shelf)) {
+    setIsIdealMode(ideal);
+
+    if (shelf && SHELF_NAMES.includes(shelf)) {
       console.log('Setting selected shelf:', shelf);
       setSelectedShelf(shelf);
       setShowTIRA(false);
@@ -112,16 +123,27 @@ export default function FullscreenView() {
     try {
       setShowTIRA(false);
       setSelectedShelf(shelf);
-      // Navigate first
-      const newUrl = `/main/stores/storeinsight/fullscreen/${store}?shelf=${shelf}`;
+      const newUrl = `/main/stores/storeinsight/fullscreen/${store}?shelf=${shelf}&ideal=${isIdealMode}`;
       console.log('Navigating to:', newUrl);
       navigate(newUrl);
-      // Then reload the page to clear memory of previously loaded models
       window.location.reload();
     } catch (error) {
       console.error('Error handling shelf click:', error);
     }
   };
+  const handleModeToggle = () => {
+    const newIdealMode = !isIdealMode;
+    setIsIdealMode(newIdealMode);
+    if (selectedShelf) {
+      const newUrl = `/main/stores/storeinsight/fullscreen/${store}?shelf=${selectedShelf}&ideal=${newIdealMode}`;
+      navigate(newUrl);
+      window.location.reload();
+    }
+  };
+  // const handleCompareToggle = () => {
+  //   if (!selectedShelf) return;
+  //   setIsCompareMode(!isCompareMode);
+  // };
 
   // Camera controls
   const handleZoomIn = () => {
@@ -200,6 +222,21 @@ export default function FullscreenView() {
             {shelf}
           </button>
         ))}
+        {selectedShelf && (
+          <div className="flex items-center gap-2 ml-4">
+            <span className={`text-sm ${!isIdealMode ? 'text-blue-600 font-medium' : 'text-gray-500'}`}>Current</span>
+            <ToggleSwitch checked={isIdealMode} onCheckedChange={handleModeToggle} size="md" />
+            <span className={`text-sm ${isIdealMode ? 'text-blue-600 font-medium' : 'text-gray-500'}`}>Ideal</span>
+
+            {/* Compare button */}
+            {/* <button
+              onClick={handleCompareToggle}
+              className={`px-4 py-2 rounded-lg transition ${isCompareMode ? 'bg-blue-600 text-white' : 'bg-gray-200 text-black'}`}
+            >
+              {isCompareMode ? 'Exit Compare' : 'Compare'}
+            </button> */}
+          </div>
+        )}
       </div>
 
       {/* 3D Model Canvas */}
@@ -210,15 +247,15 @@ export default function FullscreenView() {
           <hemisphereLight intensity={0.6} />
           <directionalLight position={[5, 5, 5]} intensity={0.5} />
           <Suspense fallback={<Loader />}>
-            {showTIRA ? (
+            {selectedShelf ? (
+              <ErrorBoundary fallback={<Html center>Error loading shelf model</Html>}>
+                <Shelf selectedShelf={selectedShelf} isIdealMode={isIdealMode} />
+              </ErrorBoundary>
+            ) : (
               <ErrorBoundary fallback={<Html center>Error loading TIRA model</Html>}>
                 <TIRAFullModel highlightedGroup={highlightedGroup} />
               </ErrorBoundary>
-            ) : selectedShelf ? (
-              <ErrorBoundary fallback={<Html center>Error loading shelf model</Html>}>
-                <Shelf selectedShelf={selectedShelf} />
-              </ErrorBoundary>
-            ) : null}
+            )}
           </Suspense>
           <OrbitControls
             ref={controlsRef}
@@ -342,14 +379,14 @@ const TIRAFullModel = ({ highlightedGroup }) => {
   return <primitive object={scene} ref={groupRef} scale={[2, 2, 2]} />;
 };
 
-const Shelf = ({ selectedShelf }) => {
-  const modelUrl = getShelfModelURL(selectedShelf);
+const Shelf = ({ selectedShelf, isIdealMode }) => {
+  const modelUrl = getShelfModelURL(selectedShelf, isIdealMode);
 
-  // Log when component mounts or updates
   useEffect(() => {
     console.log('Shelf component - selectedShelf:', selectedShelf);
     console.log('Shelf component - modelUrl:', modelUrl);
-  }, [selectedShelf, modelUrl]);
+    console.log('Shelf component - isIdealMode:', isIdealMode);
+  }, [selectedShelf, modelUrl, isIdealMode]);
 
   const { scene } = useGLTF(modelUrl, {
     draco: true,
