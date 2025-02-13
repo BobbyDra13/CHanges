@@ -88,7 +88,7 @@ export default function FullscreenView() {
   const [isDragMode, setIsDragMode] = useState(false);
   const controlsRef = useRef();
   const cameraRef = useRef();
-  //const [isCompareMode, setIsCompareMode] = useState(false);
+  const [isCompareMode, setIsCompareMode] = useState(false);
 
   // Effect to handle URL params and set initial state
   useEffect(() => {
@@ -229,56 +229,65 @@ export default function FullscreenView() {
             <span className={`text-sm ${isIdealMode ? 'text-blue-600 font-medium' : 'text-gray-500'}`}>Ideal</span>
 
             {/* Compare button */}
-            {/* <button
-              onClick={handleCompareToggle}
-              className={`px-4 py-2 rounded-lg transition ${isCompareMode ? 'bg-blue-600 text-white' : 'bg-gray-200 text-black'}`}
-            >
-              {isCompareMode ? 'Exit Compare' : 'Compare'}
-            </button> */}
+            {false && (
+              <button
+                onClick={() => setIsCompareMode(!isCompareMode)}
+                className={`px-4 py-2 rounded-lg transition ${isCompareMode ? 'bg-blue-600 text-white' : 'bg-gray-200 text-black'}`}
+              >
+                {isCompareMode ? 'Exit Compare' : 'Compare'}
+              </button>
+            )}
           </div>
         )}
       </div>
 
       {/* 3D Model Canvas */}
       <div className="relative flex-grow">
-        <Canvas shadows camera={{ position: [0, 1, 4], fov: 45 }}>
-          <PerspectiveCamera makeDefault position={cameraPosition} fov={45} ref={cameraRef} near={0.1} far={1000} />
-          <ambientLight intensity={0.5} />
-          <hemisphereLight intensity={0.6} />
-          <directionalLight position={[5, 5, 5]} intensity={0.5} />
-          <Suspense fallback={<Loader />}>
-            {selectedShelf ? (
-              <ErrorBoundary fallback={<Html center>Error loading shelf model</Html>}>
-                <Shelf selectedShelf={selectedShelf} isIdealMode={isIdealMode} />
-              </ErrorBoundary>
-            ) : (
-              <ErrorBoundary fallback={<Html center>Error loading TIRA model</Html>}>
-                <TIRAFullModel highlightedGroup={highlightedGroup} />
-              </ErrorBoundary>
-            )}
-          </Suspense>
-          <OrbitControls
-            ref={controlsRef}
-            enablePan={isDragMode}
-            enableZoom={true}
-            enableRotate={!isDragMode}
-            minDistance={2}
-            maxDistance={20}
-            minPolarAngle={0}
-            maxPolarAngle={Math.PI}
-            dampingFactor={0.1}
-            rotateSpeed={0.7}
-            zoomSpeed={0.8}
-            panSpeed={1.2}
-            enableDamping={true}
-            target={[0, 1, 0]}
-            mouseButtons={{
-              LEFT: isDragMode ? 2 : 0, // 0 = ROTATE, 2 = PAN
-              MIDDLE: 1, // DOLLY (zoom)
-              RIGHT: 0 // No right mouse button action
-            }}
-          />
-        </Canvas>
+        {isCompareMode ? (
+          <div className="absolute inset-0 flex justify-center items-center bg-white">
+            <img src="https://storage.googleapis.com/3dmodelhost/Images/SHELF_1.jpg" alt="Current Shelf" className="w-1/2 h-auto p-2" />
+            <img src="https://storage.googleapis.com/3dmodelhost/Images/SHELF_2.jpg" alt="Ideal Shelf" className="w-1/2 h-auto p-2" />
+          </div>
+        ) : (
+          <Canvas shadows camera={{ position: [0, 1, 4], fov: 45 }}>
+            <PerspectiveCamera makeDefault position={cameraPosition} fov={45} ref={cameraRef} near={0.1} far={1000} />
+            <ambientLight intensity={0.5} />
+            <hemisphereLight intensity={0.6} />
+            <directionalLight position={[5, 5, 5]} intensity={0.5} />
+            <Suspense fallback={<Loader />}>
+              {selectedShelf ? (
+                <ErrorBoundary fallback={<Html center>Error loading shelf model</Html>}>
+                  <Shelf selectedShelf={selectedShelf} isIdealMode={isIdealMode} />
+                </ErrorBoundary>
+              ) : (
+                <ErrorBoundary fallback={<Html center>Error loading TIRA model</Html>}>
+                  <TIRAFullModel highlightedGroup={highlightedGroup} />
+                </ErrorBoundary>
+              )}
+            </Suspense>
+            <OrbitControls
+              ref={controlsRef}
+              enablePan={isDragMode}
+              enableZoom={true}
+              enableRotate={!isDragMode}
+              minDistance={2}
+              maxDistance={20}
+              minPolarAngle={0}
+              maxPolarAngle={Math.PI}
+              dampingFactor={0.1}
+              rotateSpeed={0.7}
+              zoomSpeed={0.8}
+              panSpeed={1.2}
+              enableDamping={true}
+              target={[0, 1, 0]}
+              mouseButtons={{
+                LEFT: isDragMode ? 2 : 0, // 0 = ROTATE, 2 = PAN
+                MIDDLE: 1, // DOLLY (zoom)
+                RIGHT: 0 // No right mouse button action
+              }}
+            />
+          </Canvas>
+        )}
 
         {/* Controls UI */}
         <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex items-center gap-3 bg-white/95 px-4 py-2 rounded-full shadow-lg">

@@ -7,8 +7,21 @@ export default function TIRAmodel() {
   const { store } = useParams();
   const [isLoading, setIsLoading] = useState(true);
 
+  // Mapping specific store IDs to image URLs
+  const storeImages = {
+    '6623a893c40c738627f3373f': 'https://storage.googleapis.com/3dmodelhost/TIRA2.jpg',
+    '67591b90b378a605865c09e1': 'https://storage.googleapis.com/3dmodelhost/TIRA1.jpg'
+  };
+
+  // Determine the correct image URL based on store ID, fallback to a default image
+  const imageUrl = storeImages[store] || 'https://storage.googleapis.com/3dmodelhost/default.jpg';
+
   const handleExploreMore = () => {
-    navigate(`/main/stores/storeinsight/fullscreen/${store}`); // Navigate to fullscreen with the `store` parameter
+    if (store === '6623a893c40c738627f3373f') {
+      navigate(`/main/stores/storeinsight/fullscreenjwd/${store}`);
+    } else {
+      navigate(`/main/stores/storeinsight/fullscreen/${store}`);
+    }
   };
 
   return (
@@ -51,9 +64,9 @@ export default function TIRAmodel() {
         </div>
       )}
 
-      {/* Static JPEG Image of the TIRA Model */}
+      {/* Dynamically Loaded Image */}
       <img
-        src="https://storage.googleapis.com/3dmodelhost/TIRA1.jpg"
+        src={imageUrl}
         alt="TIRA Model"
         style={{
           width: '100%',
