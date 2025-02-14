@@ -88,7 +88,7 @@ export default function FullscreenJWD() {
   const resetCamera = () => {
     if (controlsRef.current) {
       controlsRef.current.reset();
-      setCameraPosition([0, 1, 4]);
+      setCameraPosition([0, 2, 10]);
     }
   };
 
@@ -128,7 +128,7 @@ export default function FullscreenJWD() {
 
       {/* 3D Model Canvas */}
       <div className="relative flex-grow">
-        <Canvas shadows camera={{ position: [0, 2, 10], fov: 45 }}>
+        <Canvas shadows camera={{ position: [0, 2, 10], fov: 60 }}>
           <PerspectiveCamera makeDefault position={cameraPosition} fov={60} ref={cameraRef} near={0.1} far={1000} />
           <ambientLight intensity={0.5} />
           <hemisphereLight intensity={0.6} />
@@ -235,5 +235,5 @@ const TIRAFullModel = () => {
     }
   });
 
-  return <primitive object={scene} scale={[1, 1, 1]} />;
+  return <primitive object={scene} scale={[0.1, 0.1, 0.1]} />;
 };
