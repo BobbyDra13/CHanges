@@ -67,7 +67,7 @@ function Loader() {
 export default function FullscreenJWD() {
   const navigate = useNavigate();
   const { store } = useParams();
-  const [cameraPosition, setCameraPosition] = useState([0, 1, 50]);
+  const [cameraPosition, setCameraPosition] = useState([0, 2, 10]);
   const [isDragMode, setIsDragMode] = useState(false);
   const controlsRef = useRef();
   const cameraRef = useRef();
@@ -128,8 +128,8 @@ export default function FullscreenJWD() {
 
       {/* 3D Model Canvas */}
       <div className="relative flex-grow">
-        <Canvas shadows camera={{ position: [0, 1, 50], fov: 45 }}>
-          <PerspectiveCamera makeDefault position={cameraPosition} fov={45} ref={cameraRef} near={0.1} far={1000} />
+        <Canvas shadows camera={{ position: [0, 2, 10], fov: 45 }}>
+          <PerspectiveCamera makeDefault position={cameraPosition} fov={60} ref={cameraRef} near={0.1} far={1000} />
           <ambientLight intensity={0.5} />
           <hemisphereLight intensity={0.6} />
           <directionalLight position={[5, 5, 5]} intensity={0.5} />
@@ -144,7 +144,7 @@ export default function FullscreenJWD() {
             enableZoom={true}
             enableRotate={!isDragMode}
             minDistance={5}
-            maxDistance={70}
+            maxDistance={50}
             minPolarAngle={0}
             maxPolarAngle={Math.PI}
             dampingFactor={0.1}
